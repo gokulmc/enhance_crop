@@ -130,6 +130,7 @@ class FFmpegWrite(Buffer):
             if not self.slowmo_mode
             else self.fps
         )
+        log(f"Output FPS: {multiplier}")  
         if not self.benchmark:
             # maybe i can split this so i can just use ffmpeg normally like with vspipe
             command = [

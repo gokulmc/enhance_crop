@@ -391,7 +391,7 @@ if __name__ == "__main__":
     softsplat(*example_inputs, 'soft')
     softsplat(*example_inputs, 'soft')
     print("Inference time: ", time.time() - start_time)
-    
+
     
     with suppress_stdout_stderr():
         from softsplat_cupy import softsplat as softsplat_cupy
