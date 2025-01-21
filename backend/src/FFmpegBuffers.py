@@ -310,7 +310,7 @@ class FFmpegWrite(Buffer):
         os._exit(1)
 
 class MPVOutput:
-    def __init__(self, FFMpegWrite: FFmpegWrite,width,height,fps, outputFrameChunkSize):
+    def __init__(self, FFMpegWrite: FFmpegWrite,width,height,fps, outputFrameChunkSize, input_file):
         self.proc = None
         self.startTime = time.time()
         self.FFMPegWrite = FFMpegWrite
@@ -318,41 +318,46 @@ class MPVOutput:
         self.width = width
         self.height = height
         self.fps = fps
+        self.input_file = input_file
+        self.writeQueue = queue.Queue(maxsize=50)
         
 
     def command(self):
         command = [
-            "mpv",
-            "--cache=yes",
-            "--cache-secs=10",
-            "--demuxer=rawvideo",
-            f"--demuxer-rawvideo-w={self.width}",
-            f"--demuxer-rawvideo-h={self.height}",
-            f"--demuxer-rawvideo-fps={self.fps}",
-            "rawvideo-format=rgb24",
-            f"--audio-file={self.FFMPegWrite.inputFile}",
-            "-"
+            "./bin/ffplay.exe",
+            "-f", "rawvideo",
+            "-pixel_format", "rgb24",
+            "-video_size", f"{self.width}x{self.height}",
+            "-framerate", str(self.fps),
+            "-i", "-",  # Video input from stdin
+            "-i", "../Downloads/output-audio.aac"
+
         ]
         return command
 
-    def writeFrame(self):
-        """
-        Write raw frame data to mpv's stdin.
-        """
-        if self.proc and self.proc.stdin and self.FFMPegWrite.writeProcess:
-            self.proc.stdin.buffer.write(self.FFMPegWrite.writeProcess.stdout.read(self.outputFrameChunkSize))
-
     def write_out_frames(self):
-        with open('mpv_log.txt', "w") as f:
-            while not self.FFMPegWrite.writeProcess:
-                time.sleep(1)
-            subprocess.Popen(
+         with open('mpv_log.txt', "w") as f:
+            with subprocess.Popen(
                 self.command(),
-                stdin=self.FFMPegWrite.writeProcess.stdout,
+                stdin=subprocess.PIPE,
                 stderr=f,
                 stdout=f,
-                
-            )
+                text=True,
+                universal_newlines=True,
+            ) as self.writeProcess:
+                while True:
+                    frame = self.writeQueue.get()
+                    if frame is None:
+                        break
+                    self.writeProcess.stdin.buffer.write(frame)
+
+                self.writeProcess.stdin.close()
+                self.writeProcess.wait()
+                exit_code = self.writeProcess.returncode
+
+                renderTime = time.time() - self.startTime
+
+                printAndLog(f"\nTime to complete render: {round(renderTime, 2)}")
                 
 
                 

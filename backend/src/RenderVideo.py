@@ -194,7 +194,7 @@ class Render:
             audio_encoder=audio_encoder,
         )
 
-        self.MPVOut = MPVOutput(self.writeBuffer, width=self.width*self.upscaleTimes, height=self.height*self.upscaleTimes,fps=self.fps*self.ceilInterpolateFactor, outputFrameChunkSize=self.outputFrameChunkSize)
+        self.writeBuffer = MPVOutput(self.writeBuffer, width=self.width*self.upscaleTimes, height=self.height*self.upscaleTimes,fps=self.fps*self.ceilInterpolateFactor, outputFrameChunkSize=self.outputFrameChunkSize, input_file=self.inputFile)
 
         self.informationHandler = InformationWriteOut(
             sharedMemoryID=sharedMemoryID,
@@ -223,12 +223,12 @@ class Render:
                 sharedMemoryChunkSize
             )
         )
-        self.MPVoutThread = Thread(target=self.MPVOut.write_out_frames)
+        #self.MPVoutThread = Thread(target=self.MPVOut.write_out_frames)
         self.sharedMemoryThread.start()
         self.ffmpegReadThread.start()
         self.ffmpegWriteThread.start()
         self.renderThread.start()
-        self.MPVoutThread.start()
+        #self.MPVoutThread.start()
 
     def render(self):
         frames_rendered = 0
