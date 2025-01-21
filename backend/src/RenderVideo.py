@@ -6,7 +6,7 @@ import sys
 from multiprocessing import shared_memory
 import cv2
 
-from .FFmpegBuffers import FFmpegRead, FFmpegWrite
+from .FFmpegBuffers import FFmpegRead, FFmpegWrite, MPVOutput
 from .FFmpeg import InformationWriteOut
 from .utils.Encoders import EncoderSettings
 from .utils.SceneDetect import SceneDetect
@@ -194,6 +194,8 @@ class Render:
             audio_encoder=audio_encoder,
         )
 
+        self.MPVOut = MPVOutput(self.writeBuffer, width=self.width*self.upscaleTimes, height=self.height*self.upscaleTimes,fps=self.fps*self.ceilInterpolateFactor, outputFrameChunkSize=self.outputFrameChunkSize)
+
         self.informationHandler = InformationWriteOut(
             sharedMemoryID=sharedMemoryID,
             paused_shared_memory_id=pause_shared_memory_id,
@@ -221,10 +223,12 @@ class Render:
                 sharedMemoryChunkSize
             )
         )
+        self.MPVoutThread = Thread(target=self.MPVOut.write_out_frames)
         self.sharedMemoryThread.start()
         self.ffmpegReadThread.start()
         self.ffmpegWriteThread.start()
         self.renderThread.start()
+        self.MPVoutThread.start()
 
     def render(self):
         frames_rendered = 0

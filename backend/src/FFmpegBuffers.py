@@ -100,6 +100,7 @@ class FFmpegWrite(Buffer):
         ceilInterpolateFactor: int,
         video_encoder: EncoderSettings,
         audio_encoder: EncoderSettings,
+        mpv_output = True
     ):
         self.inputFile = inputFile
         self.outputFile = outputFile
@@ -117,9 +118,11 @@ class FFmpegWrite(Buffer):
         self.ceilInterpolateFactor = ceilInterpolateFactor
         self.video_encoder = video_encoder
         self.audio_encoder = audio_encoder
+        self.mpv_output = mpv_output
         self.writeQueue = queue.Queue(maxsize=50)
         self.previewFrame = None
         self.framesRendered: int = 1
+        self.writeProcess = None
 
     def command(self):
         log("Generating FFmpeg WRITE command...")
@@ -131,6 +134,26 @@ class FFmpegWrite(Buffer):
             else self.fps
         )
         log(f"Output FPS: {multiplier}")  
+        if self.mpv_output:
+            command = [
+                f"{FFMPEG_PATH}",
+                "-f",
+                "rawvideo",
+                "-pix_fmt",
+                "rgb24",
+                "-vcodec",
+                "rawvideo",
+                "-s",
+                f"{self.width}x{self.height}",
+                "-i",
+                "-",
+                "-f",
+                "rawvideo",
+                "-pix_fmt",
+                "yuv420p",
+                "-",
+            ]
+            return command
         if not self.benchmark:
             # maybe i can split this so i can just use ffmpeg normally like with vspipe
             command = [
@@ -249,7 +272,7 @@ class FFmpegWrite(Buffer):
                     self.command(),
                     stdin=subprocess.PIPE,
                     stderr=f,
-                    stdout=f,
+                    stdout=subprocess.PIPE,
                     text=True,
                     universal_newlines=True,
                 ) as self.writeProcess:
@@ -285,3 +308,59 @@ class FFmpegWrite(Buffer):
             )
         time.sleep(1)
         os._exit(1)
+
+class MPVOutput:
+    def __init__(self, FFMpegWrite: FFmpegWrite,width,height,fps, outputFrameChunkSize):
+        self.proc = None
+        self.startTime = time.time()
+        self.FFMPegWrite = FFMpegWrite
+        self.outputFrameChunkSize = outputFrameChunkSize
+        self.width = width
+        self.height = height
+        self.fps = fps
+        
+
+    def command(self):
+        command = [
+            "mpv",
+            "--cache=yes",
+            "--cache-secs=10",
+            "--demuxer=rawvideo",
+            f"--demuxer-rawvideo-w={self.width}",
+            f"--demuxer-rawvideo-h={self.height}",
+            f"--demuxer-rawvideo-fps={self.fps}",
+            "rawvideo-format=rgb24",
+            f"--audio-file={self.FFMPegWrite.inputFile}",
+            "-"
+        ]
+        return command
+
+    def writeFrame(self):
+        """
+        Write raw frame data to mpv's stdin.
+        """
+        if self.proc and self.proc.stdin and self.FFMPegWrite.writeProcess:
+            self.proc.stdin.buffer.write(self.FFMPegWrite.writeProcess.stdout.read(self.outputFrameChunkSize))
+
+    def write_out_frames(self):
+        with open('mpv_log.txt', "w") as f:
+            while not self.FFMPegWrite.writeProcess:
+                time.sleep(1)
+            subprocess.Popen(
+                self.command(),
+                stdin=self.FFMPegWrite.writeProcess.stdout,
+                stderr=f,
+                stdout=f,
+                
+            )
+                
+
+                
+
+    def stop(self):
+        """
+        Stop mpv by closing stdin.
+        """
+        if self.proc:
+            self.proc.stdin.close()
+            self.proc.wait()
