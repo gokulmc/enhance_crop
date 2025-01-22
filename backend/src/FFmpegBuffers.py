@@ -345,21 +345,21 @@ class MPVOutput:
         with open('mpv_log.txt', "w") as f:
             while not self.FFMPegWrite.writeProcess:
                 time.sleep(1)
-            subprocess.Popen(
+            self.proc = subprocess.Popen(
                 self.command(),
                 stdin=self.FFMPegWrite.writeProcess.stdout,
                 stderr=f,
                 stdout=f,
                 
             )
-                
-
-                
+            self.proc.wait()
+            self.stop() 
+            os._exit(0) # force exit        
 
     def stop(self):
         """
         Stop mpv by closing stdin.
         """
         if self.proc:
-            self.proc.stdin.close()
+            self.proc.terminate()
             self.proc.wait()
