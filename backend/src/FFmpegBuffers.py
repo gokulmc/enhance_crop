@@ -145,10 +145,12 @@ class FFmpegWrite(Buffer):
                 "rawvideo",
                 "-s",
                 f"{self.width}x{self.height}",
+                "-r",
+                f"{multiplier}",
                 "-i",
                 "-",
                 "-f",
-                "rawvideo",
+                "matroska",
                 "-pix_fmt",
                 "yuv420p",
                 "-",
@@ -323,16 +325,12 @@ class MPVOutput:
     def command(self):
         command = [
         "mpv",
-        "--demuxer=rawvideo",
-        f"--demuxer-rawvideo-w={self.width}",
-        f"--demuxer-rawvideo-h={self.height}",
-        f"--demuxer-rawvideo-fps={self.fps}",
         f"--audio-file={self.FFMPegWrite.inputFile}",
         "--no-config",
         "--cache=yes",
-        "--cache-secs=30",                    # Cache 30 seconds of video
-        "--demuxer-max-bytes=500MiB",         # Increase max bytes
-        "--demuxer-readahead-secs=30",        # Read ahead 30 seconds
+        "--cache-secs=5",                    # Cache 30 seconds of video
+        "--demuxer-max-bytes=500Mib",         # Increase max bytes
+        "--demuxer-readahead-secs=5",        # Read ahead 30 seconds
         "--demuxer-seekable-cache=yes",       # Enable seekable cache
         "--stream-buffer-size=500MiB",        # Increase buffer size
         "--hr-seek-framedrop=no",            # Prevent frame dropping during seeks

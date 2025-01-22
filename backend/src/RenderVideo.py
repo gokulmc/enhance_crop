@@ -196,8 +196,6 @@ class Render:
             mpv_output=output_to_mpv,
         )
 
-        
-
         self.informationHandler = InformationWriteOut(
             sharedMemoryID=sharedMemoryID,
             paused_shared_memory_id=pause_shared_memory_id,
