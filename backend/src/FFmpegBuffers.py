@@ -36,7 +36,7 @@ class FFmpegRead(Buffer):
             stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL,
         )
-        self.readQueue = queue.Queue(maxsize=50)
+        self.readQueue = queue.Queue(maxsize=100)
 
     def command(self):
         log("Generating FFmpeg READ command...")
@@ -100,7 +100,7 @@ class FFmpegWrite(Buffer):
         ceilInterpolateFactor: int,
         video_encoder: EncoderSettings,
         audio_encoder: EncoderSettings,
-        mpv_output = True
+        mpv_output: bool
     ):
         self.inputFile = inputFile
         self.outputFile = outputFile
@@ -119,7 +119,7 @@ class FFmpegWrite(Buffer):
         self.video_encoder = video_encoder
         self.audio_encoder = audio_encoder
         self.mpv_output = mpv_output
-        self.writeQueue = queue.Queue(maxsize=50)
+        self.writeQueue = queue.Queue(maxsize=100)
         self.previewFrame = None
         self.framesRendered: int = 1
         self.writeProcess = None
@@ -272,7 +272,7 @@ class FFmpegWrite(Buffer):
                     self.command(),
                     stdin=subprocess.PIPE,
                     stderr=f,
-                    stdout=subprocess.PIPE,
+                    stdout=subprocess.PIPE if self.mpv_output else f,
                     text=True,
                     universal_newlines=True,
                 ) as self.writeProcess:
@@ -310,7 +310,7 @@ class FFmpegWrite(Buffer):
         os._exit(1)
 
 class MPVOutput:
-    def __init__(self, FFMpegWrite: FFmpegWrite,width,height,fps, outputFrameChunkSize, input_file):
+    def __init__(self, FFMpegWrite: FFmpegWrite,width,height,fps, outputFrameChunkSize):
         self.proc = None
         self.startTime = time.time()
         self.FFMPegWrite = FFMpegWrite
@@ -318,46 +318,40 @@ class MPVOutput:
         self.width = width
         self.height = height
         self.fps = fps
-        self.input_file = input_file
-        self.writeQueue = queue.Queue(maxsize=50)
         
 
     def command(self):
         command = [
-            "./bin/ffplay.exe",
-            "-f", "rawvideo",
-            "-pixel_format", "rgb24",
-            "-video_size", f"{self.width}x{self.height}",
-            "-framerate", str(self.fps),
-            "-i", "-",  # Video input from stdin
-            "-i", "../Downloads/output-audio.aac"
-
+            "mpv",
+            "--cache=yes",
+            "--demuxer-readahead-secs=100",
+            "--demuxer=rawvideo",
+            f"--demuxer-rawvideo-w={self.width}",
+            f"--demuxer-rawvideo-h={self.height}",
+            f"--demuxer-rawvideo-fps={self.fps}",
+            f"--audio-file={self.FFMPegWrite.inputFile}",
+            "-"
         ]
         return command
 
+    def writeFrame(self):
+        """
+        Write raw frame data to mpv's stdin.
+        """
+        if self.proc and self.proc.stdin and self.FFMPegWrite.writeProcess:
+            self.proc.stdin.buffer.write(self.FFMPegWrite.writeProcess.stdout.read(self.outputFrameChunkSize))
+
     def write_out_frames(self):
-         with open('mpv_log.txt', "w") as f:
-            with subprocess.Popen(
+        with open('mpv_log.txt', "w") as f:
+            while not self.FFMPegWrite.writeProcess:
+                time.sleep(1)
+            subprocess.Popen(
                 self.command(),
-                stdin=subprocess.PIPE,
+                stdin=self.FFMPegWrite.writeProcess.stdout,
                 stderr=f,
                 stdout=f,
-                text=True,
-                universal_newlines=True,
-            ) as self.writeProcess:
-                while True:
-                    frame = self.writeQueue.get()
-                    if frame is None:
-                        break
-                    self.writeProcess.stdin.buffer.write(frame)
-
-                self.writeProcess.stdin.close()
-                self.writeProcess.wait()
-                exit_code = self.writeProcess.returncode
-
-                renderTime = time.time() - self.startTime
-
-                printAndLog(f"\nTime to complete render: {round(renderTime, 2)}")
+                
+            )
                 
 
                 

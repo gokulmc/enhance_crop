@@ -88,6 +88,7 @@ class Render:
         slomo_mode: bool = False,
         dynamic_scaled_optical_flow: bool = False,
         ensemble: bool = False,
+        output_to_mpv: bool = False
     ):
         self.inputFile = inputFile
         self.backend = backend
@@ -192,9 +193,10 @@ class Render:
             ceilInterpolateFactor=self.ceilInterpolateFactor,
             video_encoder=video_encoder,
             audio_encoder=audio_encoder,
+            mpv_output=output_to_mpv,
         )
 
-        self.writeBuffer = MPVOutput(self.writeBuffer, width=self.width*self.upscaleTimes, height=self.height*self.upscaleTimes,fps=self.fps*self.ceilInterpolateFactor, outputFrameChunkSize=self.outputFrameChunkSize, input_file=self.inputFile)
+        
 
         self.informationHandler = InformationWriteOut(
             sharedMemoryID=sharedMemoryID,
@@ -223,12 +225,16 @@ class Render:
                 sharedMemoryChunkSize
             )
         )
-        #self.MPVoutThread = Thread(target=self.MPVOut.write_out_frames)
+        
         self.sharedMemoryThread.start()
         self.ffmpegReadThread.start()
         self.ffmpegWriteThread.start()
         self.renderThread.start()
-        #self.MPVoutThread.start()
+        
+        if output_to_mpv:
+            MPVOut = MPVOutput(self.writeBuffer, width=self.width*self.upscaleTimes, height=self.height*self.upscaleTimes,fps=self.fps*self.ceilInterpolateFactor, outputFrameChunkSize=self.outputFrameChunkSize)
+            MPVoutThread = Thread(target=MPVOut.write_out_frames)
+            MPVoutThread.start()
 
     def render(self):
         frames_rendered = 0

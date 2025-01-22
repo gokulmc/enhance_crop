@@ -145,6 +145,7 @@ class HandleApplication:
             slomo_mode=self.args.slomo_mode,
             dynamic_scaled_optical_flow=self.args.dynamic_scaled_optical_flow,
             ensemble=self.args.ensemble,
+            output_to_mpv=self.args.output_to_mpv,
         )
 
     def handleArguments(self) -> argparse.ArgumentParser:
@@ -350,6 +351,12 @@ class HandleApplication:
             help="Memory ID to share preview on",
             type=str,
             default=None,
+        )
+        parser.add_argument(
+            "--output_to_mpv",
+            help="Outputs to mpv instead of an output file (requires mpv to be installed)",
+            action="store_true",
+            default=False,
         )
         parser.add_argument(
             "--list_backends",
