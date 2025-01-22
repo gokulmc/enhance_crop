@@ -389,8 +389,9 @@ class HandleApplication:
             and not self.args.benchmark
         ):
             raise os.error("Output file already exists!")
-        if not os.path.isfile(self.args.input):
-            raise os.error("Input file does not exist!")
+        if "http" not in self.args.input:
+            if not os.path.isfile(self.args.input):
+                raise os.error("Input file does not exist!")
         if self.args.tilesize < 0:
             raise ValueError("Tilesize must be greater than 0")
         if self.args.interpolate_factor < 0:

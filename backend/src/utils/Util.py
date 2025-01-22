@@ -22,7 +22,6 @@ def suppress_stdout_stderr():
             os.close(old_stdout_fd)
             os.close(old_stderr_fd)
 
-
 try:
     from ..constants import CWD
 except ImportError:
