@@ -105,11 +105,11 @@ class UpscalePytorch:
 
     @torch.inference_mode()
     def set_self_model(self, backend="pytorch"):
+        torch.cuda.empty_cache()
         if backend == "tensorrt":
             from .TensorRTHandler import TorchTensorRTHandler
-
             trtHandler = TorchTensorRTHandler()
-            trtHandler.load_engine(self.trt_engine_path)
+            self.model = trtHandler.load_engine(self.trt_engine_path)
         else:
             self.model = self.loadModel(
                 modelPath=self.modelPath, device=self.device, dtype=self.dtype
@@ -188,8 +188,8 @@ class UpscalePytorch:
                         example_inputs=inputs,
                         trt_engine_path=self.trt_engine_path,
                     )
-                torch.cuda.empty_cache()
-                self.set_self_model(backend="tensorrt")
+                
+                self.model = trtHandler.load_engine(self.trt_engine_path)
         torch.cuda.empty_cache()
         self.prepareStream.synchronize()
 

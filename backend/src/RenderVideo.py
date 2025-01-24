@@ -165,7 +165,7 @@ class Render:
             self.setupInterpolate()
             printAndLog("Using Interpolation Model: " + self.interpolateModel)
 
-        if upscaleModel:
+        if upscaleModel: # load model after interpolation model is loaded, this saves on vram if the user builds 2 separate engines
             self.upscaleOption.hotReload()
 
         self.readBuffer = FFmpegRead(  # input width
