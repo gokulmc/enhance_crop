@@ -189,7 +189,7 @@ class UpscalePytorch:
                         trt_engine_path=self.trt_engine_path,
                     )
                 
-                self.model = trtHandler.load_engine(self.trt_engine_path)
+                self.set_self_model(backend="tensorrt")
         torch.cuda.empty_cache()
         self.prepareStream.synchronize()
 
