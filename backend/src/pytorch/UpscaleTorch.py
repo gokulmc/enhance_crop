@@ -153,11 +153,11 @@ class UpscalePytorch:
                 from .TensorRTHandler import TorchTensorRTHandler
 
                 trtHandler = TorchTensorRTHandler(
-                    export_format="dynamo",
-                    dynamo_export_format="nn2exportedprogram",
-                    multi_precision_engine=True,
+                    export_format="fallback",
+                    dynamo_export_format="fallback",
+                    multi_precision_engine=False,
                     trt_optimization_level=self.trt_optimization_level,
-
+                    
                 )
 
                 self.trt_engine_path = os.path.join(
