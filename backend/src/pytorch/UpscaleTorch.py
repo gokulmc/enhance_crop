@@ -153,10 +153,11 @@ class UpscalePytorch:
                 from .TensorRTHandler import TorchTensorRTHandler
 
                 trtHandler = TorchTensorRTHandler(
-                    export_format="fallback",
-                    dynamo_export_format="fallback",
-                    multi_precision_engine=False,
+                    export_format="dynamo",
+                    dynamo_export_format="nn2exportedprogram",
+                    multi_precision_engine=True,
                     trt_optimization_level=self.trt_optimization_level,
+
                 )
 
                 self.trt_engine_path = os.path.join(
@@ -232,9 +233,7 @@ class UpscalePytorch:
 
         model = model.model
         model.load_state_dict(model.state_dict(), assign=True)
-        model.eval().to(self.device)
-        if self.dtype == torch.float16:
-            model.half()
+        model.eval().to(self.device, dtype=self.dtype)
         return model
 
     @torch.inference_mode()

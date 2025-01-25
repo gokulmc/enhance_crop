@@ -144,7 +144,7 @@ class FFmpegWrite(Buffer):
                 "-vcodec",
                 "rawvideo",
                 "-s",
-                f"{self.width}x{self.height}",
+                f"{self.width * self.upscaleTimes}x{self.upscaleTimes * self.height}",
                 "-r",
                 f"{multiplier}",
                 "-i",
