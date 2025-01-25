@@ -156,7 +156,13 @@ ncnnUpscaleModels = {
         2,
         "Compact",
     ),
-    "RealESRGAN JaNai (Animation) (2X) (Fast)": (
+    "RealESRGAN JaNai V2 (Animation) (2X) (Fast)": (
+        "2x_AnimeJaNai_V2_Compact_36k",
+        "2x_AnimeJaNai_V2_Compact_36k.tar.gz",
+        2,
+        "Compact",
+    ),
+    "RealESRGAN JaNai V3 (Animation) (2X) (Fast)": (
         "2x_AnimeJaNai_HD_V3_Sharp1_Compact_430k",
         "2x_AnimeJaNai_HD_V3_Sharp1_Compact_430k.tar.gz",
         2,
@@ -213,6 +219,12 @@ pytorchUpscaleModels = {
         2,
         "SPANPlus",
     ),
+    "SPANPlus Dynamic BHI (Realistic) (2X) (Fast)": (
+        "2x_BHI_SpanPlusDynamic_Light.pth",
+        "2x_BHI_SpanPlusDynamic_Light.pth",
+        2,
+        "SPANPlus",
+    ),
     "SPAN Nomos8k (Realistic) (High Quality Source) (4X) (Fast)": (
         "4xNomos8k_span_otf_weak_no_update_params.pth",
         "4xNomos8k_span_otf_weak_no_update_params.pth",
@@ -237,7 +249,13 @@ pytorchUpscaleModels = {
         2,
         "Compact",
     ),
-    "RealESRGAN JaNai (Animation) (2X) (Fast)": (
+    "RealESRGAN JaNai V2 (Animation) (2X) (Fast)": (
+        "2x_AnimeJaNai_V2_Compact_36k.pth",
+        "2x_AnimeJaNai_V2_Compact_36k.pth",
+        2,
+        "Compact",
+    ),
+    "RealESRGAN JaNai V3 (Animation) (2X) (Fast)": (
         "2x_AnimeJaNai_HD_V3_Sharp1_Compact_430k.pth",
         "2x_AnimeJaNai_HD_V3_Sharp1_Compact_430k.pth",
         2,
@@ -266,6 +284,12 @@ tensorrtUpscaleModels = {
         2,
         "SPANPlus",
     ),
+    "SPANPlus Dynamic BHI (Realistic) (2X) (Fast)": (
+        "2x_BHI_SpanPlusDynamic_Light.pth",
+        "2x_BHI_SpanPlusDynamic_Light.pth",
+        2,
+        "SPANPlus",
+    ),
     "SPAN Nomos8k (Realistic) (High Quality Source) (4X) (Fast)": (
         "4xNomos8k_span_otf_weak_no_update_params.pth",
         "4xNomos8k_span_otf_weak_no_update_params.pth",
@@ -290,7 +314,13 @@ tensorrtUpscaleModels = {
         2,
         "Compact",
     ),
-    "RealESRGAN JaNai (Animation) (2X) (Fast)": (
+    "RealESRGAN JaNai V2 (Animation) (2X) (Fast)": (
+        "2x_AnimeJaNai_V2_Compact_36k.pth",
+        "2x_AnimeJaNai_V2_Compact_36k.pth",
+        2,
+        "Compact",
+    ),
+    "RealESRGAN JaNai V3 (Animation) (2X) (Fast)": (
         "2x_AnimeJaNai_HD_V3_Sharp1_Compact_430k.pth",
         "2x_AnimeJaNai_HD_V3_Sharp1_Compact_430k.pth",
         2,

@@ -115,6 +115,11 @@ class UpscalePytorch:
                 modelPath=self.modelPath, device=self.device, dtype=self.dtype
             )
 
+
+    # add prores
+    # add janai v2
+    # add bhi light model
+
     @torch.inference_mode()
     def _load(self):
         with torch.cuda.stream(self.prepareStream):

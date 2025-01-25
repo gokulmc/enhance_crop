@@ -251,6 +251,7 @@ class HandleApplication:
                 "libx265",
                 "vp9",
                 "av1",
+                "prores",
                 "x264_vulkan",
                 "x264_nvenc",
                 "x265_nvenc",

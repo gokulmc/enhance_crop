@@ -33,6 +33,11 @@ class libx264(Encoder):
     preInputsettings = None
     postInputSettings = "-c:v libx264"
 
+class prores(Encoder):
+    preset_tag = "prores"
+    preInputsettings = None
+    postInputSettings = "-c:v prores_ks"
+
 
 class libx265(Encoder):
     preset_tag = "libx265"

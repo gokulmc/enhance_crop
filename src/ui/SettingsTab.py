@@ -267,6 +267,7 @@ class Settings:
                 "libx265",
                 "vp9",
                 "av1",
+                "prores",
                 "x264_vulkan (experimental)",
                 "x264_nvenc",
                 "x265_nvenc",
