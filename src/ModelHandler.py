@@ -284,12 +284,6 @@ tensorrtUpscaleModels = {
         2,
         "SPANPlus",
     ),
-    "SPANPlus Dynamic BHI (Realistic) (2X) (Fast)": (
-        "2x_BHI_SpanPlusDynamic_Light.pth",
-        "2x_BHI_SpanPlusDynamic_Light.pth",
-        2,
-        "SPANPlus",
-    ),
     "SPAN Nomos8k (Realistic) (High Quality Source) (4X) (Fast)": (
         "4xNomos8k_span_otf_weak_no_update_params.pth",
         "4xNomos8k_span_otf_weak_no_update_params.pth",
