@@ -12,6 +12,7 @@ from .utils.Encoders import EncoderSettings
 from .utils.SceneDetect import SceneDetect
 from .utils.Util import printAndLog, log
 from .utils.BorderDetect import BorderDetect
+from .utils.VideoInfo import OpenCVInfo
 
 
 def remove_shared_memory_block(name):
@@ -126,17 +127,18 @@ class Render:
             print("Error: Could not open video.")
             exit()
 
-        self.width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-        self.height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        videoInfo = OpenCVInfo(input_file=inputFile)
+
+        self.width, self.height = videoInfo.get_width_x_height()
         self.originalWidth = self.width
         self.originalHeight = self.height
         self.borderX = 0
         self.borderY = 0  # set borders for cropping automatically to 0, will be overwritten if borders are detected
-        self.totalInputFrames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        self.totalInputFrames = videoInfo.get_total_frames()
         self.totalOutputFrames = int(
-            cap.get(cv2.CAP_PROP_FRAME_COUNT) * self.interpolateFactor
+            self.totalInputFrames * self.interpolateFactor
         )
-        self.fps = cap.get(cv2.CAP_PROP_FPS)
+        self.fps = videoInfo.get_fps()
         cap.release()
 
         video_encoder = EncoderSettings(video_encoder_preset)
