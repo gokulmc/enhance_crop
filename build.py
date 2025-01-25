@@ -8,7 +8,7 @@ import shutil
 
 import urllib.request
 
-linux_and_mac_py_ver = "python3.10"
+linux_and_mac_py_ver = "python3"
 
 
 def checkIfExeExists(exe):
