@@ -196,6 +196,7 @@ class Render:
             video_encoder=video_encoder,
             audio_encoder=audio_encoder,
             mpv_output=output_to_mpv,
+            hdr_mode=hdr_mode,
         )
 
         self.informationHandler = InformationWriteOut(

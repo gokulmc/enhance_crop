@@ -488,5 +488,8 @@ class ProcessTab:
 
         if self.isOverwrite:
             command += ["--overwrite"]
+        
+        if renderOptions.hdrMode:
+            command += ["--hdr_mode"]
 
         return command

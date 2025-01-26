@@ -26,6 +26,7 @@ class RenderOptions:
         ensemble: bool,
         interpolateModelFile: str | None = None,
         upscaleModelFile: str | None = None,
+        hdrMode: bool = False,
     ):
         self._inputFile = inputFile
         self._outputPath = outputPath
@@ -47,6 +48,7 @@ class RenderOptions:
         self._sloMoMode = sloMoMode
         self._dyanmicScaleOpticalFlow = dyanmicScaleOpticalFlow
         self._ensemble = ensemble
+        self._hdrMode = hdrMode
 
     @property
     def inputFile(self):
@@ -207,6 +209,13 @@ class RenderOptions:
     @upscaleModelFile.setter
     def upscaleModelFile(self, value: str):
         self._upscaleModelFile = value
+    
+    @property
+    def hdrMode(self):
+        return self._hdrMode
+    @hdrMode.setter
+    def hdrMode(self, value: bool):
+        self._hdrMode = value
 
 
 class RenderQueue:

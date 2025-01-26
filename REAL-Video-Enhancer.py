@@ -377,6 +377,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             upscaleTimes=upscaleTimes,
             upscaleModelFile=upscaleModelFile if upscale else None,
             interpolateModelFile=interpolateModelFile if interpolate else None,
+            hdrMode=self.hdrModeCheckBox.isChecked(),
         )
 
         self.renderQueue.add(renderOptions)

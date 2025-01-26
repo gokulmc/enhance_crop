@@ -100,6 +100,7 @@ class FFmpegWrite(Buffer):
         ceilInterpolateFactor: int,
         video_encoder: EncoderSettings,
         audio_encoder: EncoderSettings,
+        hdr_mode: bool,
         mpv_output: bool
     ):
         self.inputFile = inputFile
@@ -119,10 +120,12 @@ class FFmpegWrite(Buffer):
         self.video_encoder = video_encoder
         self.audio_encoder = audio_encoder
         self.mpv_output = mpv_output
+        self.hdr_mode = hdr_mode
         self.writeQueue = queue.Queue(maxsize=100)
         self.previewFrame = None
         self.framesRendered: int = 1
         self.writeProcess = None
+        
 
     def command(self):
         log("Generating FFmpeg WRITE command...")
@@ -134,6 +137,7 @@ class FFmpegWrite(Buffer):
             else self.fps
         )
         log(f"Output FPS: {multiplier}")  
+
         if self.mpv_output:
             command = [
                 f"{FFMPEG_PATH}",
@@ -156,6 +160,7 @@ class FFmpegWrite(Buffer):
                 "-",
             ]
             return command
+        
         if not self.benchmark:
             # maybe i can split this so i can just use ffmpeg normally like with vspipe
             command = [
@@ -199,6 +204,30 @@ class FFmpegWrite(Buffer):
                         "-b:a",
                         self.audio_bitrate,
                     ]
+            
+            if self.hdr_mode:
+
+                command += [
+                    "-color_primaries", "bt2020",
+                    "-color_trc", "smpte2084",
+                    "-colorspace", "bt2020nc",
+                    "-color_range", "pc",
+                    # Preserve HDR metadata
+                    "-copy_unknown",
+                    "-map_metadata", "0",
+                    # Keep HDR side data
+                    "-strict", "experimental",
+                ]
+
+                # override pixel format
+                pxfmtdict = {
+                    "yuv420p": "yuv420p10le",
+                    "yuv422": "yuv422p10le",
+                    "yuv444": "yuv444p10le",
+                }
+
+                if self.pixelFormat in pxfmtdict:
+                    self.pixelFormat = pxfmtdict[self.pixelFormat]
 
             command += [
                 "-pix_fmt",
@@ -223,7 +252,8 @@ class FFmpegWrite(Buffer):
             if self.overwrite:
                 command.append("-y")
 
-        else:
+        else: # Benchmark mode
+
             command = [
                 f"{FFMPEG_PATH}",
                 "-hide_banner",

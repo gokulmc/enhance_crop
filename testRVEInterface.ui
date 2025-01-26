@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>978</width>
-    <height>834</height>
+    <height>883</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -126,7 +126,7 @@ background-color:#fff;
              <string notr="true"/>
             </property>
             <property name="currentIndex">
-             <number>3</number>
+             <number>2</number>
             </property>
             <widget class="QWidget" name="homePage">
              <property name="styleSheet">
@@ -1153,6 +1153,75 @@ text-align: center;
                           <property name="text">
                            <string>General Settings</string>
                           </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QWidget" name="widget_6" native="true">
+                          <layout class="QHBoxLayout" name="horizontalLayout_37">
+                           <item>
+                            <widget class="QLabel" name="label_59">
+                             <property name="font">
+                              <font>
+                               <pointsize>12</pointsize>
+                              </font>
+                             </property>
+                             <property name="toolTip">
+                              <string/>
+                             </property>
+                             <property name="statusTip">
+                              <string/>
+                             </property>
+                             <property name="text">
+                              <string>HDR Mode</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <spacer name="horizontalSpacer_22">
+                             <property name="orientation">
+                              <enum>Qt::Orientation::Horizontal</enum>
+                             </property>
+                             <property name="sizeHint" stdset="0">
+                              <size>
+                               <width>297</width>
+                               <height>20</height>
+                              </size>
+                             </property>
+                            </spacer>
+                           </item>
+                           <item>
+                            <widget class="QLabel" name="label_55">
+                             <property name="maximumSize">
+                              <size>
+                               <width>25</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="toolTip">
+                              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;HDR Mode:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;- &lt;/span&gt;Enables necessary settings within ffmpeg to output a HDR video, &lt;span style=&quot; font-weight:700;&quot;&gt;WARNING: Can cause shifting when enabled on a SDR video.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                             </property>
+                             <property name="text">
+                              <string/>
+                             </property>
+                             <property name="pixmap">
+                              <pixmap resource="resources.qrc">:/icons/icons/info.svg</pixmap>
+                             </property>
+                             <property name="scaledContents">
+                              <bool>true</bool>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QCheckBox" name="hdrModeCheckBox">
+                             <property name="styleSheet">
+                              <string notr="true"/>
+                             </property>
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
                          </widget>
                         </item>
                         <item>
@@ -2522,8 +2591,8 @@ QTabWidget::pane { /* The tab widget frame */
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>778</width>
-                   <height>750</height>
+                   <width>449</width>
+                   <height>416</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_18">
@@ -2565,8 +2634,8 @@ QTabWidget::pane { /* The tab widget frame */
                              <rect>
                               <x>0</x>
                               <y>0</y>
-                              <width>720</width>
-                              <height>627</height>
+                              <width>465</width>
+                              <height>216</height>
                              </rect>
                             </property>
                             <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -3393,7 +3462,7 @@ QTabWidget::pane { /* The tab widget frame */
                                </size>
                               </property>
                               <property name="toolTip">
-                               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Audio Encoder&lt;/span&gt;&lt;/p&gt;&lt;p&gt; - &lt;span style=&quot; font-weight:700;&quot;&gt;Recommended &lt;/span&gt;to use &lt;span style=&quot; font-weight:700;&quot;&gt;aac&lt;/span&gt; if the video container is &lt;span style=&quot; font-weight:700;&quot;&gt;not mkv, &lt;/span&gt;or if the output video has audio isses.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;- &lt;/span&gt;copy_audio: No re-encoding is done on the output&lt;/p&gt;&lt;p&gt;- aac: Most common, and high quality.&lt;/p&gt;&lt;p&gt;- libmp3lame: Used less, low quality.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Audio Encoder&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- &lt;span style=&quot; font-weight:700;&quot;&gt;Recommended &lt;/span&gt;to use &lt;span style=&quot; font-weight:700;&quot;&gt;aac&lt;/span&gt; if the video container is &lt;span style=&quot; font-weight:700;&quot;&gt;not mkv, &lt;/span&gt;or if the output video has audio isses.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;- &lt;/span&gt;copy_audio: No re-encoding is done on the output&lt;/p&gt;&lt;p&gt;- aac: Most common, and high quality.&lt;/p&gt;&lt;p&gt;- libmp3lame: Used less, low quality.&lt;/p&gt;&lt;p&gt;- opus: Used for &lt;span style=&quot; font-weight:700;&quot;&gt;webm&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                               </property>
                               <property name="text">
                                <string/>
