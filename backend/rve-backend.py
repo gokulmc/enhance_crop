@@ -252,6 +252,7 @@ class HandleApplication:
                 "vp9",
                 "av1",
                 "prores",
+                "ffv1",
                 "x264_vulkan",
                 "x264_nvenc",
                 "x265_nvenc",
@@ -270,6 +271,9 @@ class HandleApplication:
                 "yuv420p",
                 "yuv422p",
                 "yuv444p",
+                "yuv420p10le",
+                "yuv422p10le",
+                "yuv444p10le",
             ],
             type=str,
         )

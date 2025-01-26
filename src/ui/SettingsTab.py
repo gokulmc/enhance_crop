@@ -246,7 +246,7 @@ class Settings:
             "preview_enabled": "True",
             "scene_change_detection_method": "pyscenedetect",
             "scene_change_detection_enabled": "True",
-            "scene_change_detection_threshold": "4.0",
+            "scene_change_detection_threshold": "3.5",
             "discord_rich_presence": "False",
             "video_quality": "High",
             "output_folder_location": os.path.join(f"{HOME_PATH}", "Videos")
@@ -268,6 +268,7 @@ class Settings:
                 "vp9",
                 "av1",
                 "prores",
+                "ffv1",
                 "x264_vulkan (experimental)",
                 "x264_nvenc",
                 "x265_nvenc",
@@ -296,7 +297,7 @@ class Settings:
             "pytorch_gpu_id": "ANY",
             "auto_border_cropping": ("True", "False"),
             "video_container": ("mkv", "mp4", "mov"),
-            "video_pixel_format": ("yuv420p", "yuv422p", "yuv444p"),
+            "video_pixel_format": ("yuv420p", "yuv422p", "yuv444p", "yuv420p10le", "yuv422p10le", "yuv444p10le"),
         }
         self.settings = self.defaultSettings.copy()
         if not os.path.isfile(self.settingsFile):

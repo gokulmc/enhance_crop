@@ -1,12 +1,13 @@
 from abc import ABC
 from dataclasses import dataclass
+from typing import Optional
 
 
 @dataclass
 class Encoder(ABC):
     preset_tag: str
-    preInputsettings: str
-    postInputSettings: str
+    preInputsettings: Optional[str]
+    postInputSettings: Optional[str]
     qualityControlMode: str = "-crf"
 
 
@@ -33,11 +34,6 @@ class libx264(Encoder):
     preInputsettings = None
     postInputSettings = "-c:v libx264"
 
-class prores(Encoder):
-    preset_tag = "prores"
-    preInputsettings = None
-    postInputSettings = "-c:v prores_ks"
-
 
 class libx265(Encoder):
     preset_tag = "libx265"
@@ -51,12 +47,20 @@ class vp9(Encoder):
     postInputSettings = "-c:v libvpx-vp9"
     qualityControlMode: str = "-cq:v"
 
-
 class av1(Encoder):
     preset_tag = "av1"
     preInputsettings = None
     postInputSettings = "-c:v libsvtav1"
 
+class prores(Encoder):
+    preset_tag = "prores"
+    preInputsettings = None
+    postInputSettings = "-c:v prores_ks"
+
+class ffv1(Encoder):
+    preset_tag = "ffv1"
+    preInputsettings = None
+    postInputSettings = "-c:v ffv1"
 
 class x264_vulkan(Encoder):
     preset_tag = "x264_vulkan"
@@ -116,6 +120,8 @@ class EncoderSettings:
         for encoder in Encoder.__subclasses__():
             if encoder.preset_tag == self.encoder_preset:
                 return encoder
+        
+        raise ValueError(f"Encoder {self.encoder_preset} not found")
 
     def getPreInputSettings(self) -> str:
         return self.encoder.preInputsettings

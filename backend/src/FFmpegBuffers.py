@@ -338,13 +338,6 @@ class MPVOutput:
         ]
         return command
 
-    def writeFrame(self):
-        """
-        Write raw frame data to mpv's stdin.
-        """
-        if self.proc and self.proc.stdin and self.FFMPegWrite.writeProcess:
-            self.proc.stdin.buffer.write(self.FFMPegWrite.writeProcess.stdout.read(self.outputFrameChunkSize))
-
     def write_out_frames(self):
         with open('mpv_log.txt', "w") as f:
             while not self.FFMPegWrite.writeProcess:

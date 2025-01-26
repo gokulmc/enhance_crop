@@ -8,7 +8,7 @@
  - Default video container setting
  - Batch input support
  - Full fallback on TRT upscaling, so the engine has the greatest chance of building correctly.
- - Prores codec
+ - Additional Codec Support
  - Additional Animation and Realistic Models
 ### Changed
  - Adjusted dynamic scale.
@@ -16,6 +16,7 @@
  - Moved pausing to shared memory.
  - Changed checks on default output directory.
  - Optimized engine building for interpolate and upscale at the same time, should now use less VRAM.
+ - Improved tooltips.
 ### Fixed
  - Win10 tooltips and pop ups.
    
