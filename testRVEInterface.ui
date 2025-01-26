@@ -1172,7 +1172,7 @@ text-align: center;
                               <string/>
                              </property>
                              <property name="text">
-                              <string>HDR Mode</string>
+                              <string>HDR Mode (experimental)</string>
                              </property>
                             </widget>
                            </item>
