@@ -282,7 +282,12 @@ class HandleApplication:
             "--audio_encoder_preset",
             help="encoder preset that sets default encoder settings",
             default="aac",
-            choices=["aac", "libmp3lame", "copy_audio"],
+            choices=[
+                "aac", 
+                "libmp3lame",
+                "opus", 
+                "copy_audio",
+                ],
             type=str,
         )
         parser.add_argument(

@@ -22,6 +22,10 @@ class aac(Encoder):
     preInputsettings = None
     postInputSettings = "-c:a aac"
 
+class opus(Encoder):
+    preset_tag = "opus"
+    preInputsettings = None
+    postInputSettings = "-c:a libopus"
 
 class libmp3lame(Encoder):
     preset_tag = "libmp3lame"

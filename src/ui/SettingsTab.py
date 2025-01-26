@@ -277,7 +277,7 @@ class Settings:
                 "x265_vaapi",
                 "av1_vaapi",
             ),
-            "audio_encoder": ("aac", "libmp3lame", "copy_audio"),
+            "audio_encoder": ("aac", "libmp3lame", "opus", "copy_audio"),
             "audio_bitrate": ("320k", "192k", "128k", "96k"),
             "preview_enabled": ("True", "False"),
             "scene_change_detection_method": (
@@ -296,7 +296,7 @@ class Settings:
             "ncnn_gpu_id": "ANY",
             "pytorch_gpu_id": "ANY",
             "auto_border_cropping": ("True", "False"),
-            "video_container": ("mkv", "mp4", "mov"),
+            "video_container": ("mkv", "mp4", "mov", "webm", "avi"),
             "video_pixel_format": ("yuv420p", "yuv422p", "yuv444p", "yuv420p10le", "yuv422p10le", "yuv444p10le"),
         }
         self.settings = self.defaultSettings.copy()
