@@ -10,10 +10,10 @@
  - Full fallback on TRT upscaling, so the engine has the greatest chance of building correctly.
  - Additional Codec Support
  - Additional Animation and Realistic Models
+ - Option to reencode audio, in case it has issues with output.
  - HDR Mode toggle (experimental)
 ### Changed
  - Adjusted dynamic scale.
- - Transcodes audio by default, to fix potential audio copying issues.
  - Moved pausing to shared memory.
  - Changed checks on default output directory.
  - Optimized engine building for interpolate and upscale at the same time, should now use less VRAM.
