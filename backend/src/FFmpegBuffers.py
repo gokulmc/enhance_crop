@@ -212,11 +212,6 @@ class FFmpegWrite(Buffer):
                     "-color_trc", "smpte2084",
                     "-colorspace", "bt2020nc",
                     "-color_range", "pc",
-                    # Preserve HDR metadata
-                    "-copy_unknown",
-                    "-map_metadata", "0",
-                    # Keep HDR side data
-                    "-strict", "experimental",
                 ]
 
                 # override pixel format
