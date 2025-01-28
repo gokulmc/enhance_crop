@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 import numpy as np
 import cv2
 from collections import deque
@@ -7,7 +8,7 @@ from .PySceneDetectUtils import ContentDetector
 
 
 class BaseDetector:
-    def __init__(self):
+    def __init__(self, threshold: int = 0):
         pass
 
     def sceneDetect(self, frame):
@@ -19,11 +20,11 @@ class NPMeanSCDetect(BaseDetector):
     takes in an image as np array and calculates the mean, with ability to use it for scene detect and upscale skip
     """
 
-    def __init__(self, sensitivity: int = 2):
+    def __init__(self, threshold: int = 2):
         self.i0 = None
         self.i1 = None
         # multiply sensitivity by 10 for more representative results
-        self.sensitivity = sensitivity * 10
+        self.sensitivity = threshold * 10
 
     # a simple scene detect based on mean
     def sceneDetect(self, img1):
@@ -53,14 +54,14 @@ class NPMeanSegmentedSCDetect(BaseDetector):
     """
 
     def __init__(
-        self, sensitivity: int = 2, segments: int = 10, maxDetections: int = None
+        self, threshold: int = 2, segments: int = 10, maxDetections: int = None
     ):
         self.i0 = None
         self.i1 = None
         if maxDetections is None:
             maxDetections = segments // 2 if segments > 1 else 1
         # multiply sensitivity by 10 for more representative results
-        self.sensitivity = sensitivity * 10
+        self.sensitivity = threshold * 10
         self.segments = segments
         self.maxDetections = maxDetections
 
@@ -106,9 +107,9 @@ class NPMeanSegmentedSCDetect(BaseDetector):
 
 
 class NPMeanDiffSCDetect(BaseDetector):
-    def __init__(self, sensitivity=2):
+    def __init__(self, threshold=2):
         self.sensativity = (
-            sensitivity * 10
+            threshold * 10
         )  # multiply by 10 for more representative results
         self.i0 = None
         self.i1 = None
@@ -130,7 +131,7 @@ class NPMeanDiffSCDetect(BaseDetector):
 
 
 class FFMPEGSceneDetect(BaseDetector):
-    def __init__(self, threshold=0.3, min_scene_length=15, history_size=30):
+    def __init__(self, threshold=0.3, min_scene_length=1, history_size=30):
         self.threshold = threshold / 10
         self.min_scene_length = min_scene_length
         self.history_size = history_size
@@ -233,27 +234,20 @@ class SceneDetect:
     ):
         self.width = width
         self.height = height
-        # this is just the argument from the command line, default is mean
-        if sceneChangeMethod == "mean":
-            self.detector = NPMeanSCDetect(sensitivity=sceneChangeSensitivity)
-        elif sceneChangeMethod == "mean_diff":
-            self.detector = NPMeanDiffSCDetect(sensitivity=sceneChangeSensitivity)
-        elif sceneChangeMethod == "mean_segmented":
-            self.detector = NPMeanSegmentedSCDetect(
-                sensitivity=sceneChangeSensitivity, segments=4
-            )
-        elif sceneChangeMethod == "ffmpeg":
-            self.detector = FFMPEGSceneDetect(
-                threshold=sceneChangeSensitivity / 10,
-                min_scene_length=15,
-                history_size=30,
-            )
-        elif sceneChangeMethod == "pyscenedetect":
-            self.detector = PySceneDetect(threshold=sceneChangeSensitivity)
-        elif sceneChangeMethod.lower() == "none":
-            self.detector = BaseDetector()
-        else:
-            raise ValueError("Invalid scene change method")
+        sceneChangeMethod = sceneChangeMethod.lower()
+        scmethoddict = {
+            "mean": NPMeanSCDetect,
+            "mean_diff": NPMeanDiffSCDetect,
+            "mean_segmented": NPMeanSegmentedSCDetect,
+            "ffmpeg": FFMPEGSceneDetect,
+            "pyscenedetect": PySceneDetect,
+            "none": BaseDetector,
+        }
+
+        assert sceneChangeMethod in scmethoddict, "Invalid Scene Change Method"
+        self.detector = scmethoddict[sceneChangeMethod](
+            threshold=sceneChangeSensitivity
+        )
 
     def detect(self, frame):
         frame = bytesToImg(frame, width=self.width, height=self.height)

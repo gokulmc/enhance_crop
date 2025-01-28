@@ -119,18 +119,19 @@ class EncoderSettings:
     def __init__(self, encoder_preset):
         self.encoder_preset = encoder_preset
         self.encoder: Encoder = self.getEncoder()
+        assert self.encoder is not None
 
-    def getEncoder(self) -> Encoder:
+    def getEncoder(self) -> Optional[Encoder]:
         for encoder in Encoder.__subclasses__():
             if encoder.preset_tag == self.encoder_preset:
                 return encoder
-        
         raise ValueError(f"Encoder {self.encoder_preset} not found")
+        return None
 
-    def getPreInputSettings(self) -> str:
+    def getPreInputSettings(self) -> Optional[str]:
         return self.encoder.preInputsettings
 
-    def getPostInputSettings(self) -> str:
+    def getPostInputSettings(self) -> Optional[str]:
         return self.encoder.postInputSettings
 
     def getQualityControlMode(self) -> str:
