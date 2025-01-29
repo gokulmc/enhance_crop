@@ -152,6 +152,8 @@ class UpscalePytorch:
             if self.backend == "tensorrt":
                 from .TensorRTHandler import TorchTensorRTHandler
 
+                self.model()
+
                 trtHandler = TorchTensorRTHandler(
                     export_format="fallback",
                     dynamo_export_format="fallback",
@@ -187,6 +189,15 @@ class UpscalePytorch:
                             device=self.device,
                         )
                     ]
+
+                    # inference and get re-load state dict due to issue with span.
+                    """
+                    model = self.model
+                    model(inputs)
+                    self.model.load_state_dict(model.state_dict())
+                    del model
+                    torch.cuda.empty_cache()
+
                     trtHandler.build_engine(
                         self.model,
                         self.dtype,
@@ -194,7 +205,8 @@ class UpscalePytorch:
                         example_inputs=inputs,
                         trt_engine_path=self.trt_engine_path,
                     )
-                
+                    """
+
                 self.set_self_model(backend="tensorrt")
         torch.cuda.empty_cache()
         self.prepareStream.synchronize()
