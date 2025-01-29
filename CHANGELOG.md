@@ -18,6 +18,7 @@
  - Changed checks on default output directory.
  - Optimized engine building for interpolate and upscale at the same time, should now use less VRAM.
  - Improved tooltips.
+ - Adjusted default scene detect sensitivity to 3.5.
 ### Fixed
  - Win10 tooltips and pop ups.
    
