@@ -191,10 +191,9 @@ class Conv3XC(nn.Module):
         self.eval_conv.bias.data = self.bias_concat.contiguous()  # type: ignore
 
     def forward(self, x):
-        try:
+        if self.weight_concat is None:
             self.update_params()
-        except:
-            pass
+
         out = self.eval_conv(x)
 
         if self.has_relu:
