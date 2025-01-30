@@ -40,8 +40,14 @@ def get_site_packages():
         'import site; print("\\n".join(site.getsitepackages()))',
     ]
     result = subprocess.run(command, stdout=subprocess.PIPE, text=True)
-    site_packages = result.stdout.strip()
-    return site_packages
+    site_packages = result.stdout.strip().split('\n')[0]
+    if os.path.exists(site_packages):
+        return site_packages
+    site_packages = site_packages.replace('dist','site')
+    if os.path.exists(site_packages):
+        return site_packages
+    print(site_packages)
+    raise FileNotFoundError("Unable to locate site packages for python venv!")
 
 
 def download_file(url, destination):
