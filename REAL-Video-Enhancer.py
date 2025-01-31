@@ -331,7 +331,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 return
         
         # alert user that item has been added to queue
-        notificationOverlay = NotificationOverlay("Added to queue!", self, timeout=3000)
+        notificationOverlay = NotificationOverlay("Added to queue!", self, timeout=1000)
         notificationOverlay.resize(self.size())
         notificationOverlay.show()
 
