@@ -40,7 +40,7 @@ from src.Backendhandler import BackendHandler
 from src.ModelHandler import totalModels
 from src.ui.AnimationHandler import AnimationHandler
 from src.ui.QTstyle import Palette
-from src.ui.QTcustom import RegularQTPopup
+from src.ui.QTcustom import RegularQTPopup, NotificationOverlay
 from src.ui.RenderQueue import RenderQueue, RenderOptions
 
 svg = (
@@ -329,6 +329,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if output_path == renderOptions.outputPath:
                 RegularQTPopup("Output file already in queue!")
                 return
+        
+        # alert user that item has been added to queue
+        notificationOverlay = NotificationOverlay("Added to queue!", self, timeout=3000)
+        notificationOverlay.resize(self.size())
+        notificationOverlay.show()
 
         backend = self.backendComboBox.currentText()
         upscaleTimes = 1

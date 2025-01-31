@@ -20,7 +20,7 @@ from PySide6.QtCore import (
     QSize,
     QTime,
     QUrl,
-    Qt,
+    Qt,QTimer
 )
 from PySide6.QtGui import (
     QBrush,
@@ -38,7 +38,7 @@ from PySide6.QtGui import (
     QPalette,
     QPixmap,
     QRadialGradient,
-    QTransform,
+    QTransform
 )
 from PySide6.QtWidgets import (
     QApplication,
@@ -52,6 +52,7 @@ from PySide6.QtWidgets import (
     QSpacerItem,
     QCheckBox,
     QGridLayout,
+    QMainWindow,
 )
 
 from .QTstyle import styleSheet
@@ -77,6 +78,41 @@ def show_layout_widgets(layout):
             widget = item.widget()
             if widget is not None:
                 widget.setVisible(True)  # Show the widget
+
+class NotificationOverlay(QWidget):
+    def __init__(self, message, parent=None, timeout=3000):
+        super().__init__(parent)
+        
+        # Make this widget a child of the main window, covering its area
+        self.setAttribute(Qt.WA_TransparentForMouseEvents, True)
+        self.setStyleSheet("background-color: rgba(0, 0, 0, 80);")
+        
+        # Create layout and label to display the message
+        layout = QVBoxLayout(self)
+        self.label = QLabel(message, self)
+        self.label.setStyleSheet("""
+            QLabel {
+                color: white;
+                padding: 10px;
+                font-size: 14px;
+                background-color: rgba(50, 50, 50, 180);
+                border-radius: 5px;
+            }
+        """)
+        self.label.setAlignment(Qt.AlignCenter)
+        layout.addWidget(self.label, 0, Qt.AlignCenter)
+        
+        # Close (hide) this overlay widget after 'timeout' milliseconds
+        self._timer = QTimer(self)
+        self._timer.setSingleShot(True)
+        self._timer.timeout.connect(self.close)
+        self._timer.start(timeout)
+    
+    def resizeEvent(self, event):
+        # Match the size of the parent (main window)
+        if self.parent():
+            self.resize(self.parent().size())
+        super().resizeEvent(event)
 
 
 class UpdateGUIThread(QThread):
