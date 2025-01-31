@@ -31,7 +31,7 @@ from src.Util import (
     log,
 )
 from src.DownloadModels import DownloadModel
-from src.constants import CUSTOM_MODELS_PATH
+from src.constants import CUSTOM_MODELS_PATH, MODELS_PATH
 from src.ui.ProcessTab import ProcessTab
 from src.ui.DownloadTab import DownloadTab
 from src.ui.SettingsTab import SettingsTab, Settings
@@ -318,22 +318,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             upscale = None
 
         if not self.isVideoLoaded:
-            RegularQTPopup("Video is not loaded!")
+            NotificationOverlay("Video is not loaded!", self, timeout=1500)
             return
 
         if not interpolate and not upscale:
-            RegularQTPopup("Please select at least one model!")
+            NotificationOverlay("Please select at least one model!", self, timeout=1500)
             return
 
         for renderOptions in self.renderQueue.getQueue():
             if output_path == renderOptions.outputPath:
-                RegularQTPopup("Output file already in queue!")
+                NotificationOverlay("Output file already in queue!", self, timeout=1500)
                 return
-        
-        # alert user that item has been added to queue
-        notificationOverlay = NotificationOverlay("Added to queue!", self, timeout=1000)
-        notificationOverlay.resize(self.size())
-        notificationOverlay.show()
 
         backend = self.backendComboBox.currentText()
         upscaleTimes = 1
@@ -343,10 +338,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if interpolate:
             interpolateDownloadFile = interpolateModels[interpolate][1]
             interpolateModelFile = interpolateModels[interpolate][0]
-            DownloadModel(
+
+            dm = DownloadModel(
                 modelFile=interpolateModelFile,
                 downloadModelFile=interpolateDownloadFile,
             )
+            if not dm.downloadModel():
+                NotificationOverlay(
+                    "Unable to download model, please check your network and try again.",
+                    self,
+                    timeout=1500,
+                )
+                return
 
         if upscale:
             upscaleModelFile = upscaleModels[upscale][0]
@@ -354,10 +357,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             upscaleTimes = upscaleModels[upscale][2]
             upscaleModelArch = upscaleModels[upscale][3]
             if upscaleModelArch != "custom":
-                DownloadModel(
+                dm = DownloadModel(
                     modelFile=upscaleModelFile,
                     downloadModelFile=upscaleDownloadFile,
                 )
+                if not dm.downloadModel():
+                    NotificationOverlay(
+                        "Unable to add to render queue.\nModel can't be downloaded.\nPlease check your network and try again.",
+                        self,
+                        timeout=2500,
+                    )
+                    return
 
         renderOptions = RenderOptions(
             inputFile=self.inputFileText.text(),
@@ -384,12 +394,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             interpolateModelFile=interpolateModelFile if interpolate else None,
             hdrMode=self.hdrModeCheckBox.isChecked(),
         )
-
+        # alert user that item has been added to queue
+        NotificationOverlay(
+            f"{self.inputFileText.text()} Added to queue!", self, timeout=1500
+        )
         self.renderQueue.add(renderOptions)
 
     def startRender(self):
         if len(self.renderQueue.queue) == 0:
-            RegularQTPopup("Render queue is empty!")
+            NotificationOverlay("Render queue is empty!", self, timeout=1500)
             return
         self.startRenderButton.setEnabled(False)
 
@@ -418,7 +431,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if (
             not videoHandler.isValidVideo()
         ):  # this handles case for invalid youtube link and invalid video file
-            RegularQTPopup("Not a valid input!")
+            NotificationOverlay("Not a valid input!", self, timeout=1500)
             return
         videoHandler.getData()
         self.videoWidth = videoHandler.width
@@ -476,20 +489,28 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 dir=self.homeDir,
                 filter=fileFilter,
             )
-            if getCustomModelScale(os.path.basename(modelFile)):
-                outputModelPath = os.path.join(
-                    CUSTOM_MODELS_PATH, os.path.basename(modelFile)
+            if not getCustomModelScale(os.path.basename(modelFile)):
+                NotificationOverlay(
+                    "Custom model does not have a valid\nupscale factor in the name.\nExample: 2x or x2. Skipping import...",
+                    self,
+                    timeout=1500,
                 )
-                FileHandler.copyFile(modelFile, CUSTOM_MODELS_PATH)
-                if os.path.isfile(outputModelPath):
-                    RegularQTPopup(
-                        "Model imported successfully!\nPlease restart the app for the changes to take effect."
-                    )
-                else:
-                    RegularQTPopup("Failed to import model!\nPlease try again.")
+                return
+
+            outputModelPath = os.path.join(
+                CUSTOM_MODELS_PATH, os.path.basename(modelFile)
+            )
+            FileHandler.copyFile(modelFile, CUSTOM_MODELS_PATH)
+
+            if os.path.isfile(outputModelPath):
+                NotificationOverlay(
+                    "Model imported successfully!\nPlease restart the app for the changes to take effect.",
+                    self,
+                    timeout=1500,
+                )
             else:
-                RegularQTPopup(
-                    "Custom model does not have a valid\nupscale factor in the name.\nExample: 2x or x2. Skipping import..."
+                NotificationOverlay(
+                    "Failed to import model!\nPlease try again.", self, timeout=1500
                 )
 
         elif format == "ncnn":
@@ -528,14 +549,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 FileHandler.copyFile(modelParamFile, outputModelFolder)
 
                 if os.path.isfile(outputBinPath) and os.path.isfile(outputParamPath):
-                    RegularQTPopup(
-                        "Model imported successfully!\nPlease restart the app for the changes to take effect."
+                    NotificationOverlay(
+                        "Model imported successfully!\nPlease restart the app for the changes to take effect.",
+                        self,
+                        timeout=1500,
                     )
+
                 else:
-                    RegularQTPopup("Failed to import model!\nPlease try again.")
+                    NotificationOverlay(
+                        "Failed to import model!\nPlease try again.", self, timeout=1500
+                    )
+
             else:
-                RegularQTPopup(
-                    "Custom model does not have a valid\nupscale factor in the name.\nExample: 2x or x2. Skipping import..."
+                NotificationOverlay(
+                    "Custom model does not have a valid\nupscale factor in the name.\nExample: 2x or x2. Skipping import...",
+                    self,
+                    timeout=1500,
                 )
 
     # output file button

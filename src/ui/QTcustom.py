@@ -107,7 +107,9 @@ class NotificationOverlay(QWidget):
         self._timer.setSingleShot(True)
         self._timer.timeout.connect(self.close)
         self._timer.start(timeout)
-    
+        self.resize(parent.size())
+        self.show()
+
     def resizeEvent(self, event):
         # Match the size of the parent (main window)
         if self.parent():

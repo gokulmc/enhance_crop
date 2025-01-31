@@ -1,8 +1,8 @@
 import os
 
 from .constants import MODELS_PATH
-from .Util import createDirectory, extractTarGZ
-from .ui.QTcustom import DownloadProgressPopup, NetworkCheckPopup
+from .Util import createDirectory, extractTarGZ, networkCheck
+from .ui.QTcustom import DownloadProgressPopup
 
 
 class DownloadModel:
@@ -18,31 +18,39 @@ class DownloadModel:
         downloadModelFile: str,
         modelPath: str = MODELS_PATH,
     ):
+        self.modelFile = modelFile
         self.modelPath = modelPath
         self.downloadModelFile = downloadModelFile
         self.downloadModelPath = os.path.join(modelPath, downloadModelFile)
         createDirectory(modelPath)
+        # check if internet doesnt exist, if it doesnt dont allow to be added to queue
 
-        if os.path.isfile(os.path.join(self.modelPath, modelFile)) or os.path.exists(
-            os.path.join(self.modelPath, modelFile)
-        ):
-            return
-        if NetworkCheckPopup():
-            self.downloadModel(
-                modelFile=downloadModelFile, downloadModelPath=self.downloadModelPath
-            )
-
-    def downloadModel(self, modelFile: str = None, downloadModelPath: str = None):
+    def downloadModel(self) -> bool:
+        """
+        Downloads a model from the github repo
+        If the installation is unsucessful, or interent is unavailable to download, it will return False
+        else
+        returns True if the model exists, or is sucessfully downloaded
+        """
+        if os.path.isfile(
+            os.path.join(self.modelPath, self.modelFile)
+        ) or os.path.exists(os.path.join(self.modelPath, self.modelFile)):
+            return True
+        if not networkCheck():
+            return False
         url = (
             "https://github.com/TNTwise/real-video-enhancer-models/releases/download/models/"
-            + modelFile
+            + self.modelFile
         )
-        title = "Downloading: " + modelFile
-        DownloadProgressPopup(link=url, title=title, downloadLocation=downloadModelPath)
+        title = "Downloading: " + self.modelFile
+        DownloadProgressPopup(
+            link=url, title=title, downloadLocation=self.downloadModelPath
+        )
         print("Done")
         if "tar.gz" in self.downloadModelFile:
             print("Extracting File")
             extractTarGZ(self.downloadModelPath)
+        return True
 
 
 # just some testing code lol
