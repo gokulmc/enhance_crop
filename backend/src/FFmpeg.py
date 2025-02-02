@@ -148,4 +148,4 @@ class InformationWriteOut:
                     else:
                         self.shm.buf[:fcs] = bytes(self.previewFrame)
                 self.isPaused = self.pausedManager.pause_manager()
-            time.sleep(0.1)
+            time.sleep(0.5) # setting this to a higher value will reduce the cpu usage, and increase fps
