@@ -236,8 +236,9 @@ class ProcessTab:
         self,
         renderQueue: RenderQueue,
     ):
+        self.createPausedSharedMemory()
         for renderOptions in renderQueue.getQueue():
-            self.createPausedSharedMemory()
+            
 
             self.workerThread.setOutputVideoRes(
                 renderOptions.videoWidth * renderOptions.upscaleTimes,

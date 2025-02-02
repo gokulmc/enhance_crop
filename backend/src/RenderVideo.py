@@ -240,7 +240,7 @@ class Render:
     def render(self):
         frames_rendered = 0
         while True:
-            if not self.isPaused:
+            if not self.informationHandler.get_is_paused():
                 frame = self.readBuffer.get()
                 if frame is None:
                     self.informationHandler.stopWriting()

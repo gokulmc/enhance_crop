@@ -37,11 +37,8 @@ class PauseManager:
                 )
     def pause_manager(self):
         if self.paused_shared_memory_id is not None:
-            self.isPaused = self.pausedSharedMemory.buf[0] == 1
-            activate = self.prevState != self.isPaused
-            self.prevState = self.isPaused
-            return activate and self.isPaused
-
+            return self.pausedSharedMemory.buf[0] == 1
+            
 
 class InformationWriteOut:
     def __init__(
