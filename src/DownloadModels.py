@@ -40,9 +40,9 @@ class DownloadModel:
             return False
         url = (
             "https://github.com/TNTwise/real-video-enhancer-models/releases/download/models/"
-            + self.modelFile
+            + self.downloadModelFile
         )
-        title = "Downloading: " + self.modelFile
+        title = "Downloading: " + self.downloadModelFile
         DownloadProgressPopup(
             link=url, title=title, downloadLocation=self.downloadModelPath
         )
