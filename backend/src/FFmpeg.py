@@ -27,10 +27,14 @@ class PauseManager:
         self.prevState = None
         self.paused_shared_memory_id = paused_shared_memory_id
         if self.paused_shared_memory_id is not None:
-            self.pausedSharedMemory = shared_memory.SharedMemory(
-                name=self.paused_shared_memory_id
-            )
-
+            try:
+                self.pausedSharedMemory = shared_memory.SharedMemory(
+                    name=self.paused_shared_memory_id
+                )
+            except FileNotFoundError:
+                self.pausedSharedMemory = shared_memory.SharedMemory(
+                    name=self.paused_shared_memory_id, create=True, size=1
+                )
     def pause_manager(self):
         if self.paused_shared_memory_id is not None:
             self.isPaused = self.pausedSharedMemory.buf[0] == 1
