@@ -237,9 +237,9 @@ class ProcessTab:
         self,
         renderQueue: RenderQueue,
     ):
-        
+        self.createPausedSharedMemory()
         for renderOptions in renderQueue.getQueue():
-            self.createPausedSharedMemory()
+            
             
             self.workerThread.setOutputVideoRes(
                 renderOptions.videoWidth * renderOptions.upscaleTimes,
@@ -289,10 +289,10 @@ class ProcessTab:
             self.parent.OutputFilesListWidget.addItem(
                 renderOptions.outputPath
             )  # add the file to the list widget
-            self.pausedSharedMemory.close()
-            self.pausedSharedMemory.unlink()
+            
             self.workerThread.unlink_shared_memory()
-
+        self.pausedSharedMemory.close()
+        self.pausedSharedMemory.unlink()
         renderQueue.clear()
         self.onRenderCompletion()
 
