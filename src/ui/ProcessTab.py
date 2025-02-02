@@ -228,6 +228,7 @@ class ProcessTab:
                 name=PAUSED_STATE_SHARED_MEMORY_ID, create=True, size=1
             )
         except FileExistsError:
+            log("FileExistsError! Using existing paused shared memory")
             self.pausedSharedMemory = shared_memory.SharedMemory(
                 name=PAUSED_STATE_SHARED_MEMORY_ID
             )
@@ -236,10 +237,10 @@ class ProcessTab:
         self,
         renderQueue: RenderQueue,
     ):
-        self.createPausedSharedMemory()
+        
         for renderOptions in renderQueue.getQueue():
+            self.createPausedSharedMemory()
             
-
             self.workerThread.setOutputVideoRes(
                 renderOptions.videoWidth * renderOptions.upscaleTimes,
                 renderOptions.videoHeight * renderOptions.upscaleTimes,
@@ -253,6 +254,7 @@ class ProcessTab:
                 ),
             )
             command = self.build_command(renderOptions)
+            log(str(command))
             self.renderProcess = subprocess.Popen(
                 command,
                 stdout=subprocess.PIPE,
@@ -287,8 +289,8 @@ class ProcessTab:
             self.parent.OutputFilesListWidget.addItem(
                 renderOptions.outputPath
             )  # add the file to the list widget
-
             self.pausedSharedMemory.close()
+            self.pausedSharedMemory.unlink()
             self.workerThread.unlink_shared_memory()
 
         renderQueue.clear()

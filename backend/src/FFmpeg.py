@@ -32,6 +32,7 @@ class PauseManager:
                     name=self.paused_shared_memory_id
                 )
             except FileNotFoundError:
+                log(f"FileNotFoundError! Creating new paused shared memory: {self.paused_shared_memory_id}")
                 self.pausedSharedMemory = shared_memory.SharedMemory(
                     name=self.paused_shared_memory_id, create=True, size=1
                 )
