@@ -19,6 +19,9 @@
  - Optimized engine building for interpolate and upscale at the same time, should now use less VRAM.
  - Improved tooltips.
  - Adjusted default scene detect sensitivity to 3.5.
+ - Bump torch to 2.6.0
+ - Bump numpy to 2.2.2
+ - Bump tensorrt to 10.7
 ### Fixed
  - Win10 tooltips and pop ups.
    
