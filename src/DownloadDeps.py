@@ -62,9 +62,9 @@ class DownloadDependencies:
 
     def __init__(self):
         if PLATFORM == "win32":
-            self.__torchVersion = "dev20241214"
+            self.__torchVersion = ""
         elif PLATFORM == "linux":
-            self.__torchVersion = "dev20241214"
+            self.__torchVersion = ""
 
         createDirectory(os.path.join(CWD, "python"))
         createDirectory(os.path.join(CWD, "bin"))
@@ -173,7 +173,7 @@ class DownloadDependencies:
             command += [
                 "--no-warn-script-location",
                 "--extra-index-url",
-                "https://download.pytorch.org/whl/nightly/cu126",
+                "https://download.pytorch.org/whl/test/cu126",
                 "--extra-index-url",
                 "https://pypi.nvidia.com",
             ]
@@ -213,7 +213,7 @@ class DownloadDependencies:
             "opencv-python-headless",
             "pypresence",
             "scenedetect",
-            "numpy==1.26.4",
+            "numpy==2.2.2",
             "sympy",
             "tqdm",
             "typing_extensions",
@@ -230,8 +230,8 @@ class DownloadDependencies:
         Pytorch CUDA deps
         """
         torchCUDADeps = [
-            f"torch==2.6.0.{self.__torchVersion}",
-            f"torchvision==0.22.0.{self.__torchVersion}",
+            f"torch==2.6.0",
+            f"torchvision==0.22.0",
             "safetensors",
             "einops",
             "cupy-cuda12x==13.3.0",
@@ -246,11 +246,11 @@ class DownloadDependencies:
         TensorRT deps
         """
         tensorRTDeps = [
-            "tensorrt==10.6.0",
-            "tensorrt_cu12==10.6.0",
-            "tensorrt-cu12_libs==10.6.0",
-            "tensorrt_cu12_bindings==10.6.0",
-            f"torch_tensorrt==2.6.0.{self.__torchVersion}",
+            "tensorrt==10.7.0",
+            "tensorrt_cu12==10.7.0",
+            "tensorrt-cu12_libs==10.7.0",
+            "tensorrt_cu12_bindings==10.7.0",
+            f"torch_tensorrt==2.6.0",
         ]
 
         return tensorRTDeps
