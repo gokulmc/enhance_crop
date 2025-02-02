@@ -231,7 +231,7 @@ class DownloadDependencies:
         """
         torchCUDADeps = [
             f"torch==2.6.0",
-            f"torchvision==0.22.0",
+            f"torchvision==0.21.0",
             "safetensors",
             "einops",
             "cupy-cuda12x==13.3.0",
