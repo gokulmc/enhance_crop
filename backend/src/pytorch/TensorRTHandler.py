@@ -29,7 +29,6 @@ with suppress_stdout_stderr():
     import torch
     import torch_tensorrt
     import tensorrt as trt
-    from torch._decomp import get_decompositions
     from torch._export.converter import TS2EPConverter
     from torch.export.exported_program import ExportedProgram
 
@@ -140,9 +139,16 @@ class TorchTensorRTHandler:
             )
 
     def grid_sample_decomp(self, exported_program):
-        return exported_program.run_decompositions(
-            get_decompositions([torch.ops.aten.grid_sampler_2d])
+        from torch_tensorrt.dynamo.conversion.impl.grid import GridSamplerInterpolationMode
+        GridSamplerInterpolationMode.update(
+            {
+                0: trt.InterpolationMode.LINEAR,
+                1: trt.InterpolationMode.NEAREST,
+                2: trt.InterpolationMode.CUBIC,
+            }
         )
+        return exported_program
+
 
     def export_using_dynamo(
         self,
