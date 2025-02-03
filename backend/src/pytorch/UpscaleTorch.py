@@ -156,7 +156,7 @@ class UpscalePytorch:
                 trtHandler = TorchTensorRTHandler(
                     export_format="fallback",
                     dynamo_export_format="fallback",
-                    multi_precision_engine=False,
+                    multi_precision_engine=True,
                     trt_optimization_level=self.trt_optimization_level,
                     
                 )

@@ -80,7 +80,7 @@ class TorchTensorRTHandler:
         self,
         export_format: str = "dynamo",
         dynamo_export_format: str = "nn2exportedprogram",
-        multi_precision_engine: bool = True,
+        multi_precision_engine: bool = False,
         trt_workspace_size: int = 0,
         max_aux_streams: int | None = None,
         trt_optimization_level: int = 3,
