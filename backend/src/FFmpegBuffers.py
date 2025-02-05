@@ -46,6 +46,8 @@ class FFmpegRead(Buffer):
             f"{self.inputFile}",
             "-vf",
             f"crop={self.width}:{self.height}:{self.borderX}:{self.borderY}",
+            "-vf",
+            "scale=w=iw*sar:h=ih", # fix when DAR does not match SAR https://github.com/TNTwise/REAL-Video-Enhancer/issues/63
             "-f",
             "image2pipe",
             "-pix_fmt",
@@ -205,11 +207,13 @@ class FFmpegWrite(Buffer):
                     "1:s?",  # Map all subtitle streams from input 1
                 ]
                 command += self.audio_encoder.getPostInputSettings().split()
+                
                 if not self.audio_encoder.getPresetTag() == "copy_audio":
                     command += [
                         "-b:a",
                         self.audio_bitrate,
                     ]
+                
             
             if self.hdr_mode:
 
