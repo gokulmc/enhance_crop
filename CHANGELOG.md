@@ -24,6 +24,7 @@
  - Bump tensorrt to 10.7
 ### Fixed
  - Win10 tooltips and pop ups.
+ - Issue when DAR is not equal to SAR (Thanks Yasand123).
    
 # RVE 2.1.5
 ### Added
