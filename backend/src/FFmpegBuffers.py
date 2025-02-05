@@ -97,6 +97,7 @@ class FFmpegWrite(Buffer):
         benchmark: bool,
         slowmo_mode: bool,
         upscaleTimes: int,
+        interpolateFactor:int,
         ceilInterpolateFactor: int,
         video_encoder: EncoderSettings,
         audio_encoder: EncoderSettings,
@@ -116,6 +117,7 @@ class FFmpegWrite(Buffer):
         self.benchmark = benchmark
         self.slowmo_mode = slowmo_mode
         self.upscaleTimes = upscaleTimes
+        self.interpolateFactor = interpolateFactor
         self.ceilInterpolateFactor = ceilInterpolateFactor
         self.video_encoder = video_encoder
         self.audio_encoder = audio_encoder
@@ -132,7 +134,7 @@ class FFmpegWrite(Buffer):
         if self.slowmo_mode:
             log("Slowmo mode enabled, will not merge audio or subtitles.")
         multiplier = (
-            (self.fps * self.ceilInterpolateFactor)
+            (self.fps * self.interpolateFactor)
             if not self.slowmo_mode
             else self.fps
         )
@@ -141,6 +143,8 @@ class FFmpegWrite(Buffer):
         if self.mpv_output:
             command = [
                 f"{FFMPEG_PATH}",
+                "-framerate",
+                f"{self.fps*self.ceilInterpolateFactor}",
                 "-f",
                 "rawvideo",
                 "-pix_fmt",
@@ -149,10 +153,10 @@ class FFmpegWrite(Buffer):
                 "rawvideo",
                 "-s",
                 f"{self.width * self.upscaleTimes}x{self.upscaleTimes * self.height}",
-                "-r",
-                f"{multiplier}",
                 "-i",
                 "-",
+                "-r",
+                f"{multiplier}",
                 "-f",
                 "matroska",
                 "-pix_fmt",
@@ -173,6 +177,8 @@ class FFmpegWrite(Buffer):
                     command += pre_in_set.split()
 
             command += [
+                "-framerate",
+                f"{self.fps*self.ceilInterpolateFactor}",
                 "-f",
                 "rawvideo",
                 "-pix_fmt",
@@ -181,10 +187,10 @@ class FFmpegWrite(Buffer):
                 "rawvideo",
                 "-s",
                 f"{self.width * self.upscaleTimes}x{self.height * self.upscaleTimes}",
-                "-r",
-                f"{multiplier}",
                 "-i",
                 "-",
+                "-r",
+                f"{multiplier}",
             ]
 
             if not self.slowmo_mode:

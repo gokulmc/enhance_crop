@@ -192,6 +192,7 @@ class Render:
             benchmark=benchmark,
             slowmo_mode=slomo_mode,
             upscaleTimes=self.upscaleTimes,
+            interpolateFactor=self.interpolateFactor,
             ceilInterpolateFactor=self.ceilInterpolateFactor,
             video_encoder=video_encoder,
             audio_encoder=audio_encoder,
@@ -233,7 +234,7 @@ class Render:
         self.renderThread.start()
         
         if output_to_mpv:
-            MPVOut = MPVOutput(self.writeBuffer, width=self.width*self.upscaleTimes, height=self.height*self.upscaleTimes,fps=self.fps*self.ceilInterpolateFactor, outputFrameChunkSize=self.outputFrameChunkSize)
+            MPVOut = MPVOutput(self.writeBuffer, width=self.width*self.upscaleTimes, height=self.height*self.upscaleTimes,fps=self.fps*self.interpolateFactor, outputFrameChunkSize=self.outputFrameChunkSize)
             MPVoutThread = Thread(target=MPVOut.write_out_frames)
             MPVoutThread.start()
 
