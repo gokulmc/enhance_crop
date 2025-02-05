@@ -136,7 +136,7 @@ class Render:
         self.borderY = 0  # set borders for cropping automatically to 0, will be overwritten if borders are detected
         self.totalInputFrames = videoInfo.get_total_frames()
         self.totalOutputFrames = int(
-            self.totalInputFrames * self.interpolateFactor
+            self.totalInputFrames * self.ceilInterpolateFactor
         )
         self.fps = videoInfo.get_fps()
         cap.release()
