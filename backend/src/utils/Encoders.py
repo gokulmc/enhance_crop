@@ -2,113 +2,139 @@ from abc import ABC
 from dataclasses import dataclass
 from typing import Optional
 
-
 @dataclass
 class Encoder(ABC):
     preset_tag: str
     preInputsettings: Optional[str]
     postInputSettings: Optional[str]
-    qualityControlMode: str = "-crf"
 
 
-class copyAudio(Encoder):
+@dataclass
+class VideoEncoder(Encoder):
+    qualityControlMode: Optional[str] = "-crf"
+    ...
+
+
+@dataclass
+class AudioEncoder(Encoder): ...
+
+
+@dataclass
+class SubtitleEncoder(Encoder): ...
+
+
+# audio encoder options
+class copyAudio(AudioEncoder):
     preset_tag = "copy_audio"
     preInputsettings = None
     postInputSettings = "-c:a copy"
 
 
-class aac(Encoder):
+class aac(AudioEncoder):
     preset_tag = "aac"
     preInputsettings = None
     postInputSettings = "-c:a aac"
 
-class opus(Encoder):
-    preset_tag = "opus"
-    preInputsettings = None
-    postInputSettings = "-c:a libopus"
 
-class libmp3lame(Encoder):
+class libmp3lame(AudioEncoder):
     preset_tag = "libmp3lame"
     preInputsettings = None
     postInputSettings = "-c:a libmp3lame"
 
 
-class libx264(Encoder):
+# subtitle encoder options
+class copySubtitles(SubtitleEncoder):
+    preset_tag = "copy_subtitle"
+    preInputsettings = None
+    postInputSettings = "-c:s copy"
+
+
+class svt(SubtitleEncoder):
+    preset_tag = "svt"
+    preInputsettings = None
+    postInputSettings = "-c:s svt"
+
+
+class ass(SubtitleEncoder):
+    preset_tag = "ass"
+    preInputsettings = None
+    postInputSettings = "-c:s ass"
+
+
+class webvtt(SubtitleEncoder):
+    preset_tag = "ass"
+    preInputsettings = None
+    postInputSettings = "-c:s webvtt"
+
+
+class libx264(VideoEncoder):
     preset_tag = "libx264"
     preInputsettings = None
     postInputSettings = "-c:v libx264"
 
 
-class libx265(Encoder):
+class libx265(VideoEncoder):
     preset_tag = "libx265"
     preInputsettings = None
     postInputSettings = "-c:v libx265"
 
 
-class vp9(Encoder):
+class vp9(VideoEncoder):
     preset_tag = "vp9"
     preInputsettings = None
     postInputSettings = "-c:v libvpx-vp9"
     qualityControlMode: str = "-cq:v"
 
-class av1(Encoder):
+
+class av1(VideoEncoder):
     preset_tag = "av1"
     preInputsettings = None
     postInputSettings = "-c:v libsvtav1"
 
-class prores(Encoder):
-    preset_tag = "prores"
-    preInputsettings = None
-    postInputSettings = "-c:v prores_ks"
 
-class ffv1(Encoder):
-    preset_tag = "ffv1"
-    preInputsettings = None
-    postInputSettings = "-c:v ffv1"
-
-class x264_vulkan(Encoder):
+class x264_vulkan(VideoEncoder):
     preset_tag = "x264_vulkan"
     preInputsettings = "-init_hw_device vulkan=vkdev:0 -filter_hw_device vkdev"
     postInputSettings = "-filter:v format=nv12,hwupload -c:v h264_vulkan"
     # qualityControlMode: str = "-quality" # this is not implemented very well, quality ranges from 0-4 with little difference, so quality changing is disabled.
 
 
-class x264_nvenc(Encoder):
+class x264_nvenc(VideoEncoder):
     preset_tag = "x264_nvenc"
     preInputsettings = "-hwaccel cuda -hwaccel_output_format cuda"
     postInputSettings = "-c:v h264_nvenc -preset slow"
     qualityControlMode: str = "-cq:v"
 
 
-class x265_nvenc(Encoder):
+class x265_nvenc(VideoEncoder):
     preset_tag = "x265_nvenc"
     preInputsettings = "-hwaccel cuda -hwaccel_output_format cuda"
     postInputSettings = "-c:v hevc_nvenc -preset slow"
     qualityControlMode: str = "-cq:v"
 
 
-class av1_nvenc(Encoder):
+class av1_nvenc(VideoEncoder):
     preset_tag = "av1_nvenc"
     preInputsettings = "-hwaccel cuda -hwaccel_output_format cuda"
     postInputSettings = "-c:v av1_nvenc -preset slow"
     qualityControlMode: str = "-cq:v"
 
 
-class h264_vaapi(Encoder):
+class h264_vaapi(VideoEncoder):
     preset_tag = "x264_vaapi"
     preInputsettings = "-hwaccel vaapi -hwaccel_output_format vaapi"
     postInputSettings = "-rc_mode CQP -c:v h264_vaapi"
     qualityControlMode: str = "-qp"
 
 
-class h265_vaapi(Encoder):
+class h265_vaapi(VideoEncoder):
     preset_tag = "x265_vaapi"
     preInputsettings = "-hwaccel vaapi -hwaccel_output_format vaapi"
     postInputSettings = "-rc_mode CQP -c:v hevc_vaapi"
     qualityControlMode: str = "-qp"
 
 
-class av1_vaapi(Encoder):
+class av1_vaapi(VideoEncoder):
     preset_tag = "av1_vaapi"
     preInputsettings = "-hwaccel vaapi -hwaccel_output_format vaapi"
     postInputSettings = "-rc_mode CQP -c:v av1_vaapi"
@@ -116,26 +142,36 @@ class av1_vaapi(Encoder):
 
 
 class EncoderSettings:
-    def __init__(self, encoder_preset):
+    def __init__(self, encoder_preset, type="video"):
         self.encoder_preset = encoder_preset
+        self.type = type
         self.encoder: Encoder = self.getEncoder()
-        assert self.encoder is not None
 
-    def getEncoder(self) -> Optional[Encoder]:
-        for encoder in Encoder.__subclasses__():
+    def getEncoder(self) -> Encoder:
+        match self.type:
+            case "video":
+                encoder_type = VideoEncoder
+            case "audio":
+                encoder_type = AudioEncoder
+            case "subtitle":
+                encoder_type = SubtitleEncoder
+            case _:
+                raise ValueError("Not a vaid encoder type")
+
+        for encoder in encoder_type.__subclasses__():
             if encoder.preset_tag == self.encoder_preset:
                 return encoder
-        raise ValueError(f"Encoder {self.encoder_preset} not found")
-        return None
 
-    def getPreInputSettings(self) -> Optional[str]:
+    def getPreInputSettings(self) -> str:
         return self.encoder.preInputsettings
 
-    def getPostInputSettings(self) -> Optional[str]:
+    def getPostInputSettings(self) -> str:
         return self.encoder.postInputSettings
 
-    def getQualityControlMode(self) -> str:
-        return self.encoder.qualityControlMode
+    def getQualityControlMode(self) -> Optional[str]:
+        if self.type == "video":
+            return self.encoder.qualityControlMode
+        return None
 
     def getPresetTag(self) -> str:
         return self.encoder.preset_tag

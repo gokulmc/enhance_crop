@@ -2,6 +2,7 @@ from threading import Thread
 import os
 import math
 from time import sleep, time
+from typing import Optional
 import sys
 from multiprocessing import shared_memory
 import cv2
@@ -75,6 +76,7 @@ class Render:
         crf: str = "18",
         video_encoder_preset: str = "libx264",
         audio_encoder_preset: str = "aac",
+        subtitle_encoder_preset: str = "srt",
         audio_bitrate: str = "192k",
         border_detect: bool = False,
         hdr_mode: bool = False,
@@ -82,14 +84,14 @@ class Render:
         pause_shared_memory_id=None,
         sceneDetectMethod: str = "pyscenedetect",
         sceneDetectSensitivity: float = 3.0,
-        sharedMemoryID: str = None,
+        sharedMemoryID: Optional[str] = None,
         trt_optimization_level: int = 3,
-        upscale_output_resolution: str = None,
+        upscale_output_resolution: Optional[str] = None,
         UHD_mode: bool = False,
         slomo_mode: bool = False,
         dynamic_scaled_optical_flow: bool = False,
         ensemble: bool = False,
-        output_to_mpv: bool = False
+        output_to_mpv: bool = False,
     ):
         self.inputFile = inputFile
         self.backend = backend
@@ -142,7 +144,8 @@ class Render:
         cap.release()
 
         video_encoder = EncoderSettings(video_encoder_preset)
-        audio_encoder = EncoderSettings(audio_encoder_preset)
+        audio_encoder = EncoderSettings(audio_encoder_preset, type="audio")
+        subtitle_encoder = EncoderSettings(subtitle_encoder_preset, type="subtitle")
 
         if border_detect:  # border detect has to be put before everything, to overwrite the width and height
             print("Detecting borders", file=sys.stderr)

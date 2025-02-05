@@ -281,13 +281,25 @@ class HandleApplication:
         parser.add_argument(
             "--audio_encoder_preset",
             help="encoder preset that sets default encoder settings",
-            default="aac",
+            default="copy_audio",
             choices=[
-                "aac", 
+                "aac",
                 "libmp3lame",
-                "opus", 
+                "opus",
                 "copy_audio",
-                ],
+            ],
+            type=str,
+        )
+        parser.add_argument(
+            "--subtitle_encoder_preset",
+            help="encoder preset that sets default encoder settings",
+            default="copy_subtitle",
+            choices=[
+                "srt",
+                "ass",
+                "webvtt",
+                "copy_subtitle",
+            ],
             type=str,
         )
         parser.add_argument(

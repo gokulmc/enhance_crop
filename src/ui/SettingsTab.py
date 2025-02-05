@@ -50,6 +50,11 @@ class SettingsTab:
                 "audio_encoder", self.parent.audio_encoder.currentText()
             )
         )
+        self.parent.subtitle_encoder.currentIndexChanged.connect(
+            lambda: self.settings.writeSetting(
+                "subtitle_encoder", self.parent.subtitle_encoder.currentText()
+            )
+        )
         self.parent.audio_bitrate.currentIndexChanged.connect(
             lambda: self.settings.writeSetting(
                 "audio_bitrate", self.parent.audio_bitrate.currentText()
@@ -169,6 +174,9 @@ class SettingsTab:
         self.parent.audio_encoder.setCurrentText(
             self.settings.settings["audio_encoder"]
         )
+        self.parent.subtitle_encoder.setCurrentText(
+            self.settings.settings["audio_encoder"]
+        )
         self.parent.audio_bitrate.setCurrentText(
             self.settings.settings["audio_bitrate"]
         )
@@ -242,6 +250,7 @@ class Settings:
             "tensorrt_optimization_level": "3",
             "encoder": "libx264",
             "audio_encoder": "copy_audio",
+            "subtitle_encoder": "copy_subtitles",
             "audio_bitrate": "192k",
             "preview_enabled": "True",
             "scene_change_detection_method": "pyscenedetect",
@@ -278,6 +287,7 @@ class Settings:
                 "av1_vaapi",
             ),
             "audio_encoder": ("aac", "libmp3lame", "opus", "copy_audio"),
+            "subtitle_encoder": ("srt", "ass", "webvtt", "copy_subtitle"),
             "audio_bitrate": ("320k", "192k", "128k", "96k"),
             "preview_enabled": ("True", "False"),
             "scene_change_detection_method": (
@@ -297,7 +307,14 @@ class Settings:
             "pytorch_gpu_id": "ANY",
             "auto_border_cropping": ("True", "False"),
             "video_container": ("mkv", "mp4", "mov", "webm", "avi"),
-            "video_pixel_format": ("yuv420p", "yuv422p", "yuv444p", "yuv420p10le", "yuv422p10le", "yuv444p10le"),
+            "video_pixel_format": (
+                "yuv420p",
+                "yuv422p",
+                "yuv444p",
+                "yuv420p10le",
+                "yuv422p10le",
+                "yuv444p10le",
+            ),
         }
         self.settings = self.defaultSettings.copy()
         if not os.path.isfile(self.settingsFile):
