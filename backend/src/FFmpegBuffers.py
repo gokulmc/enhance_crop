@@ -202,7 +202,7 @@ class FFmpegWrite(Buffer):
                     "-map",
                     "0:v",  # Map video stream from input 0
                     "-map",
-                    "1:a?",  # Map all audio streams from input 1
+                    "1:a?",  # Map all audio streams from input 1, this causes issues with some videos, and the only solution might be audio extraction
                     "-map",
                     "1:s?",  # Map all subtitle streams from input 1
                 ]
@@ -239,8 +239,6 @@ class FFmpegWrite(Buffer):
                 self.pixelFormat,
                 "-c:s",
                 "copy",
-                "-loglevel",
-                "error",
             ]
 
             if self.custom_encoder is not None:
