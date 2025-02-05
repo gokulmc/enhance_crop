@@ -178,7 +178,7 @@ class FFmpegWrite(Buffer):
 
             command += [
                 "-framerate",
-                f"{self.fps*self.ceilInterpolateFactor}",
+                f"{self.fps*self.interpolateFactor}",
                 "-f",
                 "rawvideo",
                 "-pix_fmt",
