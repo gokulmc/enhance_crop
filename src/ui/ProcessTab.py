@@ -413,6 +413,8 @@ class ProcessTab:
             f"{self.settings.settings['audio_encoder']}",
             "--audio_bitrate",
             f"{self.settings.settings['audio_bitrate']}",
+            "--subtitle_encoder_preset",
+            f"{self.settings.ettings['subtitle_encoder']}"
             "--crf",
             f"{self.qualityToCRF[self.settings.settings['video_quality']]}",
             "--tensorrt_opt_profile",
