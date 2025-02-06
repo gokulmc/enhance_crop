@@ -175,7 +175,7 @@ class SettingsTab:
             self.settings.settings["audio_encoder"]
         )
         self.parent.subtitle_encoder.setCurrentText(
-            self.settings.settings["audio_encoder"]
+            self.settings.settings["subtitle_encoder"]
         )
         self.parent.audio_bitrate.setCurrentText(
             self.settings.settings["audio_bitrate"]
@@ -250,7 +250,7 @@ class Settings:
             "tensorrt_optimization_level": "3",
             "encoder": "libx264",
             "audio_encoder": "copy_audio",
-            "subtitle_encoder": "copy_subtitles",
+            "subtitle_encoder": "copy_subtitle",
             "audio_bitrate": "192k",
             "preview_enabled": "True",
             "scene_change_detection_method": "pyscenedetect",

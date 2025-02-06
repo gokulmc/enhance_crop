@@ -8,7 +8,7 @@
  - Default video container setting
  - Batch input support
  - Full fallback on TRT upscaling, so the engine has the greatest chance of building correctly.
- - Additional Codec Support
+ - Additional Codec Support (Video, Audio, Subtitle)
  - Additional Animation and Realistic Models
  - Option to reencode audio, in case it has issues with output.
  - HDR Mode toggle (experimental)
