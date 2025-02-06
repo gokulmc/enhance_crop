@@ -249,7 +249,7 @@ class DownloadDependencies:
             "tensorrt==10.7.0.post1",
             "tensorrt_cu12==10.7.0.post1",
             "tensorrt-cu12_libs==10.7.0.post1",
-            "tensorrt_cu12_bindings==10.7.0",
+            "tensorrt_cu12_bindings==10.7.0.post1",
             f"torch_tensorrt==2.6.0",
         ]
 
