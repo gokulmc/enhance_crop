@@ -173,7 +173,7 @@ class DownloadDependencies:
             command += [
                 "--no-warn-script-location",
                 "--extra-index-url",
-                "https://download.pytorch.org/whl/test/cu126",
+                "https://download.pytorch.org/whl/cu126",
                 "--extra-index-url",
                 "https://pypi.nvidia.com",
             ]
