@@ -68,6 +68,7 @@ class DownloadDependencies:
 
         createDirectory(os.path.join(CWD, "python"))
         createDirectory(os.path.join(CWD, "bin"))
+        os.environ["PYTHONNOUSERSITE"] = "1" # Prevents python from installing packages in user site
 
     def downloadBackend(self, tag):
         """
@@ -107,7 +108,7 @@ class DownloadDependencies:
             )
 
     def downloadPython(self):
-        link = "https://github.com/indygreg/python-build-standalone/releases/download/20240814/cpython-3.11.9+20240814-"
+        link = "https://github.com/indygreg/python-build-standalone/releases/download/20250205/cpython-3.12.9+20250205-"
         pyDir = os.path.join(
             CWD,
             "python",
@@ -246,10 +247,11 @@ class DownloadDependencies:
         TensorRT deps
         """
         tensorRTDeps = [
-            "tensorrt==10.7.0.post1",
-            "tensorrt_cu12==10.7.0.post1",
-            "tensorrt-cu12_libs==10.7.0.post1",
-            "tensorrt_cu12_bindings==10.7.0.post1",
+            "tensorrt==10.8.0.43",
+            "tensorrt_cu12==10.8.0.43",
+            "tensorrt-cu12_libs==10.8.0.43",
+            "tensorrt_cu12_bindings==10.8.0.43",
+            "--no-deps",
             f"torch_tensorrt==2.6.0",
         ]
 
