@@ -138,12 +138,13 @@ class InterpolateGMFSSTorch(BaseInterpolate):
         transition=False,
         upscaleModel: UpscalePytorch = None,
     ):  # type: ignore
-        if self.frame0 is None:
-            self.frame0 = self.frame_to_tensor(img1)
-            self.stream.synchronize()
-            return
-        frame1 = self.frame_to_tensor(img1)
+        
         with torch.cuda.stream(self.stream):  # type: ignore
+            if self.frame0 is None:
+                self.frame0 = self.frame_to_tensor(img1, self.prepareStream)
+                self.stream.synchronize()
+                return
+            frame1 = self.frame_to_tensor(img1, self.prepareStream)
             if self.dynamicScaledOpticalFlow:
                 closest_value = self.dynamicScale.dynamicScaleCalculation(
                     self.frame0, frame1
@@ -171,7 +172,7 @@ class InterpolateGMFSSTorch(BaseInterpolate):
                     self.flownet.reset_cache_after_transition()
                     writeQueue.put(img1)
 
-            self.copyTensor(self.frame0, frame1)
+            self.copyTensor(self.frame0, frame1, self.prepareStream)
 
         self.stream.synchronize()
 

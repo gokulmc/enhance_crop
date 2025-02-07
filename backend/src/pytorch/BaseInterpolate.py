@@ -48,8 +48,6 @@ class BaseInterpolate(metaclass=ABCMeta):
     @abstractmethod
     def _load(self):
         """Loads in the model"""
-        self.stream = torch.cuda.Stream()
-        self.prepareStream = torch.cuda.Stream()
         self.device = torch.device("cuda")
         self.dtype = torch.float32
         self.width = 1920
@@ -91,8 +89,8 @@ class BaseInterpolate(metaclass=ABCMeta):
         return torch.float32
 
     @torch.inference_mode()
-    def copyTensor(self, tensorToCopy: torch.Tensor, tensorCopiedTo: torch.Tensor):
-        with torch.cuda.stream(self.stream):  # type: ignore
+    def copyTensor(self, tensorToCopy: torch.Tensor, tensorCopiedTo: torch.Tensor, stream):
+        with torch.cuda.stream(stream):  # type: ignore
             tensorToCopy.copy_(tensorCopiedTo, non_blocking=True)
         self.stream.synchronize()
 
@@ -135,8 +133,8 @@ class BaseInterpolate(metaclass=ABCMeta):
         )
 
     @torch.inference_mode()
-    def frame_to_tensor(self, frame) -> torch.Tensor:
-        with torch.cuda.stream(self.prepareStream):  # type: ignore
+    def frame_to_tensor(self, frame, stream: torch.cuda.Stream) -> torch.Tensor:
+        with torch.cuda.stream(stream):  # type: ignore
             frame = self.norm(
                 torch.frombuffer(
                     frame,
@@ -145,7 +143,7 @@ class BaseInterpolate(metaclass=ABCMeta):
             )
             frame = F.pad(frame, self.padding)
 
-        self.prepareStream.synchronize()
+        stream.synchronize()
         return frame
 
     @torch.inference_mode()

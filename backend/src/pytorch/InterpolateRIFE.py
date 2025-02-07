@@ -73,6 +73,8 @@ class InterpolateRifeTorch(BaseInterpolate):
     def _load(self):
         self.stream = torch.cuda.Stream()
         self.prepareStream = torch.cuda.Stream()
+        self.copyStream = torch.cuda.Stream()
+        self.f2tStream = torch.cuda.Stream()
         with torch.cuda.stream(self.prepareStream):  # type: ignore
             state_dict = torch.load(
                 self.interpolateModel,
@@ -150,7 +152,7 @@ class InterpolateRifeTorch(BaseInterpolate):
                     timestep,
                     dtype=self.dtype,
                     device=self.device,
-                ).to(non_blocking=True)
+                )
                 self.timestepDict[timestep] = timestep_tens
             # rife specific setup
             self.set_rife_args()  # sets backwarp_tenGrid and tenFlow_div
@@ -359,17 +361,18 @@ class InterpolateRifeTorch(BaseInterpolate):
         transition=False,
         upscaleModel: UpscalePytorch = None,
     ):  # type: ignore
-        with torch.cuda.stream(self.stream):  # type: ignore
-            if self.frame0 is None:
-                self.frame0 = self.frame_to_tensor(img1)
+        if self.frame0 is None:
+                self.frame0 = self.frame_to_tensor(img1, self.prepareStream)
                 if self.doEncodingOnFrame:
-                    self.encode0 = self.encode_Frame(self.frame0)
-                self.stream.synchronize()
+                    self.encode0 = self.encode_Frame(self.frame0, self.prepareStream)
                 return
 
-            frame1 = self.frame_to_tensor(img1)
-            if self.doEncodingOnFrame:
-                encode1 = self.encode_Frame(frame1)
+        frame1 = self.frame_to_tensor(img1, self.f2tStream)
+        if self.doEncodingOnFrame:
+            encode1 = self.encode_Frame(frame1, self.f2tStream)
+
+        with torch.cuda.stream(self.stream):  # type: ignore
+            
 
             if self.dynamicScaledOpticalFlow:
                 closest_value = self.dynamicScale.dynamicScaleCalculation(
@@ -415,19 +418,19 @@ class InterpolateRifeTorch(BaseInterpolate):
                         img1 = upscaleModel(frame1[:, :, : self.height, : self.width])
                     writeQueue.put(img1)
 
-            self.copyTensor(self.frame0, frame1)
+            self.copyTensor(self.frame0, frame1, self.copyStream)
             if self.doEncodingOnFrame:
-                self.copyTensor(self.encode0, encode1)  # type: ignore
+                self.copyTensor(self.encode0, encode1, self.copyStream)  # type: ignore
 
         self.stream.synchronize()
 
     @torch.inference_mode()
-    def encode_Frame(self, frame: torch.Tensor):
+    def encode_Frame(self, frame: torch.Tensor, stream: torch.cuda.Stream):
         while self.encode is None:
             sleep(1)
-        with torch.cuda.stream(self.prepareStream):  # type: ignore
+        with torch.cuda.stream(stream):  # type: ignore
             frame = self.encode(frame)
-        self.prepareStream.synchronize()
+        stream.synchronize()
         return frame
 
 
@@ -440,17 +443,17 @@ class InterpolateRifeTensorRT(InterpolateRifeTorch):
         transition=False,
         upscaleModel: UpscalePytorch = None,
     ):  # type: ignore
-        with torch.cuda.stream(self.stream):  # type: ignore
-            if self.frame0 is None:
-                self.frame0 = self.frame_to_tensor(img1)
-                if self.doEncodingOnFrame:
-                    self.encode0 = self.encode_Frame(self.frame0)
-                self.stream.synchronize()
-                return
-
-            frame1 = self.frame_to_tensor(img1)
+        if self.frame0 is None:
+            self.frame0 = self.frame_to_tensor(img1, self.prepareStream)
             if self.doEncodingOnFrame:
-                encode1 = self.encode_Frame(frame1)
+                self.encode0 = self.encode_Frame(self.frame0, self.prepareStream)
+            return
+
+        frame1 = self.frame_to_tensor(img1, self.f2tStream)
+        if self.doEncodingOnFrame:
+            encode1 = self.encode_Frame(frame1, self.f2tStream)
+        with torch.cuda.stream(self.stream):  # type: ignore
+            
 
             for n in range(self.ceilInterpolateFactor - 1):
                 while self.flownet is None:
@@ -493,8 +496,8 @@ class InterpolateRifeTensorRT(InterpolateRifeTorch):
                         img1 = upscaleModel(frame1[:, :, : self.height, : self.width])
                     writeQueue.put(img1)
 
-            self.copyTensor(self.frame0, frame1)
+            self.copyTensor(self.frame0, frame1, self.copyStream)
             if self.doEncodingOnFrame:
-                self.copyTensor(self.encode0, encode1)  # type: ignore
+                self.copyTensor(self.encode0, encode1, self.copyStream)  # type: ignore
 
         self.stream.synchronize()

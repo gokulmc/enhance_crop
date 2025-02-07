@@ -155,10 +155,10 @@ class InterpolateGIMMTorch(BaseInterpolate):
     ):  # type: ignore
         with torch.cuda.stream(self.stream):  # type: ignore
             if self.frame0 is None:
-                self.frame0 = self.frame_to_tensor(img1)
+                self.frame0 = self.frame_to_tensor(img1, self.prepareStream)
                 self.stream.synchronize()
                 return
-            frame1 = self.frame_to_tensor(img1)
+            frame1 = self.frame_to_tensor(img1, self.prepareStream)
             for n in range(self.ceilInterpolateFactor - 1):
                 if not transition:
                     timestep = (n + 1) * 1.0 / (self.ceilInterpolateFactor)
