@@ -124,6 +124,7 @@ class TorchTensorRTHandler:
                 optimization_level=self.optimization_level,
             )
     
+    @torch.inference_mode()
     def dynamo_export(self, exported_program, example_inputs, device, dtype):
             return torch_tensorrt.dynamo.compile(
                 exported_program,

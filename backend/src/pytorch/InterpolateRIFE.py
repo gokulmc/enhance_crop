@@ -212,9 +212,13 @@ class InterpolateRifeTorch(BaseInterpolate):
             if self.backend == "tensorrt":
                 from .TensorRTHandler import TorchTensorRTHandler
 
-                trtHandler = TorchTensorRTHandler(
+                trtHandler_mixed = TorchTensorRTHandler(
                     trt_optimization_level=self.trt_optimization_level,
                     multi_precision_engine=True,
+                )
+                trtHandler_static = TorchTensorRTHandler(
+                    trt_optimization_level=self.trt_optimization_level,
+                    multi_precision_engine=False,
                 )
 
                 base_trt_engine_path = os.path.join(
@@ -225,9 +229,9 @@ class InterpolateRifeTorch(BaseInterpolate):
                         + f"_{'fp16' if self.dtype == torch.float16 else 'fp32'}"
                         + f"_scale-{self.scale}"
                         + f"_{torch.cuda.get_device_name(self.device)}"
-                        + f"_trt-{trtHandler.tensorrt_version}"
+                        + f"_trt-{trtHandler_static.tensorrt_version}"
                         + f"_ensemble-{self.ensemble}"
-                        + f"_torch_tensorrt-{trtHandler.torch_tensorrt_version}"
+                        + f"_torch_tensorrt-{trtHandler_static.torch_tensorrt_version}"
                         + (
                             f"_level-{self.trt_optimization_level}"
                             if self.trt_optimization_level is not None
@@ -312,7 +316,8 @@ class InterpolateRifeTorch(BaseInterpolate):
                                     device=self.device,
                                 ),
                             ]
-                            trtHandler.build_engine(
+                            
+                            trtHandler_static.build_engine(
                                 model=self.encode,
                                 dtype=self.dtype,
                                 example_inputs=encodedExampleInputs,
@@ -320,17 +325,17 @@ class InterpolateRifeTorch(BaseInterpolate):
                                 trt_engine_path=encode_trt_engine_path,
                             )
 
-                        self.encode = trtHandler.load_engine(encode_trt_engine_path)
+                        self.encode = trtHandler_static.load_engine(encode_trt_engine_path)
 
-                    trtHandler.build_engine(
+                    trtHandler_mixed.build_engine(
                         model=self.flownet,
                         dtype=self.dtype,
                         example_inputs=exampleInput,
                         device=self.device,
                         trt_engine_path=trt_engine_path,
                     )
-
-                self.flownet = trtHandler.load_engine(trt_engine_path)
+                torch.cuda.empty_cache()
+                self.flownet = trtHandler_mixed.load_engine(trt_engine_path)
         torch.cuda.empty_cache()
         self.prepareStream.synchronize()
 
