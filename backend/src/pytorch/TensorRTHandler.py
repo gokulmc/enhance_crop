@@ -99,21 +99,14 @@ class TorchTensorRTHandler:
         self.static_shape = static_shape  # Unused for now
         self.multi_precision_engine = multi_precision_engine
 
-    def prepare_inputs(
-        self, example_inputs: list[torch.Tensor]
-    ) -> list[torch_tensorrt.Input]:
-        """Prepares input specifications for TensorRT."""
-        return [
-            torch_tensorrt.Input(shape=input.shape, dtype=input.dtype)
-            for input in example_inputs
-        ]
+   
     
     @torch.inference_mode()
     def dynamo_multi_precision_export(self, exported_program, example_inputs, device):
         
             return torch_tensorrt.dynamo.compile(
                 exported_program,
-                tuple(self.prepare_inputs(example_inputs)),
+                tuple(example_inputs),
                 device=device,
                 use_explicit_typing=True,
                 debug=self.debug,
@@ -128,7 +121,7 @@ class TorchTensorRTHandler:
     def dynamo_export(self, exported_program, example_inputs, device, dtype):
             return torch_tensorrt.dynamo.compile(
                 exported_program,
-                tuple(self.prepare_inputs(example_inputs)),
+                tuple(example_inputs),
                 device=device,
                 enabled_precisions={dtype},
                 debug=self.debug,
