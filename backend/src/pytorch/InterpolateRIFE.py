@@ -302,7 +302,7 @@ class InterpolateRifeTorch(BaseInterpolate):
 
                     torch_tensorrt.save(flownet, trt_engine_path, output_format="torchscript", inputs=flownet_inputs)
                     if self.encode:
-                        encode_program = torch.export.export(encode, encode_inputs, dynamic_shapes=None)
+                        encode_program = torch.export.export(self.encode, encode_inputs, dynamic_shapes=None)
 
                         encode = torch_tensorrt.dynamo.compile(
                             encode_program,
