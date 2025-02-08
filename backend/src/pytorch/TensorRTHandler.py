@@ -59,7 +59,7 @@ except ImportError:
     onnx_support = False"""
 
 
-class TorchTensorRTHandler:
+class TorchTensorRTHandler: 
     """
     Args:
         dynamo_export_format (str): The export format to use when exporting models using Dynamo. Defaults to "nn2exportedprogram".
@@ -80,12 +80,13 @@ class TorchTensorRTHandler:
         self,
         export_format: str = "dynamo",
         dynamo_export_format: str = "nn2exportedprogram",
-        multi_precision_engine: bool = False,
-        trt_workspace_size: int = 0,
         max_aux_streams: int | None = None,
-        trt_optimization_level: int = 3,
         debug: bool = False,
         static_shape: bool = True,
+        
+        trt_optimization_level: int = 3,
+        trt_workspace_size: int = 0,
+        
     ):
         self.tensorrt_version = trt.__version__  # can just grab version from here instead of importing trt and torch trt in all related files
         self.torch_tensorrt_version = torch_tensorrt.__version__
@@ -97,7 +98,6 @@ class TorchTensorRTHandler:
         self.optimization_level = trt_optimization_level
         self.debug = debug
         self.static_shape = static_shape  # Unused for now
-        self.multi_precision_engine = multi_precision_engine
 
    
     
@@ -151,6 +151,7 @@ class TorchTensorRTHandler:
         device: torch.device,
         dtype: torch.dtype,
         trt_engine_path: str,
+        trt_multi_precision_engine: bool = False,
     ):
 
         """Exports a model using TensorRT Dynamo."""
@@ -174,7 +175,7 @@ class TorchTensorRTHandler:
 
         exported_program = self.grid_sample_decomp(exported_program)
         
-        if self.multi_precision_engine:
+        if trt_multi_precision_engine:
             model_trt = self.dynamo_multi_precision_export(exported_program, example_inputs, device)
         else:
             model_trt = self.dynamo_export(exported_program, example_inputs, device, dtype)
@@ -194,6 +195,9 @@ class TorchTensorRTHandler:
         device: torch.device,
         dtype: torch.dtype,
         trt_engine_path: str,
+        trt_min_shape: int = [1,3,224,224],
+        trt_opt_shape: int = [1,3,720,1280],
+        trt_max_shape: int = [1,3,1080,1920],
     ):
         """Exports a model using TorchScript."""
 
@@ -221,6 +225,7 @@ class TorchTensorRTHandler:
         device: torch.device,
         example_inputs: list[torch.Tensor],
         trt_engine_path: str,
+        trt_multi_precision_engine: bool = False,
     ):
         torch.cuda.empty_cache()
         """Builds a TensorRT engine from the provided model."""
@@ -231,12 +236,12 @@ class TorchTensorRTHandler:
         if self.export_format == "dynamo":
             if self.debug:
                 self.export_using_dynamo(
-                    model, example_inputs, device, dtype, trt_engine_path
+                    model, example_inputs, device, dtype, trt_engine_path, trt_multi_precision_engine=trt_multi_precision_engine
                 )
             else:
                  with suppress_stdout_stderr():
                     self.export_using_dynamo(
-                        model, example_inputs, device, dtype, trt_engine_path
+                        model, example_inputs, device, dtype, trt_engine_path, trt_multi_precision_engine=trt_multi_precision_engine
                     )
         elif self.export_format == "torchscript":
             self.export_torchscript_model(

@@ -232,8 +232,7 @@ class InterpolateRifeTorch(BaseInterpolate):
                 import torch_tensorrt
                 from .TensorRTHandler import TorchTensorRTHandler
 
-                trtHandler_static = TorchTensorRTHandler(
-                    multi_precision_engine=False,
+                trtHandler = TorchTensorRTHandler(
                     trt_optimization_level=self.trt_optimization_level,
                 )
 
@@ -245,9 +244,9 @@ class InterpolateRifeTorch(BaseInterpolate):
                         + f"_{'fp16' if self.dtype == torch.float16 else 'fp32'}"
                         + f"_scale-{self.scale}"
                         + f"_{torch.cuda.get_device_name(self.device)}"
-                        + f"_trt-{trtHandler_static.tensorrt_version}"
+                        + f"_trt-{trtHandler.tensorrt_version}"
                         + f"_ensemble-{self.ensemble}"
-                        + f"_torch_tensorrt-{trtHandler_static.torch_tensorrt_version}"
+                        + f"_torch_tensorrt-{trtHandler.torch_tensorrt_version}"
                         + (
                             f"_level-{self.trt_optimization_level}"
                             if self.trt_optimization_level is not None
@@ -264,13 +263,13 @@ class InterpolateRifeTorch(BaseInterpolate):
                 if not os.path.isfile(trt_engine_path):
                     if self.encode:
                         flownet_inputs = (
-                        torch.zeros([1, 3, self.ph, self.pw], dtype=self.dtype, device=self.device),
-                        torch.zeros([1, 3, self.ph, self.pw], dtype=self.dtype, device=self.device),
-                        torch.zeros([1, 1, self.ph, self.pw], dtype=self.dtype, device=self.device),
-                        torch.zeros([2], dtype=torch.float, device=self.device),
-                        torch.zeros([1, 2, self.ph, self.pw], dtype=torch.float, device=self.device),
-                        torch.zeros([1, num_ch_for_encode, self.ph, self.pw], dtype=self.dtype, device=self.device),
-                        torch.zeros([1, num_ch_for_encode, self.ph, self.pw], dtype=self.dtype, device=self.device),
+                            torch.zeros([1, 3, self.ph, self.pw], dtype=self.dtype, device=self.device),
+                            torch.zeros([1, 3, self.ph, self.pw], dtype=self.dtype, device=self.device),
+                            torch.zeros([1, 1, self.ph, self.pw], dtype=self.dtype, device=self.device),
+                            torch.zeros([2], dtype=torch.float, device=self.device),
+                            torch.zeros([1, 2, self.ph, self.pw], dtype=torch.float, device=self.device),
+                            torch.zeros([1, num_ch_for_encode, self.ph, self.pw], dtype=self.dtype, device=self.device),
+                            torch.zeros([1, num_ch_for_encode, self.ph, self.pw], dtype=self.dtype, device=self.device),
                         )
 
                         encode_inputs = (torch.zeros([1, 3, self.ph, self.pw], dtype=self.dtype, device=self.device),)
@@ -284,44 +283,15 @@ class InterpolateRifeTorch(BaseInterpolate):
                             torch.zeros([1, 2, self.ph, self.pw], dtype=torch.float, device=self.device),
                         )
 
+                    trtHandler.build_engine(self.flownet,  self.dtype, self.device, flownet_inputs, trt_engine_path, trt_multi_precision_engine=True)
+                    
+                    if self.encode:    
+                        trtHandler.build_engine(self.encode, self.dtype, self.device, encode_inputs, encode_trt_engine_path, trt_multi_precision_engine=False)
                         
-                            
-                    flownet_program = torch.export.export(self.flownet, flownet_inputs, dynamic_shapes=None)
-                    flownet = torch_tensorrt.dynamo.compile(
-                        flownet_program,
-                        flownet_inputs,
-                        device=self.device,
-                        debug=False,
-                        num_avg_timing_iters=4,
-                        workspace_size=0,
-                        min_block_size=1,
-                        max_aux_streams=None,
-                        optimization_level=self.trt_optimization_level,
-                        use_explicit_typing=True,
-                    )
-
-                    torch_tensorrt.save(flownet, trt_engine_path, output_format="torchscript", inputs=flownet_inputs)
-                    if self.encode:
-                        encode_program = torch.export.export(self.encode, encode_inputs, dynamic_shapes=None)
-
-                        encode = torch_tensorrt.dynamo.compile(
-                            encode_program,
-                            encode_inputs,
-                            device=self.device,
-                            enabled_precisions={self.dtype},
-                            debug=False,
-                            num_avg_timing_iters=4,
-                            workspace_size=0,
-                            min_block_size=1,
-                            max_aux_streams=None,
-                            optimization_level=self.trt_optimization_level,
-                        )
-
-                        torch_tensorrt.save(encode, encode_trt_engine_path, output_format="torchscript", inputs=encode_inputs)
-                        
-                self.flownet = torch.jit.load(trt_engine_path).eval()
+                self.flownet = trtHandler.load_engine(trt_engine_path)
+                
                 if self.encode:
-                    self.encode = torch.jit.load(encode_trt_engine_path).eval()
+                    self.encode = trtHandler.load_engine(encode_trt_engine_path)
 
 
                     
