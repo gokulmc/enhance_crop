@@ -11,6 +11,7 @@ import cpuinfo
 import distro
 import webbrowser
 import zipfile
+import sys
 from .constants import CWD, IS_FLATPAK, PLATFORM, HOME_PATH
 
 
@@ -119,8 +120,11 @@ class FileHandler:
 
 
 def log(message: str):
-    with open(os.path.join(CWD, "frontend_log.txt"), "a") as f:
-        f.write(message + "\n")
+    try:
+        with open(os.path.join(CWD, "frontend_log.txt"), "a") as f:
+            f.write(message + "\n")
+    except Exception as e:
+        print(f"An error occurred while logging: {e}", file=sys.stderr)
 
 
 with open(os.path.join(CWD, "frontend_log.txt"), "w") as f:
