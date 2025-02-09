@@ -2,6 +2,7 @@
  - NOTE: Pre-releases are unstable, please use the stable build if you experience issues. 
         New features will be added to this release over time, the current changelog is not final. 
 ### Changed
+ - Fixed RIFE TensorRT speeds
  - Backend to python 3.12
  - Bump tensorrt to 10.8
 # RVE 2.2.0 
