@@ -234,7 +234,7 @@ class SceneDetect:
     ):
         self.width = width
         self.height = height
-        sceneChangeMethod = sceneChangeMethod.lower()
+        self.sceneChangeMethod = sceneChangeMethod.lower()
         scmethoddict = {
             "mean": NPMeanSCDetect,
             "mean_diff": NPMeanDiffSCDetect,
@@ -244,12 +244,13 @@ class SceneDetect:
             "none": BaseDetector,
         }
 
-        assert sceneChangeMethod in scmethoddict, "Invalid Scene Change Method"
-        self.detector = scmethoddict[sceneChangeMethod](
+        assert self.sceneChangeMethod in scmethoddict, "Invalid Scene Change Method"
+        self.detector = scmethoddict[self.sceneChangeMethod](
             threshold=sceneChangeSensitivity
         )
 
     def detect(self, frame):
-        frame = bytesToImg(frame, width=self.width, height=self.height)
+        if self.sceneChangeMethod != "none":
+            frame = bytesToImg(frame, width=self.width, height=self.height)
         out = self.detector.sceneDetect(frame)
         return out
