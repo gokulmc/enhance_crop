@@ -278,12 +278,6 @@ tensorrtUpscaleModels = {
         2,
         "SPAN",
     ),
-    "SPANPlus Spanimation V3 (Animation) (2X) (Fast)": (
-        "2x_ModernSpanimationV3.pth",
-        "2x_ModernSpanimationV3.pth",
-        2,
-        "SPANPlus",
-    ),
     "SPAN Nomos8k (Realistic) (High Quality Source) (4X) (Fast)": (
         "4xNomos8k_span_otf_weak_no_update_params.pth",
         "4xNomos8k_span_otf_weak_no_update_params.pth",
