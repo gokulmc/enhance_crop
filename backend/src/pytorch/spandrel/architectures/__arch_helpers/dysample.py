@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
+
 class DySample(nn.Module):
     """Adapted from 'Learning to Upsample by Learning to Sample':
     https://arxiv.org/abs/2308.15085
@@ -61,7 +62,6 @@ class DySample(nn.Module):
             .transpose(1, 2)
             .unsqueeze(1)
             .unsqueeze(0)
-            .float()
             .to(x.device, non_blocking=True)
         )
         normalizer = torch.tensor(
@@ -81,7 +81,9 @@ class DySample(nn.Module):
             .float()
         )
         output = (
-            F.grid_sample(x.reshape(B * self.groups, -1, H, W).float(), coords.float(), mode="bilinear", padding_mode="border", align_corners=False)
+            F.grid_sample(
+                x.reshape(B * self.groups, -1, H, W).float(), coords.float(), mode="bilinear", padding_mode="border", align_corners=False
+            )
             .to(x.dtype)
             .view(B, -1, self.scale * H, self.scale * W)
         )
