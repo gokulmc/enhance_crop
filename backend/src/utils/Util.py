@@ -74,7 +74,9 @@ def log(message: str):
 def bytesToImg(
     image: bytes, width, height, outputWidth: int = None, outputHeight: int = None
 ) -> np.ndarray:
-    frame = np.frombuffer(image, dtype=np.uint8).reshape(height, width, 3)
+    channels = len(image) // (height * width) # 3 if RGB24/SDR, 6 if RGB48/HDR
+    hdr = channels == 6
+    frame = np.frombuffer(image, dtype=np.uint16 if hdr else np.uint8).reshape(height, width, 3).astype(np.uint8)
     if outputHeight and outputWidth:
         frame = cv2.resize(frame, dsize=(100, 100))
     return frame

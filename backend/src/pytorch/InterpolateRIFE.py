@@ -40,6 +40,7 @@ class InterpolateRifeTorch(BaseInterpolate):
         gpu_id: int = 0,
         # trt options
         trt_optimization_level: int = 5,
+        hdr_mode: bool = False,
         *args,
         **kwargs,
     ):
@@ -58,6 +59,7 @@ class InterpolateRifeTorch(BaseInterpolate):
         # set up streams for async processing
         self.scale = 1
         self.ensemble = ensemble
+        self.hdr_mode = hdr_mode # used in base interpolate class (ik inheritance is bad leave me alone)
 
         self.trt_optimization_level = trt_optimization_level
         self.trt_cache_dir = os.path.dirname(

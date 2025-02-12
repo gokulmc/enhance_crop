@@ -24,13 +24,19 @@ class Buffer(ABC):
 
 
 class FFmpegRead(Buffer):
-    def __init__(self, inputFile, width, height, borderX, borderY):
+    def __init__(self, inputFile, width, height, borderX, borderY, hdr_mode):
         self.inputFile = inputFile
         self.width = width
         self.height = height
         self.borderX = borderX
         self.borderY = borderY
-        self.inputFrameChunkSize = width * height * 3 * 2
+        self.hdr_mode = hdr_mode
+
+        if self.hdr_mode:
+            self.inputFrameChunkSize = width * height * 6
+        else:
+            self.inputFrameChunkSize = width * height * 3 
+
         self.readProcess = subprocess.Popen(
             self.command(),
             stdout=subprocess.PIPE,
@@ -51,7 +57,7 @@ class FFmpegRead(Buffer):
             "-f",
             "image2pipe",
             "-pix_fmt",
-            "rgb48",
+            "rgb48" if self.hdr_mode else "rgb24",
             "-vcodec",
             "rawvideo",
             "-s",
@@ -152,7 +158,7 @@ class FFmpegWrite(Buffer):
                 "-f",
                 "rawvideo",
                 "-pix_fmt",
-                "rgb48",
+                "rgb48" if self.hdr_mode else "rgb24",
                 "-vcodec",
                 "rawvideo",
                 "-s",
@@ -186,7 +192,7 @@ class FFmpegWrite(Buffer):
                 "-f",
                 "rawvideo",
                 "-pix_fmt",
-                "rgb48",
+                "rgb48" if self.hdr_mode else "rgb24",
                 "-vcodec",
                 "rawvideo",
                 "-s",
@@ -272,7 +278,7 @@ class FFmpegWrite(Buffer):
                 "-video_size",
                 f"{self.width * self.upscaleTimes}x{self.upscaleTimes * self.height}",
                 "-pix_fmt",
-                "rgb48",
+                "rgb48" if self.hdr_mode else "rgb24",
                 "-r",
                 str(multiplier),
                 "-i",

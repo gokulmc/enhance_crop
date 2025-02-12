@@ -35,6 +35,7 @@ class InterpolateGMFSSTorch(BaseInterpolate):
         dynamicScaledOpticalFlow: bool = False,
         gpu_id: int = 0,
         max_timestep: float = 1,
+        hdr_mode: bool = False,
         *args,
         **kwargs,
     ):
@@ -49,6 +50,7 @@ class InterpolateGMFSSTorch(BaseInterpolate):
         # set up streams for async processing
         self.scale = 1
         self.ensemble = ensemble
+        self.hdr_mode = hdr_mode # used in base interpolate class (ik inheritance is bad leave me alone)
         self.dynamicScaledOpticalFlow = dynamicScaledOpticalFlow
         self.UHDMode = UHDMode
         self.CompareNet = None

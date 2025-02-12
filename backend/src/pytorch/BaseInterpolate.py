@@ -60,6 +60,7 @@ class BaseInterpolate(metaclass=ABCMeta):
         self.tenFlow_div = None
         self.backwarp_tenGrid = None
         self.doEncodingOnFrame = False  # set this by default
+        self.hdr_mode = False
         self.CompareNet = None
 
     @staticmethod
@@ -129,7 +130,7 @@ class BaseInterpolate(metaclass=ABCMeta):
             frame.reshape(self.height, self.width, 3)
             .permute(2, 0, 1)
             .unsqueeze(0)
-            .div(65535.0)
+            .div(65535.0 if self.hdr_mode else 255.0)
             .clamp(0.0, 1.0)
         )
 
@@ -139,7 +140,7 @@ class BaseInterpolate(metaclass=ABCMeta):
             frame = self.norm(
                 torch.frombuffer(
                     frame,
-                    dtype=torch.uint16,
+                    dtype=torch.uint16 if self.hdr_mode else torch.uint8,
                 ).to(device=self.device, dtype=self.dtype, non_blocking=True)
             )
             frame = F.pad(frame, self.padding)
@@ -154,22 +155,15 @@ class BaseInterpolate(metaclass=ABCMeta):
 
     @torch.inference_mode()
     def tensor_to_frame(self, frame: torch.Tensor):
-        # Choose conversion parameters based on rgb48 flag
-        self.rgb48 = True
-        if self.rgb48:
-            scale = 65535.0
-            out_dtype = torch.uint16
-        else:
-            scale = 255.0
-            out_dtype = torch.uint8
+        # Choose conversion parameters based on hdr_mode flag
 
         return (
             frame.squeeze(0)
             .permute(1, 2, 0)
-            .mul(scale)
-            .clamp(0, scale)
+            .mul(65535.0 if self.hdr_mode else 255.0)
+            .clamp(0, 65535.0 if self.hdr_mode else 255.0)
             .round()
-            .to(out_dtype)
+            .to(torch.uint16 if self.hdr_mode else torch.uint8)
             .contiguous()
             .detach()
             .cpu()

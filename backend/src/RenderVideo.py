@@ -122,6 +122,7 @@ class Render:
         self.pytorch_gpu_id = pytorch_gpu_id
         self.ncnn_gpu_id = ncnn_gpu_id
         self.outputFrameChunkSize = None
+        self.hdr_mode = hdr_mode
 
         log("Getting Video Properties...")
         cap = cv2.VideoCapture(inputFile)
@@ -179,6 +180,7 @@ class Render:
             height=self.height,
             borderX=self.borderX,
             borderY=self.borderY,
+            hdr_mode=hdr_mode,
         )
 
         self.writeBuffer = FFmpegWrite(
@@ -366,4 +368,5 @@ class Render:
                 ensemble=self.ensemble,
                 dynamicScaledOpticalFlow=self.dynamic_scaled_optical_flow,
                 max_timestep=self.maxTimestep,
+                hdr_mode=self.hdr_mode
             )

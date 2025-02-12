@@ -43,6 +43,7 @@ class InterpolateGIMMTorch(BaseInterpolate):
         ensemble: bool = False,
         dynamicScaledOpticalFlow: bool = False,
         gpu_id: int = 0,
+        hdr_mode: bool = False,
         *args,
         **kwargs,
     ):
@@ -61,6 +62,7 @@ class InterpolateGIMMTorch(BaseInterpolate):
 
         self.backend = backend
         self.ceilInterpolateFactor = ceilInterpolateFactor
+        self.hdr_mode = hdr_mode # used in base interpolate class (ik inheritance is bad leave me alone)
         self.frame0 = None
         self.scale = 0.5  # GIMM uses fat amounts of vram, needs really low flow resolution for regular resolutions
         if UHDMode:
