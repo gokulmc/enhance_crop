@@ -76,7 +76,7 @@ def bytesToImg(
 ) -> np.ndarray:
     channels = len(image) // (height * width) # 3 if RGB24/SDR, 6 if RGB48/HDR
     hdr = channels == 6
-    frame = np.frombuffer(image, dtype=np.uint16 if hdr else np.uint8).reshape(height, width, 3).astype(np.uint8)
+    frame = np.frombuffer(image, dtype=np.uint16 if hdr else np.uint8).reshape(height, width, 3).astype(np.uint8) # downgrade to sdr for scenedetect... its good enough.
     if outputHeight and outputWidth:
         frame = cv2.resize(frame, dsize=(100, 100))
     return frame
