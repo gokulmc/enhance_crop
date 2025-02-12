@@ -30,7 +30,7 @@ class FFmpegRead(Buffer):
         self.height = height
         self.borderX = borderX
         self.borderY = borderY
-        self.inputFrameChunkSize = width * height * 3
+        self.inputFrameChunkSize = width * height * 3 * 2
         self.readProcess = subprocess.Popen(
             self.command(),
             stdout=subprocess.PIPE,
@@ -51,7 +51,7 @@ class FFmpegRead(Buffer):
             "-f",
             "image2pipe",
             "-pix_fmt",
-            "rgb24",
+            "rgb48",
             "-vcodec",
             "rawvideo",
             "-s",
@@ -152,7 +152,7 @@ class FFmpegWrite(Buffer):
                 "-f",
                 "rawvideo",
                 "-pix_fmt",
-                "rgb24",
+                "rgb48",
                 "-vcodec",
                 "rawvideo",
                 "-s",
@@ -186,7 +186,7 @@ class FFmpegWrite(Buffer):
                 "-f",
                 "rawvideo",
                 "-pix_fmt",
-                "rgb24",
+                "rgb48",
                 "-vcodec",
                 "rawvideo",
                 "-s",
@@ -272,7 +272,7 @@ class FFmpegWrite(Buffer):
                 "-video_size",
                 f"{self.width * self.upscaleTimes}x{self.upscaleTimes * self.height}",
                 "-pix_fmt",
-                "rgb24",
+                "rgb48",
                 "-r",
                 str(multiplier),
                 "-i",
@@ -297,7 +297,7 @@ class FFmpegWrite(Buffer):
         Writes out frames either to ffmpeg or to pipe
         This is determined by the --output command, which if the PIPE parameter is set, it outputs the chunk to pipe.
         A command like this is required,
-        ffmpeg -f rawvideo -pix_fmt rgb24 -s 1920x1080 -framerate 24 -i - -c:v libx264 -crf 18 -pix_fmt yuv420p -c:a copy out.mp4
+        ffmpeg -f rawvideo -pix_fmt rgb48 -s 1920x1080 -framerate 24 -i - -c:v libx264 -crf 18 -pix_fmt yuv420p -c:a copy out.mp4
         """
         log("Rendering")
         self.startTime = time.time()

@@ -129,7 +129,8 @@ class BaseInterpolate(metaclass=ABCMeta):
             frame.reshape(self.height, self.width, 3)
             .permute(2, 0, 1)
             .unsqueeze(0)
-            .div(255.0)
+            .div(65535.0)
+            .clamp(0.0, 1.0)
         )
 
     @torch.inference_mode()
@@ -138,7 +139,7 @@ class BaseInterpolate(metaclass=ABCMeta):
             frame = self.norm(
                 torch.frombuffer(
                     frame,
-                    dtype=torch.uint8,
+                    dtype=torch.uint16,
                 ).to(device=self.device, dtype=self.dtype, non_blocking=True)
             )
             frame = F.pad(frame, self.padding)
@@ -153,13 +154,24 @@ class BaseInterpolate(metaclass=ABCMeta):
 
     @torch.inference_mode()
     def tensor_to_frame(self, frame: torch.Tensor):
+        # Choose conversion parameters based on rgb48 flag
+        self.rgb48 = True
+        if self.rgb48:
+            scale = 65535.0
+            out_dtype = torch.uint16
+        else:
+            scale = 255.0
+            out_dtype = torch.uint8
+
         return (
-            frame.squeeze_(0)
+            frame.squeeze(0)
             .permute(1, 2, 0)
-            .mul(255)
-            .float()
-            .byte()
+            .mul(scale)
+            .clamp(0, scale)
+            .round()
+            .to(out_dtype)
             .contiguous()
+            .detach()
             .cpu()
             .numpy()
-        )
+    )

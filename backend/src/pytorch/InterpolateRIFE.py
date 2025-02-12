@@ -298,6 +298,12 @@ class InterpolateRifeTorch(BaseInterpolate):
 
         torch.cuda.empty_cache()
         self.prepareStream.synchronize()
+    
+    def debug_save_tensor_as_img(self, img: torch.Tensor, name: str):
+        import cv2
+        img = img.squeeze().permute(1,2,0).detach().cpu().numpy()
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        cv2.imwrite(name, img)
         
 
     @torch.inference_mode()
@@ -369,6 +375,9 @@ class InterpolateRifeTorch(BaseInterpolate):
             self.copyTensor(self.frame0, frame1, self.copyStream)
             if self.encode:
                 self.copyTensor(self.encode0, encode1, self.copyStream)  # type: ignore
+
+            # self.debug_save_tensor_as_img(self.frame0, "frame0.png")
+            
 
         self.stream.synchronize()
 
