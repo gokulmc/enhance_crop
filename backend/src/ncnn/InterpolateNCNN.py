@@ -32,10 +32,9 @@ class Rife:
         self.raw_in_image0 = None
         self.image1_bytes = None
         self.raw_in_image1 = None
-        self.channels = None
         self.height = height
         self.width = width
-        self.channels = channels
+        self.channels = 6
         self.max_timestep = max_timestep
         self.output_bytes = bytearray(width * height * channels)
         self.raw_out_image = wrapped.Image(
@@ -136,6 +135,7 @@ class InterpolateRIFENCNN:
         gpuid: int = 0,
         max_timestep: int = 1,
         interpolateFactor: int = 2,
+        hdr_mode: bool = False,
     ):
         self.max_timestep = max_timestep
         self.interpolateFactor = interpolateFactor
@@ -146,6 +146,7 @@ class InterpolateRIFENCNN:
         self.threads = threads
         self.paused = False
         self.frame0 = None
+        self.hdr_mode = hdr_mode
         self._load()
 
     def _load(self):
@@ -155,7 +156,7 @@ class InterpolateRIFENCNN:
                 num_threads=self.threads,
                 model=self.interpolateModelPath,
                 uhd_mode=False,
-                channels=3,
+                channels=6 if self.hdr_mode else 3,
                 height=self.height,
                 width=self.width,
                 max_timestep=self.max_timestep,
@@ -198,4 +199,11 @@ class InterpolateRIFENCNN:
             if upscaleModel is not None:
                 frame = upscaleModel(frame)
             writeQueue.put(frame)
+
+        # save_np = np.frombuffer(bytes(frame), dtype=np.uint16).reshape(
+        #    self.height, self.width, 3
+        # )
+        # import cv2
+
+        # cv2.imwrite("frame.png", save_np)
         self.frame0 = img1

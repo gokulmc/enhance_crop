@@ -348,6 +348,7 @@ class Render:
                 gpuid=self.ncnn_gpu_id,
                 max_timestep=self.maxTimestep,
                 interpolateFactor=self.ceilInterpolateFactor,
+                hdr_mode=self.hdr_mode,
             )
 
         if self.backend == "pytorch" or self.backend == "tensorrt":
