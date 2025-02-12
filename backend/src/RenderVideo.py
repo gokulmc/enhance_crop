@@ -294,6 +294,7 @@ class Render:
                 backend=self.backend,
                 tilesize=self.tilesize,
                 trt_optimization_level=self.trt_optimization_level,
+                hdr_mode=self.hdr_mode
             )
             self.upscaleTimes = self.upscaleOption.getScale()
 

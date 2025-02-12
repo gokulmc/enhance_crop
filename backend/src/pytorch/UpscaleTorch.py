@@ -61,12 +61,14 @@ class UpscalePytorch:
         tilesize: int = 0,
         backend: str = "pytorch",
         gpu_id: int = 0,
+        hdr_mode: bool = False,
         # trt options
         trt_workspace_size: int = 0,
         trt_cache_dir: str = None,
         trt_optimization_level: int = 3,
         trt_max_aux_streams: int | None = None,
         trt_debug: bool = False,
+        
     ):
         if device == "default":
             if torch.cuda.is_available():
@@ -97,6 +99,7 @@ class UpscalePytorch:
         self.trt_optimization_level = trt_optimization_level
         self.trt_aux_streams = trt_max_aux_streams
         self.trt_debug = trt_debug
+        self.hdr_mode = hdr_mode
 
         # streams
         self.stream = torch.cuda.Stream()
@@ -251,12 +254,12 @@ class UpscalePytorch:
     def frame_to_tensor(self, frame):
         with torch.cuda.stream(self.prepareStream):
             output = (
-                torch.frombuffer(frame, dtype=torch.uint8)
+                torch.frombuffer(frame, dtype=torch.uint16 if self.hdr_mode else torch.uint8)
                 .to(self.device, dtype=self.dtype, non_blocking=True)
                 .reshape(self.videoHeight, self.videoWidth, 3)
                 .permute(2, 0, 1)
                 .unsqueeze(0)
-                .mul_(1 / 255)
+                .mul_(1 / 65535.0 if self.hdr_mode else 255.0)
             )
         self.prepareStream.synchronize()
         return output
@@ -270,14 +273,15 @@ class UpscalePytorch:
                 output = self.model(image)
             else:
                 output = self.renderTiledImage(image)
-            output = (
-                output.clamp(0.0, 1.0)
-                .squeeze(0)
+            output =  (
+            output.squeeze(0)
                 .permute(1, 2, 0)
-                .mul(255)
-                .float()
-                .byte()
+                .clamp(0, 1)
+                .mul(65535.0 if self.hdr_mode else 255.0)
+                .round()
+                .to(torch.uint16 if self.hdr_mode else torch.uint8)
                 .contiguous()
+                .detach()
                 .cpu()
                 .numpy()
             )
