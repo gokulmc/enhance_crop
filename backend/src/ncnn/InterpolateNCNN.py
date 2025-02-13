@@ -36,7 +36,7 @@ class Rife:
         self.width = width
         self.channels = channels
         self.max_timestep = max_timestep
-        self.output_bytes = bytearray(width * height * channels)
+        self.output_bytes = bytearray(width * height * channels * 2)
         self.raw_out_image = wrapped.Image(
             self.output_bytes, self.width, self.height, self.channels
         )
@@ -134,22 +134,22 @@ class Rife:
 
         image0_bytes = bytearray(
             (
-                np.frombuffer(image0, dtype=np.uint16).reshape(
-                    self.height, self.width, self.channels
-                )
-                # / (65535.0)
+                np.frombuffer(image0, dtype=np.uint16)
+                .reshape(self.height, self.width, self.channels)
+                .astype(np.float32)
+                / (65535.0)
             ).tobytes()
         )
         img1 = (
-            np.frombuffer(image1, dtype=np.uint16).reshape(
-                self.height, self.width, self.channels
-            )
-            # / 65535.0
-        )
+            np.frombuffer(image1, dtype=np.uint16)
+            .reshape(self.height, self.width, self.channels)
+            .astype(np.float32)
+        )  # convert to float32
         image1_bytes = bytearray(img1.tobytes())
         import cv2
 
         cv2.imwrite("frame.png", img1)
+
 
         # convert image bytes into ncnn::Mat Image
         raw_in_image0 = wrapped.Image(
@@ -159,16 +159,13 @@ class Rife:
             image1_bytes, self.width, self.height, self.channels
         )
         raw_out_image = wrapped.Image(
-            self.output_bytes * 2, self.width, self.height, self.channels
+            self.output_bytes, self.width, self.height, self.channels
         )
 
         self._rife_object.process(raw_in_image0, raw_in_image1, timestep, raw_out_image)
 
-        out = (
-            np.frombuffer(self.output_bytes * 2, dtype=np.uint16).reshape(
-                self.height, self.width, 3
-            )
-            # * 65535.0
+        out = np.frombuffer(self.output_bytes, dtype=np.uint16).reshape(
+            self.height, self.width, 3
         )
         cv2.imwrite("out.png", out)
         return out
@@ -244,7 +241,9 @@ class InterpolateRIFENCNN:
             while self.paused:
                 sleep(1)
             timestep = (n + 1) * 1.0 / (self.interpolateFactor)
-            frame = self.render.process_cv2(self.frame0, img1, timestep)
+            frame = self.render.process_bytes(
+                self.frame0, img1, timestep
+            )  # self.render.process_cv2(self.frame0, img1, timestep)
 
             if upscaleModel is not None:
                 frame = upscaleModel(frame)
