@@ -174,7 +174,7 @@ class DownloadDependencies:
             command += [
                 "--no-warn-script-location",
                 "--extra-index-url",
-                "https://download.pytorch.org/whl/cu126",
+                "https://download.pytorch.org/whl/",  # switch to normal whl and test
                 "--extra-index-url",
                 "https://pypi.nvidia.com",
             ]
@@ -231,8 +231,8 @@ class DownloadDependencies:
         Pytorch CUDA deps
         """
         torchCUDADeps = [
-            f"torch==2.6.0",
-            f"torchvision==0.21.0",
+            "torch==2.6.0+cu126",  #
+            "torchvision==0.21.0+cu126",
             "safetensors",
             "einops",
             "cupy-cuda12x==13.3.0",
@@ -252,7 +252,7 @@ class DownloadDependencies:
             "tensorrt-cu12_libs==10.8.0.43",
             "tensorrt_cu12_bindings==10.8.0.43",
             "--no-deps",
-            f"torch_tensorrt==2.6.0",
+            "torch_tensorrt==2.6.0+cu126",
         ]
 
         return tensorRTDeps
@@ -306,11 +306,10 @@ class DownloadDependencies:
             self.pip(self.getPlatformIndependentDeps())
 
         rocmLinuxDeps = [
-            "https://download.pytorch.org/whl/pytorch_triton_rocm-2.3.1-cp311-cp311-linux_x86_64.whl",
+            "torch==2.6.0+rocm6.2.4",
+            "torchvision==0.21.0+rocm6.2.4",
             "einops",
             "safetensors",
-            "https://download.pytorch.org/whl/rocm5.7/torch-2.3.1%2Brocm5.7-cp311-cp311-linux_x86_64.whl",
-            "https://download.pytorch.org/whl/rocm5.7/torchvision-0.18.1%2Brocm5.7-cp311-cp311-linux_x86_64.whl",
         ]
         if PLATFORM == "linux":
             self.pip(rocmLinuxDeps, install)
