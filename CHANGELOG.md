@@ -8,6 +8,7 @@
 ### Fixed
  - Fixed lossless encoders
  - Fixed HDR Mode
+ 
 # RVE 2.2.0 
 ### Added
  - Hardware Encoding
