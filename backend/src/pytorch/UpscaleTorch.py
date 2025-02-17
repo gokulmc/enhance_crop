@@ -260,7 +260,8 @@ class UpscalePytorch:
                 .reshape(self.videoHeight, self.videoWidth, 3)
                 .permute(2, 0, 1)
                 .unsqueeze(0)
-                .mul_(1 / 65535.0 if self.hdr_mode else 255.0)
+                .mul_(1 / 65535.0 if self.hdr_mode else 1 / 255.0)
+                .clamp(0,1)
             )
         self.prepareStream.synchronize()
         return output
