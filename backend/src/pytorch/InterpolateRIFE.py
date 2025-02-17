@@ -404,10 +404,10 @@ class InterpolateRifeTensorRT(InterpolateRifeTorch):
     ):  # type: ignore
         if self.frame0 is None:
             self.frame0 = self.frame_to_tensor(img1, self.prepareStream)
+            
             if self.encode:
                 self.encode0 = self.encode_Frame(self.frame0, self.prepareStream)
             return
-
         frame1 = self.frame_to_tensor(img1, self.f2tStream)
         if self.encode:
             encode1 = self.encode_Frame(frame1, self.f2tStream)

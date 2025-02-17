@@ -173,6 +173,7 @@ class FFmpegWrite(Buffer):
                 "yuv420p",
                 "-",
             ]
+            log("FFMPEG WRITE COMMAND: " + str(command))
             return command
         
         if not self.benchmark:

@@ -127,11 +127,11 @@ class BaseInterpolate(metaclass=ABCMeta):
     @torch.inference_mode()
     def norm(self, frame: torch.Tensor):
         return (
-            frame.reshape(self.height, self.width, 3)
+            frame
+            .reshape(self.height, self.width, 3)
             .permute(2, 0, 1)
             .unsqueeze(0)
-            .div(65535.0 if self.hdr_mode else 255.0)
-            .clamp(0.0, 1.0)
+            .div_(65535.0 if self.hdr_mode else 255.0)
         )
 
     @torch.inference_mode()
@@ -141,10 +141,9 @@ class BaseInterpolate(metaclass=ABCMeta):
                 torch.frombuffer(
                     frame,
                     dtype=torch.uint16 if self.hdr_mode else torch.uint8,
-                ).to(device=self.device, dtype=self.dtype, non_blocking=True)
-            )
+                ).to(device=self.device, non_blocking=True, dtype=torch.float32 if self.hdr_mode else self.dtype) # torch dies in hdr mode if we dont cast to float before half
+            ).to(dtype=self.dtype, non_blocking=True)
             frame = F.pad(frame, self.padding)
-
         stream.synchronize()
         return frame
 
