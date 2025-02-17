@@ -5,6 +5,9 @@
  - Fixed RIFE TensorRT speeds
  - Backend to python 3.12
  - Bump tensorrt to 10.8
+### Fixed
+ - Fixed lossless encoders
+ - Fixed HDR Mode
 # RVE 2.2.0 
 ### Added
  - Hardware Encoding

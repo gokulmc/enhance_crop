@@ -1172,7 +1172,7 @@ text-align: center;
                               <string/>
                              </property>
                              <property name="text">
-                              <string>HDR Mode (Pytorch/Tensorrt Only)</string>
+                              <string>HDR Mode (Pytorch/TensorRT Only)</string>
                              </property>
                             </widget>
                            </item>
