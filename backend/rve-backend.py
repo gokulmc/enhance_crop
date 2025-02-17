@@ -431,7 +431,9 @@ class HandleApplication:
             raise ValueError(
                 "Interpolation factor must be 1 if no interpolation model is used.\nPlease use --interpolateFactor 1 for no interpolation!"
             )
-
+        if self.args.backend == 'ncnn' and self.args.hdr_mode:
+            print("WARNING: HDR mode is not supported with ncnn backend, falling back to SDR",file=sys.stderr)
+            self.args.hdr_mode = False            
 
 if __name__ == "__main__":
     HandleApplication()

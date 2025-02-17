@@ -32,11 +32,12 @@ class Rife:
         self.raw_in_image0 = None
         self.image1_bytes = None
         self.raw_in_image1 = None
+        self.channels = None
         self.height = height
         self.width = width
         self.channels = channels
         self.max_timestep = max_timestep
-        self.output_bytes = bytearray(width * height * channels * 2)
+        self.output_bytes = bytearray(width * height * channels)
         self.raw_out_image = wrapped.Image(
             self.output_bytes, self.width, self.height, self.channels
         )
@@ -124,52 +125,6 @@ class Rife:
             self.raw_in_image0 = self.raw_in_image1
         return bytes(self.output_bytes)
 
-    def process_cv2(  # maybe try using np arrays to bytes to mitigate hdr issue.
-        self, image0: np.ndarray, image1: np.ndarray, timestep: float = 0.5
-    ) -> np.ndarray:
-        if timestep == 0.0:
-            return image0
-        elif timestep == 1.0:
-            return image1
-
-        image0_bytes = bytearray(
-            (
-                np.frombuffer(image0, dtype=np.uint16)
-                .reshape(self.height, self.width, self.channels)
-                .astype(np.float32)
-                / (65535.0)
-            ).tobytes()
-        )
-        img1 = (
-            np.frombuffer(image1, dtype=np.uint16)
-            .reshape(self.height, self.width, self.channels)
-            .astype(np.float32)
-        )  # convert to float32
-        image1_bytes = bytearray(img1.tobytes())
-        import cv2
-
-        cv2.imwrite("frame.png", img1)
-
-
-        # convert image bytes into ncnn::Mat Image
-        raw_in_image0 = wrapped.Image(
-            image0_bytes, self.width, self.height, self.channels
-        )
-        raw_in_image1 = wrapped.Image(
-            image1_bytes, self.width, self.height, self.channels
-        )
-        raw_out_image = wrapped.Image(
-            self.output_bytes, self.width, self.height, self.channels
-        )
-
-        self._rife_object.process(raw_in_image0, raw_in_image1, timestep, raw_out_image)
-
-        out = np.frombuffer(self.output_bytes, dtype=np.uint16).reshape(
-            self.height, self.width, 3
-        )
-        cv2.imwrite("out.png", out)
-        return out
-
 
 class InterpolateRIFENCNN:
     def __init__(
@@ -192,7 +147,6 @@ class InterpolateRIFENCNN:
         self.threads = threads
         self.paused = False
         self.frame0 = None
-        self.hdr_mode = hdr_mode
         self._load()
 
     def _load(self):
@@ -241,12 +195,8 @@ class InterpolateRIFENCNN:
             while self.paused:
                 sleep(1)
             timestep = (n + 1) * 1.0 / (self.interpolateFactor)
-            frame = self.render.process_bytes(
-                self.frame0, img1, timestep
-            )  # self.render.process_cv2(self.frame0, img1, timestep)
-
+            frame = self.render.process_bytes(self.frame0, img1, timestep)
             if upscaleModel is not None:
                 frame = upscaleModel(frame)
             writeQueue.put(frame)
-
         self.frame0 = img1

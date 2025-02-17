@@ -84,6 +84,7 @@ class UpscaleNCNN:
         height: int = 1080,
         tilesize: int = 0,
         tilePad=10,
+        hdr_mode=False,
     ):
         # only import if necessary
         self.pad_w = tilePad
