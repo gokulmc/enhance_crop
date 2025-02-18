@@ -1,6 +1,7 @@
 from .constants import (
     PLATFORM,
     PYTHON_PATH,
+    PYTHON_VERSION,
     FFMPEG_PATH,
     BACKEND_PATH,
     TEMP_DOWNLOAD_PATH,
@@ -108,7 +109,7 @@ class DownloadDependencies:
             )
 
     def downloadPython(self):
-        link = "https://github.com/indygreg/python-build-standalone/releases/download/20250205/cpython-3.12.9+20250205-"
+        link = f"https://github.com/indygreg/python-build-standalone/releases/download/20250205/cpython-{PYTHON_VERSION}+20250205-"
         pyDir = os.path.join(
             CWD,
             "python",
