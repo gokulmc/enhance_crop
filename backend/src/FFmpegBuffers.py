@@ -35,7 +35,7 @@ class FFmpegRead(Buffer):
         if self.hdr_mode:
             self.inputFrameChunkSize = width * height * 6
         else:
-            self.inputFrameChunkSize = width * height * 3 
+            self.inputFrameChunkSize = width * height * 3
 
         self.readProcess = subprocess.Popen(
             self.command(),
@@ -117,7 +117,14 @@ class FFmpegWrite(Buffer):
         self.outputFile = outputFile
         self.width = width
         self.height = height
+        self.outputWidth = width * upscaleTimes
+        self.outputHeight = height * upscaleTimes
         self.fps = fps
+        self.outputFPS = (
+            (self.fps * self.interpolateFactor)
+            if not self.slowmo_mode
+            else self.fps
+        )
         self.crf = crf
         self.audio_bitrate = audio_bitrate
         self.pixelFormat = pixelFormat
@@ -137,18 +144,24 @@ class FFmpegWrite(Buffer):
         self.previewFrame = None
         self.framesRendered: int = 1
         self.writeProcess = None
-        
+        self.ffmpeg_log = open(FFMPEG_LOG_FILE, "w")
+        try:
+            self.writeProcess = subprocess.Popen(
+                self.command(),
+                stdin=subprocess.PIPE,
+                stderr=self.ffmpeg_log,
+                stdout=subprocess.PIPE if self.mpv_output else self.ffmpeg_log,
+                text=True,
+                universal_newlines=True,
+            )
+        except Exception as e:
+            self.onErroredExit()
+
 
     def command(self):
         log("Generating FFmpeg WRITE command...")
-        if self.slowmo_mode:
-            log("Slowmo mode enabled, will not merge audio or subtitles.")
-        multiplier = (
-            (self.fps * self.interpolateFactor)
-            if not self.slowmo_mode
-            else self.fps
-        )
-        log(f"Output FPS: {multiplier}")  
+
+
 
         if self.mpv_output:
             command = [
@@ -162,11 +175,11 @@ class FFmpegWrite(Buffer):
                 "-vcodec",
                 "rawvideo",
                 "-s",
-                f"{self.width * self.upscaleTimes}x{self.upscaleTimes * self.height}",
+                f"{self.outputWidth}x{self.outputHeight}",
                 "-i",
                 "-",
                 "-r",
-                f"{multiplier}",
+                f"{self.outputFPS}",
                 "-f",
                 "matroska",
                 "-pix_fmt",
@@ -175,7 +188,7 @@ class FFmpegWrite(Buffer):
             ]
             log("FFMPEG WRITE COMMAND: " + str(command))
             return command
-        
+
         if not self.benchmark:
             # maybe i can split this so i can just use ffmpeg normally like with vspipe
             command = [
@@ -197,11 +210,11 @@ class FFmpegWrite(Buffer):
                 "-vcodec",
                 "rawvideo",
                 "-s",
-                f"{self.width * self.upscaleTimes}x{self.height * self.upscaleTimes}",
+                f"{self.outputWidth}x{self.outputHeight}",
                 "-i",
                 "-",
                 "-r",
-                f"{multiplier}",
+                f"{self.outputFPS}",
             ]
 
             if not self.slowmo_mode:
@@ -217,14 +230,14 @@ class FFmpegWrite(Buffer):
                 ]
                 command += self.audio_encoder.getPostInputSettings().split()
                 command += self.subtitle_encoder.getPostInputSettings().split()
-                
+
                 if not self.audio_encoder.getPresetTag() == "copy_audio":
                     command += [
                         "-b:a",
                         self.audio_bitrate,
                     ]
-                
-            
+
+
             if self.hdr_mode:
 
                 command += [
@@ -247,7 +260,7 @@ class FFmpegWrite(Buffer):
             command += [
                 "-pix_fmt",
                 self.pixelFormat,
-                
+
             ]
 
             if self.custom_encoder is not None:
@@ -263,6 +276,16 @@ class FFmpegWrite(Buffer):
 
             if self.overwrite:
                 command.append("-y")
+
+            log("Output Video Information:")
+            log(f"Video Encoder: {self.video_encoder}")
+            log(f"Video Pixel Format: {self.pixelFormat}")
+            log(f"Audio Enocder: {self.audio_encoder}")
+            log(f"Subtitle Enocder: {self.subtitle_encoder}")
+            log(f"Resolution: {self.outputWidth}x{self.outputHeight}")
+            log(f"FPS: {self.outputFPS}")
+            if self.slowmo_mode:
+                log("Slowmo mode enabled, will not merge audio or subtitles.")
 
         else: # Benchmark mode
 
@@ -281,7 +304,7 @@ class FFmpegWrite(Buffer):
                 "-pix_fmt",
                 "rgb48" if self.hdr_mode else "rgb24",
                 "-r",
-                str(multiplier),
+                str(self.outputFPS),
                 "-i",
                 "-",
                 "-benchmark",
@@ -311,33 +334,27 @@ class FFmpegWrite(Buffer):
 
         exit_code: int = 0
         try:
-            with open(FFMPEG_LOG_FILE, "w") as f:
-                with subprocess.Popen(
-                    self.command(),
-                    stdin=subprocess.PIPE,
-                    stderr=f,
-                    stdout=subprocess.PIPE if self.mpv_output else f,
-                    text=True,
-                    universal_newlines=True,
-                ) as self.writeProcess:
-                    while True:
-                        frame = self.writeQueue.get()
-                        if frame is None:
-                            break
-                        self.writeProcess.stdin.buffer.write(frame)
+            while True:
+                frame = self.writeQueue.get()
+                if frame is None:
+                    break
+                self.writeProcess.stdin.buffer.write(frame)
 
-                    self.writeProcess.stdin.close()
-                    self.writeProcess.wait()
-                    exit_code = self.writeProcess.returncode
+            self.writeProcess.stdin.close()
+            self.writeProcess.wait()
+            exit_code = self.writeProcess.returncode
 
-                    renderTime = time.time() - self.startTime
+            renderTime = time.time() - self.startTime
 
-                    printAndLog(f"\nTime to complete render: {round(renderTime, 2)}")
+            printAndLog(f"\nTime to complete render: {round(renderTime, 2)}")
         except Exception as e:
             print(str(e), file=sys.stderr)
-            self.onErroredExit()
+
+        self.ffmpeg_log.close()
+        self.onErroredExit()
         if exit_code != 0:
             self.onErroredExit()
+
 
     def onErroredExit(self):
         print("FFmpeg failed to render the video.", file=sys.stderr)
@@ -362,7 +379,7 @@ class MPVOutput:
         self.width = width
         self.height = height
         self.fps = fps
-        
+
 
     def command(self):
         command = [
@@ -389,12 +406,12 @@ class MPVOutput:
                 stdin=self.FFMPegWrite.writeProcess.stdout,
                 stderr=f,
                 stdout=f,
-                
+
             )
             self.FFMPegWrite.writeProcess.stdout.close()
             self.proc.wait()
-            self.stop() 
-            os._exit(0) # force exit        
+            self.stop()
+            os._exit(0) # force exit
 
     def stop(self):
         """
