@@ -124,13 +124,9 @@ class Render:
         self.outputFrameChunkSize = None
         self.hdr_mode = hdr_mode
 
-        log("Getting Video Properties...")
-        cap = cv2.VideoCapture(inputFile)
-        if not cap.isOpened():
-            print("Error: Could not open video.")
-            exit()
-
         videoInfo = OpenCVInfo(input_file=inputFile)
+        if not videoInfo.is_valid_video:
+            printAndLog("Input video is not valid!")
 
         self.width, self.height = videoInfo.get_width_x_height()
         self.originalWidth = self.width
@@ -233,12 +229,12 @@ class Render:
                 sharedMemoryChunkSize
             )
         )
-        
+
         self.sharedMemoryThread.start()
         self.ffmpegReadThread.start()
         self.ffmpegWriteThread.start()
         self.renderThread.start()
-        
+
         if output_to_mpv:
             MPVOut = MPVOutput(self.writeBuffer, width=self.width*self.upscaleTimes, height=self.height*self.upscaleTimes,fps=self.fps*self.interpolateFactor, outputFrameChunkSize=self.outputFrameChunkSize)
             MPVoutThread = Thread(target=MPVOut.write_out_frames)
