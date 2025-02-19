@@ -20,7 +20,7 @@ from .QTcustom import (
 )
 from ..constants import (
     BACKEND_PATH,
-    PYTHON_PATH,
+    PYTHON_EXECUTABLE_PATH,
     MODELS_PATH,
     CUSTOM_MODELS_PATH,
     IMAGE_SHARED_MEMORY_ID,
@@ -393,7 +393,7 @@ class ProcessTab:
             )
 
         command = [
-            f"{PYTHON_PATH}",
+            f"{PYTHON_EXECUTABLE_PATH}",
             "-W",
             "ignore",
             os.path.join(BACKEND_PATH, "rve-backend.py"),

@@ -1,7 +1,7 @@
 import os
 import sys
 
-from .constants import BACKEND_PATH, PYTHON_PATH, PLATFORM, IS_INSTALLED, IS_FLATPAK
+from .constants import BACKEND_PATH, PYTHON_EXECUTABLE_PATH, PLATFORM, IS_INSTALLED, IS_FLATPAK
 from .Util import (
     log,
     networkCheck,
@@ -119,7 +119,7 @@ class BackendHandler:
 
         output = SettingUpBackendPopup(
             [
-                PYTHON_PATH,
+                PYTHON_EXECUTABLE_PATH,
                 "-W",
                 "ignore",
                 os.path.join(BACKEND_PATH, "rve-backend.py"),

@@ -1,10 +1,13 @@
 import requests
 import re
 import os
+import subprocess
+import shutil
 
 from .QTcustom import DownloadProgressPopup, NetworkCheckPopup, RegularQTPopup
 from ..constants import (
-    PYTHON_PATH,
+    PYTHON_EXECUTABLE_PATH,
+    PYTHON_DIRECTORY,
     BACKEND_PATH,
     EXE_NAME,
     LIBS_PATH,
@@ -12,13 +15,38 @@ from ..constants import (
     PLATFORM,
     TEMP_DOWNLOAD_PATH,
     LIBS_NAME,
+    PYTHON_VERSION,
+    
 )
+from ..DownloadDeps import DownloadDependencies
 from ..version import version
 from ..Util import FileHandler, networkCheck
 
 # version = "2.1.0" # for debugging
 
 HAS_NETWORK_ON_STARTUP = networkCheck()
+
+class PythonUpdater:
+    def __init__(self):
+        self.current_python_version = self.get_current_python_version()
+        self.deps = DownloadDependencies()
+            
+    def get_current_python_version(self):
+        output = subprocess.run([PYTHON_EXECUTABLE_PATH, "--version"], check=True, capture_output=True, text=True)
+        output = output.stdout.strip().split(" ")[1] # this extracts the version number from the output
+        return output
+    
+    def is_python_up_to_date(self):
+        return PYTHON_VERSION == self.current_python_version
+
+    def update_python(self):
+        if NetworkCheckPopup():
+            
+            shutil.rmtree(PYTHON_DIRECTORY)  
+            self.deps.downloadPython(mode="Updating")
+            RegularQTPopup("Python updated successfully!")
+            
+
 
 
 class ApplicationUpdater:
@@ -123,7 +151,7 @@ class DependencyUpdateChecker:
 
     def getPipVersion(self, dependency):
         command = [
-            PYTHON_PATH,
+            PYTHON_EXECUTABLE_PATH,
         ]
 
     def getDepVers(self):

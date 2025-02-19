@@ -1,6 +1,6 @@
 from .constants import (
     PLATFORM,
-    PYTHON_PATH,
+    PYTHON_EXECUTABLE_PATH,
     PYTHON_VERSION,
     FFMPEG_PATH,
     BACKEND_PATH,
@@ -108,7 +108,7 @@ class DownloadDependencies:
                 "Please click yes to allow VCRedlist to install!\nThe installer will now close."
             )
 
-    def downloadPython(self):
+    def downloadPython(self, mode="Downloading"):
         link = f"https://github.com/indygreg/python-build-standalone/releases/download/20250205/cpython-{PYTHON_VERSION}+20250205-"
         pyDir = os.path.join(
             CWD,
@@ -126,16 +126,16 @@ class DownloadDependencies:
                 else:
                     link += "x86_64-apple-darwin-install_only.tar.gz"
         # probably can add macos support later
-        log("Downloading Python")
+        log(f"{mode} Python")
         DownloadProgressPopup(
-            link=link, downloadLocation=pyDir, title="Downloading Python"
+            link=link, downloadLocation=pyDir, title=f"{mode} Python"
         )
 
         # extract python
         extractTarGZ(pyDir)
 
         # give executable permissions to python
-        makeExecutable(PYTHON_PATH)
+        makeExecutable(PYTHON_EXECUTABLE_PATH)
 
     def downloadFFMpeg(self):
         createDirectory(TEMP_DOWNLOAD_PATH)
@@ -164,7 +164,7 @@ class DownloadDependencies:
     ):  # going to have to make this into a qt module pop up
         createDirectory(TEMP_DOWNLOAD_PATH)
         command = [
-            PYTHON_PATH,
+            PYTHON_EXECUTABLE_PATH,
             "-m",
             "pip",
             "install" if install else "uninstall",
@@ -193,7 +193,7 @@ class DownloadDependencies:
             progressBarLength=totalDeps,
         )
         command = [
-            PYTHON_PATH,
+            PYTHON_EXECUTABLE_PATH,
             "-m",
             "pip",
             "cache",

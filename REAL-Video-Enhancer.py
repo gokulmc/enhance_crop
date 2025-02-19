@@ -32,6 +32,7 @@ from src.Util import (
 )
 from src.DownloadModels import DownloadModel
 from src.constants import CUSTOM_MODELS_PATH, MODELS_PATH
+from src.ui.Updater import PythonUpdater
 from src.ui.ProcessTab import ProcessTab
 from src.ui.DownloadTab import DownloadTab
 from src.ui.SettingsTab import SettingsTab, Settings
@@ -98,6 +99,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         backendHandler = BackendHandler(self)
         backendHandler.enableCorrectBackends()
 
+        updater = PythonUpdater()
+        if not updater.is_python_up_to_date():
+            reply = QMessageBox.question(
+            self,
+            "",
+            "Do you want to update Python?\n The current version is not supported anymore.",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No,  # type: ignore
+            )
+            if reply == QMessageBox.Yes:  # type: ignore
+                updater.update_python()
+            
         self.renderQueue = RenderQueue(self.renderQueueListWidget)
 
         backendHandler.setupBackendDeps()

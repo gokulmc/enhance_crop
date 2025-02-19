@@ -32,7 +32,9 @@ FFMPEG_PATH = (
     if PLATFORM == "win32"
     else os.path.join(CWD, "bin", "ffmpeg")
 )
-PYTHON_PATH = (
+PYTHON_DIRECTORY = os.path.join(CWD, "python")
+
+PYTHON_EXECUTABLE_PATH = (
     os.path.join(CWD, "python", "python", "python.exe")
     if PLATFORM == "win32"
     else os.path.join(CWD, "python", "python", "bin", "python3")
@@ -48,7 +50,7 @@ LIBS_PATH = os.path.join(
 )
 
 # is installed
-IS_INSTALLED = os.path.isfile(FFMPEG_PATH) and os.path.isfile(PYTHON_PATH)
+IS_INSTALLED = os.path.isfile(FFMPEG_PATH) and os.path.isfile(PYTHON_EXECUTABLE_PATH)
 
 IMAGE_SHARED_MEMORY_ID = "/image_preview" + str(os.getpid())
 PAUSED_STATE_SHARED_MEMORY_ID = "/paused_state" + str(os.getpid())
