@@ -7,7 +7,7 @@ os.environ["HCC_AMDGPU_TARGET"] = "gfx1100"
 import argparse
 import sys
 from src.RenderVideo import Render
-from src.version import version
+from src.version import __version__
 from src.utils.Util import (
     checkForPytorchCUDA,
     checkForPytorchROCM,
@@ -24,6 +24,7 @@ from src.utils.Util import (
 class HandleApplication:
     def __init__(self):
         self.args = self.handleArguments()
+        self.checkArguments()
         if not self.args.list_backends:
             if not self.batchProcessing():
                 self.renderVideo()
@@ -113,7 +114,6 @@ class HandleApplication:
         print(printMSG)
 
     def renderVideo(self):
-        self.checkArguments()
         Render(
             # model settings
             inputFile=self.args.input,
@@ -415,7 +415,7 @@ class HandleApplication:
 
     def checkArguments(self):
         if self.args.version:
-            print(f"{version}")
+            print(f"{__version__}")
             sys.exit(0)
         if (
             self.args.output is not None

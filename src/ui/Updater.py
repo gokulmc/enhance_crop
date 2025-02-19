@@ -20,7 +20,7 @@ from ..constants import (
 )
 from ..DownloadDeps import DownloadDependencies
 from ..version import version
-from ..Util import FileHandler, networkCheck
+from ..Util import FileHandler, networkCheck, log
 
 # version = "2.1.0" # for debugging
 
@@ -57,15 +57,14 @@ class BackendUpdater:
         self.backend_version = self.get_backend_version()
         
     def get_backend_version(self):
-        try:
-            output = subprocess.run([PYTHON_EXECUTABLE_PATH, os.path.join(BACKEND_PATH, "rve-backend.py"), "--version"], check=True, capture_output=True, text=True)
-        except subprocess.CalledProcessError: # if the backend is not found
-            RegularQTPopup("Backend not found! Downloading backend...")
-            self.deps.downloadBackend(mode="Downloading")
-        output = output.stdout.strip().split(" ")[1] # this extracts the version number from the output
+        output = subprocess.run([PYTHON_EXECUTABLE_PATH, os.path.join(BACKEND_PATH, "rve-backend.py"), "--version"], check=True, capture_output=True, text=True)
+        output = output.stdout.strip() # this extracts the version number from the output
         return output
+        
+        
     
     def is_backend_up_to_date(self):
+        log(self.backend_version)
         return version == self.backend_version
     
     def update_backend(self):

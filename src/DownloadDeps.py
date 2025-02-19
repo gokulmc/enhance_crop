@@ -72,7 +72,7 @@ class DownloadDependencies:
         createDirectory(os.path.join(CWD, "bin"))
         os.environ["PYTHONNOUSERSITE"] = "1" # Prevents python from installing packages in user site
 
-    def downloadBackend(self, tag):
+    def downloadBackend(self, tag=None):
         """
         Downloads the backend based on the tag of release.
         The tag of release is equal to the tag of the version.
