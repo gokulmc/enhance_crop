@@ -51,7 +51,27 @@ class PythonUpdater:
             self.deps.downloadPython(mode="Updating")
             RegularQTPopup("Python updated successfully!")
             
-
+class BackendUpdater:
+    def __init__(self):
+        self.deps = DownloadDependencies()
+        self.backend_version = self.get_backend_version()
+        
+    def get_backend_version(self):
+        try:
+            output = subprocess.run([PYTHON_EXECUTABLE_PATH, os.path.join(BACKEND_PATH, "rve-backend.py"), "--version"], check=True, capture_output=True, text=True)
+        except subprocess.CalledProcessError: # if the backend is not found
+            RegularQTPopup("Backend not found! Downloading backend...")
+            self.deps.downloadBackend(mode="Downloading")
+        output = output.stdout.strip().split(" ")[1] # this extracts the version number from the output
+        return output
+    
+    def is_backend_up_to_date(self):
+        return version == self.backend_version
+    
+    def update_backend(self):
+        if NetworkCheckPopup():
+            shutil.rmtree(BACKEND_PATH) # remove the old backend directory
+            self.deps.downloadBackend()
 
 
 class ApplicationUpdater:

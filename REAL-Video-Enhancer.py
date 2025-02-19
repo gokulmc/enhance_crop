@@ -29,8 +29,8 @@ from src.Util import (
     log,
 )
 from src.DownloadModels import DownloadModel
-from src.constants import CUSTOM_MODELS_PATH, MODELS_PATH
-from src.ui.Updater import PythonUpdater
+from src.constants import CUSTOM_MODELS_PATH, MODELS_PATH 
+from src.ui.Updater import PythonUpdater, BackendUpdater, HAS_NETWORK_ON_STARTUP
 from src.ui.ProcessTab import ProcessTab
 from src.ui.DownloadTab import DownloadTab
 from src.ui.SettingsTab import SettingsTab, Settings
@@ -101,9 +101,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         backendHandler.setupBackendDeps()
 
-        updater = PythonUpdater() # check if python is up to date, has to take place after python is installed
-        self.python_version = updater.current_python_version
-        if not updater.is_python_up_to_date():
+        pythonupdater = PythonUpdater() # check if python is up to date, has to take place after python is installed
+        backendupdater = BackendUpdater() # check if backend is up to date, has to take place after backend is installed
+        if not backendupdater.is_backend_up_to_date():
+            if HAS_NETWORK_ON_STARTUP():
+                backendupdater.update_backend()
+            else:    
+                RegularQTPopup("Backend is not up to date. Please check your network connection and try again.")
+                sys.exit(1)
+
+        self.python_version = pythonupdater.current_python_version
+        if not pythonupdater.is_python_up_to_date():
             reply = QMessageBox.question(
             self,
             "Do you want to update Python?",
@@ -112,7 +120,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             QMessageBox.StandardButton.No,  # type: ignore
             )
             if reply == QMessageBox.Yes:  # type: ignore
-                updater.update_python()
+                pythonupdater.update_python()
 
         self.backends, self.fullOutput = (
             backendHandler.recursivlyCheckIfDepsOnFirstInstallToMakeSureUserHasInstalledAtLeastOneBackend(
@@ -138,7 +146,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # set up tabs
         self.backendComboBox.addItems(self.backends)
         printOut = (
-            "System Information:\n\n"
+            "System Information:\n"
             + "OS: "
             + getOSInfo()
             + "\n"
@@ -152,7 +160,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             + str(round(getAvailableDiskSpace(), 2))
             + "GB"
             + "\n"
-            + "\nSoftware Information:\n\n"
+            + "\nSoftware Information:\n"
             + f"REAL Video Enhancer Version: {version}\n"
             + f"Python version: {self.python_version}\n"
             + self.fullOutput

@@ -7,7 +7,7 @@ os.environ["HCC_AMDGPU_TARGET"] = "gfx1100"
 import argparse
 import sys
 from src.RenderVideo import Render
-
+from src.version import version
 from src.utils.Util import (
     checkForPytorchCUDA,
     checkForPytorchROCM,
@@ -387,7 +387,12 @@ class HandleApplication:
         )
         parser.add_argument(
             "--list_backends",
-            help="list out available backends",
+            help="list out available backends and exits",
+            action="store_true",
+        )
+        parser.add_argument(
+            "--version",
+            help="prints backend version and exits",
             action="store_true",
         )
         parser.add_argument(
@@ -409,6 +414,9 @@ class HandleApplication:
         return os.path.join(self.args.modelPath, self.args.modelName)
 
     def checkArguments(self):
+        if self.args.version:
+            print(f"{version}")
+            sys.exit(0)
         if (
             self.args.output is not None
             and os.path.isfile(self.args.output)
