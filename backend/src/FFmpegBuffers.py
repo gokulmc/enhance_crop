@@ -278,10 +278,10 @@ class FFmpegWrite(Buffer):
                 command.append("-y")
 
             log("Output Video Information:")
-            log(f"Video Encoder: {self.video_encoder}")
+            log(f"Video Encoder: {self.video_encoder.getEncoder()}")
             log(f"Video Pixel Format: {self.pixelFormat}")
-            log(f"Audio Enocder: {self.audio_encoder}")
-            log(f"Subtitle Enocder: {self.subtitle_encoder}")
+            log(f"Audio Enocder: {self.audio_encoder.getEncoder()}")
+            log(f"Subtitle Enocder: {self.subtitle_encoder.getEncoder()}")
             log(f"Resolution: {self.outputWidth}x{self.outputHeight}")
             log(f"FPS: {self.outputFPS}")
             if self.slowmo_mode:
