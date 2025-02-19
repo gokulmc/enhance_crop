@@ -107,7 +107,7 @@ jobs:
         uses: softprops/action-gh-release@v1        
         with:
           name: REAL Video Enhancer 2.2.5 Pre-Release
-          tag_name: prerelease_2.2.5
+          tag_name: RVE-2.2.5
           body_path: ./RELEASE_BODY.md
           draft: false
           prerelease: true

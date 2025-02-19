@@ -7,7 +7,7 @@ from .constants import (
     TEMP_DOWNLOAD_PATH,
     CWD,
 )
-from .version import version, pre_release
+from .version import version
 from .Util import (
     log,
     createDirectory,
@@ -82,10 +82,8 @@ class DownloadDependencies:
 
         if not os.path.exists(BACKEND_PATH):
             print(str(BACKEND_PATH) + " Does not exist!")
-            if pre_release:
-                backend_url = f"https://github.com/TNTwise/REAL-Video-Enhancer/releases/download/prerelease_{version}/backend-v{version}.tar.gz"
-            else:
-                backend_url = f"https://github.com/TNTwise/REAL-Video-Enhancer/releases/download/RVE-{version}/backend-v{version}.tar.gz"
+            
+            backend_url = f"https://github.com/TNTwise/REAL-Video-Enhancer/releases/download/RVE-{version}/backend-v{version}.tar.gz"
             main_zip = os.path.join(CWD, "backend.tar.gz")
 
             log("Downloading backend")
