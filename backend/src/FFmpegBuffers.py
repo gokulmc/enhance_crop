@@ -120,11 +120,6 @@ class FFmpegWrite(Buffer):
         self.outputWidth = width * upscaleTimes
         self.outputHeight = height * upscaleTimes
         self.fps = fps
-        self.outputFPS = (
-            (self.fps * self.interpolateFactor)
-            if not self.slowmo_mode
-            else self.fps
-        )
         self.crf = crf
         self.audio_bitrate = audio_bitrate
         self.pixelFormat = pixelFormat
@@ -144,6 +139,11 @@ class FFmpegWrite(Buffer):
         self.previewFrame = None
         self.framesRendered: int = 1
         self.writeProcess = None
+        self.outputFPS = (
+            (self.fps * self.interpolateFactor)
+            if not self.slowmo_mode
+            else self.fps
+        )
         self.ffmpeg_log = open(FFMPEG_LOG_FILE, "w")
         try:
             self.writeProcess = subprocess.Popen(
