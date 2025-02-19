@@ -32,7 +32,11 @@ class PythonUpdater:
         self.deps = DownloadDependencies()
             
     def get_current_python_version(self):
-        output = subprocess.run([PYTHON_EXECUTABLE_PATH, "--version"], check=True, capture_output=True, text=True)
+        try:
+            output = subprocess.run([PYTHON_EXECUTABLE_PATH, "--version"], check=True, capture_output=True, text=True)
+        except subprocess.CalledProcessError: # if python is not found
+            RegularQTPopup("Python not found! Downloading Python...")
+            self.deps.downloadPython(mode="Downloading")
         output = output.stdout.strip().split(" ")[1] # this extracts the version number from the output
         return output
     
@@ -42,7 +46,8 @@ class PythonUpdater:
     def update_python(self):
         if NetworkCheckPopup():
             
-            shutil.rmtree(PYTHON_DIRECTORY)  
+            shutil.rmtree(PYTHON_DIRECTORY) # remove the old python directory  
+            os.mkdir(PYTHON_DIRECTORY) # create a new python directory
             self.deps.downloadPython(mode="Updating")
             RegularQTPopup("Python updated successfully!")
             

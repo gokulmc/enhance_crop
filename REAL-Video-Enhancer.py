@@ -1,11 +1,9 @@
 import sys
 import os
-
 # patch for macos
 if sys.platform == "darwin":
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
     # this goes one step up, and goes into the actual directory. This is where backend will be copied to.
-    os.chdir("..")
 import math
 from PySide6.QtWidgets import (
     QApplication,
@@ -98,22 +96,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         backendHandler = BackendHandler(self)
         backendHandler.enableCorrectBackends()
+            
+        self.renderQueue = RenderQueue(self.renderQueueListWidget)
 
-        updater = PythonUpdater()
+        backendHandler.setupBackendDeps()
+
+        updater = PythonUpdater() # check if python is up to date, has to take place after python is installed
+        self.python_version = updater.current_python_version
         if not updater.is_python_up_to_date():
             reply = QMessageBox.question(
             self,
-            "",
-            "Do you want to update Python?\n The current version is not supported anymore.",
+            "Do you want to update Python?",
+            "The installed version of Python is not supported by this version of RVE. Update?",
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
             QMessageBox.StandardButton.No,  # type: ignore
             )
             if reply == QMessageBox.Yes:  # type: ignore
                 updater.update_python()
-            
-        self.renderQueue = RenderQueue(self.renderQueueListWidget)
 
-        backendHandler.setupBackendDeps()
         self.backends, self.fullOutput = (
             backendHandler.recursivlyCheckIfDepsOnFirstInstallToMakeSureUserHasInstalledAtLeastOneBackend(
                 firstIter=True
@@ -154,6 +154,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             + "\n"
             + "\nSoftware Information:\n\n"
             + f"REAL Video Enhancer Version: {version}\n"
+            + f"Python version: {self.python_version}\n"
             + self.fullOutput
         )
         self.systemInfoText.setText(printOut)
