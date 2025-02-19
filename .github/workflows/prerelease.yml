@@ -32,7 +32,6 @@ jobs:
       - name: compress backend
         run: |
           tar czf backend-v2.2.5.tar.gz backend/
-          mv backend-v2.2.5.tar.gz backend-v2.2.5.tar.gz 
 
       - name: Save Archive as artifact
         uses: actions/upload-artifact@v4
