@@ -2,7 +2,7 @@ import os
 
 from PySide6.QtWidgets import QMainWindow, QFileDialog
 from ..constants import PLATFORM, HOME_PATH
-from ..Util import currentDirectory, checkForWritePermissions
+from ..Util import currentDirectory, checkForWritePermissions, open_folder
 from .QTcustom import RegularQTPopup
 
 
@@ -27,6 +27,7 @@ class SettingsTab:
         # set max gpu id for combo boxs
         self.parent.pytorch_gpu_id.setMaximum(total_pytorch_gpus)
         self.parent.ncnn_gpu_id.setMaximum(total_ncnn_gpus)
+        self.parent.openRVEFolderBtn.clicked.connect(lambda:open_folder(currentDirectory()))
 
     def connectWriteSettings(self):
         self.parent.precision.currentIndexChanged.connect(

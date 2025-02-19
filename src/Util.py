@@ -451,3 +451,11 @@ def checkForWritePermissions(dir):
         if os.access(dir, os.R_OK) and os.access(dir, os.W_OK):
             return True
         return False
+
+def open_folder(folder):
+    if PLATFORM == "win32":
+        os.startfile(folder)
+    elif PLATFORM == "darwin":
+        subprocess.Popen(["open", folder])
+    else:
+        subprocess.Popen(["xdg-open", folder])
