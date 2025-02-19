@@ -211,7 +211,7 @@ build_resources()
 if "--build_dir_override" in sys.argv:
     build_dir = sys.argv[sys.argv.index("--build_dir_override") + 1]
     build_executable(build_dir)
-    copy_backend(build_dir=build_dir)
+    # copy_backend(build_dir=build_dir)
 if "--build_exe" in sys.argv and "--build_dir_override" not in sys.argv:
     build_executable()
-    copy_backend()
+    # copy_backend()
