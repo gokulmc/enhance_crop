@@ -29,11 +29,24 @@ jobs:
         run: |
           zip -r REAL-Video-Enhancer-2.2.5-Linux.zip bin/
 
+      - name: compress backend
+        run: |
+          cd bin
+          tar czf backend-v2.2.5.tar.gz backend/
+          cd ..
+          mv bin/backend-v2.2.5.tar.gz backend-v2.2.5.tar.gz 
+
       - name: Save Archive as artifact
         uses: actions/upload-artifact@v4
         with:
           name: REAL-Video-Enhancer-2.2.5-Linux.zip
           path: REAL-Video-Enhancer-2.2.5-Linux.zip
+
+      - name: Save Archive as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-v2.2.5.tar.gz 
+          path: backend-v2.2.5.tar.gz 
           
   build-Windows:
     runs-on: windows-2019
@@ -102,6 +115,7 @@ jobs:
           files: |
               artifacts/REAL-Video-Enhancer-2.2.5-Windows.zip/REAL-Video-Enhancer-2.2.5-Windows.zip
               artifacts/REAL-Video-Enhancer-2.2.5-Linux.zip/REAL-Video-Enhancer-2.2.5-Linux.zip
+              artifacts/backend-v2.2.5.tar.gz/backend-v2.2.5.tar.gz
 
               
               
