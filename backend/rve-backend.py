@@ -24,8 +24,8 @@ from src.utils.Util import (
 class HandleApplication:
     def __init__(self):
         self.args = self.handleArguments()
-        self.checkArguments()
         if not self.args.list_backends:
+            self.checkArguments()
             if not self.batchProcessing():
                 self.renderVideo()
 
