@@ -67,7 +67,6 @@ class BackendUpdater:
         
     
     def is_backend_up_to_date(self):
-        log(self.backend_version)
         return version == self.backend_version
     
     def update_backend(self):

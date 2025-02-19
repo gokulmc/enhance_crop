@@ -1,22 +1,40 @@
 import os
 import sys
 
+ 
+        
+
+IS_DEV = not hasattr(sys, 'frozen')
+
+
 PLATFORM = sys.platform  # win32, darwin, linux
 
 IS_FLATPAK = "FLATPAK_ID" in os.environ
+HOME_PATH = os.path.expanduser("~")
 
-CWD = (
-    os.path.join(
-        os.path.expanduser("~"), ".var", "app", "io.github.tntwise.REAL-Video-Enhancer"
-    )
-    if IS_FLATPAK
-    else os.getcwd()
-)
+if not IS_DEV:
+    if IS_FLATPAK:
+        CWD = (
+            os.path.join(
+                HOME_PATH, ".var", "app", "io.github.tntwise.REAL-Video-Enhancer"
+            )
+        )
+    if PLATFORM == "win32":
+        CWD = os.getcwd()
+    if PLATFORM == "darwin":
+        CWD = os.getcwd()
+    if PLATFORM == "linux":
+        CWD = os.path.join(
+            HOME_PATH, ".local", "share", "REAL-Video-Enhancer"
+        )
+else:
+    CWD = os.getcwd()
+
+os.mkdir(CWD) if not os.path.exists(CWD) else None
 
 EXE_NAME = "REAL-Video-Enhancer.exe" if PLATFORM == "win32" else "REAL-Video-Enhancer"
 LIBS_NAME = "_internal" if PLATFORM == "win32" else "lib"
 # dirs
-HOME_PATH = os.path.expanduser("~")
 MODELS_PATH = os.path.join(CWD, "models")
 CUSTOM_MODELS_PATH = os.path.join(CWD, "custom_models")
 VIDEOS_PATH = (

@@ -29,7 +29,7 @@ from src.Util import (
     log,
 )
 from src.DownloadModels import DownloadModel
-from src.constants import CUSTOM_MODELS_PATH, MODELS_PATH 
+from src.constants import CUSTOM_MODELS_PATH, MODELS_PATH, CWD
 from src.ui.Updater import PythonUpdater, BackendUpdater, HAS_NETWORK_ON_STARTUP
 from src.ui.ProcessTab import ProcessTab
 from src.ui.DownloadTab import DownloadTab
@@ -100,15 +100,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.renderQueue = RenderQueue(self.renderQueueListWidget)
 
         backendHandler.setupBackendDeps()
-
-        pythonupdater = PythonUpdater() # check if python is up to date, has to take place after python is installed
-        backendupdater = BackendUpdater() # check if backend is up to date, has to take place after backend is installed
-        if not backendupdater.is_backend_up_to_date():
-            if HAS_NETWORK_ON_STARTUP:
-                backendupdater.update_backend()
-            else:    
-                RegularQTPopup("Backend is not up to date. Please check your network connection and try again.")
-                sys.exit(1)
+        if HAS_NETWORK_ON_STARTUP:
+            pythonupdater = PythonUpdater() # check if python is up to date, has to take place after python is installed
+            backendupdater = BackendUpdater() # check if backend is up to date, has to take place after backend is installed
+            if not backendupdater.is_backend_up_to_date():
+                    backendupdater.update_backend()
+            
 
         self.python_version = pythonupdater.current_python_version
         if not pythonupdater.is_python_up_to_date():
@@ -162,7 +159,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             + "\n"
             + "\nSoftware Information:\n"
             + f"REAL Video Enhancer Version: {version}\n"
-            + f"Python version: {self.python_version}\n"
+            + f"Python Version: {self.python_version}\n"
+            + f"Working Directory: {CWD}\n"
             + self.fullOutput
         )
         self.systemInfoText.setText(printOut)
