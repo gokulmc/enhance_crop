@@ -350,12 +350,12 @@ class FFmpegWrite(Buffer):
         except Exception as e:
             print(str(e), file=sys.stderr)
 
-        self.ffmpeg_log.close()
-        self.onErroredExit()
+        
         if exit_code != 0:
             self.onErroredExit()
 
-
+    def __del__(self):
+        self.ffmpeg_log.close()
     def onErroredExit(self):
         print("FFmpeg failed to render the video.", file=sys.stderr)
         with open(FFMPEG_LOG_FILE, "r") as f:
