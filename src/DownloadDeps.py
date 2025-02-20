@@ -87,7 +87,7 @@ class DownloadDependencies:
             main_zip = os.path.join(CWD, "backend.tar.gz")
 
             log("Downloading backend")
-            DownloadProgressPopup(link=backend_url, downloadLocation=main_zip)
+            DownloadProgressPopup(link=backend_url, downloadLocation=main_zip, title="Downloading backend")
             log("Extracting backend")
             extractTarGZ(main_zip)
 
