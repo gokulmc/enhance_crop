@@ -138,7 +138,6 @@ class Render:
             self.totalInputFrames * self.ceilInterpolateFactor
         )
         self.fps = videoInfo.get_fps()
-        cap.release()
 
         video_encoder = EncoderSettings(video_encoder_preset)
         audio_encoder = EncoderSettings(audio_encoder_preset, type="audio")
