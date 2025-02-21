@@ -16,7 +16,6 @@ HAS_NETWORK_ON_STARTUP = networkCheck()
 
 LOCKFILE = QDir.tempPath() + "/REAL-Video-Enhancer.lock"
 
-IS_DEV = not hasattr(sys, 'frozen')
 
 
 PLATFORM = sys.platform  # win32, darwin, linux
@@ -24,6 +23,7 @@ PLATFORM = sys.platform  # win32, darwin, linux
 IS_FLATPAK = "FLATPAK_ID" in os.environ
 HOME_PATH = os.path.expanduser("~")
 
+IS_DEV = not hasattr(sys, 'frozen')
 if not IS_DEV:
     if IS_FLATPAK:
         CWD = (
