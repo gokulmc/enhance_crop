@@ -1,8 +1,10 @@
 import os
 import sys
+from PySide6.QtCore import QDir
 
- 
-        
+
+
+LOCKFILE = QDir.tempPath() + "/REAL-Video-Enhancer.lock"
 
 IS_DEV = not hasattr(sys, 'frozen')
 

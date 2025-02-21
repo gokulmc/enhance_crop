@@ -5,6 +5,7 @@ if sys.platform == "darwin":
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
     # this goes one step up, and goes into the actual directory. This is where backend will be copied to.
 import math
+from PySide6.QtCore import QLockFile
 from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -29,7 +30,7 @@ from src.Util import (
     log,
 )
 from src.DownloadModels import DownloadModel
-from src.constants import CUSTOM_MODELS_PATH, MODELS_PATH, CWD
+from src.constants import CUSTOM_MODELS_PATH, MODELS_PATH, CWD, LOCKFILE
 from src.ui.Updater import PythonUpdater, BackendUpdater, HAS_NETWORK_ON_STARTUP
 from src.ui.ProcessTab import ProcessTab
 from src.ui.DownloadTab import DownloadTab
@@ -621,6 +622,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 def main():
+    if "--lock" in sys.argv:
+        lock_file = QLockFile(LOCKFILE)
+        if not lock_file.tryLock(100):
+            QMessageBox.warning(None, "Instance Running", "Another instance is already running.")
+            sys.exit(0)
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
     # setting the pallette
@@ -636,6 +642,7 @@ def main():
 """
 custom command args
 --debug: runs the app in debug mode
+--lock: locks the app to one instance
 --fullscreen: runs the app in fullscreen
 --swap-flatpak-checks: swaps the flatpak checks, ex if the app is running in flatpak, it will run as if it is not
 """
