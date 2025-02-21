@@ -1,10 +1,9 @@
 import os
 import sys
 
-from .constants import BACKEND_PATH, PYTHON_EXECUTABLE_PATH, PLATFORM, IS_INSTALLED, IS_FLATPAK
+from .constants import BACKEND_PATH, PYTHON_EXECUTABLE_PATH, PLATFORM, IS_INSTALLED, IS_FLATPAK, HAS_NETWORK_ON_STARTUP
 from .Util import (
     log,
-    networkCheck,
 )
 from .version import version
 
@@ -69,7 +68,7 @@ class BackendHandler:
         if not IS_INSTALLED:
             from .ui.QTcustom import RegularQTPopup
 
-            if networkCheck():
+            if HAS_NETWORK_ON_STARTUP:
                 # Dont flip these due to shitty code!
                 downloadDependencies.downloadFFMpeg()
                 downloadDependencies.downloadPython()

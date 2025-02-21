@@ -16,6 +16,7 @@ from ..constants import (
     TEMP_DOWNLOAD_PATH,
     LIBS_NAME,
     PYTHON_VERSION,
+    HAS_NETWORK_ON_STARTUP,
     
 )
 from ..DownloadDeps import DownloadDependencies
@@ -24,7 +25,7 @@ from ..Util import FileHandler, networkCheck, log
 
 # version = "2.1.0" # for debugging
 
-HAS_NETWORK_ON_STARTUP = networkCheck()
+
 
 class PythonUpdater:
     def __init__(self):
@@ -45,12 +46,13 @@ class PythonUpdater:
         return PYTHON_VERSION == self.current_python_version
 
     def update_python(self):
-        if NetworkCheckPopup():
+        if HAS_NETWORK_ON_STARTUP:
             
             shutil.rmtree(PYTHON_DIRECTORY) # remove the old python directory  
             os.mkdir(PYTHON_DIRECTORY) # create a new python directory
             self.deps.downloadPython(mode="Updating")
-            RegularQTPopup("Python updated successfully!")
+        else:
+            RegularQTPopup("No network connection found! Please connect to the internet to update Python.")        
             
 class BackendUpdater:
     def __init__(self):
@@ -72,9 +74,11 @@ class BackendUpdater:
         return backend_dev_version == self.backend_version
     
     def update_backend(self):
-        if NetworkCheckPopup():
+        if HAS_NETWORK_ON_STARTUP:
             shutil.rmtree(BACKEND_PATH) # remove the old backend directory
             self.deps.downloadBackend()
+        else:
+            RegularQTPopup("No network connection found! Please connect to the internet to update the backend.")
 
 
 class ApplicationUpdater:
