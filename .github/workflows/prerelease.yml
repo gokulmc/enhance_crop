@@ -77,8 +77,78 @@ jobs:
           name: REAL-Video-Enhancer-2.2.5-Windows.zip
           path: REAL-Video-Enhancer-2.2.5-Windows.zip
 
+  build-MacOS:
+    runs-on: macos-13
+    permissions: write-all  
+    steps:
+
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11.9
+
+      - name: Install Python Dependencies
+
+        run: |
+
+          brew install llvm@15
+          brew install pyside
+          python3 -m pip install -r requirements.txt
+
+      - name: Build
+
+        run: python3 build.py --build_exe
+    
+      - name: compress archive
+        run: |
+          zip -r REAL-Video-Enhancer-2.2.5-MacOS_x86_64.zip bin/
+
+      - name: Save Archive as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: REAL-Video-Enhancer-2.2.5-MacOS_x86_64.zip
+          path: REAL-Video-Enhancer-2.2.5-MacOS_x86_64.zip
+
+  build-MacOS_arm64:
+
+    runs-on: macos-14
+
+    permissions: write-all  
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+
+        uses: actions/setup-python@v5
+
+        with:
+          python-version: 3.11.9
+
+      - name: Install Python Dependencies
+        run: |
+          brew install pyside@6
+          python3 -m pip install -r requirements.txt
+
+      - name: Build
+        run: |
+          python3 build.py --build_exe
+
+      - name: compress archive
+        run: |
+
+
+          zip -r REAL-Video-Enhancer-2.2.5-MacOS_arm64.zip bin/
+
+      - name: Save Archive as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: REAL-Video-Enhancer-2.2.5-MacOS_arm64.zip
+          path: REAL-Video-Enhancer-2.2.5-MacOS_arm64.zip
+          
   Release:
-    needs: [build-Windows, build-Linux]
+    needs: [build-Windows, build-Linux, build-MacOS, build-MacOS_arm64]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -112,6 +182,8 @@ jobs:
           files: |
               artifacts/REAL-Video-Enhancer-2.2.5-Windows.zip/REAL-Video-Enhancer-2.2.5-Windows.zip
               artifacts/REAL-Video-Enhancer-2.2.5-Linux.zip/REAL-Video-Enhancer-2.2.5-Linux.zip
+              artifacts/REAL-Video-Enhancer-2.0-MacOS_x86_64.zip/REAL-Video-Enhancer-2.2.5-MacOS_x86_64.zip
+              artifacts/REAL-Video-Enhancer-2.0-MacOS_arm64.zip/REAL-Video-Enhancer-2.2.5-MacOS_arm64.zip
               artifacts/backend-v2.2.5.tar.gz/backend-v2.2.5.tar.gz
 
               
