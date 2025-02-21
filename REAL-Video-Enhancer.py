@@ -648,6 +648,8 @@ custom command args
 """
 
 if __name__ == "__main__":
+    from multiprocessing import freeze_support
+    freeze_support()
     if "--debug" in sys.argv:
         import trace
 
