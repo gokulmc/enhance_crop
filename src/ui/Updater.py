@@ -28,6 +28,7 @@ HAS_NETWORK_ON_STARTUP = networkCheck()
 
 class PythonUpdater:
     def __init__(self):
+        
         self.current_python_version = self.get_current_python_version()
         self.deps = DownloadDependencies()
             
@@ -55,6 +56,7 @@ class BackendUpdater:
     def __init__(self):
         self.deps = DownloadDependencies()
         self.backend_version = self.get_backend_version()
+        self.dev_version = version + "-dev02202025" # has to match version of backend, update this wehenver updating pre release
         
     def get_backend_version(self):
         try:
@@ -67,7 +69,7 @@ class BackendUpdater:
         
     
     def is_backend_up_to_date(self):
-        return version == self.backend_version
+        return self.dev_version == self.backend_version
     
     def update_backend(self):
         if NetworkCheckPopup():
