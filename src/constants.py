@@ -20,9 +20,9 @@ if not IS_DEV:
             )
         )
     if PLATFORM == "win32":
-        CWD = os.getcwd()
+        CWD = os.path.join(HOME_PATH, "AppData", "Local", "REAL-Video-Enhancer")
     if PLATFORM == "darwin":
-        CWD = os.getcwd()
+        CWD = os.path.join(HOME_PATH, "Library", "REAL-Video-Enhancer")
     if PLATFORM == "linux":
         CWD = os.path.join(
             HOME_PATH, ".local", "share", "REAL-Video-Enhancer"
