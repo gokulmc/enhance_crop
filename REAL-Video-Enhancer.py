@@ -622,7 +622,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 def main():
-    if "--lock" in sys.argv:
+    if not "--unlock" in sys.argv:
         lock_file = QLockFile(LOCKFILE)
         if not lock_file.tryLock(100):
             QMessageBox.warning(None, "Instance Running", "Another instance is already running.")
@@ -642,7 +642,7 @@ def main():
 """
 custom command args
 --debug: runs the app in debug mode
---lock: locks the app to one instance
+--unlock: allows more than one instance to be launched
 --fullscreen: runs the app in fullscreen
 --swap-flatpak-checks: swaps the flatpak checks, ex if the app is running in flatpak, it will run as if it is not
 """
