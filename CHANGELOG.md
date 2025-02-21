@@ -2,7 +2,9 @@
  - NOTE: Pre-releases are unstable, please use the stable build if you experience issues. 
         New features will be added to this release over time, the current changelog is not final. 
 ### Added
- - Updates backend and python version
+ - Updates backend and python version.
+ - MacOS support.
+ - Lock to make sure the app does not have duplicates open.
 ### Changed
  - Installes to a preset directory, and updates python and backend dynamically.
  - Improved RIFE TensorRT speeds
