@@ -145,8 +145,6 @@ def build_executable(dist_dir=None):
             "-m",
             "PyInstaller",
             "REAL-Video-Enhancer.py",
-            "--collect-all",
-            "PySide6",
             "--icon=icons/logo-v2.ico",
             "--noconfirm",
             "--noupx",
