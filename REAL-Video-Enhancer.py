@@ -105,7 +105,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             pythonupdater = PythonUpdater() # check if python is up to date, has to take place after python is installed
             backendupdater = BackendUpdater() # check if backend is up to date, has to take place after backend is installed
             if not backendupdater.is_backend_up_to_date():
-                    backendupdater.update_backend()
+                backendupdater.update_backend()
             
 
         self.python_version = pythonupdater.current_python_version

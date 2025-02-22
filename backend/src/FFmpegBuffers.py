@@ -115,6 +115,7 @@ class FFmpegWrite(Buffer):
     ):
         self.inputFile = inputFile
         self.outputFile = outputFile
+        self.audio_output_file = f"{self.outputFile}_audio.mkv"
         self.width = width
         self.height = height
         self.outputWidth = width * upscaleTimes
@@ -156,6 +157,20 @@ class FFmpegWrite(Buffer):
             )
         except Exception as e:
             self.onErroredExit()
+
+    def extract_audio(self):
+        log("Extracting audio...")
+        command = [
+            f"{FFMPEG_PATH}",
+            "-i",
+            f"{self.inputFile}",
+            "-vn",
+        ]
+
+        command += self.audio_encoder.getPostInputSettings().split()
+        command += [
+            self.audio_output_file,
+        ]
 
 
     def command(self):
@@ -355,7 +370,11 @@ class FFmpegWrite(Buffer):
             self.onErroredExit()
 
     def __del__(self):
+
         self.ffmpeg_log.close()
+        if os.path.isfile(self.audio_output_file):
+            os.remove(self.audio_output_file)
+
     def onErroredExit(self):
         print("FFmpeg failed to render the video.", file=sys.stderr)
         with open(FFMPEG_LOG_FILE, "r") as f:
