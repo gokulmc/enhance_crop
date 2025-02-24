@@ -414,6 +414,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             upscaleModelFile=upscaleModelFile if upscale else None,
             interpolateModelFile=interpolateModelFile if interpolate else None,
             hdrMode=self.hdrModeCheckBox.isChecked(),
+            mergeSubtitles=self.mergeSubtitlesCheckBox.isChecked(),
         )
         # alert user that item has been added to queue
         NotificationOverlay(

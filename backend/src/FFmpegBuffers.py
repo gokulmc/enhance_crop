@@ -113,7 +113,7 @@ class FFmpegWrite(Buffer):
         subtitle_encoder: EncoderSettings,
         hdr_mode: bool,
         mpv_output: bool,
-        extract_audio: bool = False,
+        merge_subtitles: bool = True,
     ):
         self.inputFile = inputFile
         self.outputFile = outputFile
@@ -138,11 +138,11 @@ class FFmpegWrite(Buffer):
         self.subtitle_encoder = subtitle_encoder
         self.mpv_output = mpv_output
         self.hdr_mode = hdr_mode
-        self.extract_audio = extract_audio
         self.writeQueue = queue.Queue(maxsize=100)
         self.previewFrame = None
         self.framesRendered: int = 1
         self.writeProcess = None
+        self.merge_subtitles = merge_subtitles
         self.outputFPS = (
             (self.fps * self.interpolateFactor)
             if not self.slowmo_mode
@@ -150,8 +150,6 @@ class FFmpegWrite(Buffer):
         )
         self.ffmpeg_log = open(FFMPEG_LOG_FILE, "w")
         try:
-            if self.extract_audio:
-                self.extract_audio_to_file()
 
             self.writeProcess = subprocess.Popen(
                 self.command(),
@@ -163,22 +161,6 @@ class FFmpegWrite(Buffer):
             )
         except Exception as e:
             self.onErroredExit()
-
-    def extract_audio_to_file(self):
-        log("Extracting audio...")
-        print("Extracting audio...",file=sys.stderr)
-        command = [
-            f"{FFMPEG_PATH}",
-            "-i",
-            f"{self.inputFile}",
-            "-vn",
-        ]
-
-        command += self.audio_encoder.getPostInputSettings().split()
-        command += [
-            self.audio_output_file, "-y",
-        ]
-        subprocess.run(command, stderr=self.ffmpeg_log, stdout=self.ffmpeg_log)
 
 
     def command(self):
@@ -241,19 +223,16 @@ class FFmpegWrite(Buffer):
             if not self.slowmo_mode:
                 command += [
                     "-i",
-                    f"{self.inputFile}" if not self.extract_audio else f"{self.audio_output_file}",
+                    f"{self.inputFile}",
                     "-map",
                     "0:v",  # Map video stream from input 0
                     "-map",
-                    "1:s?",  # Map all subtitle streams from input 1
+                    "1:a?",
+                    
                 ]
-
-                if not self.extract_audio:
-                    command += [
-                        "-map",
-                        "1:a?",
-                    ]  # Map all audio streams from input 1, this causes issues with some videos, and the only solution might be audio extraction
-                
+                if self.merge_subtitles:
+                    "-map",
+                    "1:s?",  # Map all subtitle streams from input 1, this sometimes causes issues with some older videos and messes up the audio somehow
                 command += self.audio_encoder.getPostInputSettings().split()
                 command += self.subtitle_encoder.getPostInputSettings().split()
 
@@ -393,6 +372,10 @@ class FFmpegWrite(Buffer):
                 f"{self.audio_output_file}",
                 "-c",
                 "copy",
+                "-map",
+                "0:v",
+                "-map",
+                "1:a?",
                 f"{tempOutputFile}",
                 "-y",
             ]

@@ -27,6 +27,7 @@ class RenderOptions:
         interpolateModelFile: str | None = None,
         upscaleModelFile: str | None = None,
         hdrMode: bool = False,
+        mergeSubtitles: bool = True,
     ):
         self._inputFile = inputFile
         self._outputPath = outputPath
@@ -49,6 +50,7 @@ class RenderOptions:
         self._dyanmicScaleOpticalFlow = dyanmicScaleOpticalFlow
         self._ensemble = ensemble
         self._hdrMode = hdrMode
+        self._mergeSubtitles = mergeSubtitles
 
     @property
     def inputFile(self):
@@ -216,6 +218,14 @@ class RenderOptions:
     @hdrMode.setter
     def hdrMode(self, value: bool):
         self._hdrMode = value
+    
+    @property
+    def mergeSubtitles(self):
+        return self._mergeSubtitles
+    @mergeSubtitles.setter
+    def mergeSubtitles(self, value: bool):
+        self._mergeSubtitles = value
+        
 
 
 class RenderQueue:

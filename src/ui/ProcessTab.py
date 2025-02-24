@@ -500,4 +500,8 @@ class ProcessTab:
         if renderOptions.hdrMode:
             command += ["--hdr_mode"]
 
+        if renderOptions.mergeSubtitles:
+            command += ["--merge_subtitles"]
+            
+
         return command

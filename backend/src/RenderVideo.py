@@ -80,7 +80,7 @@ class Render:
         audio_bitrate: str = "192k",
         border_detect: bool = False,
         hdr_mode: bool = False,
-        extract_audio: bool = False,
+        merge_subtitles: bool = False,
         # misc
         pause_shared_memory_id=None,
         sceneDetectMethod: str = "pyscenedetect",
@@ -199,7 +199,7 @@ class Render:
             subtitle_encoder=subtitle_encoder,
             mpv_output=output_to_mpv,
             hdr_mode=hdr_mode,
-            extract_audio=extract_audio,
+            merge_subtitles=merge_subtitles,
         )
 
         self.informationHandler = InformationWriteOut(
