@@ -101,24 +101,28 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.renderQueue = RenderQueue(self.renderQueueListWidget)
 
         backendHandler.setupBackendDeps()
-        if HAS_NETWORK_ON_STARTUP:
-            pythonupdater = PythonUpdater() # check if python is up to date, has to take place after python is installed
-            backendupdater = BackendUpdater() # check if backend is up to date, has to take place after backend is installed
-            if not backendupdater.is_backend_up_to_date():
-                backendupdater.update_backend()
-            
+
+        pythonupdater = (
+            PythonUpdater()
+        )  # check if python is up to date, has to take place after python is installed
+        backendupdater = BackendUpdater()  # check if backend is up to date, has to take place after backend is installed
 
         self.python_version = pythonupdater.current_python_version
-        if not pythonupdater.is_python_up_to_date():
-            reply = QMessageBox.question(
-            self,
-            "Do you want to update Python?",
-            "The installed version of Python is not supported by this version of RVE. Update?",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-            QMessageBox.StandardButton.No,  # type: ignore
-            )
-            if reply == QMessageBox.Yes:  # type: ignore
-                pythonupdater.update_python()
+
+        if HAS_NETWORK_ON_STARTUP:
+            if not backendupdater.is_backend_up_to_date():
+                backendupdater.update_backend()
+
+            if not pythonupdater.is_python_up_to_date():
+                reply = QMessageBox.question(
+                    self,
+                    "Do you want to update Python?",
+                    "The installed version of Python is not supported by this version of RVE. Update?",
+                    QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                    QMessageBox.StandardButton.No,  # type: ignore
+                )
+                if reply == QMessageBox.Yes:  # type: ignore
+                    pythonupdater.update_python()
 
         self.backends, self.fullOutput = (
             backendHandler.recursivlyCheckIfDepsOnFirstInstallToMakeSureUserHasInstalledAtLeastOneBackend(

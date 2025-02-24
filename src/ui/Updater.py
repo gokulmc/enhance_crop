@@ -51,6 +51,7 @@ class PythonUpdater:
             shutil.rmtree(PYTHON_DIRECTORY) # remove the old python directory  
             os.mkdir(PYTHON_DIRECTORY) # create a new python directory
             self.deps.downloadPython(mode="Updating")
+            self.current_python_version = self.get_current_python_version()
         else:
             RegularQTPopup("No network connection found! Please connect to the internet to update Python.")        
             
