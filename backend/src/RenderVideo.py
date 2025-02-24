@@ -80,6 +80,7 @@ class Render:
         audio_bitrate: str = "192k",
         border_detect: bool = False,
         hdr_mode: bool = False,
+        extract_audio: bool = False,
         # misc
         pause_shared_memory_id=None,
         sceneDetectMethod: str = "pyscenedetect",
@@ -104,7 +105,6 @@ class Render:
         # max timestep is a hack to make sure ncnn cache frames too early, and ncnn breaks if i modify the code at all so ig this is what we are doing
         # also used to help with performace and caching
         self.maxTimestep = (interpolateFactor - 1) / interpolateFactor
-        self.ncnn = self.backend == "ncnn"
         self.ceilInterpolateFactor = math.ceil(self.interpolateFactor)
         # self.setupRender = self.returnFrame  # set it to not convert the bytes to array by default, and just pass chunk through
         self.setupFrame0 = None
@@ -199,6 +199,7 @@ class Render:
             subtitle_encoder=subtitle_encoder,
             mpv_output=output_to_mpv,
             hdr_mode=hdr_mode,
+            extract_audio=extract_audio,
         )
 
         self.informationHandler = InformationWriteOut(

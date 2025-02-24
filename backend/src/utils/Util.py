@@ -35,7 +35,7 @@ def removeFile(file):
     try:
         os.remove(file)
     except Exception:
-        print("Failed to remove file!")
+        log("Failed to remove file! " + file)
 
 
 def removeFolder(folder):

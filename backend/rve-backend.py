@@ -139,6 +139,7 @@ class HandleApplication:
             border_detect=self.args.border_detect,
             hdr_mode=self.args.hdr_mode,
             pixelFormat=self.args.video_pixel_format,
+            extract_audio=self.args.extract_audio,
             # misc settings
             pause_shared_memory_id=self.args.pause_shared_memory_id,
             sceneDetectMethod=self.args.scene_detect_method,
@@ -400,6 +401,12 @@ class HandleApplication:
             help="File to store paused state (True means paused, False means unpaused)",
             type=str,
             default=None,
+        )
+        parser.add_argument(
+            "--extract_audio",
+            help="Extracts audio and copies it to output file, useful if straight copying results in issues.",
+            action="store_true",
+            default=False,
         )
         parser.add_argument(
             "--upscale_output_resolution",

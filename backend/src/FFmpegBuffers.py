@@ -11,6 +11,7 @@ from .constants import FFMPEG_PATH, FFMPEG_LOG_FILE
 from .utils.Util import (
     log,
     printAndLog,
+    removeFile,
 )
 from threading import Thread
 import numpy as np
@@ -111,11 +112,12 @@ class FFmpegWrite(Buffer):
         audio_encoder: EncoderSettings,
         subtitle_encoder: EncoderSettings,
         hdr_mode: bool,
-        mpv_output: bool
+        mpv_output: bool,
+        extract_audio: bool = False,
     ):
         self.inputFile = inputFile
         self.outputFile = outputFile
-        self.audio_output_file = f"{self.outputFile}_audio.mkv"
+        self.audio_output_file = f"{self.outputFile}_audio.aac"
         self.width = width
         self.height = height
         self.outputWidth = width * upscaleTimes
@@ -136,6 +138,7 @@ class FFmpegWrite(Buffer):
         self.subtitle_encoder = subtitle_encoder
         self.mpv_output = mpv_output
         self.hdr_mode = hdr_mode
+        self.extract_audio = extract_audio
         self.writeQueue = queue.Queue(maxsize=100)
         self.previewFrame = None
         self.framesRendered: int = 1
@@ -147,6 +150,9 @@ class FFmpegWrite(Buffer):
         )
         self.ffmpeg_log = open(FFMPEG_LOG_FILE, "w")
         try:
+            if self.extract_audio:
+                self.extract_audio_to_file()
+
             self.writeProcess = subprocess.Popen(
                 self.command(),
                 stdin=subprocess.PIPE,
@@ -158,8 +164,9 @@ class FFmpegWrite(Buffer):
         except Exception as e:
             self.onErroredExit()
 
-    def extract_audio(self):
+    def extract_audio_to_file(self):
         log("Extracting audio...")
+        print("Extracting audio...",file=sys.stderr)
         command = [
             f"{FFMPEG_PATH}",
             "-i",
@@ -169,14 +176,13 @@ class FFmpegWrite(Buffer):
 
         command += self.audio_encoder.getPostInputSettings().split()
         command += [
-            self.audio_output_file,
+            self.audio_output_file, "-y",
         ]
+        subprocess.run(command, stderr=self.ffmpeg_log, stdout=self.ffmpeg_log)
 
 
     def command(self):
         log("Generating FFmpeg WRITE command...")
-
-
 
         if self.mpv_output:
             command = [
@@ -235,14 +241,19 @@ class FFmpegWrite(Buffer):
             if not self.slowmo_mode:
                 command += [
                     "-i",
-                    f"{self.inputFile}",
+                    f"{self.inputFile}" if not self.extract_audio else f"{self.audio_output_file}",
                     "-map",
                     "0:v",  # Map video stream from input 0
                     "-map",
-                    "1:a?",  # Map all audio streams from input 1, this causes issues with some videos, and the only solution might be audio extraction
-                    "-map",
                     "1:s?",  # Map all subtitle streams from input 1
                 ]
+
+                if not self.extract_audio:
+                    command += [
+                        "-map",
+                        "1:a?",
+                    ]  # Map all audio streams from input 1, this causes issues with some videos, and the only solution might be audio extraction
+                
                 command += self.audio_encoder.getPostInputSettings().split()
                 command += self.subtitle_encoder.getPostInputSettings().split()
 
@@ -364,17 +375,34 @@ class FFmpegWrite(Buffer):
             printAndLog(f"\nTime to complete render: {round(renderTime, 2)}")
         except Exception as e:
             print(str(e), file=sys.stderr)
-
         
         if exit_code != 0:
             self.onErroredExit()
+            return
+        
+        if self.extract_audio:
+            log("Merging audio...")
+            print("Merging audio...",file=sys.stderr)
+            outputFileExtension = self.outputFile.split(".")[-1]
+            tempOutputFile = f"{self.outputFile}_temp.{outputFileExtension}"
+            command = [
+                f"{FFMPEG_PATH}",
+                "-i",
+                f"{self.outputFile}",
+                "-i",
+                f"{self.audio_output_file}",
+                "-c",
+                "copy",
+                f"{tempOutputFile}",
+                "-y",
+            ]
+            subprocess.run(command, stderr=self.ffmpeg_log, stdout=self.ffmpeg_log)
+            removeFile(self.outputFile)
+            removeFile(self.audio_output_file)
+            os.rename(tempOutputFile, self.outputFile)
 
-    def __del__(self):
-
-        self.ffmpeg_log.close()
-        if os.path.isfile(self.audio_output_file):
-            os.remove(self.audio_output_file)
-
+    
+            
     def onErroredExit(self):
         print("FFmpeg failed to render the video.", file=sys.stderr)
         with open(FFMPEG_LOG_FILE, "r") as f:
@@ -388,6 +416,10 @@ class FFmpegWrite(Buffer):
             )
         time.sleep(1)
         os._exit(1)
+    
+    def __del__(self):
+        removeFile(self.audio_output_file)
+        self.ffmpeg_log.close()
 
 class MPVOutput:
     def __init__(self, FFMpegWrite: FFmpegWrite,width,height,fps, outputFrameChunkSize):
