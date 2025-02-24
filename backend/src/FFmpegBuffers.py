@@ -113,7 +113,7 @@ class FFmpegWrite(Buffer):
         subtitle_encoder: EncoderSettings,
         hdr_mode: bool,
         mpv_output: bool,
-        merge_subtitles: bool = True,
+        merge_subtitles: bool,
     ):
         self.inputFile = inputFile
         self.outputFile = outputFile
@@ -358,31 +358,7 @@ class FFmpegWrite(Buffer):
         if exit_code != 0:
             self.onErroredExit()
             return
-        
-        if self.extract_audio:
-            log("Merging audio...")
-            print("Merging audio...",file=sys.stderr)
-            outputFileExtension = self.outputFile.split(".")[-1]
-            tempOutputFile = f"{self.outputFile}_temp.{outputFileExtension}"
-            command = [
-                f"{FFMPEG_PATH}",
-                "-i",
-                f"{self.outputFile}",
-                "-i",
-                f"{self.audio_output_file}",
-                "-c",
-                "copy",
-                "-map",
-                "0:v",
-                "-map",
-                "1:a?",
-                f"{tempOutputFile}",
-                "-y",
-            ]
-            subprocess.run(command, stderr=self.ffmpeg_log, stdout=self.ffmpeg_log)
-            removeFile(self.outputFile)
-            removeFile(self.audio_output_file)
-            os.rename(tempOutputFile, self.outputFile)
+     
 
     
             

@@ -80,7 +80,7 @@ class Render:
         audio_bitrate: str = "192k",
         border_detect: bool = False,
         hdr_mode: bool = False,
-        merge_subtitles: bool = False,
+        merge_subtitles: bool = True,
         # misc
         pause_shared_memory_id=None,
         sceneDetectMethod: str = "pyscenedetect",
