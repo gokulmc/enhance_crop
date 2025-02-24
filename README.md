@@ -17,26 +17,28 @@
 * **[Introduction](#introduction)**
 * **[Features](#Features)**
 * **[Hardware Requirements](#hardware-requirements)**
-* **[Cloning](#cloning)**
-* **[Building](#building)**
-* **[Credits](#credits)**
-  * [People](#people) 
-  * [Software](#software)
 * **[Models](#models)**
   * [Interpolate Models](#interpolate-models)
   * [Upscale Models](#upscale-models)
+* **[Backends](#backends)**
 * **[FAQ](#faq)**
   * [General App Usage](#general-application-usage) 
   * [TensorRT](#tensorrt-related-questions)
   * [ROCm](#rocm-related-questions)
   * [NCNN](#ncnn-related-questions)
+* **[Cloning](#cloning)**
+* **[Building](#building)**
+* **[Colab Notebook](#colab-notebook)**
+* **[Credits](#credits)**
+  * [People](#people) 
+  * [Software](#software)
 
 # Introduction
 
 <strong>REAL Video Enhancer</strong>  is a redesigned and enhanced version of the original Rife ESRGAN App for Linux. This program offers convenient access to frame interpolation and upscaling functionalities on Windows, Linux and MacOS (last MacOS version is 1.2.0), and is an alternative to outdated software like <a rel="noopener noreferrer" href="https://nmkd.itch.io/flowframes" target="_blank" >Flowframes</a> or <a rel="noopener noreferrer" href="https://github.com/mafiosnik777/enhancr" target="_blank">enhancr</a>.
 
 <p align=center>
-  <img src="https://github.com/TNTwise/REAL-Video-Enhancer/blob/2.0/icons/demo.png" width = "100%">
+  <img src="https://github.com/TNTwise/REAL-Video-Enhancer/blob/a68ab3bc145220e7e4fd0f41a2c7cd2329095f55/screenshots/demo.png?raw=true" width = "100%">
 </p>
 <h1>Features: </h1>
 <ul>
@@ -56,7 +58,7 @@
 | GPU | Vulkan 1.3 capable device | Nvidia RTX GPU (20 series and up)
 | RAM | 8 GB | 16 GB
 | Storage | 1 GB free (NCNN install only) | 10 GB free (TensorRT install)
-| Operating System | Windows 10/11 64bit | Any modern Linux distro (Ubuntu 20.04+)
+| Operating System | Windows 10/11 64bit / MacOS 13+ | Any modern Linux distro (Ubuntu 20.04+)
 
 # Models:
 ### Interpolate Models:
@@ -75,36 +77,35 @@
 | 2x-OpenProteus | SiroSky | [OpenProteus](https://github.com/Sirosky/Upscale-Hub/releases/tag/OpenProteus) 
 | 2x-AnimeJaNai V2 and V3 Sharp | The Database | [AnimeJanai](https://github.com/the-database/mpv-upscale-2x_animejanai)
 
+# Backends
+  | Backend | Hardware | 
+  |--|--|
+  | TensorRT | NVIDIA RTX GPUs
+  | PyTorch  | CUDA 12.6 and ROCm 6.2 capable GPUs
+  | NCNN | Vulkan 1.3 capable GPUs
+ 
 # FAQ
 ### General Application Usage
-* **Q:** What does this program attempt to accomplish?
-  * **A:**  Fast, efficient and easily accessable video interpolation (Ex: 24->48FPS) and video upscaling (Ex: 1920->3840)
-* **Q:** What backend should I use?
-  * **A:** <br/> **Modern Nvidia** (20 series and up), TensorRT is recommended. <br/>
-            **Older Nvidia**  (10 and 16 series), CUDA is recommended. <br/>
-            **Oldest Nvidia**  (900 series and below), NCNN is recommended. <br/>
-            **Modern AMD Linux** (6000 seies and up), ROCm is experimental. <br/>
-            **Other Cards (AMD/Intel)** NCNN is the only backend currently working. <br/>
-* **Q:** Why is it failing to recognize installed backends?
-  * **A:**  REAL Video Enhancer uses PIP and portable python for inference, this can sometimes have issues installing. Please attempt reinstalling the app before creating an issue.
+  | Question | Answer | 
+  |--|--|
+  | What does this program attempt to accomplish? | Fast, efficient and easily accessable video interpolation (Ex: 24->48FPS) and video upscaling (Ex: 1920->3840)
+  | Why is it failing to recognize installed backends? | REAL Video Enhancer uses PIP and portable python for inference, this can sometimes have issues installing. Please attempt reinstalling the app before creating an issue.
 
 ### TensorRT related questions
-* **Q:** Why does it take so long to begin inference?
-  * **A:**  TensorRT uses advanced optimization at the beginning of inference based on your device, this is only done once per resolution of video inputed.
-* **Q:** Why does the optimization and inference fail?
-  * **A:**  The most common way an optimization can fail is **Limited VRAM** There is no fix to this except using CUDA or NCNN instead.
+  |||
+  |--|--|
+  | Why does it take so long to begin inference? | TensorRT uses advanced optimization at the beginning of inference based on your device, this is only done once per resolution of video inputed.
+  | Why does the optimization and inference fail? | The most common way an optimization can fail is **Limited VRAM** There is no fix to this except using CUDA or NCNN instead.
  
 ### ROCm related questions
-* **Q:** Why am I getting (Insert Error here)?
-  * **A:**  ROCM is buggy, please take a look at <a href="https://github.com/TNTwise/REAL-Video-Enhancer/wiki/ROCm-Help">ROCm Help</a>.
+  |||
+  |--|--|
+  | Why am I getting (Insert Error here)? | ROCM is buggy, please take a look at <a href="https://github.com/TNTwise/REAL-Video-Enhancer/wiki/ROCm-Help">ROCm Help</a>.
 
 ### NCNN related questions
-* **Q:** Why am I getting (Insert Vulkan Error here)?
-  * **A:**  This usually is an OOM (Out Of Memory) error, this can indicate a weak iGPU or very old GPU, I recommeding trying out the <a href="https://github.com/TNTwise/REAL-Video-Enhancer-Colab">Colab Notebook</a>  instead.
-
-# Star History
-[![Star History Chart](https://api.star-history.com/svg?repos=tntwise/real-video-enhancer&type=Date)](https://star-history.com/#tntwise/real-video-enhancer&Date)
-
+  |||
+  |--|--|
+  | Why am I getting (Insert Vulkan Error here)? | This usually is an OOM (Out Of Memory) error, this can indicate a weak iGPU or very old GPU, I recommeding trying out the <a href="https://github.com/TNTwise/REAL-Video-Enhancer-Colab">Colab Notebook</a>  instead.
 
 
 # Cloning:
@@ -115,6 +116,9 @@ git clone https://github.com/TNTwise/REAL-Video-Enhancer
 ```
 python3 build.py --build_exe
 ```
+
+# Colab Notebook
+ <a href="https://colab.research.google.com/github/TNTwise/REAL-Video-Enhancer-Colab/blob/main/RVEColab.ipynb">Colab Notebook</a>
 
 # Credits:
 ### People:
@@ -147,3 +151,5 @@ python3 build.py --build_exe
 | Python Standalone Builds | Backend inference using portable python, helps when porting to different platforms. | https://github.com/indygreg/python-build-standalone |
 
 
+# Star History
+[![Star History Chart](https://api.star-history.com/svg?repos=tntwise/real-video-enhancer&type=Date)](https://star-history.com/#tntwise/real-video-enhancer&Date)
