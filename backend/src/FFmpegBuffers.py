@@ -228,11 +228,12 @@ class FFmpegWrite(Buffer):
                     "0:v",  # Map video stream from input 0
                     "-map",
                     "1:a?",
-                    
+
                 ]
                 if self.merge_subtitles:
+                    command += [
                     "-map",
-                    "1:s?",  # Map all subtitle streams from input 1, this sometimes causes issues with some older videos and messes up the audio somehow
+                    "1:s?",]  # Map all subtitle streams from input 1, this sometimes causes issues with some older videos and messes up the audio somehow
                 command += self.audio_encoder.getPostInputSettings().split()
                 command += self.subtitle_encoder.getPostInputSettings().split()
 
