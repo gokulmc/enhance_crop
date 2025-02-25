@@ -1,8 +1,8 @@
-PySide6-Essentials==6.8.0.2
-opencv-python-headless==4.10.0.84
+PySide6-Essentials==6.8.2.1
+opencv-python-headless==4.11.0.86
 requests
-numpy==1.26.4
-cx-Freeze==7.0.0
+numpy==2.2.2
+cx-Freeze==7.2.10
 lief
 pyinstaller
 psutil
@@ -12,5 +12,5 @@ pypresence
 certifi
 yt-dlp
 validators
-packaging==24.1
+packaging
 

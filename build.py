@@ -1,3 +1,4 @@
+from abc import  abstractmethod
 import os
 import subprocess
 import sys
@@ -8,52 +9,7 @@ import shutil
 
 import urllib.request
 
-linux_and_mac_py_ver = "python3"
-
-
-def checkIfExeExists(exe):
-    path = shutil.which(exe)
-    return path is not None
-
-
-def getPlatform():
-    return sys.platform
-
-
-def python_path():
-    return (
-        "venv\\Scripts\\python.exe" if getPlatform() == "win32" else "venv/bin/python3"
-    )
-
-
-python_version = (
-    linux_and_mac_py_ver
-    if getPlatform() != "win32" and checkIfExeExists(linux_and_mac_py_ver)
-    else "python3"
-)
-
-
-def get_site_packages():
-    command = [
-        python_path(),
-        "-c",
-        'import site; print("\\n".join(site.getsitepackages()))',
-    ]
-    result = subprocess.run(command, stdout=subprocess.PIPE, text=True)
-    site_packages = result.stdout.strip().split('\n')[0]
-    if os.path.exists(site_packages):
-        return site_packages
-    site_packages = site_packages.replace('dist','site')
-    if os.path.exists(site_packages):
-        return site_packages
-    print(site_packages)
-    raise FileNotFoundError("Unable to locate site packages for python venv!")
-
-
-def download_file(url, destination):
-    print(f"Downloading file from {url}")
-    urllib.request.urlretrieve(url, destination)
-    print("File downloaded successfully")
+PLATFORM = sys.platform
 
 
 def zero_mainwindow_size():
@@ -75,69 +31,121 @@ def zero_mainwindow_size():
 
     set_mainwindow_size_zero()
 
+class PythonManager:
 
-def build_gui():
-    print("Building GUI")
-    zero_mainwindow_size()
-    if getPlatform() == "darwin" or getPlatform() == "linux":
-        os.system(
-            f"{get_site_packages()}/PySide6/Qt/libexec/uic -g python testRVEInterface.ui > mainwindow.py"
-        )
-    if getPlatform() == "win32":
-        os.system(
-            r".\venv\Lib\site-packages\PySide6\uic.exe -g python testRVEInterface.ui > mainwindow.py"
-        )
+    PYTHON_VENV_PATH = "venv\\Scripts\\python.exe" if PLATFORM == "win32" else "venv/bin/python3"
+    PYTHON_SYSTEM_EXECUTABLE = "python3"
 
+    def setup_python(self):
+        self.__create_venv()
+        self.__install_pip_in_venv()
+        self.__install_requirements_in_venv()
 
-def install_pip():
-    download_file("https://bootstrap.pypa.io/get-pip.py", "get-pip.py")
-    command = ["python3", "get-pip.py"]
-    subprocess.run(command)
+    def __create_venv(self):
+        print("Creating virtual environment")
+        command = [self.PYTHON_SYSTEM_EXECUTABLE, "-m", "venv", "venv"]
+        subprocess.run(command)
 
 
-def install_pip_in_venv():
-    command = [
-        "venv\\Scripts\\python.exe" if getPlatform() == "win32" else "venv/bin/python3",
-        "get-pip.py",
-    ]
-    subprocess.run(command)
+    def __install_pip_in_venv(self):
+        command = [
+            self.PYTHON_VENV_PATH,
+            "-m",
+            "ensurepip",
+        ]
+        subprocess.run(command)
+
+    def __install_requirements_in_venv(self):
+        print("Installing requirements in virtual environment")
+        if not os.path.isfile("requirements.txt"):
+            raise FileNotFoundError("No requirements.txt in current directory!")
+        command = [
+            self.PYTHON_VENV_PATH,
+            "-m",
+            "pip",
+            "install",
+            "-r",
+            "requirements.txt",
+        ]
+
+        subprocess.run(command)
+        
+
+    def get_venv_site_packages(self):
+        command = [
+            self.PYTHON_VENV_PATH,
+            "-c",
+            'import site; print("\\n".join(site.getsitepackages()))',
+        ]
+        result = subprocess.run(command, stdout=subprocess.PIPE, text=True)
+        site_packages = result.stdout.strip().split('\n')[0]
+        if os.path.exists(site_packages):
+            return site_packages
+        site_packages = site_packages.replace('dist','site')
+        if os.path.exists(site_packages):
+            return site_packages
+        print(site_packages)
+        raise FileNotFoundError("Unable to locate site packages for python venv!")
+    
 
 
-def build_resources():
-    print("Building resources.rc")
-    if getPlatform() == "darwin" or getPlatform() == "linux":
-        os.system(
-            f"{get_site_packages()}/PySide6/Qt/libexec/rcc -g python resources.qrc > resources_rc.py"
-        )
-    if getPlatform() == "win32":
-        os.system(
-            r".\venv\Lib\site-packages\PySide6\rcc.exe -g python resources.qrc > resources_rc.py"
-        )
+class BuildManager:
+
+    @abstractmethod
+    def build(self):
+        ...
+    
+    def download_file(self, url, destination):
+        print(f"Downloading file from {url}")
+        urllib.request.urlretrieve(url, destination)
+        print("File downloaded successfully")
+
+    
+
+    def build_gui(self):
+        print("Building GUI")
+        zero_mainwindow_size()
+        if PLATFORM == "darwin" or PLATFORM == "linux":
+            os.system(
+                f"{self.get_site_packages()}/PySide6/Qt/libexec/uic -g python testRVEInterface.ui > mainwindow.py"
+            )
+        if PLATFORM == "win32":
+            os.system(
+                r".\venv\Lib\site-packages\PySide6\uic.exe -g python testRVEInterface.ui > mainwindow.py"
+            )
+    
+    def build_resources(self):
+        print("Building resources.rc")
+        if PLATFORM == "darwin" or PLATFORM == "linux":
+            os.system(
+                f"{self.get_site_packages()}/PySide6/Qt/libexec/rcc -g python resources.qrc > resources_rc.py"
+            )
+        if PLATFORM == "win32":
+            os.system(
+                r".\venv\Lib\site-packages\PySide6\rcc.exe -g python resources.qrc > resources_rc.py"
+            )
 
 
-def create_venv():
-    print("Creating virtual environment")
-    command = [python_version, "-m", "venv", "venv"]
-    subprocess.run(command)
+class PyInstaller(BuildManager):
+    def build(self):
+
+        ...
 
 
-def install_requirements_in_venv():
-    print("Installing requirements in virtual environment")
-    command = [
-        python_path(),
-        "-m",
-        "pip",
-        "install",
-        "-r",
-        "requirements.txt",
-    ]
 
-    subprocess.run(command)
+
+
+
+
+
+
+
+
 
 
 def build_executable(dist_dir=None):
     print("Building executable")
-    if getPlatform() == "win32" or getPlatform() == "darwin":
+    if PLATFORM == "win32" or PLATFORM == "darwin":
         if dist_dir is None:
             dist_dir = "dist"
         command = [
@@ -168,7 +176,7 @@ def build_executable(dist_dir=None):
 
 def copy_backend(build_dir=None):
     print("Copying backend")
-    if getPlatform() == "win32":
+    if PLATFORM == "win32":
         if build_dir is None:
             build_dir = "dist"
         try:
@@ -179,15 +187,11 @@ def copy_backend(build_dir=None):
             os.system(
                 f'xcopy "./backend" "./{build_dir}/REAL-Video-Enhancer/backend" /E /I'
             )
-    if getPlatform() == "linux":
+    if PLATFORM == "linux":
         if build_dir is None:
             build_dir = "bin"
         os.system(f"cp -r backend {build_dir}/")
 
-
-def clean():
-    print("Cleaning up")
-    os.remove("get-pip.py")
 
 
 def build_venv():
