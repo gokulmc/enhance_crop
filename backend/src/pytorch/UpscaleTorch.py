@@ -206,7 +206,7 @@ class UpscalePytorch:
                         self.device,
                         example_inputs=inputs,
                         trt_engine_path=self.trt_engine_path,
-                        trt_multi_precision_engine=True,
+                        trt_multi_precision_engine=False,
                     )
                     
 
