@@ -169,6 +169,8 @@ class FFmpegWrite(Buffer):
         if self.mpv_output:
             command = [
                 f"{FFMPEG_PATH}",
+                "-loglevel", 
+                "error",
                 "-framerate",
                 f"{self.fps*self.ceilInterpolateFactor}",
                 "-f",
@@ -196,6 +198,8 @@ class FFmpegWrite(Buffer):
             # maybe i can split this so i can just use ffmpeg normally like with vspipe
             command = [
                 f"{FFMPEG_PATH}",
+                "-loglevel", 
+                "error",
             ]
 
             if self.custom_encoder is None:
@@ -298,8 +302,8 @@ class FFmpegWrite(Buffer):
             command = [
                 f"{FFMPEG_PATH}",
                 "-hide_banner",
-                "-v",
-                "warning",
+                "-loglevel", 
+                "error",
                 "-stats",
                 "-f",
                 "rawvideo",
@@ -367,24 +371,20 @@ class FFmpegWrite(Buffer):
     def onErroredExit(self):
         print("FFmpeg failed to render the video.", file=sys.stderr)
 
-        emphasisLine = None
-
         with open(FFMPEG_LOG_FILE, "r") as f:
             for line in f.readlines():
-                print(line, file=sys.stderr)
-                if self.outputFileExtension in line:
-                    emphasisLine = line
-        log(self.outputFileExtension)
+                if f"[{self.outputFileExtension}" in line:
+                    print("\n")
+                    print(line, file=sys.stderr)
+
         if self.video_encoder.getPresetTag() == "x264_vulkan":
             print("Vulkan encode failed, try restarting the render.", file=sys.stderr)
             print(
                 "Make sure you have the latest drivers installed and your GPU supports vulkan encoding.",
                 file=sys.stderr,
             )
-        
-        if emphasisLine:
-            print(f"\n {emphasisLine}")
-        
+
+
         time.sleep(1)
         os._exit(1)
     
