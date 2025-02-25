@@ -216,7 +216,7 @@ QScrollBar:horizontal{
              <string notr="true"/>
             </property>
             <property name="currentIndex">
-             <number>2</number>
+             <number>3</number>
             </property>
             <widget class="QWidget" name="homePage">
              <property name="styleSheet">
@@ -732,8 +732,8 @@ background-color:#16191d
                             <rect>
                              <x>0</x>
                              <y>0</y>
-                             <width>478</width>
-                             <height>461</height>
+                             <width>402</width>
+                             <height>290</height>
                             </rect>
                            </property>
                            <layout class="QVBoxLayout" name="verticalLayout_32">
@@ -1197,8 +1197,8 @@ text-align: center;
                          <rect>
                           <x>0</x>
                           <y>0</y>
-                          <width>452</width>
-                          <height>482</height>
+                          <width>409</width>
+                          <height>477</height>
                          </rect>
                         </property>
                         <layout class="QVBoxLayout" name="verticalLayout_33">
@@ -2712,8 +2712,8 @@ QTabWidget::pane { /* The tab widget frame */
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>470</width>
-                   <height>506</height>
+                   <width>784</width>
+                   <height>722</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_18">
@@ -2755,8 +2755,8 @@ QTabWidget::pane { /* The tab widget frame */
                              <rect>
                               <x>0</x>
                               <y>0</y>
-                              <width>462</width>
-                              <height>180</height>
+                              <width>726</width>
+                              <height>599</height>
                              </rect>
                             </property>
                             <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -4252,13 +4252,31 @@ QTabWidget::pane { /* The tab widget frame */
                           </widget>
                          </item>
                          <item>
-                          <widget class="QPushButton" name="openRVEFolderBtn">
-                           <property name="contextMenuPolicy">
-                            <enum>Qt::ContextMenuPolicy::NoContextMenu</enum>
-                           </property>
-                           <property name="text">
-                            <string>Open RVE Folder</string>
-                           </property>
+                          <widget class="QWidget" name="widget_29" native="true">
+                           <layout class="QVBoxLayout" name="verticalLayout_35">
+                            <property name="leftMargin">
+                             <number>0</number>
+                            </property>
+                            <property name="topMargin">
+                             <number>0</number>
+                            </property>
+                            <property name="rightMargin">
+                             <number>0</number>
+                            </property>
+                            <property name="bottomMargin">
+                             <number>0</number>
+                            </property>
+                            <item>
+                             <widget class="QPushButton" name="openRVEFolderBtn">
+                              <property name="contextMenuPolicy">
+                               <enum>Qt::ContextMenuPolicy::NoContextMenu</enum>
+                              </property>
+                              <property name="text">
+                               <string>Open RVE Folder</string>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
                           </widget>
                          </item>
                         </layout>
