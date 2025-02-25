@@ -117,7 +117,7 @@ class FFmpegWrite(Buffer):
     ):
         self.inputFile = inputFile
         self.outputFile = outputFile
-        self.audio_output_file = f"{self.outputFile}_audio.aac"
+        self.outputFileExtension = os.path.split(self.outputFile)[-1].split(".")[-1]
         self.width = width
         self.height = height
         self.outputWidth = width * upscaleTimes
@@ -355,6 +355,7 @@ class FFmpegWrite(Buffer):
             printAndLog(f"\nTime to complete render: {round(renderTime, 2)}")
         except Exception as e:
             print(str(e), file=sys.stderr)
+            self.onErroredExit()
         
         if exit_code != 0:
             self.onErroredExit()
@@ -365,20 +366,29 @@ class FFmpegWrite(Buffer):
             
     def onErroredExit(self):
         print("FFmpeg failed to render the video.", file=sys.stderr)
+
+        emphasisLine = None
+
         with open(FFMPEG_LOG_FILE, "r") as f:
             for line in f.readlines():
                 print(line, file=sys.stderr)
+                if self.outputFileExtension in line:
+                    emphasisLine = line
+        log(self.outputFileExtension)
         if self.video_encoder.getPresetTag() == "x264_vulkan":
             print("Vulkan encode failed, try restarting the render.", file=sys.stderr)
             print(
                 "Make sure you have the latest drivers installed and your GPU supports vulkan encoding.",
                 file=sys.stderr,
             )
+        
+        if emphasisLine:
+            print(f"\n {emphasisLine}")
+        
         time.sleep(1)
         os._exit(1)
     
     def __del__(self):
-        removeFile(self.audio_output_file)
         self.ffmpeg_log.close()
 
 class MPVOutput:
