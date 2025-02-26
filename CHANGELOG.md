@@ -14,6 +14,7 @@
 ### Fixed
  - Fixed lossless encoders
  - Fixed HDR Mode
+ - libxcb-cursor0 not found on Linux XORG installations.
  
 # RVE 2.2.0 
 ### Added
