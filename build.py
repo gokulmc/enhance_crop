@@ -112,6 +112,7 @@ class PythonManager:
 
 class BuildManager:
     def __init__(self):
+        shutil.rmtree(OUTPUT_FOLDER, ignore_errors=True)
         self.python_manager = PythonManager()
 
     @abstractmethod
@@ -223,8 +224,10 @@ class Nuitka(BuildManager):
         PythonManager.run_venv_python(
             (
               "-m nuitka" 
-            + " --mingw64" 
             + " --standalone" 
+            + " --include-package-data=PySide6"
+            + " --enable-plugin=pyside6"
+            + " --include-qt-plugins=qml"
             + " --show-progress" 
             + " --show-scons" 
             + f" --output-dir={OUTPUT_FOLDER}"

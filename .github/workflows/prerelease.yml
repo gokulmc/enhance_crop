@@ -28,7 +28,8 @@ jobs:
       
       - name: compress archive
         run: |
-          zip -r REAL-Video-Enhancer-2.2.5-Linux.zip dist/
+          mv dist/ bin/
+          zip -r REAL-Video-Enhancer-2.2.5-Linux.zip bin/
 
       - name: compress backend
         run: |
