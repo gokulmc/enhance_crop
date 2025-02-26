@@ -133,7 +133,7 @@ jobs:
 
       - name: Build
         run: |
-          python3 build.py --pyinstaller
+          python3 build.py --build pyinstaller
 
       - name: compress archive
         run: |
