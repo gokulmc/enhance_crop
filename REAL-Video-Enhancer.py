@@ -1,5 +1,6 @@
 import sys
 import os
+#os.environ['LD_LIBRARY_PATH'] = os.getcwd() + ':' + os.environ.get('LD_LIBRARY_PATH', '')
 # patch for macos
 if sys.platform == "darwin":
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
