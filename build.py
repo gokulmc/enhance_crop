@@ -235,7 +235,7 @@ class Nuitka(BuildManager):
 if __name__ == "__main__":
     
     args = argparse.ArgumentParser()
-    args.add_argument("--build", help="Build the application with a specific builder.", default="pyinstaller", choices=["pyinstaller", "cxfreeze", "nuitka"])
+    args.add_argument("--build", help="Build the application with a specific builder.", default="pyinstaller", choices=["pyinstaller", "cx_freeze", "nuitka"])
     args = args.parse_args()
     match args.build:
         case "pyinstaller":
