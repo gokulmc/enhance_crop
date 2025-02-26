@@ -43,12 +43,13 @@ class PythonUpdater:
         return output
     
     def is_python_up_to_date(self):
+        log(f"Python up to date: {PYTHON_VERSION == self.current_python_version}")
         return PYTHON_VERSION == self.current_python_version
 
     def update_python(self):
         if HAS_NETWORK_ON_STARTUP:
             
-            shutil.rmtree(PYTHON_DIRECTORY) # remove the old python directory  
+            FileHandler.removeFolder(PYTHON_DIRECTORY) # remove the old python directory  
             os.mkdir(PYTHON_DIRECTORY) # create a new python directory
             self.deps.downloadPython(mode="Updating")
             self.current_python_version = self.get_current_python_version()
@@ -69,7 +70,7 @@ class BackendUpdater:
             return output
         except subprocess.CalledProcessError: # if the backend is not found
             self.deps.downloadBackend()
-            return self.get_backend_version(iter=iter) if iter < 3 else None
+            return None
         
         
     
@@ -80,7 +81,7 @@ class BackendUpdater:
     
     def update_backend(self):
         if HAS_NETWORK_ON_STARTUP:
-            shutil.rmtree(BACKEND_PATH) # remove the old backend directory
+            FileHandler.removeFolder(BACKEND_PATH) # remove the old backend directory
             self.deps.downloadBackend()
         else:
             RegularQTPopup("No network connection found! Please connect to the internet to update the backend.")
