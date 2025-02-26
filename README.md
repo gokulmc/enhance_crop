@@ -113,8 +113,15 @@
 git clone https://github.com/TNTwise/REAL-Video-Enhancer
 ```
 # Building:
+
+<p>3 supported build methods: </p>
+<p> - pyinstaller (recommended for Win/Mac) <br/>
+    - cx_freeze (recommended for Linux) <br/>
+    - nuitka (experimental)
+</p>
+
 ```
-python3 build.py --build_exe
+python3 build.py --build BUILD_OPTION
 ```
 
 # Colab Notebook

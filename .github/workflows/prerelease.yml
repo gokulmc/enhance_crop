@@ -23,11 +23,11 @@ jobs:
         run : |
           sudo apt-get install '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev
       - name: Build
-        run: python3 build.py --build_exe
+        run: python3 build.py --build cx_freeze
       
       - name: compress archive
         run: |
-          zip -r REAL-Video-Enhancer-2.2.5-Linux.zip bin/
+          zip -r REAL-Video-Enhancer-2.2.5-Linux.zip dist/
 
       - name: compress backend
         run: |
@@ -62,7 +62,7 @@ jobs:
       
 
       - name: Build
-        run: python3 build.py --build_exe
+        run: python3 build.py --build pyinstaller
       
       - name: compress archive
         run: |
@@ -99,7 +99,7 @@ jobs:
 
       - name: Build
 
-        run: python3 build.py --build_exe
+        run: python3 build.py --build pyinstaller
     
       - name: compress archive
         run: |

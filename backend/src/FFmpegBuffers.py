@@ -117,7 +117,8 @@ class FFmpegWrite(Buffer):
     ):
         self.inputFile = inputFile
         self.outputFile = outputFile
-        self.outputFileExtension = os.path.split(self.outputFile)[-1].split(".")[-1]
+        if self.outputFile:
+            self.outputFileExtension = os.path.split(self.outputFile)[-1].split(".")[-1]
         self.width = width
         self.height = height
         self.outputWidth = width * upscaleTimes
