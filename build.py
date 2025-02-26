@@ -115,6 +115,9 @@ class BuildManager:
         shutil.rmtree(OUTPUT_FOLDER, ignore_errors=True)
         self.python_manager = PythonManager()
 
+    def __init__(self):
+        self.pythonManager = PythonManager()
+
     @abstractmethod
     def build(self):
         ...
@@ -123,8 +126,6 @@ class BuildManager:
         print(f"Downloading file from {url}")
         urllib.request.urlretrieve(url, destination)
         print("File downloaded successfully")
-
-    
 
     def build_gui(self):
         print("Building GUI")

@@ -1,5 +1,10 @@
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
+
+from numpy import extract
 from .constants import (
     PLATFORM,
+    PYTHON_DIRECTORY,
     PYTHON_EXECUTABLE_PATH,
     PYTHON_VERSION,
     FFMPEG_PATH,
@@ -9,6 +14,7 @@ from .constants import (
 )
 from .version import version
 from .Util import (
+    FileHandler,
     log,
     createDirectory,
     makeExecutable,
@@ -55,68 +61,80 @@ def run_executable(exe_path):
         return False
     return True
 
+@dataclass
+class Dependency(ABC):
 
-class DownloadDependencies:
-    """
-    Downloads platform specific dependencies python and ffmpeg to their respective locations and creates the directories
-
-    """
+    download_path:str
+    installed_path:str
 
     def __init__(self):
-        if PLATFORM == "win32":
-            self.__torchVersion = ""
-        elif PLATFORM == "linux":
-            self.__torchVersion = ""
+        FileHandler.createDirectory(os.path.dirname(self.download_path))
 
-        createDirectory(os.path.join(CWD, "python"))
-        createDirectory(os.path.join(CWD, "bin"))
-        os.environ["PYTHONNOUSERSITE"] = "1" # Prevents python from installing packages in user site
+    @abstractmethod
+    def __get_download_link(self) -> str: ...
+        
+    @abstractmethod
+    def download(self) -> None: ...
 
-    def downloadBackend(self, tag=None):
-        """
-        Downloads the backend based on the tag of release.
-        The tag of release is equal to the tag of the version.
-        *NOTE
-        tag is unused for now, as still in active development. just downloads the latest backend.
-        """
+class Backend(Dependency):
+    download_path = os.path.join(CWD, "backend.tar.gz")
+    installed_path = BACKEND_PATH
 
-        if not os.path.exists(BACKEND_PATH):
-            print(str(BACKEND_PATH) + " Does not exist!")
-            
-            backend_url = f"https://github.com/TNTwise/REAL-Video-Enhancer/releases/download/RVE-{version}/backend-v{version}.tar.gz"
-            main_zip = os.path.join(CWD, "backend.tar.gz")
 
-            log("Downloading backend")
-            DownloadProgressPopup(link=backend_url, downloadLocation=main_zip, title="Downloading backend")
-            log("Extracting backend")
-            extractTarGZ(main_zip)
+    def __get_download_link(self):
+        backend_url = f"https://github.com/TNTwise/REAL-Video-Enhancer/releases/download/RVE-{version}/backend-v{version}.tar.gz"
+        return backend_url
+    
+    def download(self):
+        download_link = self.__get_download_link()
+        DownloadProgressPopup(link=download_link, downloadLocation=self.download_path, title="Downloading Backend")
+        extractTarGZ(self.download_path)
 
-    def downloadVCREDLIST(self):
-        vcTempPath = os.path.join(CWD, "bin", "VC_redist.x64.exe")
-        link = "https://aka.ms/vs/17/release/vc_redist.x64.exe"
+class FFMpeg(Dependency):
+    download_path = os.path.join(CWD, "ffmpeg")
+    installed_path = FFMPEG_PATH
 
-        log("Downloading VC_redlist.x64.exe\nClick yes after download is complete.")
-        DownloadProgressPopup(
-            link=link,
-            downloadLocation=vcTempPath,
-            title="Downloading VC_redlist.x64.exe\nClick yes after download is complete.",
-        )
-        # give executable permissions to ffmpeg
-        makeExecutable(vcTempPath)
+    def __get_download_link(self) -> str:
+        link = "https://github.com/TNTwise/real-video-enhancer-models/releases/download/models/"
+        match PLATFORM:
+            case "linux":
+                link += "ffmpeg"
+            case "win32":
+                link += "ffmpeg.exe"
+            case "darwin":
+                link += "ffmpeg-macos-bin"
+        return link
+
+    def download(self):
+        download_link = self.__get_download_link()
+        DownloadProgressPopup(link=download_link, downloadLocation=self.download_path, title="Downloading FFMpeg")
+        FileHandler.moveFile(self.download_path, self.installed_path)
+        FileHandler.makeExecutable(self.installed_path)
+
+class VCRedList(Dependency):
+    download_path = os.path.join(CWD, "bin", "VC_redist.x64.exe")
+    installed_path = download_path
+
+    def __get_download_link(self) -> str:
+        return "https://aka.ms/vs/17/release/vc_redist.x64.exe"
+    
+    def download(self):
+        download_link = self.__get_download_link()
+        DownloadProgressPopup(link = download_link, downloadLocation=self.download_path, title = "Downloading VCRedist")
         if not run_executable(
-            [vcTempPath, "/install", "/quiet", "/norestart"]
+            [self.download_path, "/install", "/quiet", "/norestart"]
         ):  # keep trying until user says yes
             RegularQTPopup(
                 "Please click yes to allow VCRedlist to install!\nThe installer will now close."
             )
 
-    def downloadPython(self, mode="Downloading"):
+class Python(Dependency):
+    download_path = os.path.join(CWD, "python", "python.tar.gz")
+    installed_path = PYTHON_DIRECTORY
+
+    def __get_download_link(self) -> str:
         link = f"https://github.com/indygreg/python-build-standalone/releases/download/20250205/cpython-{PYTHON_VERSION}+20250205-"
-        pyDir = os.path.join(
-            CWD,
-            "python",
-            "python.tar.gz",
-        )
+       
         match PLATFORM:
             case "linux":
                 link += "x86_64-unknown-linux-gnu-install_only.tar.gz"
@@ -127,37 +145,32 @@ class DownloadDependencies:
                     link += "aarch64-apple-darwin-install_only.tar.gz"
                 else:
                     link += "x86_64-apple-darwin-install_only.tar.gz"
-        # probably can add macos support later
-        log(f"{mode} Python")
-        DownloadProgressPopup(
-            link=link, downloadLocation=pyDir, title=f"{mode} Python"
-        )
 
-        # extract python
-        extractTarGZ(pyDir)
+        return link
 
-        # give executable permissions to python
-        makeExecutable(PYTHON_EXECUTABLE_PATH)
+    def download(self):
+        download_link = self.__get_download_link()
+        DownloadProgressPopup(link = download_link, downloadLocation=self.download_path, title = f"Downloading Python {PYTHON_VERSION}")
+        extractTarGZ(self.download_path)
 
-    def downloadFFMpeg(self):
-        createDirectory(TEMP_DOWNLOAD_PATH)
-        ffmpegTempPath = os.path.join(TEMP_DOWNLOAD_PATH, "ffmpeg")
-        link = "https://github.com/TNTwise/real-video-enhancer-models/releases/download/models/"
-        match PLATFORM:
-            case "linux":
-                link += "ffmpeg"
-            case "win32":
-                link += "ffmpeg.exe"
-            case "darwin":
-                link += "ffmpeg-macos-bin"
-        log("Downloading FFMpeg")
-        DownloadProgressPopup(
-            link=link, downloadLocation=ffmpegTempPath, title="Downloading FFMpeg"
-        )
-        # give executable permissions to ffmpeg
-        makeExecutable(ffmpegTempPath)
-        move(ffmpegTempPath, FFMPEG_PATH)
-        removeFolder(TEMP_DOWNLOAD_PATH)
+
+
+class DownloadDependencies:
+    """
+    Downloads platform specific dependencies python and ffmpeg to their respective locations and creates the directories
+
+    """
+
+    def __init__(self):
+        
+        createDirectory(os.path.join(CWD, "python"))
+        createDirectory(os.path.join(CWD, "bin"))
+        os.environ["PYTHONNOUSERSITE"] = "1" # Prevents python from installing packages in user site
+
+    def download_all_deps(self):
+        for dep in Dependency.__subclasses__():
+            d = dep()
+            d.download()
 
     def pip(
         self,
