@@ -185,7 +185,7 @@ class PyInstaller(BuildManager):
             + " --noconfirm"
             + " --noupx" 
             + " --distpath"
-            + " dist"
+            + f" {OUTPUT_FOLDER}"
             )
         )
             
@@ -200,13 +200,13 @@ class CxFreeze(BuildManager):
 
         PythonManager.pip_install_package_in_venv(self.cx_freeze_version)
         PythonManager.run_venv_python(
-            [
-            "-m",
-            "cx_Freeze",
-            "REAL-Video-Enhancer.py",
-            "--target-dir",
-            OUTPUT_FOLDER,
-            ]
+            (
+              " -m"
+            + " cx_Freeze"
+            + " REAL-Video-Enhancer.py"
+            + " --target-dir"
+            + f" {OUTPUT_FOLDER}"
+            )
         )
 
 class Nuitka(BuildManager):
@@ -240,7 +240,7 @@ if __name__ == "__main__":
     match args.build:
         case "pyinstaller":
             builder = PyInstaller()
-        case "cxfreeze":
+        case "cx_freeze":
             builder = CxFreeze()
         case "nuitka":
             builder = Nuitka()
