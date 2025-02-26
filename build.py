@@ -226,6 +226,7 @@ class Nuitka(BuildManager):
               "-m nuitka" 
             + " --standalone" 
             + " --include-package-data=PySide6"
+            + " --include-package-data=cpuinfo"
             + " --enable-plugin=pyside6"
             + " --include-qt-plugins=qml"
             + " --show-progress" 

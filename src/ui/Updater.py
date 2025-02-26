@@ -61,17 +61,21 @@ class BackendUpdater:
         self.backend_version = self.get_backend_version()
        
         
-    def get_backend_version(self):
+    def get_backend_version(self, iter=0):
         try:
             output = subprocess.run([PYTHON_EXECUTABLE_PATH, os.path.join(BACKEND_PATH, "rve-backend.py"), "--version"], check=True, capture_output=True, text=True)
             output = output.stdout.strip() # this extracts the version number from the output
+            log(f"Backend Version: {output}")
             return output
         except subprocess.CalledProcessError: # if the backend is not found
             self.deps.downloadBackend()
+            return self.get_backend_version(iter=iter) if iter < 3 else None
         
         
     
     def is_backend_up_to_date(self):
+        _s = backend_dev_version == self.backend_version
+        log(f"Backend up to date: {_s} {backend_dev_version} == {self.backend_version}")
         return backend_dev_version == self.backend_version
     
     def update_backend(self):
