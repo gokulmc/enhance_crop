@@ -12,7 +12,8 @@ import distro
 import webbrowser
 import zipfile
 import sys
-from .constants import CWD, IS_FLATPAK, PLATFORM, HOME_PATH
+
+from .constants import CWD, HAS_NETWORK_ON_STARTUP, IS_FLATPAK, PLATFORM, HOME_PATH
 
 
 class FileHandler:

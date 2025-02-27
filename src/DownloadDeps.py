@@ -1,7 +1,10 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from typing import Optional
+from PySide6.QtWidgets import QMessageBox
 
 from numpy import extract
+
 from .constants import (
     PLATFORM,
     PYTHON_DIRECTORY,
@@ -11,8 +14,9 @@ from .constants import (
     BACKEND_PATH,
     TEMP_DOWNLOAD_PATH,
     CWD,
+    HAS_NETWORK_ON_STARTUP,
 )
-from .version import version
+from .version import version, backend_dev_version
 from .Util import (
     FileHandler,
     log,
@@ -27,6 +31,7 @@ from .ui.QTcustom import (
     DownloadProgressPopup,
     DisplayCommandOutputPopup,
     RegularQTPopup,
+    needs_network_else_exit,
 )
 import os
 from platform import machine
@@ -63,7 +68,7 @@ def run_executable(exe_path):
 
 @dataclass
 class Dependency(ABC):
-
+    updatable: bool
     download_path:str
     installed_path:str
 
@@ -76,7 +81,12 @@ class Dependency(ABC):
     @abstractmethod
     def download(self) -> None: ...
 
+    def __get_if_update_available(self) -> bool: ...
+    def update_if_updates_available(self) -> None: ...
+
 class Backend(Dependency):
+    updatable: bool = True
+    is_update_available: bool = False
     download_path = os.path.join(CWD, "backend.tar.gz")
     installed_path = BACKEND_PATH
 
@@ -89,48 +99,27 @@ class Backend(Dependency):
         download_link = self.__get_download_link()
         DownloadProgressPopup(link=download_link, downloadLocation=self.download_path, title="Downloading Backend")
         extractTarGZ(self.download_path)
-
-class FFMpeg(Dependency):
-    download_path = os.path.join(CWD, "ffmpeg")
-    installed_path = FFMPEG_PATH
-
-    def __get_download_link(self) -> str:
-        link = "https://github.com/TNTwise/real-video-enhancer-models/releases/download/models/"
-        match PLATFORM:
-            case "linux":
-                link += "ffmpeg"
-            case "win32":
-                link += "ffmpeg.exe"
-            case "darwin":
-                link += "ffmpeg-macos-bin"
-        return link
-
-    def download(self):
-        download_link = self.__get_download_link()
-        DownloadProgressPopup(link=download_link, downloadLocation=self.download_path, title="Downloading FFMpeg")
-        FileHandler.moveFile(self.download_path, self.installed_path)
-        FileHandler.makeExecutable(self.installed_path)
-
-class VCRedList(Dependency):
-    download_path = os.path.join(CWD, "bin", "VC_redist.x64.exe")
-    installed_path = download_path
-
-    def __get_download_link(self) -> str:
-        return "https://aka.ms/vs/17/release/vc_redist.x64.exe"
     
-    def download(self):
-        download_link = self.__get_download_link()
-        DownloadProgressPopup(link = download_link, downloadLocation=self.download_path, title = "Downloading VCRedist")
-        if not run_executable(
-            [self.download_path, "/install", "/quiet", "/norestart"]
-        ):  # keep trying until user says yes
-            RegularQTPopup(
-                "Please click yes to allow VCRedlist to install!\nThe installer will now close."
-            )
+    def __get_if_update_available(self) -> bool:
+        try:
+            output = subprocess.run([PYTHON_EXECUTABLE_PATH, os.path.join(BACKEND_PATH, "rve-backend.py"), "--version"], check=True, capture_output=True, text=True)
+            output = output.stdout.strip() # this extracts the version number from the output
+            log(f"Backend Version: {output}")
+            return not output == backend_dev_version
+        except subprocess.CalledProcessError: # if the backend is not found
+            self.download()
+            return False
+    
+    def update_if_updates_available(self) -> None:
+        needs_network_else_exit()
+        FileHandler.removeFolder(BACKEND_PATH) # remove the old backend directory
+        self.download()
+
 
 class Python(Dependency):
     download_path = os.path.join(CWD, "python", "python.tar.gz")
     installed_path = PYTHON_DIRECTORY
+    is_update_available: bool = False
 
     def __get_download_link(self) -> str:
         link = f"https://github.com/indygreg/python-build-standalone/releases/download/20250205/cpython-{PYTHON_VERSION}+20250205-"
@@ -149,9 +138,91 @@ class Python(Dependency):
         return link
 
     def download(self):
+        needs_network_else_exit()
         download_link = self.__get_download_link()
         DownloadProgressPopup(link = download_link, downloadLocation=self.download_path, title = f"Downloading Python {PYTHON_VERSION}")
         extractTarGZ(self.download_path)
+    
+    def get_version(self):
+        return subprocess.run([PYTHON_EXECUTABLE_PATH, "--version"], check=True, capture_output=True, text=True)
+    
+    def __get_if_update_available(self) -> bool:
+        try:
+            output = self.get_version()
+        except subprocess.CalledProcessError: # if python is not found
+            self.download()
+            return False
+        output = output.stdout.strip().split(" ")[1] # this extracts the version number from the output
+        is_update = not output == PYTHON_VERSION
+
+        if is_update:
+            reply = QMessageBox.question(
+                None,
+                "Update Python?",
+                "The installed version of Python is older than the current version of RVE. Update?",
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No,  # type: ignore
+            )
+            if reply == QMessageBox.Yes:  # type: ignore
+                self.is_update_available = is_update
+                return is_update
+            else:
+                is_update = False
+        
+        self.is_update_available = is_update
+        return is_update
+
+    def update_if_updates_available(self) -> None:
+
+        if self.__get_if_update_available():
+            removeFolder(PYTHON_DIRECTORY)
+            self.download()
+
+class FFMpeg(Dependency):
+    download_path = os.path.join(CWD, "ffmpeg")
+    installed_path = FFMPEG_PATH
+
+    def __get_download_link(self) -> str:
+        link = "https://github.com/TNTwise/real-video-enhancer-models/releases/download/models/"
+        match PLATFORM:
+            case "linux":
+                link += "ffmpeg"
+            case "win32":
+                link += "ffmpeg.exe"
+            case "darwin":
+                link += "ffmpeg-macos-bin"
+        return link
+
+    def download(self):
+        
+        needs_network_else_exit()
+
+        download_link = self.__get_download_link()
+        DownloadProgressPopup(link=download_link, downloadLocation=self.download_path, title="Downloading FFMpeg")
+        FileHandler.moveFile(self.download_path, self.installed_path)
+        FileHandler.makeExecutable(self.installed_path)
+
+class VCRedList(Dependency):
+    updatable = False
+    download_path = os.path.join(CWD, "bin", "VC_redist.x64.exe")
+    installed_path = download_path
+
+    def __get_download_link(self) -> str:
+        return "https://aka.ms/vs/17/release/vc_redist.x64.exe"
+    
+    def download(self):
+        if PLATFORM == 'win32':
+            needs_network_else_exit()
+
+            download_link = self.__get_download_link()
+            DownloadProgressPopup(link = download_link, downloadLocation=self.download_path, title = "Downloading VCRedist")
+            if not run_executable(
+                [self.download_path, "/install", "/quiet", "/norestart"]
+            ):  # keep trying until user says yes
+                RegularQTPopup(
+                    "Please click yes to allow VCRedlist to install!\nThe installer will now close."
+                )
+
 
 
 

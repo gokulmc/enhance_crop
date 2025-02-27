@@ -57,6 +57,7 @@ from PySide6.QtWidgets import (
 )
 
 from .QTstyle import styleSheet
+from ..constants import HAS_NETWORK_ON_STARTUP
 from ..Util import log, networkCheck
 from ..Backendhandler import BackendHandler
 
@@ -782,6 +783,11 @@ def NetworkCheckPopup(hostname="https://raw.githubusercontent.com") -> bool:
         return False
     # return true if network connection
     return True
+
+def needs_network_else_exit():
+    if not HAS_NETWORK_ON_STARTUP:
+        RegularQTPopup("Network is required for this action!\nPlease connect to a network.\nClosing app.")
+        os._exit(1)
 
 
 def addNotificationToButton(button: QPushButton):

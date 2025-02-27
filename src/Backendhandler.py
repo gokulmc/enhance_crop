@@ -59,26 +59,8 @@ class BackendHandler:
         except Exception as e:
             print(e)
 
-    def setupBackendDeps(self):
-        # need pop up window
-        from .DownloadDeps import Dependency
 
-        downloadDependencies = DownloadDependencies()
-        if not IS_INSTALLED:
-            from .ui.QTcustom import RegularQTPopup
-
-            if HAS_NETWORK_ON_STARTUP:
-                # Dont flip these due to shitty code!
-                downloadDependencies.downloadFFMpeg()
-                downloadDependencies.downloadPython()
-                if PLATFORM == "win32":
-                    downloadDependencies.downloadVCREDLIST()
-            else:
-                RegularQTPopup(
-                    "Cannot install required dependencies!\nThe first launch of the app requires internet."
-                )
-                sys.exit()
-
+            
     def recursivlyCheckIfDepsOnFirstInstallToMakeSureUserHasInstalledAtLeastOneBackend(
         self, firstIter=True
     ):

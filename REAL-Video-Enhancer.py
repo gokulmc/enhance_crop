@@ -31,8 +31,8 @@ from src.Util import (
     log,
 )
 from src.DownloadModels import DownloadModel
-from src.constants import CUSTOM_MODELS_PATH, MODELS_PATH, CWD, LOCKFILE
-from src.ui.Updater import PythonUpdater, BackendUpdater, HAS_NETWORK_ON_STARTUP
+from src.DownloadDeps import Dependency, Python
+from src.constants import CUSTOM_MODELS_PATH, MODELS_PATH, CWD, LOCKFILE, IS_INSTALLED
 from src.ui.ProcessTab import ProcessTab
 from src.ui.DownloadTab import DownloadTab
 from src.ui.SettingsTab import SettingsTab, Settings
@@ -101,29 +101,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
         self.renderQueue = RenderQueue(self.renderQueueListWidget)
 
-        backendHandler.setupBackendDeps()
 
-        pythonupdater = (
-            PythonUpdater()
-        )  # check if python is up to date, has to take place after python is installed
-        backendupdater = BackendUpdater()  # check if backend is up to date, has to take place after backend is installed
+        if not IS_INSTALLED: [depdendency().download() for depdendency in Dependency.__subclasses__()]
+            
 
-        self.python_version = pythonupdater.current_python_version
-
-        if HAS_NETWORK_ON_STARTUP:
-            if not backendupdater.is_backend_up_to_date():
-                backendupdater.update_backend()
-
-            if not pythonupdater.is_python_up_to_date():
-                reply = QMessageBox.question(
-                    self,
-                    "Do you want to update Python?",
-                    "The installed version of Python is not supported by this version of RVE. Update?",
-                    QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-                    QMessageBox.StandardButton.No,  # type: ignore
-                )
-                if reply == QMessageBox.Yes:  # type: ignore
-                    pythonupdater.update_python()
+        
 
         self.backends, self.fullOutput = (
             backendHandler.recursivlyCheckIfDepsOnFirstInstallToMakeSureUserHasInstalledAtLeastOneBackend(
@@ -165,7 +147,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             + "\n"
             + "\nSoftware Information:\n"
             + f"REAL Video Enhancer Version: {version}\n"
-            + f"Python Version: {self.python_version}\n"
+            + f"Python Version: {Python().get_version()}\n"
             + f"Working Directory: {CWD}\n"
             + self.fullOutput
         )
