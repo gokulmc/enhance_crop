@@ -211,10 +211,11 @@ class CxFreeze(BuildManager):
             )
         )
         if PLATFORM == "linux":
-            try:
-                shutil.copy("/usr/lib/x86_64-linux-gnu/libxcb-cursor.so.0", f"{OUTPUT_FOLDER}/lib/PySide6/Qt/lib")
-            except FileNotFoundError:
-                print("Failed to copy libxcb-cursor.so.0, this can lead to issues in packaged installations.")
+            if not os.path.isfile('/usr/lib/x86_64-linux-gnu/libxcb-cursor.so.0'):
+                raise FileNotFoundError("Unable to build as libxcbcursor is not installed!")
+            
+            shutil.copy("/usr/lib/x86_64-linux-gnu/libxcb-cursor.so.0", f"{OUTPUT_FOLDER}/lib/PySide6/Qt/lib")
+            
 
 class Nuitka(BuildManager):
 

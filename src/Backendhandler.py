@@ -61,10 +61,9 @@ class BackendHandler:
 
     def setupBackendDeps(self):
         # need pop up window
-        from .DownloadDeps import DownloadDependencies
+        from .DownloadDeps import Dependency
 
         downloadDependencies = DownloadDependencies()
-        downloadDependencies.downloadBackend(version)
         if not IS_INSTALLED:
             from .ui.QTcustom import RegularQTPopup
 
