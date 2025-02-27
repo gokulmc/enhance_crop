@@ -7,7 +7,7 @@ import subprocess
 import sys
 import shutil
 import argparse
-
+import requests
 import urllib.request
 
 PLATFORM = sys.platform
@@ -31,6 +31,17 @@ def zero_mainwindow_size():
             tree.write(path)
 
     set_mainwindow_size_zero()
+
+def downloadFile(link, downloadLocation):
+    response = requests.get(
+        link,
+        stream=True,
+    )
+
+    with open(downloadLocation, "wb") as f:
+        for chunk in response.iter_content(chunk_size=1024):
+            f.write(chunk)
+
 
 class PythonManager:
 
@@ -210,10 +221,21 @@ class CxFreeze(BuildManager):
             )
         )
         if PLATFORM == "linux":
-            if not os.path.isfile('/usr/lib/x86_64-linux-gnu/libxcb-cursor.so.0'):
-                raise FileNotFoundError("Unable to build as libxcbcursor is not installed!")
+            try:
+                if not os.path.isfile('/usr/lib/x86_64-linux-gnu/libxcb-cursor.so.0'):
+                    raise FileNotFoundError("Unable to build as libxcbcursor is not installed!")
+                
+                input_file = "/usr/lib/x86_64-linux-gnu/libxcb-cursor.so.0"
+            except FileNotFoundError:
+                try:
+                    print("libxcbcursor not found, downloading...")
+                    
+                    downloadFile("https://github.com/TNTwise/real-video-enhancer-models/releases/download/models/libxcb-cursor.so.0","libxcb-cursor.so.0")
+                    input_file = "libxcb-cursor.so.0"
+                except requests.exceptions.ConnectionError:
+                    raise FileNotFoundError("libxcbcursor not installed, and no network available to download it!")
             
-            shutil.copy("/usr/lib/x86_64-linux-gnu/libxcb-cursor.so.0", f"{OUTPUT_FOLDER}/lib/PySide6/Qt/lib")
+            shutil.copy(input_file, f"{OUTPUT_FOLDER}/lib/PySide6/Qt/lib")
             
 
 class Nuitka(BuildManager):
