@@ -199,6 +199,7 @@ class FFMpeg(Dependency):
 
         download_link = self.get_download_link()
         DownloadProgressPopup(link=download_link, downloadLocation=self.download_path, title="Downloading FFMpeg")
+        FileHandler.createDirectory(os.path.dirname(self.installed_path))
         FileHandler.moveFile(self.download_path, self.installed_path)
         FileHandler.makeExecutable(self.installed_path)
 
