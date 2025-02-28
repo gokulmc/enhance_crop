@@ -76,12 +76,12 @@ class Dependency(ABC):
         FileHandler.createDirectory(os.path.dirname(self.download_path))
 
     @abstractmethod
-    def __get_download_link(self) -> str: ...
+    def get_download_link(self) -> str: ...
         
     @abstractmethod
     def download(self) -> None: ...
 
-    def __get_if_update_available(self) -> bool: ...
+    def get_if_update_available(self) -> bool: ...
     def update_if_updates_available(self) -> None: ...
 
 class Backend(Dependency):
@@ -91,16 +91,16 @@ class Backend(Dependency):
     installed_path = BACKEND_PATH
 
 
-    def __get_download_link(self):
+    def get_download_link(self) -> str:
         backend_url = f"https://github.com/TNTwise/REAL-Video-Enhancer/releases/download/RVE-{version}/backend-v{version}.tar.gz"
         return backend_url
     
     def download(self):
-        download_link = self.__get_download_link()
+        download_link = self.get_download_link()
         DownloadProgressPopup(link=download_link, downloadLocation=self.download_path, title="Downloading Backend")
         extractTarGZ(self.download_path)
     
-    def __get_if_update_available(self) -> bool:
+    def get_if_update_available(self) -> bool:
         try:
             output = subprocess.run([PYTHON_EXECUTABLE_PATH, os.path.join(BACKEND_PATH, "rve-backend.py"), "--version"], check=True, capture_output=True, text=True)
             output = output.stdout.strip() # this extracts the version number from the output
@@ -121,7 +121,7 @@ class Python(Dependency):
     installed_path = PYTHON_DIRECTORY
     is_update_available: bool = False
 
-    def __get_download_link(self) -> str:
+    def get_download_link(self) -> str:
         link = f"https://github.com/indygreg/python-build-standalone/releases/download/20250205/cpython-{PYTHON_VERSION}+20250205-"
        
         match PLATFORM:
@@ -139,14 +139,14 @@ class Python(Dependency):
 
     def download(self):
         needs_network_else_exit()
-        download_link = self.__get_download_link()
+        download_link = self.get_download_link()
         DownloadProgressPopup(link = download_link, downloadLocation=self.download_path, title = f"Downloading Python {PYTHON_VERSION}")
         extractTarGZ(self.download_path)
     
     def get_version(self):
         return subprocess.run([PYTHON_EXECUTABLE_PATH, "--version"], check=True, capture_output=True, text=True)
     
-    def __get_if_update_available(self) -> bool:
+    def get_if_update_available(self) -> bool:
         try:
             output = self.get_version()
         except subprocess.CalledProcessError: # if python is not found
@@ -174,7 +174,7 @@ class Python(Dependency):
 
     def update_if_updates_available(self) -> None:
 
-        if self.__get_if_update_available():
+        if self.get_if_update_available():
             removeFolder(PYTHON_DIRECTORY)
             self.download()
 
@@ -182,7 +182,7 @@ class FFMpeg(Dependency):
     download_path = os.path.join(CWD, "ffmpeg")
     installed_path = FFMPEG_PATH
 
-    def __get_download_link(self) -> str:
+    def get_download_link(self) -> str:
         link = "https://github.com/TNTwise/real-video-enhancer-models/releases/download/models/"
         match PLATFORM:
             case "linux":
@@ -197,7 +197,7 @@ class FFMpeg(Dependency):
         
         needs_network_else_exit()
 
-        download_link = self.__get_download_link()
+        download_link = self.get_download_link()
         DownloadProgressPopup(link=download_link, downloadLocation=self.download_path, title="Downloading FFMpeg")
         FileHandler.moveFile(self.download_path, self.installed_path)
         FileHandler.makeExecutable(self.installed_path)
@@ -207,14 +207,14 @@ class VCRedList(Dependency):
     download_path = os.path.join(CWD, "bin", "VC_redist.x64.exe")
     installed_path = download_path
 
-    def __get_download_link(self) -> str:
+    def get_download_link(self) -> str:
         return "https://aka.ms/vs/17/release/vc_redist.x64.exe"
     
     def download(self):
         if PLATFORM == 'win32':
             needs_network_else_exit()
 
-            download_link = self.__get_download_link()
+            download_link = self.get_download_link()
             DownloadProgressPopup(link = download_link, downloadLocation=self.download_path, title = "Downloading VCRedist")
             if not run_executable(
                 [self.download_path, "/install", "/quiet", "/norestart"]

@@ -102,7 +102,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.renderQueue = RenderQueue(self.renderQueueListWidget)
 
 
-        if not IS_INSTALLED: [depdendency().download() for depdendency in Dependency.__subclasses__()]
+        if not IS_INSTALLED: 
+            for dep in Dependency.__subclasses__():
+                d = dep()
+                d.download()
+        
+        for dep in Dependency.__subclasses__():
+            if dep().get_if_update_available():
+                dep().update_if_updates_available()
             
 
         

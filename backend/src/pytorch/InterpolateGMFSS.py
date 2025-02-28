@@ -36,7 +36,6 @@ class InterpolateGMFSSTorch(BaseInterpolate):
         gpu_id: int = 0,
         max_timestep: float = 1,
         hdr_mode: bool = False,
-        use_cuda_graph: bool = False,
         *args,
         **kwargs,
     ):
@@ -56,7 +55,6 @@ class InterpolateGMFSSTorch(BaseInterpolate):
         self.UHDMode = UHDMode
         self.CompareNet = None
         self.max_timestep = max_timestep
-        self.use_cuda_graph = use_cuda_graph
         if UHDMode:
             self.scale = 0.5
         self._load()
@@ -108,7 +106,6 @@ class InterpolateGMFSSTorch(BaseInterpolate):
                     [timestep], dtype=self.dtype, device=self.device
                 ).to(non_blocking=True)
                 self.timestepDict[timestep] = timestep_tens
-
             self.flownet = GMFSS(
                 model_path=self.interpolateModel,
                 scale=self.scale,
@@ -124,7 +121,6 @@ class InterpolateGMFSSTorch(BaseInterpolate):
             log("GMFSS loaded")
             log("Scale: " + str(self.scale))
             log("Using System CUDA: " + str(HAS_SYSTEM_CUDA))
-            log(f"CUDA Graphs: {'enabled' if self.use_cuda_graph else 'disabled'}")
             if not HAS_SYSTEM_CUDA:
                 print(
                     "WARNING: System CUDA not found, falling back to PyTorch softsplat. This will be a bit slower.",
@@ -134,25 +130,7 @@ class InterpolateGMFSSTorch(BaseInterpolate):
                 warnAndLog(
                     "TensorRT is not implemented for GMFSS yet, falling back to PyTorch"
                 )
-            if self.use_cuda_graph:
-                self.graph = torch.cuda.CUDAGraph()
-                self.static_input = torch.empty(1, 3, self.height, self.width).to(
-                    device=self.device, dtype=self.dtype
-                )
-                self.static_output = torch.empty(1, 3, self.height, self.width).to(
-                    device=self.device, dtype=self.dtype
-                )
-                with torch.cuda.graph(self.graph):
-                    self.static_output.copy_(self.flownet(self.static_input, self.static_input, torch.tensor([0.5]).to(device=self.device, dtype=self.dtype)))
         self.prepareStream.synchronize()
-
-    def render(self, frame0, frame1, timestep, closest_value=None):
-        if self.use_cuda_graph:
-            self.static_output.copy_(frame0, frame1, timestep, closest_value)
-            self.graph.replay()
-        else:
-            output = self.flownet(frame0, frame1, timestep, closest_value)
-        return output
 
     @torch.inference_mode()
     def __call__(
@@ -182,11 +160,7 @@ class InterpolateGMFSSTorch(BaseInterpolate):
                     while self.flownet is None:
                         sleep(1)
                     timestep = self.timestepDict[timestep]
-
-
-                    output = self.render(self.frame0, frame1, timestep, closest_value)
-                    
-                    
+                    output = self.flownet(self.frame0, frame1, timestep, closest_value)
                     if upscaleModel is not None:
                         output = upscaleModel(
                             upscaleModel.frame_to_tensor(self.tensor_to_frame(output))
