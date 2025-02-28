@@ -414,6 +414,12 @@ class HandleApplication:
             type=str,
             default=None,
         )
+        parser.add_argument(
+            "--cwd",
+            help="current working directory for the app",
+            type=str,
+            default=None,
+        )
         # append extra args
         return parser.parse_args()
 

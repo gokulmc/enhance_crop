@@ -1,5 +1,5 @@
 import os
-
+import sys
 
 def checkForCUDA() -> bool:
     try:
@@ -16,17 +16,26 @@ def checkForCUDA() -> bool:
 
 __version__ = "2.1.5"
 IS_FLATPAK = "FLATPAK_ID" in os.environ
+HOME_PATH = os.path.expanduser("~")
+PLATFORM = sys.platform  # win32, darwin, linux
 
-if IS_FLATPAK:
-    CWD = os.path.join(
-        os.path.expanduser("~"), ".var", "app", "io.github.tntwise.REAL-Video-Enhancer"
-    )
-    if not os.path.exists(CWD):
+USE_LOCAL_BACKEND = not hasattr(sys, "frozen") and os.path.exists(
+    os.path.join(os.getcwd(), "backend")
+)
+if not USE_LOCAL_BACKEND:
+    if IS_FLATPAK:
+        CWD = (
+            os.path.join(
+                HOME_PATH, ".var", "app", "io.github.tntwise.REAL-Video-Enhancer"
+            )
+        )
+    if PLATFORM == "win32":
+        CWD = os.path.join(HOME_PATH, "AppData", "Local", "REAL-Video-Enhancer")
+    if PLATFORM == "darwin":
+        CWD = os.path.join(HOME_PATH, "Library", "REAL-Video-Enhancer")
+    if PLATFORM == "linux":
         CWD = os.path.join(
-            os.path.expanduser("~"),
-            ".var",
-            "app",
-            "io.github.tntwise.REAL-Video-EnhancerV2",
+            HOME_PATH, ".local", "share", "REAL-Video-Enhancer"
         )
 else:
     CWD = os.getcwd()

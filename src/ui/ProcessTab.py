@@ -26,6 +26,7 @@ from ..constants import (
     IMAGE_SHARED_MEMORY_ID,
     PAUSED_STATE_SHARED_MEMORY_ID,
     INPUT_TEXT_FILE,
+    CWD,
 )
 from ..Util import (
     log,
@@ -425,6 +426,8 @@ class ProcessTab:
             f"{self.settings.settings['ncnn_gpu_id']}",
             "--pytorch_gpu_id",
             f"{self.settings.settings['pytorch_gpu_id']}",
+            "--cwd",
+            f"{CWD}",
         ]
 
         if renderOptions.upscaleModel:
