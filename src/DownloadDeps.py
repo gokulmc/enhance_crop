@@ -313,7 +313,7 @@ class DownloadDependencies:
         if self.settings["use_pytorch_pre_release"] == "True":
             torchCUDADeps = [
                 "--extra-index-url",
-                "https://download.pytorch.org/whl/test",  # switch to normal whl and test
+                "https://download.pytorch.org/whl/nightly/cu128",  # switch to normal whl and test
                 "torch",  #
                 "torchvision",
                 "safetensors",
