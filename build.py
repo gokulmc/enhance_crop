@@ -267,7 +267,7 @@ class Nuitka(BuildManager):
 if __name__ == "__main__":
     
     args = argparse.ArgumentParser()
-    args.add_argument("--build", help="Build the application with a specific builder.", default="pyinstaller", choices=["pyinstaller", "cx_freeze", "nuitka"])
+    args.add_argument("--build", help="Build the application with a specific builder.", default="pyinstaller", choices=["pyinstaller", "cx_freeze", "nuitka", "gui"])
     args = args.parse_args()
     match args.build:
         case "pyinstaller":
@@ -276,6 +276,10 @@ if __name__ == "__main__":
             builder = CxFreeze()
         case "nuitka":
             builder = Nuitka()
+        case "gui":
+            BuildManager().build_resources()
+            BuildManager().build_gui()
+            exit()
         case _:
             raise ValueError("Invalid build option")
     builder.build()

@@ -21,7 +21,6 @@ from time import sleep
 
 torch.set_float32_matmul_precision("medium")
 torch.set_grad_enabled(False)
-logging.basicConfig(level=logging.INFO)
 
 class InterpolateRifeTorch(BaseInterpolate):
     @torch.inference_mode()

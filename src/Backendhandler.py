@@ -9,8 +9,9 @@ from .version import version
 
 
 class BackendHandler:
-    def __init__(self, parent):
+    def __init__(self, parent, settings):
         self.parent = parent
+        self.settings = settings
 
     def enableCorrectBackends(self):
         self.parent.downloadTorchROCmBtn.setEnabled(PLATFORM == "linux")
@@ -78,7 +79,7 @@ class BackendHandler:
             log(str(e))
         if not firstIter:
             RegularQTPopup("Please install at least 1 backend!")
-        downloadDependencies = DownloadDependencies()
+        downloadDependencies = DownloadDependencies(self.settings)
         DownloadDepsDialog(
             ncnnDownloadBtnFunc=lambda: downloadDependencies.downloadNCNNDeps(True),
             pytorchCUDABtnFunc=lambda: downloadDependencies.downloadPyTorchCUDADeps(

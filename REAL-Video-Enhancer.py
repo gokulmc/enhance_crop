@@ -29,10 +29,17 @@ from src.Util import (
     getAvailableDiskSpace,
     FileHandler,
     log,
+    createDirectory
 )
-from src.DownloadModels import DownloadModel
-from src.DownloadDeps import Dependency, Python
 from src.constants import CUSTOM_MODELS_PATH, MODELS_PATH, CWD, LOCKFILE, IS_INSTALLED
+
+createDirectory(os.path.join(CWD, "python"))
+createDirectory(os.path.join(CWD, "bin"))
+os.environ["PYTHONNOUSERSITE"] = "1" # Prevents python from installing packages in user site
+
+
+from src.DownloadModels import DownloadModel
+from src.DownloadDeps import Dependency, Python, DownloadDependencies
 from src.ui.ProcessTab import ProcessTab
 from src.ui.DownloadTab import DownloadTab
 from src.ui.SettingsTab import SettingsTab, Settings
@@ -91,17 +98,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.videoWidth = None
         self.videoHeight = None
         self.isVideoLoaded = False
+        
+        settings = Settings()
+        settings.readSettings()
+        self.settings = settings
 
         # setup application
 
         # Set up the user interface from Designer.
         self.setupUi(self)
-        backendHandler = BackendHandler(self)
+        backendHandler = BackendHandler(self, self.settings)
         backendHandler.enableCorrectBackends()
             
         self.renderQueue = RenderQueue(self.renderQueueListWidget)
 
-
+        
         if not IS_INSTALLED: 
             for dep in Dependency.__subclasses__():
                 d = dep()
@@ -175,9 +186,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         total_pytorch_gpus = max(0, total_pytorch_gpus)  # minimum gpu id is 0
         total_ncnn_gpus = max(0, total_ncnn_gpus)
 
-        settings = Settings()
-        settings.readSettings()
-        self.settings = settings
+        
         self.processTab = ProcessTab(
             parent=self,
             settings=settings,
@@ -190,6 +199,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             total_ncnn_gpus=total_ncnn_gpus,
             total_pytorch_gpus=total_pytorch_gpus,
         )
+        downloadDeps = DownloadDependencies(settings=self.settings)
 
         # Startup Animation
         self.animationHandler = AnimationHandler()

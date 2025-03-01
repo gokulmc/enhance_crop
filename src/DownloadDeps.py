@@ -232,12 +232,8 @@ class DownloadDependencies:
     Downloads platform specific dependencies python and ffmpeg to their respective locations and creates the directories
 
     """
-
-    def __init__(self):
-        
-        createDirectory(os.path.join(CWD, "python"))
-        createDirectory(os.path.join(CWD, "bin"))
-        os.environ["PYTHONNOUSERSITE"] = "1" # Prevents python from installing packages in user site
+    def __init__(self, settings):
+        self.settings = settings        
 
     def download_all_deps(self):
         for dep in Dependency.__subclasses__():
@@ -261,10 +257,6 @@ class DownloadDependencies:
         if install:
             command += [
                 "--no-warn-script-location",
-                "--extra-index-url",
-                "https://download.pytorch.org/whl/",  # switch to normal whl and test
-                "--extra-index-url",
-                "https://pypi.nvidia.com",
             ]
         else:
             command += ["-y"]
@@ -302,7 +294,7 @@ class DownloadDependencies:
             "opencv-python-headless",
             "pypresence",
             "scenedetect",
-            "numpy==2.2.2",
+            "numpy==2.2.2", 
             "sympy==1.13.1",
             "tqdm",
             "typing_extensions",
@@ -318,13 +310,28 @@ class DownloadDependencies:
         Default deps
         Pytorch CUDA deps
         """
-        torchCUDADeps = [
-            "torch==2.6.0+cu126",  #
-            "torchvision==0.21.0+cu126",
-            "safetensors",
-            "einops",
-            "cupy-cuda12x==13.3.0",
-        ]
+        if self.settings["use_pytorch_pre_release"] == "True":
+            torchCUDADeps = [
+                "--extra-index-url",
+                "https://download.pytorch.org/whl/test",  # switch to normal whl and test
+                "torch",  #
+                "torchvision",
+                "safetensors",
+                "einops",
+                "cupy-cuda12x==13.3.0",
+            ]
+        else:
+            torchCUDADeps = [
+                "--extra-index-url",
+                "https://download.pytorch.org/whl/",  # switch to normal whl and test
+                "--extra-index-url",
+                "https://pypi.nvidia.com",
+                "torch==2.6.0+cu126",  #
+                "torchvision==0.21.0+cu126",
+                "safetensors",
+                "einops",
+                "cupy-cuda12x==13.3.0",
+            ]
         return torchCUDADeps
 
     def getTensorRTDeps(self):
@@ -335,13 +342,26 @@ class DownloadDependencies:
         TensorRT deps
         """
         tensorRTDeps = [
-            "tensorrt==10.8.0.43",
-            "tensorrt_cu12==10.8.0.43",
-            "tensorrt-cu12_libs==10.8.0.43",
-            "tensorrt_cu12_bindings==10.8.0.43",
-            "--no-deps",
-            "torch_tensorrt==2.6.0+cu126",
+            "tensorrt==10.8.0.43" if not self.settings["use_pytorch_pre_release"] == "True" else "tensorrt",
+            "tensorrt_cu12==10.8.0.43" if not self.settings["use_pytorch_pre_release"] == "True" else "tensorrt_cu12",
+            "tensorrt-cu12_libs==10.8.0.43" if not self.settings["use_pytorch_pre_release"] == "True" else "tensorrt-cu12_libs",
+            "tensorrt_cu12_bindings==10.8.0.43" if not self.settings["use_pytorch_pre_release"] == "True" else "tensorrt_cu12_bindings",
         ]
+        if self.settings["use_pytorch_pre_release"] == "True":
+            tensorRTDeps += [
+                "--extra-index-url",
+                "https://download.pytorch.org/whl/test",
+                "--no-deps",
+                "torch_tensorrt",
+            ]
+        else:
+            tensorRTDeps += [
+                "--extra-index-url",
+                "https://download.pytorch.org/whl/",
+                "--no-deps",
+                "torch_tensorrt==2.6.0+cu126",
+            ]
+
 
         return tensorRTDeps
 
@@ -379,7 +399,7 @@ class DownloadDependencies:
         if install:
             self.pip(self.getPlatformIndependentDeps())
         ncnnDeps = [
-            "rife-ncnn-vulkan-python-tntwise==1.4.5",
+            "rife-ncnn-vulkan-python-tntwise",
             "upscale_ncnn_py==1.2.0",
             "ncnn==1.0.20240820",
             "numpy==2.2.2",
