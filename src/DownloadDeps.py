@@ -86,7 +86,7 @@ class Dependency(ABC):
 
 class Backend(Dependency):
     updatable: bool = True
-    is_update_available: bool = False
+    is_update_available: bool
     download_path = os.path.join(CWD, "backend.tar.gz")
     installed_path = BACKEND_PATH
 
@@ -105,21 +105,25 @@ class Backend(Dependency):
             output = subprocess.run([PYTHON_EXECUTABLE_PATH, os.path.join(BACKEND_PATH, "rve-backend.py"), "--version"], check=True, capture_output=True, text=True)
             output = output.stdout.strip() # this extracts the version number from the output
             log(f"Backend Version: {output}")
-            return not output == backend_dev_version
+            update_available = not output == backend_dev_version
+            self.is_update_available = update_available
+            return update_available
         except subprocess.CalledProcessError: # if the backend is not found
             self.download()
+            self.is_update_available = False
             return False
     
     def update_if_updates_available(self) -> None:
-        needs_network_else_exit()
-        FileHandler.removeFolder(BACKEND_PATH) # remove the old backend directory
-        self.download()
+        if self.is_update_available:
+            needs_network_else_exit()
+            FileHandler.removeFolder(BACKEND_PATH) # remove the old backend directory
+            self.download()
 
 
 class Python(Dependency):
     download_path = os.path.join(CWD, "python", "python.tar.gz")
     installed_path = PYTHON_DIRECTORY
-    is_update_available: bool = False
+    is_update_available: bool
 
     def get_download_link(self) -> str:
         link = f"https://github.com/indygreg/python-build-standalone/releases/download/20250205/cpython-{PYTHON_VERSION}+20250205-"
@@ -140,6 +144,7 @@ class Python(Dependency):
     def download(self):
         needs_network_else_exit()
         download_link = self.get_download_link()
+        FileHandler.createDirectory(os.path.dirname(self.download_path))
         DownloadProgressPopup(link = download_link, downloadLocation=self.download_path, title = f"Downloading Python {PYTHON_VERSION}")
         extractTarGZ(self.download_path)
     
@@ -164,17 +169,16 @@ class Python(Dependency):
                 QMessageBox.StandardButton.No,  # type: ignore
             )
             if reply == QMessageBox.Yes:  # type: ignore
-                self.is_update_available = is_update
-                return is_update
+                self.is_update_available = True
+                print("Updating Python")
             else:
                 is_update = False
-        
-        self.is_update_available = is_update
-        return is_update
+                self.is_update_available = is_update
+        return self.is_update_available
 
     def update_if_updates_available(self) -> None:
 
-        if self.get_if_update_available():
+        if self.is_update_available:
             removeFolder(PYTHON_DIRECTORY)
             self.download()
 

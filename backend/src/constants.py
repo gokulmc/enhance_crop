@@ -1,6 +1,5 @@
 import os
 import sys
-global CWD
 
 def checkForCUDA() -> bool:
     try:
@@ -20,19 +19,26 @@ IS_FLATPAK = "FLATPAK_ID" in os.environ
 HOME_PATH = os.path.expanduser("~")
 PLATFORM = sys.platform  # win32, darwin, linux
 
-
-if IS_FLATPAK:
-    CWD = (
-        os.path.join(
-            HOME_PATH, ".var", "app", "io.github.tntwise.REAL-Video-Enhancer"
+USE_LOCAL_BACKEND = not hasattr(sys, "frozen") and os.path.exists(
+    os.path.join(os.getcwd(), "backend")
+)
+if not USE_LOCAL_BACKEND:
+    if IS_FLATPAK:
+        CWD = (
+            os.path.join(
+                HOME_PATH, ".var", "app", "io.github.tntwise.REAL-Video-Enhancer"
+            )
         )
-    )
-
-CWD = os.getcwd()
-
-def set_manual_cwd(cwd):
-    global CWD
-    CWD = cwd
+    if PLATFORM == "win32":
+        CWD = os.path.join(HOME_PATH, "AppData", "Local", "REAL-Video-Enhancer")
+    if PLATFORM == "darwin":
+        CWD = os.path.join(HOME_PATH, "Library", "REAL-Video-Enhancer")
+    if PLATFORM == "linux":
+        CWD = os.path.join(
+            HOME_PATH, ".local", "share", "REAL-Video-Enhancer"
+        )
+else:
+    CWD = os.getcwd()
 
 FFMPEG_PATH = os.path.join(CWD, "bin", "ffmpeg")
 FFMPEG_LOG_FILE = os.path.join(CWD, "ffmpeg_log.txt")

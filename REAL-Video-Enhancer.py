@@ -119,8 +119,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 d.download()
         
         for dep in Dependency.__subclasses__():
-            if dep().get_if_update_available():
-                dep().update_if_updates_available()
+            d = dep()
+            if d.get_if_update_available():
+                d.update_if_updates_available()
             
 
         

@@ -6,15 +6,24 @@ os.environ["HCC_AMDGPU_TARGET"] = "gfx1100"
 
 import argparse
 import sys
+from src.RenderVideo import Render
+from src.version import __version__
+from src.utils.Util import (
+    checkForPytorchCUDA,
+    checkForPytorchROCM,
+    checkForNCNN,
+    checkForTensorRT,
+    check_bfloat16_support,
+    checkForDirectML,
+    checkForDirectMLHalfPrecisionSupport,
+    get_gpus_ncnn,
+    get_gpus_torch,
+)
 
-from src.constants import set_manual_cwd
 
 class HandleApplication:
     def __init__(self):
         self.args = self.handleArguments()
-        if self.args.cwd:
-            
-            set_manual_cwd(self.args.cwd)
         if not self.args.list_backends:
             self.checkArguments()
             if not self.batchProcessing():
@@ -47,20 +56,6 @@ class HandleApplication:
         half_prec_supp = False
         availableBackends = []
         printMSG = ""
-        
-        
-        from src.utils.Util import (
-            checkForPytorchCUDA,
-            checkForPytorchROCM,
-            checkForNCNN,
-            checkForTensorRT,
-            check_bfloat16_support,
-            checkForDirectML,
-            checkForDirectMLHalfPrecisionSupport,
-            get_gpus_ncnn,
-            get_gpus_torch,
-            log
-        )
 
         if checkForTensorRT():
             """
@@ -119,7 +114,6 @@ class HandleApplication:
         print(printMSG)
 
     def renderVideo(self):
-        from src.RenderVideo import Render
         Render(
             # model settings
             inputFile=self.args.input,
@@ -434,7 +428,6 @@ class HandleApplication:
 
     def checkArguments(self):
         if self.args.version:
-            from src.version import __version__
             print(f"{__version__}")
             sys.exit(0)
         if (
