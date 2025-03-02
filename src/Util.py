@@ -18,6 +18,18 @@ from .constants import CWD, HAS_NETWORK_ON_STARTUP, IS_FLATPAK, PLATFORM, HOME_P
 
 class FileHandler:
     @staticmethod
+    def getFreeSpace() -> int:
+        """
+        Returns the available disk space in GB.
+        """
+        try:
+            total, used, free = shutil.disk_usage("/")
+            available_space = free / (1024**3)
+            return available_space
+        except Exception as e:
+            printAndLog(f"An error occurred while getting available disk space: {e}")
+            return 0
+    @staticmethod
     def moveFolder(prev: str, new: str):
         """
         moves a folder from prev to new

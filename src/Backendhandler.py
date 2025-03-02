@@ -4,6 +4,7 @@ import sys
 from .constants import BACKEND_PATH, PYTHON_EXECUTABLE_PATH, PLATFORM, IS_INSTALLED, IS_FLATPAK, HAS_NETWORK_ON_STARTUP
 from .Util import (
     log,
+    FileHandler
 )
 from .version import version
 
@@ -19,9 +20,10 @@ class BackendHandler:
             self.parent.downloadTorchCUDABtn.setEnabled(False)
             self.parent.downloadTensorRTBtn.setEnabled(False)
         if IS_FLATPAK:
-            self.parent.downloadTorchCUDABtn.setEnabled(False)
-            self.parent.downloadTorchROCmBtn.setEnabled(False)
-            self.parent.downloadTensorRTBtn.setEnabled(False)
+            if FileHandler.getFreeSpace() < 10:
+                self.parent.downloadTorchCUDABtn.setEnabled(False)
+                self.parent.downloadTorchROCmBtn.setEnabled(False)
+                self.parent.downloadTensorRTBtn.setEnabled(False)
 
         # disable as it is not complete
         try:
