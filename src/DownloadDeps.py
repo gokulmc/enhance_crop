@@ -144,7 +144,7 @@ class Python(Dependency):
         extractTarGZ(self.download_path)
     
     def get_version(self):
-        return subprocess.run([PYTHON_EXECUTABLE_PATH, "--version"], check=True, capture_output=True, text=True)
+        return subprocess.run([PYTHON_EXECUTABLE_PATH, "--version"], check=True, capture_output=True, text=True).stdout.strip().split(" ")[1] # this extracts the version number from the output
     
     def get_if_update_available(self) -> bool:
         try:
@@ -152,7 +152,7 @@ class Python(Dependency):
         except subprocess.CalledProcessError: # if python is not found
             self.download()
             return False
-        output = output.stdout.strip().split(" ")[1] # this extracts the version number from the output
+        
         is_update = not output == PYTHON_VERSION
 
         if is_update:
