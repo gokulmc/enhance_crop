@@ -199,7 +199,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             total_ncnn_gpus=total_ncnn_gpus,
             total_pytorch_gpus=total_pytorch_gpus,
         )
-        downloadDeps = DownloadDependencies(settings=self.settings)
+        downloadDeps = DownloadDependencies(False)
 
         # Startup Animation
         self.animationHandler = AnimationHandler()

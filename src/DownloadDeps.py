@@ -232,9 +232,8 @@ class DownloadDependencies:
     Downloads platform specific dependencies python and ffmpeg to their respective locations and creates the directories
 
     """
-    def __init__(self, settings):
-        self.settings = settings        
-
+    def __init__(self, use_torch_nightly:bool = False):
+        self.use_torch_nightly = use_torch_nightly
     def download_all_deps(self):
         for dep in Dependency.__subclasses__():
             d = dep()
@@ -310,7 +309,7 @@ class DownloadDependencies:
         Default deps
         Pytorch CUDA deps
         """
-        if self.settings["use_pytorch_pre_release"] == "True":
+        if self.use_torch_nightly == "True":
             torchCUDADeps = [
                 "--extra-index-url",
                 "https://download.pytorch.org/whl/nightly/cu128",  # switch to normal whl and test
@@ -342,12 +341,12 @@ class DownloadDependencies:
         TensorRT deps
         """
         tensorRTDeps = [
-            "tensorrt==10.8.0.43" if not self.settings["use_pytorch_pre_release"] == "True" else "tensorrt",
-            "tensorrt_cu12==10.8.0.43" if not self.settings["use_pytorch_pre_release"] == "True" else "tensorrt_cu12",
-            "tensorrt-cu12_libs==10.8.0.43" if not self.settings["use_pytorch_pre_release"] == "True" else "tensorrt-cu12_libs",
-            "tensorrt_cu12_bindings==10.8.0.43" if not self.settings["use_pytorch_pre_release"] == "True" else "tensorrt_cu12_bindings",
+            "tensorrt==10.8.0.43" if not self.use_torch_nightly == "True" else "tensorrt",
+            "tensorrt_cu12==10.8.0.43" if not self.use_torch_nightly == "True" else "tensorrt_cu12",
+            "tensorrt-cu12_libs==10.8.0.43" if not self.use_torch_nightly == "True" else "tensorrt-cu12_libs",
+            "tensorrt_cu12_bindings==10.8.0.43" if not self.use_torch_nightly == "True" else "tensorrt_cu12_bindings",
         ]
-        if self.settings["use_pytorch_pre_release"] == "True":
+        if self.use_torch_nightly == "True":
             tensorRTDeps += [
                 "--extra-index-url",
                 "https://download.pytorch.org/whl/test",

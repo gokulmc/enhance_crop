@@ -10,7 +10,7 @@ from .version import version
 
 
 class BackendHandler:
-    def __init__(self, parent, settings):
+    def __init__(self, parent, settings=None):
         self.parent = parent
         self.settings = settings
 
@@ -81,7 +81,7 @@ class BackendHandler:
             log(str(e))
         if not firstIter:
             RegularQTPopup("Please install at least 1 backend!")
-        downloadDependencies = DownloadDependencies(self.settings)
+        downloadDependencies = DownloadDependencies(False)
         DownloadDepsDialog(
             ncnnDownloadBtnFunc=lambda: downloadDependencies.downloadNCNNDeps(True),
             pytorchCUDABtnFunc=lambda: downloadDependencies.downloadPyTorchCUDADeps(
