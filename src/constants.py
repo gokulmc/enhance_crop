@@ -23,16 +23,11 @@ PLATFORM = sys.platform  # win32, darwin, linux
 IS_FLATPAK = "FLATPAK_ID" in os.environ
 HOME_PATH = os.path.expanduser("~")
 
-USE_LOCAL_BACKEND = not hasattr(sys, "frozen") and os.path.exists(
+USE_LOCAL_BACKEND =  os.path.exists(
     os.path.join(os.getcwd(), "backend")
 )
 if not USE_LOCAL_BACKEND:
-    if IS_FLATPAK:
-        CWD = (
-            os.path.join(
-                HOME_PATH, ".var", "app", "io.github.tntwise.REAL-Video-Enhancer"
-            )
-        )
+    
     if PLATFORM == "win32":
         CWD = os.path.join(HOME_PATH, "AppData", "Local", "REAL-Video-Enhancer")
     if PLATFORM == "darwin":
@@ -43,7 +38,12 @@ if not USE_LOCAL_BACKEND:
         )
 else:
     CWD = os.getcwd()
-
+if IS_FLATPAK:
+        CWD = (
+            os.path.join(
+                HOME_PATH, ".var", "app", "io.github.tntwise.REAL-Video-Enhancer"
+            )
+        )
 os.mkdir(CWD) if not os.path.exists(CWD) else None
 
 EXE_NAME = "REAL-Video-Enhancer.exe" if PLATFORM == "win32" else "REAL-Video-Enhancer"
