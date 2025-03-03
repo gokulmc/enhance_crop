@@ -15,6 +15,7 @@ from .constants import (
     TEMP_DOWNLOAD_PATH,
     CWD,
     HAS_NETWORK_ON_STARTUP,
+    USE_LOCAL_BACKEND,
 )
 from .version import version, backend_dev_version
 from .Util import (
@@ -96,6 +97,9 @@ class Backend(Dependency):
         return backend_url
     
     def download(self):
+        if USE_LOCAL_BACKEND:
+            return
+        needs_network_else_exit()
         download_link = self.get_download_link()
         DownloadProgressPopup(link=download_link, downloadLocation=self.download_path, title="Downloading Backend")
         extractTarGZ(self.download_path)
