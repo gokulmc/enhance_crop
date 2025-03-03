@@ -263,6 +263,7 @@ class DownloadDependencies:
         os.environ["TMPDIR"] = TEMP_DOWNLOAD_PATH
         if install:
             command += [
+                "--upgrade",
                 "--no-warn-script-location",
                 "--extra-index-url",
                 "https://download.pytorch.org/whl/",  # switch to normal whl and test
@@ -300,18 +301,19 @@ class DownloadDependencies:
 
     def getPlatformIndependentDeps(self):
         platformIndependentdeps = [
-            "testresources",
-            "requests",
-            "opencv-python-headless",
-            "pypresence",
-            "scenedetect",
+            "testresources==2.0.1",
+            "requests==2.32.3",
+            "opencv-python-headless==4.11.0.86",
+            "pypresence==4.3.0",
+            "scenedetect==0.6.5.2",
             "numpy==2.2.2",
             "sympy==1.13.1",
-            "tqdm",
-            "typing_extensions",
-            "packaging",
-            "mpmath",
-            "pillow",
+            "tqdm==4.67.1",
+            "typing_extensions==4.12.2",
+            "packaging==24.2",
+            "mpmath==1.3.0",
+            "pillow==11.1.0",
+            "sympy==1.13.1",
         ]
         return platformIndependentdeps
 
@@ -324,8 +326,8 @@ class DownloadDependencies:
         torchCUDADeps = [
             "torch==2.6.0+cu126",  #
             "torchvision==0.21.0+cu126",
-            "safetensors",
-            "einops",
+            "safetensors==0.5.3",
+            "einops==0.8.1",
             "cupy-cuda12x==13.3.0",
         ]
         return torchCUDADeps
@@ -386,9 +388,6 @@ class DownloadDependencies:
             "upscale_ncnn_py==1.2.0",
             "ncnn==1.0.20240820",
             "numpy==2.2.2",
-            "opencv-python-headless",
-            "mpmath",
-            "sympy==1.13.1",
         ]
         self.pip(ncnnDeps, install)
 
@@ -404,6 +403,19 @@ class DownloadDependencies:
         ]
         if PLATFORM == "linux":
             self.pip(rocmLinuxDeps, install)
+    def updateInstalledDeps(self, backends:list[str]):
+        if "pytorch (cuda)" in backends:
+            self.parent.downloadTorchCUDABtn.setVisible(False)
+            self.parent.uninstallTorchCUDABtn.setVisible(True)
+        if "pytorch (rocm)" in backends:
+            self.parent.downloadTorchROCmBtn.setVisible(False)
+            self.parent.uninstallTorchROCmBtn.setVisible(True)
+        if "ncnn" in backends:
+            self.parent.downloadNCNNBtn.setVisible(False)
+            self.parent.uninstallNCNNBtn.setVisible(True)
+        if "tensorrt" in backends:
+            self.parent.downloadTensorRTBtn.setVisible(False)
+            self.parent.uninstallTensorRTBtn.setVisible(True)
 
 
 if __name__ == "__main__":
