@@ -173,7 +173,7 @@ class Python(Dependency):
                 print("Updating Python")
             else:
                 is_update = False
-                self.is_update_available = is_update
+        self.is_update_available = is_update
         return self.is_update_available
 
     def update_if_updates_available(self) -> None:
@@ -260,6 +260,10 @@ class DownloadDependencies:
         if install:
             command += [
                 "--no-warn-script-location",
+                "--extra-index-url",
+                "https://download.pytorch.org/whl/",  # switch to normal whl and test
+                "--extra-index-url",
+                "https://pypi.nvidia.com",
             ]
         else:
             command += ["-y"]
@@ -297,7 +301,7 @@ class DownloadDependencies:
             "opencv-python-headless",
             "pypresence",
             "scenedetect",
-            "numpy==2.2.2", 
+            "numpy==2.2.2",
             "sympy==1.13.1",
             "tqdm",
             "typing_extensions",
@@ -313,28 +317,13 @@ class DownloadDependencies:
         Default deps
         Pytorch CUDA deps
         """
-        if self.use_torch_nightly == "True":
-            torchCUDADeps = [
-                "--extra-index-url",
-                "https://download.pytorch.org/whl/nightly/cu128",  # switch to normal whl and test
-                "torch",  #
-                "torchvision",
-                "safetensors",
-                "einops",
-                "cupy-cuda12x==13.3.0",
-            ]
-        else:
-            torchCUDADeps = [
-                "--extra-index-url",
-                "https://download.pytorch.org/whl/",  # switch to normal whl and test
-                "--extra-index-url",
-                "https://pypi.nvidia.com",
-                "torch==2.6.0+cu126",  #
-                "torchvision==0.21.0+cu126",
-                "safetensors",
-                "einops",
-                "cupy-cuda12x==13.3.0",
-            ]
+        torchCUDADeps = [
+            "torch==2.6.0+cu126",  #
+            "torchvision==0.21.0+cu126",
+            "safetensors",
+            "einops",
+            "cupy-cuda12x==13.3.0",
+        ]
         return torchCUDADeps
 
     def getTensorRTDeps(self):
@@ -345,26 +334,13 @@ class DownloadDependencies:
         TensorRT deps
         """
         tensorRTDeps = [
-            "tensorrt==10.8.0.43" if not self.use_torch_nightly == "True" else "tensorrt",
-            "tensorrt_cu12==10.8.0.43" if not self.use_torch_nightly == "True" else "tensorrt_cu12",
-            "tensorrt-cu12_libs==10.8.0.43" if not self.use_torch_nightly == "True" else "tensorrt-cu12_libs",
-            "tensorrt_cu12_bindings==10.8.0.43" if not self.use_torch_nightly == "True" else "tensorrt_cu12_bindings",
+            "tensorrt==10.8.0.43",
+            "tensorrt_cu12==10.8.0.43",
+            "tensorrt-cu12_libs==10.8.0.43",
+            "tensorrt_cu12_bindings==10.8.0.43",
+            "--no-deps",
+            "torch_tensorrt==2.6.0+cu126",
         ]
-        if self.use_torch_nightly == "True":
-            tensorRTDeps += [
-                "--extra-index-url",
-                "https://download.pytorch.org/whl/test",
-                "--no-deps",
-                "torch_tensorrt",
-            ]
-        else:
-            tensorRTDeps += [
-                "--extra-index-url",
-                "https://download.pytorch.org/whl/",
-                "--no-deps",
-                "torch_tensorrt==2.6.0+cu126",
-            ]
-
 
         return tensorRTDeps
 
@@ -402,7 +378,7 @@ class DownloadDependencies:
         if install:
             self.pip(self.getPlatformIndependentDeps())
         ncnnDeps = [
-            "rife-ncnn-vulkan-python-tntwise",
+            "rife-ncnn-vulkan-python-tntwise==1.4.5",
             "upscale_ncnn_py==1.2.0",
             "ncnn==1.0.20240820",
             "numpy==2.2.2",
