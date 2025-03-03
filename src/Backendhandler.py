@@ -20,10 +20,10 @@ class BackendHandler:
             self.parent.downloadTorchCUDABtn.setEnabled(False)
             self.parent.downloadTensorRTBtn.setEnabled(False)
 
-        if FileHandler.getFreeSpace() < 8:
+        if FileHandler.getFreeSpace() < 7:
             self.parent.downloadTorchCUDABtn.setEnabled(False)
             self.parent.downloadTorchROCmBtn.setEnabled(False)
-        if FileHandler.getFreeSpace() < 13:
+        if FileHandler.getFreeSpace() < 7:
             self.parent.downloadTensorRTBtn.setEnabled(False)
 
         # disable as it is not complete
