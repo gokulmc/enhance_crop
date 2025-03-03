@@ -19,11 +19,12 @@ class BackendHandler:
         if PLATFORM == "darwin":
             self.parent.downloadTorchCUDABtn.setEnabled(False)
             self.parent.downloadTensorRTBtn.setEnabled(False)
-        if IS_FLATPAK:
-            if FileHandler.getFreeSpace() < 10:
-                self.parent.downloadTorchCUDABtn.setEnabled(False)
-                self.parent.downloadTorchROCmBtn.setEnabled(False)
-                self.parent.downloadTensorRTBtn.setEnabled(False)
+
+        if FileHandler.getFreeSpace() < 8:
+            self.parent.downloadTorchCUDABtn.setEnabled(False)
+            self.parent.downloadTorchROCmBtn.setEnabled(False)
+        if FileHandler.getFreeSpace() < 13:
+            self.parent.downloadTensorRTBtn.setEnabled(False)
 
         # disable as it is not complete
         try:
