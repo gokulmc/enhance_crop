@@ -11,6 +11,7 @@
  - Backend to python 3.12
  - Bump tensorrt to 10.8
  - Bump ROCm to 6.2.4
+ - Enabled tensorrt and torch in flatpak.
 ### Fixed
  - Fixed lossless encoders
  - Fixed HDR Mode
