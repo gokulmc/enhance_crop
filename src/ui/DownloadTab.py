@@ -96,8 +96,8 @@ class DownloadTab:
         self.parent.selectNCNNCustomModel.clicked.connect(
             lambda: self.parent.importCustomModel("ncnn")
         )
-        self.parent.UpdateApplicationButton.clicked.connect(
-            self.applicationUpdater.install_new_update
+        self.parent.UpdateDependenciesButton.clicked.connect(
+            lambda: self.downloadDeps.updateInstalledDeps(self.backends)
         )
 
     def download(self, dep, install: bool = True):

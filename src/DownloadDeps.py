@@ -31,6 +31,7 @@ from .Util import (
 from .ui.QTcustom import (
     DownloadProgressPopup,
     DisplayCommandOutputPopup,
+    NetworkCheckPopup,
     RegularQTPopup,
     needs_network_else_exit,
 )
@@ -398,25 +399,25 @@ class DownloadDependencies:
         rocmLinuxDeps = [
             "torch==2.6.0+rocm6.2.4",
             "torchvision==0.21.0+rocm6.2.4",
-            "einops",
-            "safetensors",
+            "safetensors==0.5.3",
+            "einops==0.8.1",
         ]
         if PLATFORM == "linux":
             self.pip(rocmLinuxDeps, install)
-    def updateInstalledDeps(self, backends:list[str]):
-        if "pytorch (cuda)" in backends:
-            self.parent.downloadTorchCUDABtn.setVisible(False)
-            self.parent.uninstallTorchCUDABtn.setVisible(True)
-        if "pytorch (rocm)" in backends:
-            self.parent.downloadTorchROCmBtn.setVisible(False)
-            self.parent.uninstallTorchROCmBtn.setVisible(True)
-        if "ncnn" in backends:
-            self.parent.downloadNCNNBtn.setVisible(False)
-            self.parent.uninstallNCNNBtn.setVisible(True)
-        if "tensorrt" in backends:
-            self.parent.downloadTensorRTBtn.setVisible(False)
-            self.parent.uninstallTensorRTBtn.setVisible(True)
 
+    def updateInstalledDeps(self, backends:list[str]):
+        if NetworkCheckPopup("https://pypi.org/"):
+            if "pytorch (cuda)" in backends:
+                self.downloadPyTorchCUDADeps()
+            if "pytorch (rocm)" in backends:
+                self.downloadPyTorchROCmDeps()
+            if "ncnn" in backends:
+                self.downloadNCNNDeps()
+            if "tensorrt" in backends:
+                self.downloadPyTorchCUDADeps()
+                self.downloadTensorRTDeps()
+            
+            RegularQTPopup("Dependencies fully up-to-date!")
 
 if __name__ == "__main__":
     downloadDependencies = DownloadDependencies()
