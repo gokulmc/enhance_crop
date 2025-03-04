@@ -770,9 +770,34 @@ class RegularQTPopup(QtWidgets.QDialog):
         super().__init__()
         self.setWindowTitle("REAL Video Enhancer")
         self.setFixedSize(400, 100)
+        self.setStyleSheet(styleSheet())
+        
+        # Create main layout
         layout = QtWidgets.QVBoxLayout()
+        
+        # Add message label
         label = QtWidgets.QLabel(message)
         layout.addWidget(label)
+        
+        # Create horizontal layout for button
+        button_layout = QtWidgets.QHBoxLayout()
+        
+        # Add spacer to push button to the right
+        spacer = QtWidgets.QSpacerItem(
+            40, 20, 
+            QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Minimum
+        )
+        button_layout.addItem(spacer)
+        
+        # Create and add OK button
+        ok_button = QtWidgets.QPushButton("OK")
+        ok_button.clicked.connect(self.close)
+        button_layout.addWidget(ok_button)
+        
+        # Add button layout to main layout
+        layout.addLayout(button_layout)
+        
         self.setLayout(layout)
         self.exec()
 
