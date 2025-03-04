@@ -98,6 +98,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.videoWidth = None
         self.videoHeight = None
         self.isVideoLoaded = False
+        self.anyBackendsInstalled = True
         
         settings = Settings()
         settings.readSettings()
@@ -124,13 +125,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 d.update_if_updates_available()
             
 
-        
-
         self.backends, self.fullOutput = (
-            backendHandler.recursivlyCheckIfDepsOnFirstInstallToMakeSureUserHasInstalledAtLeastOneBackend(
-                firstIter=True
-            )
+            backendHandler.getAvailableBackends()
         )
+
+        # set default home page
+        self.stackedWidget.setCurrentIndex(0)
+
+        self.anyBackendsInstalled = len(self.backends) > 0
+        if not self.anyBackendsInstalled:
+            self.processBtn.setEnabled(False) # disable process button if no backends are available
+            self.stackedWidget.setCurrentIndex(4)
+            self.homeBtn.setChecked(False)
+            self.downloadBtn.setChecked(True)
+            self.processBtn.setToolTip("Please install at least one backend to enable processing.")
+            self.processBtn.setToolTipDuration(0)
+            
+            
 
         backendHandler.hideUninstallButtons()
         backendHandler.showUninstallButton(self.backends)
@@ -142,9 +153,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setMinimumSize(950, 600)
 
         self.aspect_ratio = self.width() / self.height()
-
-        # set default home page
-        self.stackedWidget.setCurrentIndex(0)
 
         self.QConnect()
         # set up tabs
@@ -176,6 +184,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # process the output
         total_ncnn_gpus = -1
         total_pytorch_gpus = -1
+        halfPrecisionSupport = False
         for line in self.fullOutput.lower().split("\n"):
             if "half precision support:" in line:
                 halfPrecisionSupport = "true" in line
@@ -187,11 +196,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         total_pytorch_gpus = max(0, total_pytorch_gpus)  # minimum gpu id is 0
         total_ncnn_gpus = max(0, total_ncnn_gpus)
 
-        
-        self.processTab = ProcessTab(
-            parent=self,
-            settings=settings,
-        )
+        if self.anyBackendsInstalled:
+            self.processTab = ProcessTab(
+                parent=self,
+                settings=settings,
+            )
         self.homeTab = HomeTab(parent=self)
         self.downloadTab = DownloadTab(parent=self, backends=self.backends)
         self.settingsTab = SettingsTab(
@@ -205,6 +214,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Startup Animation
         self.animationHandler = AnimationHandler()
         self.animationHandler.fadeInAnimation(self)
+
+        if not self.anyBackendsInstalled:
+            RegularQTPopup("Welcome to REAL Video Enhancer!\nPlease install at least one backend to get started.")
 
     def QConnect(self):
         # connect buttons to switch menus
@@ -621,7 +633,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             QMessageBox.StandardButton.No,  # type: ignore
         )
         if reply == QMessageBox.Yes:  # type: ignore
-            self.processTab.killRenderProcess()
+            if hasattr(self, "processTab"):
+                self.processTab.killRenderProcess()
             event.accept()
         else:
             event.ignore()

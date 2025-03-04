@@ -4526,60 +4526,6 @@ background-color:white;
                   <widget class="QWidget" name="widget_31" native="true" />
                  </item>
                  <item>
-                  <widget class="QWidget" name="backendUpdaterContainer" native="true">
-                   <layout class="QHBoxLayout" name="horizontalLayout_41">
-                    <property name="leftMargin">
-                     <number>4</number>
-                    </property>
-                    <property name="topMargin">
-                     <number>9</number>
-                    </property>
-                    <property name="rightMargin">
-                     <number>9</number>
-                    </property>
-                    <property name="bottomMargin">
-                     <number>9</number>
-                    </property>
-                    <item>
-                     <widget class="QPushButton" name="UpdateDependenciesButton">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>50</width>
-                        <height>45</height>
-                       </size>
-                      </property>
-                      <property name="text">
-                       <string />
-                      </property>
-                      <property name="icon">
-                       <iconset resource="resources.qrc">
-                        <normaloff>:/icons/icons/download.svg</normaloff>:/icons/icons/download.svg</iconset>
-                      </property>
-                      <property name="iconSize">
-                       <size>
-                        <width>30</width>
-                        <height>30</height>
-                       </size>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLabel" name="label_52">
-                      <property name="text">
-                       <string>Update Depdencies</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </widget>
-                 </item>
-                 <item>
                   <layout class="QHBoxLayout" name="horizontalLayout_46">
                    <item>
                     <widget class="QLabel" name="label_63">
@@ -4678,6 +4624,89 @@ background-color:white;
                       <number>0</number>
                      </property>
                      <item>
+                      <widget class="QWidget" name="pytorchBackendInstallerContainer_4" native="true">
+                       <layout class="QHBoxLayout" name="horizontalLayout_9">
+                        <property name="leftMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="topMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="rightMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="bottomMargin">
+                         <number>0</number>
+                        </property>
+                        <item>
+                         <widget class="QPushButton" name="downloadNCNNBtn">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                          <property name="maximumSize">
+                           <size>
+                            <width>50</width>
+                            <height>45</height>
+                           </size>
+                          </property>
+                          <property name="text">
+                           <string />
+                          </property>
+                          <property name="icon">
+                           <iconset resource="resources.qrc">
+                            <normaloff>:/icons/icons/download.svg</normaloff>:/icons/icons/download.svg</iconset>
+                          </property>
+                          <property name="iconSize">
+                           <size>
+                            <width>30</width>
+                            <height>30</height>
+                           </size>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QPushButton" name="uninstallNCNNBtn">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                          <property name="maximumSize">
+                           <size>
+                            <width>50</width>
+                            <height>45</height>
+                           </size>
+                          </property>
+                          <property name="text">
+                           <string />
+                          </property>
+                          <property name="icon">
+                           <iconset resource="resources.qrc">
+                            <normaloff>:/icons/icons/trash-2.svg</normaloff>:/icons/icons/trash-2.svg</iconset>
+                          </property>
+                          <property name="iconSize">
+                           <size>
+                            <width>30</width>
+                            <height>30</height>
+                           </size>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="label_10">
+                          <property name="text">
+                           <string>NCNN Vulkan (All GPUs, slower inference, small download)</string>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </widget>
+                     </item>
+                     <item>
                       <widget class="QWidget" name="pytorchBackendInstallerContainer" native="true">
                        <layout class="QHBoxLayout" name="horizontalLayout_6">
                         <property name="leftMargin">
@@ -4754,89 +4783,6 @@ background-color:white;
                          <widget class="QLabel" name="label_6">
                           <property name="text">
                            <string>PyTorch CUDA (Nvidia Only, faster infernce, large download) </string>
-                          </property>
-                         </widget>
-                        </item>
-                       </layout>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QWidget" name="pytorchBackendInstallerContainer_3" native="true">
-                       <layout class="QHBoxLayout" name="horizontalLayout_10">
-                        <property name="leftMargin">
-                         <number>0</number>
-                        </property>
-                        <property name="topMargin">
-                         <number>0</number>
-                        </property>
-                        <property name="rightMargin">
-                         <number>0</number>
-                        </property>
-                        <property name="bottomMargin">
-                         <number>0</number>
-                        </property>
-                        <item>
-                         <widget class="QPushButton" name="downloadTorchROCmBtn">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>50</width>
-                            <height>45</height>
-                           </size>
-                          </property>
-                          <property name="text">
-                           <string />
-                          </property>
-                          <property name="icon">
-                           <iconset resource="resources.qrc">
-                            <normaloff>:/icons/icons/download.svg</normaloff>:/icons/icons/download.svg</iconset>
-                          </property>
-                          <property name="iconSize">
-                           <size>
-                            <width>30</width>
-                            <height>30</height>
-                           </size>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QPushButton" name="uninstallTorchROCmBtn">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>50</width>
-                            <height>45</height>
-                           </size>
-                          </property>
-                          <property name="text">
-                           <string />
-                          </property>
-                          <property name="icon">
-                           <iconset resource="resources.qrc">
-                            <normaloff>:/icons/icons/trash-2.svg</normaloff>:/icons/icons/trash-2.svg</iconset>
-                          </property>
-                          <property name="iconSize">
-                           <size>
-                            <width>30</width>
-                            <height>30</height>
-                           </size>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="label_9">
-                          <property name="text">
-                           <string>PyTorch ROCm (AMD RX 6000 through RX 7000, linux only, faster infrence, large download)</string>
                           </property>
                          </widget>
                         </item>
@@ -4927,8 +4873,8 @@ background-color:white;
                       </widget>
                      </item>
                      <item>
-                      <widget class="QWidget" name="pytorchBackendInstallerContainer_4" native="true">
-                       <layout class="QHBoxLayout" name="horizontalLayout_9">
+                      <widget class="QWidget" name="pytorchBackendInstallerContainer_3" native="true">
+                       <layout class="QHBoxLayout" name="horizontalLayout_10">
                         <property name="leftMargin">
                          <number>0</number>
                         </property>
@@ -4942,7 +4888,7 @@ background-color:white;
                          <number>0</number>
                         </property>
                         <item>
-                         <widget class="QPushButton" name="downloadNCNNBtn">
+                         <widget class="QPushButton" name="downloadTorchROCmBtn">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
                             <horstretch>0</horstretch>
@@ -4971,7 +4917,7 @@ background-color:white;
                          </widget>
                         </item>
                         <item>
-                         <widget class="QPushButton" name="uninstallNCNNBtn">
+                         <widget class="QPushButton" name="uninstallTorchROCmBtn">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
                             <horstretch>0</horstretch>
@@ -5000,9 +4946,9 @@ background-color:white;
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_10">
+                         <widget class="QLabel" name="label_9">
                           <property name="text">
-                           <string>NCNN Vulkan (All GPUs, slower inference, small download)</string>
+                           <string>PyTorch ROCm (AMD RX 6000 through RX 7000, linux only, faster infrence, large download)</string>
                           </property>
                          </widget>
                         </item>
@@ -5094,6 +5040,60 @@ background-color:white;
                      </item>
                     </layout>
                    </widget>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QWidget" name="backendUpdaterContainer" native="true">
+                   <layout class="QHBoxLayout" name="horizontalLayout_41">
+                    <property name="leftMargin">
+                     <number>4</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>9</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>9</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>9</number>
+                    </property>
+                    <item>
+                     <widget class="QPushButton" name="UpdateDependenciesButton">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>50</width>
+                        <height>45</height>
+                       </size>
+                      </property>
+                      <property name="text">
+                       <string />
+                      </property>
+                      <property name="icon">
+                       <iconset resource="resources.qrc">
+                        <normaloff>:/icons/icons/download.svg</normaloff>:/icons/icons/download.svg</iconset>
+                      </property>
+                      <property name="iconSize">
+                       <size>
+                        <width>30</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="label_52">
+                      <property name="text">
+                       <string>Update Backends</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
                   </widget>
                  </item>
                 </layout>

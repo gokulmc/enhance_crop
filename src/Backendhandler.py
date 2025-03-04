@@ -128,6 +128,9 @@ class BackendHandler:
         backends_str = output[start:end]
 
         # Convert the string representation of the list to an actual list
-        backends = eval(backends_str)
+        try:
+            backends = eval(backends_str)
+        except Exception:
+            backends = []
 
         return backends, output
