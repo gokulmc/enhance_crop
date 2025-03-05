@@ -78,14 +78,11 @@ class DownloadTab:
         self.parent.uninstallNCNNBtn.clicked.connect(
             lambda: self.download("ncnn", False)
         )
-        self.parent.uninstallTorchCUDABtn.clicked.connect(
+        self.parent.uninstallTorchBtn.clicked.connect(
             lambda: self.download("torch_cuda", False)
         )
         self.parent.uninstallTensorRTBtn.clicked.connect(
             lambda: self.download("tensorrt", False)
-        )
-        self.parent.uninstallTorchROCmBtn.clicked.connect(
-            lambda: self.download("torch_rocm", False)
         )
         self.parent.uninstallDirectMLBtn.clicked.connect(
             lambda: self.download("directml", False)
