@@ -15,14 +15,12 @@ class BackendHandler:
         self.settings = settings
 
     def enableCorrectBackends(self):
-        self.parent.downloadTorchROCmBtn.setEnabled(PLATFORM == "linux")
         if PLATFORM == "darwin":
-            self.parent.downloadTorchCUDABtn.setEnabled(False)
+            self.parent.downloadTorchBtn.setEnabled(False)
             self.parent.downloadTensorRTBtn.setEnabled(False)
 
         if FileHandler.getFreeSpace() < 7:
-            self.parent.downloadTorchCUDABtn.setEnabled(False)
-            self.parent.downloadTorchROCmBtn.setEnabled(False)
+            self.parent.downloadTorchBtn.setEnabled(False)
         if FileHandler.getFreeSpace() < 7:
             self.parent.downloadTensorRTBtn.setEnabled(False)
 
@@ -35,19 +33,18 @@ class BackendHandler:
             print(e)
 
     def hideUninstallButtons(self):
-        self.parent.uninstallTorchCUDABtn.setVisible(False)
-        self.parent.uninstallTorchROCmBtn.setVisible(False)
+        self.parent.uninstallTorchBtn.setVisible(False)
         self.parent.uninstallNCNNBtn.setVisible(False)
         self.parent.uninstallTensorRTBtn.setVisible(False)
         self.parent.uninstallDirectMLBtn.setVisible(False)
 
     def showUninstallButton(self, backends):
         if "pytorch (cuda)" in backends:
-            self.parent.downloadTorchCUDABtn.setVisible(False)
-            self.parent.uninstallTorchCUDABtn.setVisible(True)
+            self.parent.downloadTorchBtn.setVisible(False)
+            self.parent.uninstallTorchBtn.setVisible(True)
         if "pytorch (rocm)" in backends:
-            self.parent.downloadTorchROCmBtn.setVisible(False)
-            self.parent.uninstallTorchROCmBtn.setVisible(True)
+            self.parent.downloadTorchBtn.setVisible(False)
+            self.parent.uninstallTorchBtn.setVisible(True)
         if "ncnn" in backends:
             self.parent.downloadNCNNBtn.setVisible(False)
             self.parent.uninstallNCNNBtn.setVisible(True)
@@ -64,39 +61,6 @@ class BackendHandler:
             print(e)
 
 
-            
-    def recursivlyCheckIfDepsOnFirstInstallToMakeSureUserHasInstalledAtLeastOneBackend(
-        self, firstIter=True
-    ):
-        from .DownloadDeps import DownloadDependencies
-        from .ui.QTcustom import RegularQTPopup, DownloadDepsDialog
-
-        """
-        will keep trying until the user installs at least 1 backend, happens when user tries to close out of backend slect and gets an error
-        """
-        try:
-            self.availableBackends, self.fullOutput = self.getAvailableBackends()
-            if not len(self.availableBackends) == 0:
-                return self.availableBackends, self.fullOutput
-        except SyntaxError as e:
-            log(str(e))
-        if not firstIter:
-            RegularQTPopup("Please install at least 1 backend!")
-        downloadDependencies = DownloadDependencies(False)
-        DownloadDepsDialog(
-            ncnnDownloadBtnFunc=lambda: downloadDependencies.downloadNCNNDeps(True),
-            pytorchCUDABtnFunc=lambda: downloadDependencies.downloadPyTorchCUDADeps(
-                True
-            ),
-            pytorchROCMBtnFunc=lambda: downloadDependencies.downloadPyTorchROCmDeps(
-                True
-            ),
-            trtBtnFunc=lambda: downloadDependencies.downloadTensorRTDeps(True),
-            directmlBtnFunc=lambda: downloadDependencies.downloadDirectMLDeps(True),
-        )
-        return self.recursivlyCheckIfDepsOnFirstInstallToMakeSureUserHasInstalledAtLeastOneBackend(
-            firstIter=False
-        )
 
     def getAvailableBackends(self):
         from .ui.QTcustom import SettingUpBackendPopup

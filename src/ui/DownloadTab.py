@@ -55,14 +55,11 @@ class DownloadTab:
 
     def QButtonConnect(self):
         self.parent.downloadNCNNBtn.clicked.connect(lambda: self.download("ncnn", True))
-        self.parent.downloadTorchCUDABtn.clicked.connect(
-            lambda: self.download("torch_cuda", True)
+        self.parent.downloadTorchBtn.clicked.connect(
+            lambda: self.download("torch", True)
         )
         self.parent.downloadTensorRTBtn.clicked.connect(
             lambda: self.download("tensorrt", True)
-        )
-        self.parent.downloadTorchROCmBtn.clicked.connect(
-            lambda: self.download("torch_rocm", True)
         )
         self.parent.downloadDirectMLBtn.clicked.connect(
             lambda: self.download("directml", True)
