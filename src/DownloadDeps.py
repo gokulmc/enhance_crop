@@ -342,16 +342,17 @@ class DownloadDependencies:
                 ]
                 deps += ["cupy-cuda12x==13.3.0"] if "cu" in backend else []
                 self.pip(deps, install)
-            case "tensorrt":
-                torch_version[-1] = "0" # if any torch version is .1, torch trt is not updated to that version
-                deps = [
-                    "tensorrt==10.8.0.43",
-                    "tensorrt_cu12==10.8.0.43",
-                    "tensorrt-cu12_libs==10.8.0.43",
-                    "tensorrt_cu12_bindings==10.8.0.43",
-                    "--no-deps",
-                    f"torch_tensorrt=={torch_version}+{torch_backend}",
-                ]
-                self.pip(deps, install)
+
+                if backend == "tensorrt":
+                    
+                    deps = [
+                        "tensorrt==10.8.0.43",
+                        "tensorrt_cu12==10.8.0.43",
+                        "tensorrt-cu12_libs==10.8.0.43",
+                        "tensorrt_cu12_bindings==10.8.0.43",
+                        "--no-deps",
+                        f"torch_tensorrt=={torch_version}+{torch_backend}",
+                    ]
+                    self.pip(deps, install)
         
         
