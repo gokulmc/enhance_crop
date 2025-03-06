@@ -137,6 +137,16 @@ class SettingsTab:
                 "video_pixel_format", self.parent.video_pixel_format.currentText()
             )
         )
+        self.parent.pytorch_version.currentIndexChanged.connect(
+            lambda: self.settings.writeSetting(
+                "pytorch_version", self.parent.pytorch_version.currentText()
+            )
+        )
+        self.parent.pytorch_backend.currentIndexChanged.connect(
+            lambda: self.settings.writeSetting(
+                "pytorch_backend", self.parent.pytorch_backend.currentText()
+            )
+        )
 
     def writeOutputFolder(self):
         outputlocation = self.parent.output_folder_location.text()
@@ -219,6 +229,13 @@ class SettingsTab:
         self.parent.video_pixel_format.setCurrentText(
             self.settings.settings["video_pixel_format"]
         )
+        self.parent.pytorch_version.setCurrentText(
+            self.settings.settings["pytorch_version"]
+        )
+        self.parent.pytorch_backend.setCurrentText(
+            self.settings.settings["pytorch_backend"]
+        )
+
 
     def selectOutputFolder(self):
         outputFile = QFileDialog.getExistingDirectory(
@@ -268,7 +285,8 @@ class Settings:
             "auto_border_cropping": "False",
             "video_container": "mkv",
             "video_pixel_format": "yuv420p",
-            "use_pytorch_pre_release": "False",
+            "pytorch_version": "2.6.0",
+            "pytorch_backend": "CUDA"
         }
         self.allowedSettings = {
             "precision": ("auto", "float32", "float16"),
@@ -317,8 +335,8 @@ class Settings:
                 "yuv422p10le",
                 "yuv444p10le",
             ),
-            "use_pytorch_pre_release": ("True", "False")
-            ,
+            "pytorch_version": "ANY",
+            "pytorch_backend": ("CUDA", "ROCm", "xpu")
         }
         self.settings = self.defaultSettings.copy()
         if not os.path.isfile(self.settingsFile):

@@ -312,13 +312,12 @@ class DownloadDependencies:
             "pypresence==4.3.0",
             "scenedetect==0.6.5.2",
             "numpy==2.2.2",
-            "sympy==1.13.1",
+            "sympy",
             "tqdm==4.67.1",
             "typing_extensions==4.12.2",
             "packaging==24.2",
             "mpmath==1.3.0",
             "pillow==11.1.0",
-            "sympy==1.13.1",
         ]
         return platformIndependentdeps
     
@@ -345,7 +344,7 @@ class DownloadDependencies:
                 self.pip(deps, install)
             case "tensorrt":
                 torch_version[-1] = "0" # if any torch version is .1, torch trt is not updated to that version
-                deps += [
+                deps = [
                     "tensorrt==10.8.0.43",
                     "tensorrt_cu12==10.8.0.43",
                     "tensorrt-cu12_libs==10.8.0.43",

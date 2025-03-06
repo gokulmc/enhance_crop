@@ -4532,11 +4532,18 @@ background-color:white;
                   <layout class="QHBoxLayout" name="horizontalLayout_46">
                    <item>
                     <layout class="QGridLayout" name="gridLayout_9">
-                     <item row="1" column="0">
-                      <widget class="QLabel" name="label_53">
-                       <property name="text">
-                        <string>PyTorch Backend</string>
-                       </property>
+                     <item row="0" column="2">
+                      <widget class="QComboBox" name="pytorch_version">
+                       <item>
+                        <property name="text">
+                         <string>2.6.0 (Stable)</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>2.7.0.dev20250304 (Nightly)</string>
+                        </property>
+                       </item>
                       </widget>
                      </item>
                      <item row="0" column="0">
@@ -4546,8 +4553,40 @@ background-color:white;
                        </property>
                       </widget>
                      </item>
-                     <item row="1" column="2">
-                      <widget class="QComboBox" name="pytorchBackendComboBox">
+                     <item row="0" column="1">
+                      <widget class="QLabel" name="label_64">
+                       <property name="maximumSize">
+                        <size>
+                         <width>25</width>
+                         <height>25</height>
+                        </size>
+                       </property>
+                       <property name="toolTip">
+                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;PyTorch Version&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:700;"/&gt;- This is the version downloaded&lt;/p&gt;&lt;p&gt; - Stable (Recommended), Nightly (Experimental, allows for Blackwell GPUs to run)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                       </property>
+                       <property name="toolTipDuration">
+                        <number>0</number>
+                       </property>
+                       <property name="text">
+                        <string />
+                       </property>
+                       <property name="pixmap">
+                        <pixmap resource="resources.qrc">:/icons/icons/info.svg</pixmap>
+                       </property>
+                       <property name="scaledContents">
+                        <bool>true</bool>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="0">
+                      <widget class="QLabel" name="label_53">
+                       <property name="text">
+                        <string>PyTorch Backend</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="2">
+                      <widget class="QComboBox" name="pytorch_backend">
                        <item>
                         <property name="text">
                          <string>CUDA</string>
@@ -4565,22 +4604,8 @@ background-color:white;
                        </item>
                       </widget>
                      </item>
-                     <item row="0" column="2">
-                      <widget class="QComboBox" name="pytorchVersionComboBox">
-                       <item>
-                        <property name="text">
-                         <string>2.6.0 (Stable)</string>
-                        </property>
-                       </item>
-                       <item>
-                        <property name="text">
-                         <string>2.7.0.dev20250304 (Nightly)</string>
-                        </property>
-                       </item>
-                      </widget>
-                     </item>
-                     <item row="0" column="1">
-                      <widget class="QLabel" name="label_64">
+                     <item row="2" column="1">
+                      <widget class="QLabel" name="label_66">
                        <property name="maximumSize">
                         <size>
                          <width>25</width>
@@ -4588,7 +4613,7 @@ background-color:white;
                         </size>
                        </property>
                        <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;Disable Dependency Limits&lt;/span&gt;&lt;/p&gt;&lt;p&gt; - Disables restrictions on dependencies being downloaded, RVE will just download the latest packages from pypi. &lt;span style=" font-weight:700;"&gt;MAY BREAK INFERENCE.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;PyTorch Backend&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- CUDA: NVIDIA GPUs 10 series and up&lt;/p&gt;&lt;p&gt;- ROCm: AMD (Linux Only) 6000 series and up&lt;/p&gt;&lt;p&gt;- xpu: Intel: idk fam, dunno if this even works lowkey&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                        </property>
                        <property name="toolTipDuration">
                         <number>0</number>

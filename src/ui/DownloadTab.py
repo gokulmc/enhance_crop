@@ -102,17 +102,17 @@ class DownloadTab:
         Returns:
         - None
         """
-        pytorch_ver = self.parent.pytorchVersionComboBox.currentText().split()[0]
-        pytorch_backend = self.parent.pytorchBackendComboBox.currentText().split()[0]
-        print(pytorch_ver, pytorch_backend, TorchScraper().torch_to_torchvision_versions)
-        torchvision_ver = TorchScraper().torch_to_torchvision_versions[pytorch_ver]
+        pytorch_ver = self.parent.pytorch_version.currentText().split()[0]
+        pytorch_backend = self.parent.pytorch_backend.currentText().split()[0]
+        torchvision_ver = TorchScraper().torchvision_version
 
         if pytorch_backend.lower() == "cuda":
-            pytorch_backend = TorchScraper().torch_to_cuda_versions[pytorch_ver]
+            pytorch_backend = TorchScraper().cuda_version
         elif pytorch_backend.lower() == "rocm":
-            pytorch_backend = TorchScraper().torch_to_rocm_versions[pytorch_ver]
+            pytorch_backend = TorchScraper().rocm_version
         else:
-            pytorch_backend = TorchScraper().torch_to_xpu_versions[pytorch_ver]
+            pytorch_backend = TorchScraper().xpu_version
+        
         if NetworkCheckPopup(
             "https://pypi.org/"
         ):  # check for network before installing

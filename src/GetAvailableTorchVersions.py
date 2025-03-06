@@ -4,7 +4,7 @@ try:
 except ImportError:
     from constants import HAS_NETWORK_ON_STARTUP
 from dataclasses import dataclass
-
+from .ui.SettingsTab import Settings
 @dataclass
 class TorchVersion:
     torch_version: str
@@ -20,15 +20,22 @@ class TorchVersion:
 
 class TorchScraper:
     def __init__(self):
-        torch_stable = "2.6.0"
-        nightly_date = "20250304"
-        torch_nightly = "2.7.0.dev{nightly_date}".format(nightly_date=nightly_date)
+        settings = Settings()
+        torch_version = settings.settings["pytorch_version"].split()[0] # has to be in the format "2.6.0" or "2.7.0.dev20220301"
+        nightly = "dev" in torch_version
+        if nightly:
+            nightly_date = torch_version.split(".dev")[1]
         
-        self.cuda_versions = ["cu126", "cu128"]
-        self.rocm_versions = ["rocm6.2.4", "rocm6.3"]
-        self.xpu_versions = ["xpu"]
-        self.torch_versions = ["2.6.0", f"{torch_nightly}"]
-        self.torch_to_torchvision_versions = {"2.6.0": "0.21.0", f"{torch_nightly}": "0.22.0.dev{nightly_date}".format(nightly_date=nightly_date)}
+
+        self.torchvision_version = "0.21.0"
+        self.cuda_version = "cu126"
+        self.rocm_version = "rocm6.2.4"
+        self.xpu_version = "xpu"
+        if nightly:
+            self.torchvision_version = "0.22.0.dev" + nightly_date
+            self.cuda_version = "cu128"
+            self.rocm_version = "rocm6.3"
+            self.xpu_version = "xpu"
         """
         torch cuda 2.6 -> cuda 12.6
         torch cuda 2.7 -> cuda 12.8
@@ -37,9 +44,7 @@ class TorchScraper:
         torch xpu 2.6 -> xpu
         torch xpu 2.7 -> xpu
         """
-        self.torch_to_cuda_versions = {"2.6.0": "cu126", f"{torch_nightly}": "cu128"}
-        self.torch_to_rocm_versions = {"2.6.0": "rocm6.2.4", f"{torch_nightly}": "rocm6.3"}
-        self.torch_to_xpu_versions = {"2.6.0": "xpu", f"{torch_nightly}": "xpu"}
+        
 
         self.stable_url = 'https://download.pytorch.org/whl/'
         self.stable_torch = 'https://download.pytorch.org/whl/torch'
