@@ -71,7 +71,7 @@ PYTHON_EXECUTABLE_PATH = (
     if PLATFORM == "win32"
     else os.path.join(CWD, "python", "python", "bin", "python3")
 )
-PYTHON_VERSION = "3.11.11" # sets python version of backend
+PYTHON_VERSION = "3.12.9" # sets python version of backend
 EXE_PATH = os.path.join(
     CWD,
     EXE_NAME,
