@@ -287,6 +287,7 @@ class DownloadDependencies:
             title="Download Dependencies",
             progressBarLength=totalDeps,
         )
+
         command = [
             PYTHON_EXECUTABLE_PATH,
             "-m",
@@ -320,83 +321,35 @@ class DownloadDependencies:
             "sympy==1.13.1",
         ]
         return platformIndependentdeps
-
-    def getPyTorchDeps(self, torch_version: Optional[str] = "2.6.0", torchvision_version: Optional[str] = "0.21.0", backend: Optional[str] = "cu126",):
-        """
-        Installs:
-        Default deps
-        Pytorch CUDA deps
-        """
-        torchDeps = [
-            f"torch=={torch_version}+{backend}",  #
-            f"torchvision=={torchvision_version}+{backend}",
-            "safetensors==0.5.3",
-            "einops==0.8.1",
-            
-        ]
-        torchDeps += ["cupy-cuda12x==13.3.0"] if "cu" in backend else []
-        return torchDeps
-
-    def getTensorRTDeps(self, torch_version: Optional[str] = "2.6.0", backend: Optional[str] = "cu126",):
-        """
-        Installs:
-        Default deps
-        Pytorch CUDA deps
-        TensorRT deps
-        """
-        torch_version[-1] = "0" # if any torch version is .1, torch trt is not updated to that version
-        tensorRTDeps = [
-            "tensorrt==10.8.0.43",
-            "tensorrt_cu12==10.8.0.43",
-            "tensorrt-cu12_libs==10.8.0.43",
-            "tensorrt_cu12_bindings==10.8.0.43",
-            "--no-deps",
-            f"torch_tensorrt=={torch_version}+{backend}",
-        ]
-
-        return tensorRTDeps
-
-    def downloadPyTorchDeps(self, install: bool = True, torch_version: Optional[str] = "2.6.0", torchvision_version: Optional[str] = "0.21.0", backend: Optional[str] = "cu126",):
-        self.pip(self.getPyTorchDeps(torch_version=torch_version,torchvision_version=torchvision_version, backend=backend), install)
-
-    def downloadTensorRTDeps(self, install: bool = True, torch_version: Optional[str] = "2.6.0", torchvision_version: Optional[str] = "0.21.0", backend: Optional[str] = "cu126",):
-        if install:
-            self.pip(self.getPlatformIndependentDeps(torch_version=torch_version, torchvision_version=torchvision_version, backend=backend))
-        self.pip(
-            self.getPyTorchDeps(),
-            install,
-        )
-        self.pip(
-            self.getTensorRTDeps(torch_version=torch_version, backend=backend),  # Has to be in this order, because i skip dependency check for torchvision
-            install,
-        )
-
-    def downloadDirectMLDeps(self, install: bool = True):
-        directMLDeps = [
-            "onnxruntime-directml",
-            "onnx",
-            "onnxconverter-common",
-        ] + self.getPlatformIndependentDeps()
-        self.pip(directMLDeps, install)
-
-    def downloadNCNNDeps(self, install: bool = True):
-        """
-        Installs:
-        Default deps
-        NCNN deps
-        """
-        if install:
-            self.pip(self.getPlatformIndependentDeps())
-        ncnnDeps = [
-            "rife-ncnn-vulkan-python-tntwise==1.4.5",
-            "upscale_ncnn_py==1.2.0",
-            "ncnn==1.0.20240820",
-            "numpy==2.2.2",
-        ]
-        self.pip(ncnnDeps, install)
-
-
-
-if __name__ == "__main__":
-    downloadDependencies = DownloadDependencies()
-    downloadDependencies.downloadPython()
+    
+    def downloadPythonDeps(self, backend, torch_version: Optional[str] = "2.6.0", torchvision_version: Optional[str] = "0.21.0", torch_backend: Optional[str] = "cu126", install: bool = True):
+        deps = self.getPlatformIndependentDeps()
+        match backend:
+            case "ncnn":
+                deps += [
+                    "rife-ncnn-vulkan-python-tntwise==1.4.5",
+                    "upscale_ncnn_py==1.2.0",
+                    "ncnn==1.0.20240820",
+                    "numpy==2.2.2",
+                ]
+            case "pytorch" | "tensorrt":
+                deps += [
+                    f"torch=={torch_version}+{torch_backend}",  #
+                    f"torchvision=={torchvision_version}+{torch_backend}",
+                    "safetensors==0.5.3",
+                    "einops==0.8.1",
+                    
+                ]
+                deps += ["cupy-cuda12x==13.3.0"] if "cu" in backend else []
+            case "tensorrt":
+                torch_version[-1] = "0" # if any torch version is .1, torch trt is not updated to that version
+                deps += [
+                    "tensorrt==10.8.0.43",
+                    "tensorrt_cu12==10.8.0.43",
+                    "tensorrt-cu12_libs==10.8.0.43",
+                    "tensorrt_cu12_bindings==10.8.0.43",
+                    "--no-deps",
+                    f"torch_tensorrt=={torch_version}+{torch_backend}",
+                ]
+        return_code = self.pip(deps, install)
+        log(return_code)

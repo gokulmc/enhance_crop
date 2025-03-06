@@ -444,9 +444,7 @@ class DisplayCommandOutputPopup(QtWidgets.QDialog):
         self.progressBarLength = progressBarLength
         self.setup_ui()
         self.setLayout(self.gridLayout)
-        self.exec()
-        self.workerThread.wait()
-
+    
     """
     Initializes all threading bs
     """

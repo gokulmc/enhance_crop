@@ -116,15 +116,7 @@ class DownloadTab:
         if NetworkCheckPopup(
             "https://pypi.org/"
         ):  # check for network before installing
-            match dep:
-                case "ncnn":
-                    self.downloadDeps.downloadNCNNDeps(install)
-                case "torch":
-                    self.downloadDeps.downloadPyTorchDeps(install, pytorch_ver, torchvision_ver, pytorch_backend)
-                case "tensorrt":
-                    self.downloadDeps.downloadTensorRTDeps(install, pytorch_ver, torchvision_ver, pytorch_backend)
-                case "directml":
-                    self.downloadDeps.downloadDirectMLDeps(install)
+            self.downloadDeps.downloadPythonDeps(dep, pytorch_ver, torchvision_ver, pytorch_backend, install)
             RegularQTPopup(
                 "Download Complete\nPlease restart the application to apply changes."
             )
