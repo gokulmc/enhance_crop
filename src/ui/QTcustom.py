@@ -52,6 +52,7 @@ from PySide6.QtWidgets import (
     QWidget,
     QSpacerItem,
     QCheckBox,
+    QComboBox,
     QGridLayout,
     QMainWindow,
 )
@@ -59,8 +60,35 @@ from PySide6.QtWidgets import (
 from .QTstyle import styleSheet
 from ..constants import HAS_NETWORK_ON_STARTUP
 from ..Util import log, networkCheck
-from ..Backendhandler import BackendHandler
 
+def disable_combobox_item(combobox: QComboBox, index):
+    """
+    Disable a specific item in a QComboBox (making it visible but unselectable)
+    
+    Parameters:
+        combobox: QComboBox widget
+        index: Index of the item to disable
+    """
+    if 0 <= index < combobox.count():
+        model = combobox.model()
+        item = model.item(index)
+        if item:
+            # Remove the enabled flag to disable the item
+            flags = item.flags() & ~Qt.ItemIsEnabled
+            item.setFlags(flags)
+            item.setForeground(QBrush(QColor(128, 128, 128)))  # Gray color
+
+def disable_combobox_item_by_text(combobox: QComboBox, text):
+    """
+    Disable a specific item in a QComboBox by its text
+    
+    Parameters:
+        combobox: QComboBox widget
+        text: Text of the item to disable
+    """
+    index = combobox.findText(text)
+    if index >= 0:
+        disable_combobox_item(combobox, index)
 
 def hide_layout_widgets(layout):
     # Iterate through all items in the layout and hide the widgets

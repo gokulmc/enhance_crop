@@ -123,7 +123,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             d = dep()
             if d.get_if_update_available():
                 d.update_if_updates_available()
-            
+        
 
         self.backends, self.fullOutput = (
             backendHandler.getAvailableBackends()

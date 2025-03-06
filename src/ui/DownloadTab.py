@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QMainWindow
-from .QTcustom import RegularQTPopup, NetworkCheckPopup, addNotificationToButton
+from .QTcustom import RegularQTPopup, NetworkCheckPopup, addNotificationToButton, disable_combobox_item_by_text
 from ..DownloadDeps import DownloadDependencies
 from ..DownloadModels import DownloadModel
 from ..ModelHandler import (
@@ -9,8 +9,8 @@ from ..ModelHandler import (
     pytorchUpscaleModels,
 )
 from .Updater import ApplicationUpdater
-from ..constants import IS_FLATPAK, MODELS_PATH
-
+from ..constants import IS_FLATPAK, MODELS_PATH, PLATFORM
+from ..GetAvailableTorchVersions import TorchScraper
 
 def downloadModelsBasedOnInstalledBackend(installed_backends: list):
     if NetworkCheckPopup():
@@ -46,6 +46,8 @@ class DownloadTab:
         self.applicationUpdater = ApplicationUpdater()
 
         # set this all to not visible, as scrapping the idea for now.
+        if PLATFORM != "linux":
+            disable_combobox_item_by_text(self.parent.pytorchBackendComboBox, "ROCm (Linux Only)")
 
         self.parent.ApplicationUpdateContainer.setVisible(False)
         # elif self.applicationUpdater.check_for_updates():
@@ -76,7 +78,7 @@ class DownloadTab:
             lambda: self.download("ncnn", False)
         )
         self.parent.uninstallTorchBtn.clicked.connect(
-            lambda: self.download("torch_cuda", False)
+            lambda: self.download("torch", False)
         )
         self.parent.uninstallTensorRTBtn.clicked.connect(
             lambda: self.download("tensorrt", False)
@@ -90,9 +92,7 @@ class DownloadTab:
         self.parent.selectNCNNCustomModel.clicked.connect(
             lambda: self.parent.importCustomModel("ncnn")
         )
-        self.parent.UpdateDependenciesButton.clicked.connect(
-            lambda: self.downloadDeps.updateInstalledDeps(self.backends)
-        )
+
 
     def download(self, dep, install: bool = True):
         """
@@ -102,18 +102,27 @@ class DownloadTab:
         Returns:
         - None
         """
+        pytorch_ver = self.parent.pytorchVersionComboBox.currentText().split()[0]
+        pytorch_backend = self.parent.pytorchBackendComboBox.currentText().split()[0]
+        print(pytorch_ver, pytorch_backend, TorchScraper().torch_to_torchvision_versions)
+        torchvision_ver = TorchScraper().torch_to_torchvision_versions[pytorch_ver]
+
+        if pytorch_backend.lower() == "cuda":
+            pytorch_backend = TorchScraper().torch_to_cuda_versions[pytorch_ver]
+        elif pytorch_backend.lower() == "rocm":
+            pytorch_backend = TorchScraper().torch_to_rocm_versions[pytorch_ver]
+        else:
+            pytorch_backend = TorchScraper().torch_to_xpu_versions[pytorch_ver]
         if NetworkCheckPopup(
             "https://pypi.org/"
         ):  # check for network before installing
             match dep:
                 case "ncnn":
                     self.downloadDeps.downloadNCNNDeps(install)
-                case "torch_cuda":
-                    self.downloadDeps.downloadPyTorchCUDADeps(install)
+                case "torch":
+                    self.downloadDeps.downloadPyTorchDeps(install, pytorch_ver, torchvision_ver, pytorch_backend)
                 case "tensorrt":
-                    self.downloadDeps.downloadTensorRTDeps(install)
-                case "torch_rocm":
-                    self.downloadDeps.downloadPyTorchROCmDeps(install)
+                    self.downloadDeps.downloadTensorRTDeps(install, pytorch_ver, torchvision_ver, pytorch_backend)
                 case "directml":
                     self.downloadDeps.downloadDirectMLDeps(install)
             RegularQTPopup(

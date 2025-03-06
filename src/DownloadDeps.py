@@ -35,6 +35,7 @@ from .ui.QTcustom import (
     RegularQTPopup,
     needs_network_else_exit,
 )
+from .GetAvailableTorchVersions import TorchScraper
 import os
 from platform import machine
 import subprocess
@@ -267,6 +268,8 @@ class DownloadDependencies:
                 "--upgrade",
                 "--no-warn-script-location",
                 "--extra-index-url",
+                "https://download.pytorch.org/whl/nightly/",
+                "--extra-index-url",
                 "https://download.pytorch.org/whl/",  # switch to normal whl and test
                 "--extra-index-url",
                 "https://pypi.nvidia.com",
@@ -318,53 +321,53 @@ class DownloadDependencies:
         ]
         return platformIndependentdeps
 
-    def getPyTorchCUDADeps(self):
+    def getPyTorchDeps(self, torch_version: Optional[str] = "2.6.0", torchvision_version: Optional[str] = "0.21.0", backend: Optional[str] = "cu126",):
         """
         Installs:
         Default deps
         Pytorch CUDA deps
         """
-        torchCUDADeps = [
-            "torch==2.6.0+cu126",  #
-            "torchvision==0.21.0+cu126",
+        torchDeps = [
+            f"torch=={torch_version}+{backend}",  #
+            f"torchvision=={torchvision_version}+{backend}",
             "safetensors==0.5.3",
             "einops==0.8.1",
-            "cupy-cuda12x==13.3.0",
+            
         ]
-        return torchCUDADeps
+        torchDeps += ["cupy-cuda12x==13.3.0"] if "cu" in backend else []
+        return torchDeps
 
-    def getTensorRTDeps(self):
+    def getTensorRTDeps(self, torch_version: Optional[str] = "2.6.0", backend: Optional[str] = "cu126",):
         """
         Installs:
         Default deps
         Pytorch CUDA deps
         TensorRT deps
         """
+        torch_version[-1] = "0" # if any torch version is .1, torch trt is not updated to that version
         tensorRTDeps = [
             "tensorrt==10.8.0.43",
             "tensorrt_cu12==10.8.0.43",
             "tensorrt-cu12_libs==10.8.0.43",
             "tensorrt_cu12_bindings==10.8.0.43",
             "--no-deps",
-            "torch_tensorrt==2.6.0+cu126",
+            f"torch_tensorrt=={torch_version}+{backend}",
         ]
 
         return tensorRTDeps
 
-    def downloadPyTorchCUDADeps(self, install: bool = True):
-        if install:
-            self.pip(self.getPlatformIndependentDeps())
-        self.pip(self.getPyTorchCUDADeps(), install)
+    def downloadPyTorchDeps(self, install: bool = True, torch_version: Optional[str] = "2.6.0", torchvision_version: Optional[str] = "0.21.0", backend: Optional[str] = "cu126",):
+        self.pip(self.getPyTorchDeps(torch_version=torch_version,torchvision_version=torchvision_version, backend=backend), install)
 
-    def downloadTensorRTDeps(self, install: bool = True):
+    def downloadTensorRTDeps(self, install: bool = True, torch_version: Optional[str] = "2.6.0", torchvision_version: Optional[str] = "0.21.0", backend: Optional[str] = "cu126",):
         if install:
-            self.pip(self.getPlatformIndependentDeps())
+            self.pip(self.getPlatformIndependentDeps(torch_version=torch_version, torchvision_version=torchvision_version, backend=backend))
         self.pip(
-            self.getPyTorchCUDADeps(),
+            self.getPyTorchDeps(),
             install,
         )
         self.pip(
-            self.getTensorRTDeps(),  # Has to be in this order, because i skip dependency check for torchvision
+            self.getTensorRTDeps(torch_version=torch_version, backend=backend),  # Has to be in this order, because i skip dependency check for torchvision
             install,
         )
 
@@ -392,32 +395,7 @@ class DownloadDependencies:
         ]
         self.pip(ncnnDeps, install)
 
-    def downloadPyTorchROCmDeps(self, install: bool = True):
-        if install:
-            self.pip(self.getPlatformIndependentDeps())
 
-        rocmLinuxDeps = [
-            "torch==2.6.0+rocm6.2.4",
-            "torchvision==0.21.0+rocm6.2.4",
-            "safetensors==0.5.3",
-            "einops==0.8.1",
-        ]
-        if PLATFORM == "linux":
-            self.pip(rocmLinuxDeps, install)
-
-    def updateInstalledDeps(self, backends:list[str]):
-        if NetworkCheckPopup("https://pypi.org/"):
-            if "pytorch (cuda)" in backends:
-                self.downloadPyTorchCUDADeps()
-            if "pytorch (rocm)" in backends:
-                self.downloadPyTorchROCmDeps()
-            if "ncnn" in backends:
-                self.downloadNCNNDeps()
-            if "tensorrt" in backends:
-                self.downloadPyTorchCUDADeps()
-                self.downloadTensorRTDeps()
-            
-            RegularQTPopup("Dependencies fully up-to-date!")
 
 if __name__ == "__main__":
     downloadDependencies = DownloadDependencies()

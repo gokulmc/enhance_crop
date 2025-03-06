@@ -137,14 +137,6 @@ class SettingsTab:
                 "video_pixel_format", self.parent.video_pixel_format.currentText()
             )
         )
-        self.parent.use_pytorch_pre_release.stateChanged.connect(
-            lambda: self.settings.writeSetting(
-                "use_pytorch_pre_release",
-                "True"
-                if self.parent.use_pytorch_pre_release.isChecked()
-                else "False",
-            )
-        )
 
     def writeOutputFolder(self):
         outputlocation = self.parent.output_folder_location.text()
@@ -227,10 +219,6 @@ class SettingsTab:
         self.parent.video_pixel_format.setCurrentText(
             self.settings.settings["video_pixel_format"]
         )
-        self.parent.use_pytorch_pre_release.setChecked(
-            self.settings.settings["use_pytorch_pre_release"] == "True"
-        )
-
 
     def selectOutputFolder(self):
         outputFile = QFileDialog.getExistingDirectory(
