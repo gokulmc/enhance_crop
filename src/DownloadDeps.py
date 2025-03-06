@@ -325,7 +325,11 @@ class DownloadDependencies:
         return platformIndependentdeps
     
     def downloadPythonDeps(self, backend, torch_version: Optional[str] = "2.6.0", torchvision_version: Optional[str] = "0.21.0", torch_backend: Optional[str] = "cu126", install: bool = True):
-        deps = self.getPlatformIndependentDeps()
+        deps = []
+
+        if install: # dont uninstall platform independent deps
+            deps = self.getPlatformIndependentDeps()
+            
         return_codes = []
         match backend:
             case "ncnn":
