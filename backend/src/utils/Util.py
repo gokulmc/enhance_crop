@@ -139,6 +139,22 @@ def checkForPytorchROCM() -> bool:
     except Exception as e:
         log(str(e))
 
+def checkForPytorchXPU() -> bool:
+    """
+    function that checks if the pytorch backend is available
+    """
+    try:
+        import torch
+        import torchvision
+
+        if "xpu" in torch.__version__:
+            return True
+        return False
+    except ImportError as e:
+        log(str(e))
+        return False
+    except Exception as e:
+        log(str(e))
 
 def checkForTensorRT() -> bool:
     """
