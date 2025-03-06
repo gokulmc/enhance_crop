@@ -641,17 +641,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 def main():
+    app = QApplication(sys.argv)
+    app.setStyle("Fusion")
+    app.setPalette(Palette())
+    window = MainWindow()
     if not "--unlock" in sys.argv:
         lock_file = QLockFile(LOCKFILE)
         if not lock_file.tryLock(100):
             QMessageBox.warning(None, "Instance Running", "Another instance is already running.")
             sys.exit(0)
-    app = QApplication(sys.argv)
-    app.setStyle("Fusion")
+    
     # setting the pallette
 
-    app.setPalette(Palette())
-    window = MainWindow()
+    
     if "--fullscreen" in sys.argv:
         window.showFullScreen()
     window.show()
