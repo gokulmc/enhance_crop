@@ -332,7 +332,8 @@ class DownloadDependencies:
                     "ncnn==1.0.20240820",
                     "numpy==2.2.2",
                 ]
-            case "pytorch" | "tensorrt":
+                self.pip(deps, install)
+            case "torch" | "tensorrt":
                 deps += [
                     f"torch=={torch_version}+{torch_backend}",  #
                     f"torchvision=={torchvision_version}+{torch_backend}",
@@ -341,6 +342,7 @@ class DownloadDependencies:
                     
                 ]
                 deps += ["cupy-cuda12x==13.3.0"] if "cu" in backend else []
+                self.pip(deps, install)
             case "tensorrt":
                 torch_version[-1] = "0" # if any torch version is .1, torch trt is not updated to that version
                 deps += [
@@ -351,5 +353,6 @@ class DownloadDependencies:
                     "--no-deps",
                     f"torch_tensorrt=={torch_version}+{torch_backend}",
                 ]
-        return_code = self.pip(deps, install)
-        log(return_code)
+                self.pip(deps, install)
+        
+        
