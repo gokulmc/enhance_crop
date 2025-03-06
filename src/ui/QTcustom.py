@@ -265,6 +265,7 @@ class DownloadAndReportToQTThread(QThread):
 
 class SubprocessThread(QThread):
     output = QtCore.Signal(str)
+    return_code = QtCore.Signal(int)
     fullOutput = QtCore.Signal(str)
 
     def __init__(self, command):
@@ -289,6 +290,7 @@ class SubprocessThread(QThread):
         self.process.stdout.close()
         return_code = self.process.wait()
         self.output.emit(f"Process finished with return code {return_code}")
+        self.return_code.emit(return_code)
 
 
 # Custom Widgets
@@ -443,7 +445,9 @@ class DisplayCommandOutputPopup(QtWidgets.QDialog):
         self.totalIters = 0
         self.progressBarLength = progressBarLength
         self.setup_ui()
+        
         self.setLayout(self.gridLayout)
+        self.startDownload()
         self.exec()
         self.workerThread.wait()
     """
@@ -455,7 +459,7 @@ class DisplayCommandOutputPopup(QtWidgets.QDialog):
         self.setWindowTitle(self.title)
         self.setStyleSheet(styleSheet())
         self.setMinimumSize(700, 100)
-        self.startDownload()
+        
         self.centralwidget = QtWidgets.QWidget(parent=self)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
@@ -507,6 +511,7 @@ class DisplayCommandOutputPopup(QtWidgets.QDialog):
     def startDownload(self):
         self.workerThread = SubprocessThread(command=self.command)
         self.workerThread.output.connect(self.setProgress)
+        self.workerThread.return_code.connect(self.set_return_code)
         self.workerThread.finished.connect(self.close)
         self.workerThread.finished.connect(self.workerThread.deleteLater)
         self.workerThread.finished.connect(self.workerThread.quit)
@@ -514,6 +519,15 @@ class DisplayCommandOutputPopup(QtWidgets.QDialog):
             self.workerThread.wait
         )  # need quit and wait to allow process to exit safely
         self.workerThread.start()
+
+    def set_return_code(self, return_code):
+        self.return_code = return_code
+    
+    def get_return_code(self) -> int:  
+        try:
+            return self.return_code
+        except Exception:
+            return 1
 
     def setProgress(self, value):
         self.totalCommandOutput += value + "\n"

@@ -116,7 +116,10 @@ class DownloadTab:
         if NetworkCheckPopup(
             "https://pypi.org/"
         ):  # check for network before installing
-            self.downloadDeps.downloadPythonDeps(dep, pytorch_ver, torchvision_ver, pytorch_backend, install)
-            RegularQTPopup(
-                "Download Complete\nPlease restart the application to apply changes."
-            )
+            return_code = self.downloadDeps.downloadPythonDeps(dep, pytorch_ver, torchvision_ver, pytorch_backend, install)
+            if return_code == 0:
+                RegularQTPopup(
+                    "Download Complete\nPlease restart the application to apply changes."
+                )
+            else:
+                RegularQTPopup("Download Failed!\nPlease check logs for more info.")

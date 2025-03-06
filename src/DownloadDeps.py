@@ -282,11 +282,13 @@ class DownloadDependencies:
         log("Downloading Deps: " + str(command))
         log("Total Dependencies: " + str(totalDeps))
 
-        DisplayCommandOutputPopup(
+        d = DisplayCommandOutputPopup(
             command=command,
             title="Download Dependencies",
             progressBarLength=totalDeps,
         )
+
+        return_code = d.get_return_code()
 
         command = [
             PYTHON_EXECUTABLE_PATH,
@@ -303,6 +305,7 @@ class DownloadDependencies:
         if origTemp:
             os.environ["TMPDIR"] = str(origTemp)
         removeFolder(TEMP_DOWNLOAD_PATH)
+        return return_code
 
     def getPlatformIndependentDeps(self):
         platformIndependentdeps = [
@@ -323,6 +326,7 @@ class DownloadDependencies:
     
     def downloadPythonDeps(self, backend, torch_version: Optional[str] = "2.6.0", torchvision_version: Optional[str] = "0.21.0", torch_backend: Optional[str] = "cu126", install: bool = True):
         deps = self.getPlatformIndependentDeps()
+        return_codes = []
         match backend:
             case "ncnn":
                 deps += [
@@ -331,7 +335,8 @@ class DownloadDependencies:
                     "ncnn==1.0.20240820",
                     "numpy==2.2.2",
                 ]
-                self.pip(deps, install)
+                return_code = self.pip(deps, install)
+                return_codes.append(return_code)
             case "torch" | "tensorrt":
                 deps += [
                     f"torch=={torch_version}+{torch_backend}",  #
@@ -341,7 +346,8 @@ class DownloadDependencies:
                     
                 ]
                 deps += ["cupy-cuda12x==13.3.0"] if "cu" in backend else []
-                self.pip(deps, install)
+                return_code = self.pip(deps, install)
+                return_codes.append(return_code)
 
                 if backend == "tensorrt":
                     
@@ -353,6 +359,10 @@ class DownloadDependencies:
                         "--no-deps",
                         f"torch_tensorrt=={torch_version}+{torch_backend}",
                     ]
-                    self.pip(deps, install)
+                    return_code = self.pip(deps, install)
+                    return_codes.append(return_code)
         
-        
+        for return_code in return_codes:
+            if return_code != 0:
+                return return_code
+        return return_code
