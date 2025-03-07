@@ -5,6 +5,8 @@
  - Updates backend and python version.
  - MacOS support.
  - Lock to make sure the app does not have duplicates open.
+ - Switchable pytorch backend and version.
+ - Experimental Blackwell GPU support. 
 ### Changed
  - Installes to a preset directory, and updates python and backend dynamically.
  - Improved RIFE TensorRT speeds
