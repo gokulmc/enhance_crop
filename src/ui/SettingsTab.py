@@ -336,7 +336,7 @@ class Settings:
                 "yuv444p10le",
             ),
             "pytorch_version": "ANY",
-            "pytorch_backend": ("CUDA", "ROCm", "xpu")
+            "pytorch_backend": "ANY",
         }
         self.settings = self.defaultSettings.copy()
         if not os.path.isfile(self.settingsFile):

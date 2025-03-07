@@ -1,8 +1,8 @@
 import os
 
 # os variables
-os.environ["HSA_OVERRIDE_GFX_VERSION"] = "10.3.0"
-os.environ["HCC_AMDGPU_TARGET"] = "gfx1100"
+os.environ["HSA_OVERRIDE_GFX_VERSION"] = "11.0.0"
+os.environ["HCC_AMDGPU_TARGET"] = "gfx1030"
 
 import argparse
 import sys
