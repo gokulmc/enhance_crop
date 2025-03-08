@@ -47,7 +47,7 @@ class DownloadTab:
 
         # set this all to not visible, as scrapping the idea for now.
         if PLATFORM != "linux":
-            disable_combobox_item_by_text(self.parent.pytorchBackendComboBox, "ROCm (Linux Only)")
+            disable_combobox_item_by_text(self.parent.pytorch_backend, "ROCm (Linux Only)")
 
         self.parent.ApplicationUpdateContainer.setVisible(False)
         # elif self.applicationUpdater.check_for_updates():
