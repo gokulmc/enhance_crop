@@ -23,9 +23,11 @@ PLATFORM = sys.platform  # win32, darwin, linux
 IS_FLATPAK = "FLATPAK_ID" in os.environ
 HOME_PATH = os.path.expanduser("~")
 
+IS_COMPILED_OR_FROZEN = hasattr(sys, "frozen")
 USE_LOCAL_BACKEND =  os.path.exists(
     os.path.join(os.getcwd(), "backend")
-)
+) and not IS_COMPILED_OR_FROZEN 
+
 if not USE_LOCAL_BACKEND:
     
     if PLATFORM == "win32":
