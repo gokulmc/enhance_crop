@@ -75,6 +75,7 @@ class InterpolateGIMMTorch(BaseInterpolate):
     def _load(self):
         self.stream = torch.cuda.Stream()
         self.prepareStream = torch.cuda.Stream()
+        self.copyStream = torch.cuda.Stream()
         with torch.cuda.stream(self.prepareStream):  # type: ignore
             from .InterpolateArchs.GIMM.gimmvfi_r import GIMMVFI_R
 
@@ -203,6 +204,6 @@ class InterpolateGIMMTorch(BaseInterpolate):
                     if upscaleModel is not None:
                         img1 = upscaleModel(frame1[:, :, : self.height, : self.width])
                     writeQueue.put(img1)
-            self.copyTensor(self.frame0, frame1)
+            self.copyTensor(self.frame0, frame1, self.copyStream)
 
         self.stream.synchronize()
