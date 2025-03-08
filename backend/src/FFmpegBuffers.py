@@ -7,6 +7,7 @@ import queue
 import sys
 import time
 import math
+import platform
 from .constants import FFMPEG_PATH, FFMPEG_LOG_FILE
 from .utils.Util import (
     log,
@@ -42,6 +43,7 @@ class FFmpegRead(Buffer):
             self.command(),
             stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL,
+            creationflags=subprocess.CREATE_NO_WINDOW if platform.system() == "Windows" else 0,  # Prevent opening a new window on Windows
         )
         self.readQueue = queue.Queue(maxsize=100)
 
@@ -159,6 +161,7 @@ class FFmpegWrite(Buffer):
                 stdout=subprocess.PIPE if self.mpv_output else self.ffmpeg_log,
                 text=True,
                 universal_newlines=True,
+                creationflags=subprocess.CREATE_NO_WINDOW if platform.system() == "Windows" else 0,  # Prevent opening a new window on Windows
             )
         except Exception as e:
             self.onErroredExit()
@@ -428,7 +431,7 @@ class MPVOutput:
                 stdin=self.FFMPegWrite.writeProcess.stdout,
                 stderr=f,
                 stdout=f,
-
+                creationflags=subprocess.CREATE_NO_WINDOW if platform.system() == "Windows" else 0,  # Prevent opening a new window on Windows
             )
             self.FFMPegWrite.writeProcess.stdout.close()
             self.proc.wait()

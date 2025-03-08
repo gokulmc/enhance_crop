@@ -27,6 +27,7 @@ from ..constants import (
     PAUSED_STATE_SHARED_MEMORY_ID,
     INPUT_TEXT_FILE,
     CWD,
+    PLATFORM,
 )
 from ..Util import (
     log,
@@ -256,11 +257,18 @@ class ProcessTab:
             )
             command = self.build_command(renderOptions)
             log(str(command))
+
+            startupinfo = None
+            if PLATFORM == "win32":
+                startupinfo = subprocess.STARTUPINFO()
+                startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+
             self.renderProcess = subprocess.Popen(
                 command,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 universal_newlines=True,
+                startupinfo=startupinfo,
             )
             textOutput = []
             for line in iter(self.renderProcess.stdout.readline, b""):
