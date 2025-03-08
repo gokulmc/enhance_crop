@@ -344,9 +344,10 @@ class DownloadDependencies:
             case "torch" | "tensorrt":
                 deps += [
                     f"torch=={torch_version}+{torch_backend}",  #
-                    f"torchvision=={torchvision_version}+{torch_backend}",
                     "safetensors==0.5.3",
                     "einops==0.8.1",
+                    "--no-deps",
+                    f"torchvision=={torchvision_version}+{torch_backend}",
                     
                 ]
                 deps += ["cupy-cuda12x==13.3.0"] if "cu" in backend else []
