@@ -346,11 +346,16 @@ class DownloadDependencies:
                     f"torch=={torch_version}+{torch_backend}",  #
                     "safetensors==0.5.3",
                     "einops==0.8.1",
-                    "--no-deps",
-                    f"torchvision=={torchvision_version}+{torch_backend}",
                     
                 ]
                 deps += ["cupy-cuda12x==13.3.0"] if "cu" in backend else []
+                return_code = self.pip(deps, install)
+                return_codes.append(return_code)
+
+                deps = [
+                    "--no-deps",
+                    f"torchvision=={torchvision_version}+{torch_backend}",
+                ]
                 return_code = self.pip(deps, install)
                 return_codes.append(return_code)
 
