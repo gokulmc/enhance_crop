@@ -64,7 +64,7 @@ jobs:
       
 
       - name: Build
-        run: python3 build.py --build pyinstaller
+        run: python3 build.py --build nuitka
       
       - name: compress archive
         run: |
