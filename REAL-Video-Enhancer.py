@@ -644,15 +644,15 @@ def main():
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
     app.setPalette(Palette())
-    window = MainWindow()
+    
     if not "--unlock" in sys.argv:
         lock_file = QLockFile(LOCKFILE)
-        if not lock_file.tryLock(100):
+        if not lock_file.tryLock(10):
             QMessageBox.warning(None, "Instance Running", "Another instance is already running.")
             sys.exit(0)
     
     # setting the pallette
-
+    window = MainWindow()
     
     if "--fullscreen" in sys.argv:
         window.showFullScreen()

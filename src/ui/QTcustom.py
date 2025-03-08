@@ -273,22 +273,17 @@ class SubprocessThread(QThread):
         self.command = command
 
     def run(self):
-        # Set up arguments for subprocess.Popen
-        popen_args = {
-            "stdout": subprocess.PIPE,
-            "stderr": subprocess.STDOUT,
-            "text": True,
-            "bufsize": 1,
-            "universal_newlines": True,
-        }
-        
-        # Add Windows-specific flag to hide console window
         if PLATFORM == "win32":
-            popen_args["creationflags"] = subprocess.CREATE_NO_WINDOW
-        
+                startupinfo = subprocess.STARTUPINFO()
+                startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
         self.process = subprocess.Popen(
             self.command,
-            **popen_args
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            bufsize=1,
+            universal_newlines=True,
+            startupinfo=startupinfo,
         )
         totalOutput = ""
         for line in iter(self.process.stdout.readline, ""):
