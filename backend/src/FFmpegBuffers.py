@@ -1,4 +1,3 @@
-import queue
 from abc import ABC, abstractmethod
 import cv2
 import os
@@ -17,12 +16,14 @@ from .utils.Util import (
 from threading import Thread
 import numpy as np
 from .utils.Encoders import Encoder, EncoderSettings
+from multiprocessing import Process, Queue, shared_memory, Value, Lock
 
-
+BUFFER_FRAMES = 200  # Number of frames to buffer
 class Buffer(ABC):
     @abstractmethod
     def command(self) -> list[str]:
         pass
+
 
 
 class FFmpegRead(Buffer):
@@ -39,13 +40,23 @@ class FFmpegRead(Buffer):
         else:
             self.inputFrameChunkSize = width * height * 3
 
-        self.readProcess = subprocess.Popen(
-            self.command(),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL,
-            creationflags=subprocess.CREATE_NO_WINDOW if platform.system() == "Windows" else 0,  # Prevent opening a new window on Windows
+        # Shared memory setup
+        buffer_size = self.inputFrameChunkSize * BUFFER_FRAMES
+        self.shm = shared_memory.SharedMemory(create=True, size=buffer_size)
+        
+        # Synchronization variables
+        self.write_index = Value('i', 0)  # Where the producer writes
+        self.read_index = Value('i', 0)   # Where the consumer reads
+        self.frames_available = Value('i', 0)  # Number of frames available
+        self.lock = Lock()
+        
+        # Start the reader process
+        self.reader_process = Thread(
+            target=self.read_frames_into_shm, 
+            args=(self.shm.name, self.inputFrameChunkSize, buffer_size)
         )
-        self.readQueue = queue.Queue(maxsize=100)
+        self.reader_process.daemon = True
+        self.reader_process.start()
 
     def command(self):
         log("Generating FFmpeg READ command...")
@@ -70,26 +81,83 @@ class FFmpegRead(Buffer):
         log("FFMPEG READ COMMAND: " + str(command))
         return command
 
-    def read_frame(self):
-        chunk = self.readProcess.stdout.read(self.inputFrameChunkSize)
-        if len(chunk) < self.inputFrameChunkSize:
-            return None
-        return chunk
-
-    def read_frames_into_queue(self):
-        while True:
-            chunk = self.read_frame()
-            if chunk is None:
-                break
-            self.readQueue.put(chunk)
-        self.readQueue.put(None)
+    def read_frames_into_shm(self, shm_name, frame_size, buffer_size):
+        # Reconnect to shared memory in this process
+        shm = shared_memory.SharedMemory(name=shm_name)
+        
+        # Start ffmpeg process
+        readProcess = subprocess.Popen(
+            self.command(),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            creationflags=subprocess.CREATE_NO_WINDOW if platform.system() == "Windows" else 0,
+        )
+        
+        frames_per_buffer = buffer_size // frame_size
+        end_of_stream = False
+        
+        try:
+            while not end_of_stream:
+                # Wait if buffer is full
+                while self.frames_available.value >= frames_per_buffer:
+                    time.sleep(0.001)  # Small sleep to prevent CPU hogging
+                
+                # Calculate position in circular buffer
+                write_pos = (self.write_index.value % frames_per_buffer) * frame_size
+                
+                # Read frame directly into shared memory
+                chunk = readProcess.stdout.read(frame_size)
+                if len(chunk) < frame_size:
+                    end_of_stream = True
+                    break
+                
+                # Copy to shared memory
+                shm.buf[write_pos:write_pos + len(chunk)] = chunk
+                
+                # Update indices atomically
+                with self.lock:
+                    self.write_index.value = (self.write_index.value + 1) % frames_per_buffer
+                    self.frames_available.value += 1
+            
+            # Signal end of stream by setting a special marker
+            with self.lock:
+                # Use -1 as a special marker for end of stream
+                self.write_index.value = -1
+                
+        finally:
+            readProcess.stdout.close()
+            readProcess.terminate()
+            shm.close()
 
     def get(self):
-        return self.readQueue.get()
+        # Wait for a frame to be available
+        while self.frames_available.value <= 0:
+            # Check if we've reached the end
+            if self.write_index.value == -1:
+                return None
+            time.sleep(0.001)  # Small sleep to prevent CPU hogging
+        
+        frames_per_buffer = self.shm.size // self.inputFrameChunkSize
+        read_pos = (self.read_index.value % frames_per_buffer) * self.inputFrameChunkSize
+        
+        # Create a copy of the frame data
+        frame_data = bytes(self.shm.buf[read_pos:read_pos + self.inputFrameChunkSize])
+        
+        # Update indices atomically
+        with self.lock:
+            self.read_index.value = (self.read_index.value + 1) % frames_per_buffer
+            self.frames_available.value -= 1
+            
+        return frame_data
 
     def close(self):
-        self.readProcess.stdout.close()
-        self.readProcess.terminate()
+        if hasattr(self, 'reader_process'):
+            self.reader_process.terminate()
+            self.reader_process.join(timeout=1)
+        
+        if hasattr(self, 'shm'):
+            self.shm.close()
+            self.shm.unlink()  # Important! Remove the shared memory segment
 
 
 class FFmpegWrite(Buffer):
