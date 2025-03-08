@@ -58,7 +58,7 @@ from PySide6.QtWidgets import (
 )
 
 from .QTstyle import styleSheet
-from ..constants import HAS_NETWORK_ON_STARTUP
+from ..constants import HAS_NETWORK_ON_STARTUP, PLATFORM
 from ..Util import log, networkCheck
 
 def disable_combobox_item(combobox: QComboBox, index):
@@ -273,13 +273,22 @@ class SubprocessThread(QThread):
         self.command = command
 
     def run(self):
+        # Set up arguments for subprocess.Popen
+        popen_args = {
+            "stdout": subprocess.PIPE,
+            "stderr": subprocess.STDOUT,
+            "text": True,
+            "bufsize": 1,
+            "universal_newlines": True,
+        }
+        
+        # Add Windows-specific flag to hide console window
+        if PLATFORM == "win32":
+            popen_args["creationflags"] = subprocess.CREATE_NO_WINDOW
+        
         self.process = subprocess.Popen(
             self.command,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-            bufsize=1,
-            universal_newlines=True,
+            **popen_args
         )
         totalOutput = ""
         for line in iter(self.process.stdout.readline, ""):
@@ -291,7 +300,6 @@ class SubprocessThread(QThread):
         return_code = self.process.wait()
         self.output.emit(f"Process finished with return code {return_code}")
         self.return_code.emit(return_code)
-
 
 # Custom Widgets
 class DownloadProgressPopup(QtWidgets.QProgressDialog):
