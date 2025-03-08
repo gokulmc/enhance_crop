@@ -106,7 +106,7 @@ class DownloadTab:
         pytorch_backend = self.parent.pytorch_backend.currentText().split()[0]
         torchvision_ver = TorchScraper().torchvision_version
 
-        if pytorch_backend.lower() == "cuda":
+        if pytorch_backend.lower() == "cuda" or dep == "tensorrt":
             pytorch_backend = TorchScraper().cuda_version
         elif pytorch_backend.lower() == "rocm":
             pytorch_backend = TorchScraper().rocm_version

@@ -252,6 +252,7 @@ class Nuitka(BuildManager):
         PythonManager.run_venv_python(
             (
               "-m nuitka" 
+            + "--mingw64" if PLATFORM == "win32" else ""
             + " --standalone" 
             + " --include-package-data=PySide6"
             + " --include-package-data=cpuinfo"
