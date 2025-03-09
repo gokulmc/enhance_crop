@@ -84,7 +84,6 @@ class HandleApplication:
             pyTorchGpus = get_gpus_torch()
             for i, gpu in enumerate(pyTorchGpus):
                 printMSG += f"PyTorch GPU {i}: {gpu}\n"
-
         if checkForPytorchROCM():
             availableBackends.append("pytorch (rocm)")
             import torch

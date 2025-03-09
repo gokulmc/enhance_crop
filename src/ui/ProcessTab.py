@@ -14,6 +14,7 @@ from .RenderQueue import RenderQueue
 
 from .AnimationHandler import AnimationHandler
 from .QTcustom import (
+    RegularQTPopup,
     UpdateGUIThread,
     show_layout_widgets,
     hide_layout_widgets,
@@ -51,6 +52,7 @@ class ProcessTab:
         self.tileUpAnimationHandler = AnimationHandler()
         self.tileDownAnimationHandler = AnimationHandler()
         self.settings = settings
+        self.return_codes = []
 
         self.qualityToCRF = {
             "Low": "28",
@@ -240,6 +242,7 @@ class ProcessTab:
         renderQueue: RenderQueue,
     ):
         self.createPausedSharedMemory()
+        
         for renderOptions in renderQueue.getQueue():
             
             
@@ -258,17 +261,21 @@ class ProcessTab:
             command = self.build_command(renderOptions)
             log(str(command))
 
-            startupinfo = None
+            kwargs = {
+                "stdout": subprocess.PIPE,
+                "stderr": subprocess.STDOUT,
+                "universal_newlines": True,
+
+            }
+
             if PLATFORM == "win32":
-                startupinfo = subprocess.STARTUPINFO()
-                startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+                kwargs["startupinfo"] = subprocess.STARTUPINFO()
+                kwargs["startupinfo"].dwFlags |= subprocess.STARTF_USESHOWWINDOW
+               
 
             self.renderProcess = subprocess.Popen(
                 command,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
-                universal_newlines=True,
-                startupinfo=startupinfo,
+                **kwargs,
             )
             textOutput = []
             for line in iter(self.renderProcess.stdout.readline, b""):
@@ -289,8 +296,10 @@ class ProcessTab:
                     textOutput.append(line)
                 # self.setRenderOutputContent(textOutput)
                 self.renderTextOutputList = textOutput.copy()
+                
                 if "Time to complete render" in line:
                     break
+            self.return_codes.append(self.renderProcess.wait())
             for line in textOutput:
                 if len(line) > 2:
                     log(line)
@@ -305,10 +314,16 @@ class ProcessTab:
             self.pausedSharedMemory.unlink()
         except Exception: # too lazy to patch why this errors maybe on exit
             pass
+        
         renderQueue.clear()
         self.onRenderCompletion()
 
     def guiChangesOnRenderCompletion(self):
+        if all(return_code == 0 for return_code in self.return_codes):
+            log("All render processes completed successfully")
+        else:
+            log("Some render processes failed")
+            RegularQTPopup("Rendering failed! Please check the logs tab!")
         # Have to swap the visibility of these here otherwise crash for some reason
         hide_layout_widgets(self.parent.onRenderButtonsContiainer)
         self.parent.startRenderButton.setEnabled(True)
