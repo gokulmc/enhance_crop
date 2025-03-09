@@ -1,7 +1,7 @@
-PySide6-Essentials==6.8.2.1
+PySide6==6.8.0
 opencv-python-headless==4.11.0.86
 requests
-numpy==2.2.2
+numpy==1.26.4
 lief
 psutil
 py-cpuinfo
@@ -11,4 +11,5 @@ certifi
 yt-dlp
 validators
 packaging
-
+pyserial==3.5
+pynput==1.7.7

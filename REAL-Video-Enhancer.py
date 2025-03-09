@@ -1,19 +1,19 @@
 import sys
 import os
-#os.environ['LD_LIBRARY_PATH'] = os.getcwd() + ':' + os.environ.get('LD_LIBRARY_PATH', '')
-# patch for macos
-if sys.platform == "darwin":
-    os.chdir(os.path.dirname(os.path.abspath(__file__)))
-    # this goes one step up, and goes into the actual directory. This is where backend will be copied to.
-import math
-from PySide6.QtCore import QLockFile
+os.environ["PYTHONNOUSERSITE"] = "1" # Prevents python from installing packages in user site
+os.environ["QT_MEDIA_BACKEND"] = "gstreamer"
+
+from PySide6.QtCore import QLockFile, QUrl
 from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
     QFileDialog,
     QMessageBox,
+    
 )
 from PySide6.QtGui import QIcon
+from PySide6.QtMultimedia import QMediaPlayer
+from PySide6.QtMultimediaWidgets import QVideoWidget
 from mainwindow import Ui_MainWindow
 from PySide6 import QtSvg  # Import the QtSvg module so svg icons can be used on windows
 from src.version import version
@@ -35,7 +35,6 @@ from src.constants import CUSTOM_MODELS_PATH, MODELS_PATH, CWD, LOCKFILE, IS_INS
 
 createDirectory(os.path.join(CWD, "python"))
 createDirectory(os.path.join(CWD, "bin"))
-os.environ["PYTHONNOUSERSITE"] = "1" # Prevents python from installing packages in user site
 
 
 from src.DownloadModels import DownloadModel
@@ -103,11 +102,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         settings = Settings()
         settings.readSettings()
         self.settings = settings
+        
 
         # setup application
+        
+
+
 
         # Set up the user interface from Designer.
         self.setupUi(self)
+        #self.VideoPreview.setVisible(False)
+        
+        
+        
+        
+
+
         backendHandler = BackendHandler(self, self.settings)
         backendHandler.enableCorrectBackends()
             
@@ -217,7 +227,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if not self.anyBackendsInstalled:
             RegularQTPopup("Welcome to REAL Video Enhancer!\nPlease install at least one backend to get started.")
-
+        
+    
+        player = QMediaPlayer()
+        player.setSource(QUrl.fromLocalFile("CodeGeassR2-OP2.webm"))
+        player.setVideoOutput(self.VideoPreview)
+        self.VideoPreview.show()
+        self.playbutton.clicked.connect(lambda: player.play())
+        
     def QConnect(self):
         # connect buttons to switch menus
         self.homeBtn.clicked.connect(self.switchToHomePage)
