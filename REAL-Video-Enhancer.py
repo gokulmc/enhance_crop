@@ -31,7 +31,7 @@ from src.Util import (
     log,
     createDirectory
 )
-from src.constants import CUSTOM_MODELS_PATH, MODELS_PATH, CWD, LOCKFILE, IS_INSTALLED
+from src.constants import CUSTOM_MODELS_PATH, MODELS_PATH, CWD, LOCKFILE, IS_INSTALLED, TEMP_DOWNLOAD_PATH
 
 createDirectory(os.path.join(CWD, "python"))
 createDirectory(os.path.join(CWD, "bin"))
@@ -362,8 +362,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setDefaultOutputFile(self.settings.settings["output_folder_location"])
         self.updateVideoGUIText()
 
-    def addToRenderQueue(self):
-        self.settings.readSettings()
+    def getCurrentRenderOptions(self):
         interpolate = self.interpolateModelComboBox.currentText()
         upscale = self.upscaleModelComboBox.currentText()
         output_path = self.outputFileText.text()
@@ -375,18 +374,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not self.isVideoLoaded:
             NotificationOverlay("Video is not loaded!", self, timeout=1500)
             return
-
+        
         if not interpolate and not upscale:
             NotificationOverlay("Please select at least one model!", self, timeout=1500)
             return
-
-        for renderOptions in self.renderQueue.getQueue():
-            if output_path == renderOptions.outputPath:
-                NotificationOverlay("Output file already in queue!", self, timeout=1500)
-                return
-
+        
         backend = self.backendComboBox.currentText()
-        upscaleTimes = 1
         upscaleModelArch = "custom"
         interpolateModels, upscaleModels = getModels(backend)
 
@@ -423,8 +416,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         timeout=2500,
                     )
                     return
-
-        renderOptions = RenderOptions(
+                
+        return RenderOptions(
             inputFile=self.inputFileText.text(),
             outputPath=output_path,
             videoWidth=self.videoWidth,
@@ -450,6 +443,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             hdrMode=self.hdrModeCheckBox.isChecked(),
             mergeSubtitles=self.mergeSubtitlesCheckBox.isChecked(),
         )
+
+    def addToRenderQueue(self):
+        self.settings.readSettings()
+        interpolate = self.interpolateModelComboBox.currentText()
+        upscale = self.upscaleModelComboBox.currentText()
+        output_path = self.outputFileText.text()
+        if interpolate == "None":
+            interpolate = None
+        if upscale == "None":
+            upscale = None
+        
+        for renderOptions in self.renderQueue.getQueue():
+            if output_path == renderOptions.outputPath:
+                NotificationOverlay("Output file already in queue!", self, timeout=1500)
+                return
+
+        renderOptions = self.getCurrentRenderOptions()
         # alert user that item has been added to queue
         NotificationOverlay(
             f"{self.inputFileText.text()} Added to queue!", self, timeout=1500
@@ -642,6 +652,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         )
 
     def closeEvent(self, event):
+        FileHandler.removeFolder(TEMP_DOWNLOAD_PATH)
         reply = QMessageBox.question(
             self,
             "",
@@ -655,6 +666,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             event.accept()
         else:
             event.ignore()
+
 
 
 def main():
