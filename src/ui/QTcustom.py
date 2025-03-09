@@ -273,17 +273,20 @@ class SubprocessThread(QThread):
         self.command = command
 
     def run(self):
+        kwargs = {
+            "stdout": subprocess.PIPE,
+            "stderr": subprocess.STDOUT,
+            "text": True,
+            "universal_newlines": True,
+            "bufsize": 1,
+        }
         if PLATFORM == "win32":
-                startupinfo = subprocess.STARTUPINFO()
-                startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+                kwargs["startupinfo"] = subprocess.STARTUPINFO()
+                kwargs["startupinfo"].dwFlags |= subprocess.STARTF_USESHOWWINDOW
+
         self.process = subprocess.Popen(
             self.command,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-            bufsize=1,
-            universal_newlines=True,
-            startupinfo=startupinfo,
+            **kwargs,
         )
         totalOutput = ""
         for line in iter(self.process.stdout.readline, ""):
