@@ -107,6 +107,8 @@ class DownloadTab:
         torchvision_ver = TorchScraper().torchvision_version
 
         if pytorch_backend.lower() == "cuda" or dep == "tensorrt":
+            if install:
+                RegularQTPopup("Warning: RTX 50 series needs torch 2.7.0 nightly to function.\nPlease select the nightly version if you are the singular person who got a 50 series card.")
             pytorch_backend = TorchScraper().cuda_version
         elif pytorch_backend.lower() == "rocm":
             pytorch_backend = TorchScraper().rocm_version
