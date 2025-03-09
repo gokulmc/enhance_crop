@@ -48,6 +48,8 @@ class ProcessTab:
         self.outputVideoHeight = None
         self.outputVideoWidth = None
         self.currentFrame = 0
+        self.fps = 0
+        self.eta = 0
         self.animationHandler = AnimationHandler()
         self.tileUpAnimationHandler = AnimationHandler()
         self.tileDownAnimationHandler = AnimationHandler()
@@ -292,6 +294,8 @@ class ProcessTab:
                     self.currentFrame = int(
                         re.search(r"Current Frame: (\d+)", line).group(1)
                     )
+                    self.fps = re.search(r"FPS: (\d+)", line).group(1)
+                    self.eta = re.search(r"ETA: (.+)", line).group(1)
                 if any(char.isalpha() for char in line):
                     textOutput.append(line)
                 # self.setRenderOutputContent(textOutput)
@@ -332,6 +336,8 @@ class ProcessTab:
         self.parent.startRenderButton.clicked.connect(self.parent.startRender)
         self.parent.enableProcessPage()
         self.parent.startRenderButton.setVisible(True)
+        self.parent.FPS.setText("FPS: ")
+        self.parent.ETA.setText("ETA: ")
 
     def onRenderCompletion(self):
         try:
@@ -395,6 +401,8 @@ class ProcessTab:
             scrollbar = self.parent.renderOutput.verticalScrollBar()
             scrollbar.setValue(scrollbar.maximum())
             self.parent.progressBar.setValue(self.currentFrame)
+            self.parent.FPS.setText(f"FPS: {self.fps}")
+            self.parent.ETA.setText(f"ETA: {self.eta}")
         if not qimage.isNull():
             label_width = self.parent.previewLabel.width()
             label_height = self.parent.previewLabel.height()

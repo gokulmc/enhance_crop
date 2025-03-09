@@ -398,7 +398,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     timeout=1500,
                 )
                 return
-
+        upscaleTimes = 1
         if upscale:
             upscaleModelFile = upscaleModels[upscale][0]
             upscaleDownloadFile = upscaleModels[upscale][1]
@@ -652,7 +652,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         )
 
     def closeEvent(self, event):
-        FileHandler.removeFolder(TEMP_DOWNLOAD_PATH)
+        
         reply = QMessageBox.question(
             self,
             "",
@@ -661,6 +661,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             QMessageBox.StandardButton.No,  # type: ignore
         )
         if reply == QMessageBox.Yes:  # type: ignore
+            FileHandler.removeFolder(TEMP_DOWNLOAD_PATH)
             if hasattr(self, "processTab"):
                 self.processTab.killRenderProcess()
             event.accept()

@@ -61,7 +61,8 @@ class FileHandler:
         """
         Removes the folder of the current working directory
         """
-        shutil.rmtree(folder)
+        if os.path.exists(folder):
+            shutil.rmtree(folder)
 
     @staticmethod
     def removeFile(file):
