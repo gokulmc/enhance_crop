@@ -11,7 +11,8 @@
  - Installes to a preset directory, and updates python and backend dynamically.
  - Improved RIFE TensorRT speeds
  - Backend to python 3.12
- - Bump tensorrt to 10.8
+ - Bump tensorrt to 10.9
+ - Selectable torch 2.7.0-test
  - Bump ROCm to 6.2.4
  - Enabled tensorrt and torch in flatpak.
  - No more terminal runnning when using RVE on windows.

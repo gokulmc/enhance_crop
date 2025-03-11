@@ -466,5 +466,18 @@ class HandleApplication:
             print("WARNING: HDR mode is not supported with ncnn backend, falling back to SDR",file=sys.stderr)
             self.args.hdr_mode = False            
 
-if __name__ == "__main__":
-    HandleApplication()
+import cProfile
+import pstats
+from pstats import SortKey
+
+# Profile the entire application
+profile = cProfile.Profile()
+profile.enable()
+
+# Run your code
+HandleApplication()
+
+profile.disable()
+# Sort by cumulative time and print top 20 functions
+ps = pstats.Stats(profile).sort_stats(SortKey.CUMULATIVE)
+ps.print_stats(20)
