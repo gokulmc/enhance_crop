@@ -362,10 +362,10 @@ class DownloadDependencies:
                 if backend == "tensorrt":
                     
                     deps = [
-                        "tensorrt==10.8.0.43",
-                        "tensorrt_cu12==10.8.0.43",
-                        "tensorrt-cu12_libs==10.8.0.43",
-                        "tensorrt_cu12_bindings==10.8.0.43",
+                        "tensorrt==10.9.0.34",
+                        "tensorrt_cu12==10.9.0.34",
+                        "tensorrt-cu12_libs==10.9.0.34",
+                        "tensorrt_cu12_bindings==10.9.0.34",
                         "--no-deps",
                         f"torch_tensorrt=={torch_version}+{torch_backend}",
                     ]
