@@ -290,6 +290,7 @@ class UpscalePytorch:
             # torch.save(self.model.state_dict(), "Sudo_Shuffle_Span_no_update_params.pth")
             # exit()
         self.stream.synchronize()
+        torch.cuda.synchronize()
         return output
 
     def getScale(self):

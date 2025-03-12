@@ -381,6 +381,7 @@ class InterpolateRifeTorch(BaseInterpolate):
             
 
         self.stream.synchronize()
+        torch.cuda.synchronize()
 
     @torch.inference_mode()
     def encode_Frame(self, frame: torch.Tensor, stream: torch.cuda.Stream):
@@ -424,6 +425,7 @@ class InterpolateRifeTensorRT(InterpolateRifeTorch):
 
                     if self.encode:
                         output = self.flownet(self.frame0, frame1, timestep, self.tenFlow_div, self.backwarp_tenGrid, self.encode0, encode1) # type: ignore
+                        
                     else:
                         output = self.flownet(self.frame0, frame1, timestep, self.tenFlow_div, self.backwarp_tenGrid,)
 
@@ -446,3 +448,4 @@ class InterpolateRifeTensorRT(InterpolateRifeTorch):
                 self.copyTensor(self.encode0, encode1, self.copyStream)  # type: ignore
 
         self.stream.synchronize()
+        torch.cuda.synchronize()
