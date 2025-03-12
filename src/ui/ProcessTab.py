@@ -7,8 +7,9 @@ from multiprocessing import shared_memory
 
 from PySide6 import QtGui
 from PySide6.QtGui import QPixmap, QPainter, QPainterPath, QColor
-from PySide6.QtCore import Qt, QSize
+from PySide6.QtCore import Qt, QSize, QUrl
 from PySide6.QtWidgets import QMessageBox
+from PySide6.QtMultimedia import QMediaPlayer
 
 from .RenderQueue import RenderQueue
 
@@ -50,6 +51,8 @@ class ProcessTab:
         self.currentFrame = 0
         self.fps = 0
         self.eta = 0
+        self.isPreview = False
+        self.currentRenderOptions = None
         self.status = "Idle"
         self.animationHandler = AnimationHandler()
         self.tileUpAnimationHandler = AnimationHandler()
@@ -248,7 +251,9 @@ class ProcessTab:
         
         for renderOptions in renderQueue.getQueue():
             
-            
+            self.isPreview = renderOptions.isPreview
+            self.currentRenderOptions = renderOptions
+
             self.workerThread.setOutputVideoRes(
                 renderOptions.videoWidth * renderOptions.upscaleTimes,
                 renderOptions.videoHeight * renderOptions.upscaleTimes,
@@ -346,6 +351,27 @@ class ProcessTab:
         self.parent.FPS.setText("FPS: ")
         self.parent.ETA.setText("ETA: ")
         self.parent.STATUS.setText("Status: ")
+        if self.currentRenderOptions.isPreview:
+            try:
+                def onScroll(preview:QMediaPlayer, value):
+                    preview.setPosition(value)
+                    
+                self.parent.renderQueue.clear()
+                self.parent.VideoPreview.setVisible(True)
+                player = QMediaPlayer()
+                player.setSource(QUrl.fromLocalFile(self.currentRenderOptions.outputPath))
+                player.setVideoOutput(self.parent.VideoPreview)
+                player.play()
+                player.pause()
+                player.setPosition(5)
+                self.parent.VideoPreview.show()
+                self.parent.VideoPreview.setVisible(True)
+                self.parent.previewLabel.setVisible(False)
+                self.parent.timeInVideoScrollBar.setRange(0, (self.currentRenderOptions.endTime-self.currentRenderOptions.startTime)*10) # convert to ms
+                self.parent.timeInVideoScrollBar.valueChanged.connect(lambda: onScroll(player, int(self.parent.timeInVideoScrollBar.value()*100)))
+
+            except Exception as e:
+                log(f"Error: {e}")
 
     def onRenderCompletion(self):
         try:
@@ -469,6 +495,16 @@ class ProcessTab:
             "--cwd",
             f"{CWD}",
         ]
+        if renderOptions.startTime is not None:
+            command += [
+                "--start_time",
+                f"{renderOptions.startTime}",
+            ]
+        if renderOptions.endTime is not None:
+            command += [
+                "--end_time",
+                f"{renderOptions.endTime}",
+            ]
 
         if renderOptions.upscaleModel:
             modelPath = os.path.join(MODELS_PATH, renderOptions.upscaleModelFile)

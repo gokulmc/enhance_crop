@@ -112,11 +112,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Set up the user interface from Designer.
         self.setupUi(self)
         #self.VideoPreview.setVisible(False)
-        
-        
-        
-        
-
 
         backendHandler = BackendHandler(self, self.settings)
         backendHandler.enableCorrectBackends()
@@ -230,19 +225,33 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
     
         #player = QMediaPlayer()
+        #player.setPosition()
         #player.setSource(QUrl.fromLocalFile("./CodeGeassR2-OP2.webm"))
         #player.setVideoOutput(self.VideoPreview)
         #self.VideoPreview.show()
-        # self.playbutton.clicked.connect(lambda: player.play())
-        self.RenderedPreviewControlsContainer.setVisible(False)
-        self.VideoPreview.setVisible(False)
+        #self.playbutton.clicked.connect(lambda: player.play())
+        
+
     def QConnect(self):
         # connect buttons to switch menus
         self.homeBtn.clicked.connect(self.switchToHomePage)
         self.processBtn.clicked.connect(self.switchToProcessingPage)
         self.settingsBtn.clicked.connect(self.switchToSettingsPage)
         self.downloadBtn.clicked.connect(self.switchToDownloadPage)
+        self.renderPreviewBtn.clicked.connect(self.renderPreview)
+        self.VideoPreview.setVisible(False)
         # connect getting default output file
+
+    def renderPreview(self):
+        renderOptions = self.getCurrentRenderOptions()
+        renderOptions.outputPath = os.path.join(TEMP_DOWNLOAD_PATH, f"{os.path.basename(renderOptions.inputFile)}_preview.mkv")
+        renderOptions.startTime = self.startTimeSpinBox.value()
+        renderOptions.endTime = self.endTimeSpinBox.value()
+        renderOptions.isPreview = True
+        if renderOptions:
+            self.renderQueue.add(renderOptions)
+            self.startRender()
+            
 
     def setButtonsUnchecked(self, buttonToIgnore):
         buttons = [
@@ -362,6 +371,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.settings.readSettings()
         self.setDefaultOutputFile(self.settings.settings["output_folder_location"])
         self.updateVideoGUIText()
+        self.timeInVideoScrollBar.setMaximum(self.videoLength)
 
     def getCurrentRenderOptions(self):
         interpolate = self.interpolateModelComboBox.currentText()
@@ -447,13 +457,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def addToRenderQueue(self):
         self.settings.readSettings()
-        interpolate = self.interpolateModelComboBox.currentText()
-        upscale = self.upscaleModelComboBox.currentText()
         output_path = self.outputFileText.text()
-        if interpolate == "None":
-            interpolate = None
-        if upscale == "None":
-            upscale = None
+        
         
         for renderOptions in self.renderQueue.getQueue():
             if output_path == renderOptions.outputPath:

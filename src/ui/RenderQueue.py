@@ -28,6 +28,9 @@ class RenderOptions:
         upscaleModelFile: str | None = None,
         hdrMode: bool = False,
         mergeSubtitles: bool = True,
+        startTime: float | None = None,
+        endTime: float | None = None,
+        isPreview: bool = False,
     ):
         self._inputFile = inputFile
         self._outputPath = outputPath
@@ -51,6 +54,9 @@ class RenderOptions:
         self._ensemble = ensemble
         self._hdrMode = hdrMode
         self._mergeSubtitles = mergeSubtitles
+        self._startTime = startTime
+        self._endTime = endTime
+        self._isPreview = isPreview
 
     @property
     def inputFile(self):
@@ -225,6 +231,28 @@ class RenderOptions:
     @mergeSubtitles.setter
     def mergeSubtitles(self, value: bool):
         self._mergeSubtitles = value
+    
+    @property
+    def startTime(self):
+        return self._startTime
+    @startTime.setter
+    def startTime(self, value: float):
+        self._startTime = value
+
+    @property
+    def endTime(self):
+        return self._endTime
+    @endTime.setter
+    def endTime(self, value: float):
+        self._endTime = value
+
+    @property
+    def isPreview(self):
+        return self._isPreview
+    @isPreview.setter
+    def isPreview(self, value: bool):
+        self._isPreview = value
+        
         
 
 
