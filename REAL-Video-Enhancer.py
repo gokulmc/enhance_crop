@@ -233,7 +233,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         player.setSource(QUrl.fromLocalFile("./CodeGeassR2-OP2.webm"))
         player.setVideoOutput(self.VideoPreview)
         self.VideoPreview.show()
-        self.playbutton.clicked.connect(lambda: player.play())
+        # self.playbutton.clicked.connect(lambda: player.play())
         
     def QConnect(self):
         # connect buttons to switch menus

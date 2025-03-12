@@ -50,6 +50,7 @@ class ProcessTab:
         self.currentFrame = 0
         self.fps = 0
         self.eta = 0
+        self.status = "Idle"
         self.animationHandler = AnimationHandler()
         self.tileUpAnimationHandler = AnimationHandler()
         self.tileDownAnimationHandler = AnimationHandler()
@@ -296,6 +297,12 @@ class ProcessTab:
                     )
                     self.fps = re.search(r"FPS: (\d+)", line).group(1)
                     self.eta = re.search(r"ETA: (.+)", line).group(1)
+                    self.status = "Rendering"
+                
+                if "this may take a while" in line.lower():
+                    self.status = "Building Engine"
+                    
+
                 if any(char.isalpha() for char in line):
                     textOutput.append(line)
                 # self.setRenderOutputContent(textOutput)
@@ -338,6 +345,7 @@ class ProcessTab:
         self.parent.startRenderButton.setVisible(True)
         self.parent.FPS.setText("FPS: ")
         self.parent.ETA.setText("ETA: ")
+        self.parent.STATUS.setText("Status: ")
 
     def onRenderCompletion(self):
         try:
@@ -403,6 +411,7 @@ class ProcessTab:
             self.parent.progressBar.setValue(self.currentFrame)
             self.parent.FPS.setText(f"FPS: {self.fps}")
             self.parent.ETA.setText(f"ETA: {self.eta}")
+            self.parent.STATUS.setText(f"Status: {self.status}")
         if not qimage.isNull():
             label_width = self.parent.previewLabel.width()
             label_height = self.parent.previewLabel.height()
