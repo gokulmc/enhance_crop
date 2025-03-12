@@ -229,12 +229,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             RegularQTPopup("Welcome to REAL Video Enhancer!\nPlease install at least one backend to get started.")
         
     
-        player = QMediaPlayer()
-        player.setSource(QUrl.fromLocalFile("./CodeGeassR2-OP2.webm"))
-        player.setVideoOutput(self.VideoPreview)
-        self.VideoPreview.show()
+        #player = QMediaPlayer()
+        #player.setSource(QUrl.fromLocalFile("./CodeGeassR2-OP2.webm"))
+        #player.setVideoOutput(self.VideoPreview)
+        #self.VideoPreview.show()
         # self.playbutton.clicked.connect(lambda: player.play())
-        
+        self.RenderedPreviewControlsContainer.setVisible(False)
+        self.VideoPreview.setVisible(False)
     def QConnect(self):
         # connect buttons to switch menus
         self.homeBtn.clicked.connect(self.switchToHomePage)
