@@ -26,10 +26,12 @@ class Buffer(ABC):
 
 
 class FFmpegRead(Buffer):
-    def __init__(self, inputFile, width, height, borderX, borderY, hdr_mode):
+    def __init__(self, inputFile, width, height, start_time, end_time, borderX, borderY, hdr_mode):
         self.inputFile = inputFile
         self.width = width
         self.height = height
+        self.start_time = start_time
+        self.end_time = end_time
         self.borderX = borderX
         self.borderY = borderY
         self.hdr_mode = hdr_mode
@@ -65,8 +67,13 @@ class FFmpegRead(Buffer):
             "rawvideo",
             "-s",
             f"{self.width}x{self.height}",
+            "-ss",
+            str(self.start_time),
+            "-to",
+            str(self.end_time),
             "-",
         ]
+        
         log("FFMPEG READ COMMAND: " + str(command))
         return command
 
@@ -99,6 +106,8 @@ class FFmpegWrite(Buffer):
         outputFile: str,
         width: int,
         height: int,
+        start_time: float,
+        end_time: float,
         fps: float,
         crf: str,
         audio_bitrate: str,
@@ -123,6 +132,8 @@ class FFmpegWrite(Buffer):
             self.outputFileExtension = os.path.split(self.outputFile)[-1].split(".")[-1]
         self.width = width
         self.height = height
+        self.start_time = start_time
+        self.end_time = end_time
         self.outputWidth = width * upscaleTimes
         self.outputHeight = height * upscaleTimes
         self.fps = fps
@@ -187,12 +198,24 @@ class FFmpegWrite(Buffer):
                 f"{self.outputWidth}x{self.outputHeight}",
                 "-i",
                 "-",
+                "-i",
+                f"{self.inputFile}",
+                "-map",
+                "0:v",  # Map video stream from input 0
+                "-map",
+                "1:a?",
+                "-map",
+                "1:s?",
+                "-to",
+                str(self.end_time-self.start_time),
                 "-r",
                 f"{self.outputFPS}",
                 "-f",
                 "matroska",
                 "-pix_fmt",
                 "yuv420p",
+                "-af",
+                f"atrim=start={self.start_time},asetpts=PTS-STARTPTS",
                 "-",
             ]
             log("FFMPEG WRITE COMMAND: " + str(command))
@@ -284,9 +307,11 @@ class FFmpegWrite(Buffer):
                 command += self.video_encoder.getPostInputSettings().split()
                 command += [self.video_encoder.getQualityControlMode(), str(self.crf)]
 
-            command.append(
+            command +=[
+                "-to",
+                str(self.end_time-self.start_time),
                 f"{self.outputFile}",
-            )
+            ]
 
             if self.overwrite:
                 command.append("-y")
@@ -313,6 +338,8 @@ class FFmpegWrite(Buffer):
                 "rawvideo",
                 "-vcodec",
                 "rawvideo",
+                "-to",
+                str(self.end_time-self.start_time),
                 "-video_size",
                 f"{self.width * self.upscaleTimes}x{self.upscaleTimes * self.height}",
                 "-pix_fmt",
@@ -409,7 +436,6 @@ class MPVOutput:
     def command(self):
         command = [
         "mpv",
-        f"--audio-file={self.FFMPegWrite.inputFile}",
         "--no-config",
         "--cache=yes",
         "--cache-secs=5",                    # Cache 30 seconds of video

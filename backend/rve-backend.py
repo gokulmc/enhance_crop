@@ -139,6 +139,8 @@ class HandleApplication:
             pytorch_gpu_id=self.args.pytorch_gpu_id,
             ncnn_gpu_id=self.args.ncnn_gpu_id,
             # ffmpeg settings
+            start_time=self.args.start_time,
+            end_time=self.args.end_time,
             overwrite=self.args.overwrite,
             crf=self.args.crf,
             video_encoder_preset=self.args.video_encoder_preset,
@@ -188,6 +190,18 @@ class HandleApplication:
             default=None,
             help="output video path or PIPE",
             type=str,
+        )
+        parser.add_argument(
+            "--start_time",
+            default=None,
+            help="Start of video to be rendered in seconds",
+            type=float,
+        )
+        parser.add_argument(
+            "--end_time",
+            default=None,
+            help="End of video to be rendered in seconds",
+            type=float,
         )
 
         parser.add_argument(
@@ -466,18 +480,5 @@ class HandleApplication:
             print("WARNING: HDR mode is not supported with ncnn backend, falling back to SDR",file=sys.stderr)
             self.args.hdr_mode = False            
 
-import cProfile
-import pstats
-from pstats import SortKey
-
-# Profile the entire application
-profile = cProfile.Profile()
-profile.enable()
-
-# Run your code
-HandleApplication()
-
-profile.disable()
-# Sort by cumulative time and print top 20 functions
-ps = pstats.Stats(profile).sort_stats(SortKey.CUMULATIVE)
-ps.print_stats(20)
+if __name__ == "__main__":
+    HandleApplication()

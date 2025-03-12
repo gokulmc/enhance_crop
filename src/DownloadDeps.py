@@ -254,7 +254,6 @@ class DownloadDependencies:
         deps: list,
         install: bool = True,
     ):  # going to have to make this into a qt module pop up
-        createDirectory(TEMP_DOWNLOAD_PATH)
         command = [
             PYTHON_EXECUTABLE_PATH,
             "-m",
@@ -304,7 +303,6 @@ class DownloadDependencies:
         )
         if origTemp:
             os.environ["TMPDIR"] = str(origTemp)
-        removeFolder(TEMP_DOWNLOAD_PATH)
         return return_code
 
     def getPlatformIndependentDeps(self):

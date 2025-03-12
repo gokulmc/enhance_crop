@@ -4,6 +4,7 @@ import subprocess
 import re
 import cv2
 from .Util import log
+from typing import Optional
 
 if not __name__ == "__main__":
     from ..constants import FFMPEG_PATH
@@ -65,9 +66,11 @@ class FFMpegInfoWrapper(VideoInfo):
 
 
 class OpenCVInfo(VideoInfo):
-    def __init__(self, input_file: str):
+    def __init__(self, input_file: str, start_time: Optional[float] = None, end_time: Optional[float] = None):
         log("Getting Input Video Properties")
         self.input_file = input_file
+        self.start_time = start_time
+        self.end_time = end_time
         self.cap = cv2.VideoCapture(input_file)
 
     def is_valid_video(self):
@@ -75,11 +78,22 @@ class OpenCVInfo(VideoInfo):
 
     def get_duration_seconds(self) -> float:
         duration = self.cap.get(cv2.CAP_PROP_FRAME_COUNT) / self.get_fps()
+
+        if self.start_time is not None and self.end_time is not None:
+            duration = self.end_time - self.start_time
+        elif self.start_time and not self.end_time:
+            duration = duration - self.start_time
+        elif self.end_time and not self.start_time:
+            duration = self.end_time
         log(f"Duration: {duration}")
         return duration
 
     def get_total_frames(self) -> int:
-        fc =  int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        
+        if self.start_time or self.end_time:
+            fc = int(self.get_duration_seconds() * self.get_fps())
+        else:
+            fc =  int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
         log(f"Frame count: {fc}")
         return fc
 

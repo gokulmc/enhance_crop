@@ -111,7 +111,7 @@ class ApplicationUpdater:
         return False
 
     def download_new_version(self):
-        FileHandler.createDirectory(TEMP_DOWNLOAD_PATH)
+        
         full_download_path = os.path.join(TEMP_DOWNLOAD_PATH, self.file_name)
         DownloadProgressPopup(
             link=self.download_url,

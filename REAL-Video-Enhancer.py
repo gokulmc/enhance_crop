@@ -105,7 +105,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
 
         # setup application
-        
+        FileHandler.createDirectory(TEMP_DOWNLOAD_PATH)
 
 
 
@@ -230,7 +230,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
     
         player = QMediaPlayer()
-        player.setSource(QUrl.fromLocalFile("CodeGeassR2-OP2.webm"))
+        player.setSource(QUrl.fromLocalFile("./CodeGeassR2-OP2.webm"))
         player.setVideoOutput(self.VideoPreview)
         self.VideoPreview.show()
         self.playbutton.clicked.connect(lambda: player.play())

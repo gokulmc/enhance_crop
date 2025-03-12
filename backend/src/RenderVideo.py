@@ -69,6 +69,8 @@ class Render:
         interpolateFactor: int = 1,
         tile_size=None,
         # ffmpeg settings
+        start_time=None,
+        end_time=None,
         custom_encoder: str = "libx264",
         pixelFormat: str = "yuv420p",
         benchmark: bool = False,
@@ -124,9 +126,15 @@ class Render:
         self.outputFrameChunkSize = None
         self.hdr_mode = hdr_mode
 
-        videoInfo = OpenCVInfo(input_file=inputFile)
+        videoInfo = OpenCVInfo(input_file=inputFile, start_time=start_time, end_time=end_time)
+        
         if not videoInfo.is_valid_video:
             printAndLog("Input video is not valid!")
+        
+        if start_time is None:
+            start_time = 0
+        if end_time is None:
+            end_time = videoInfo.get_duration_seconds()
 
         self.width, self.height = videoInfo.get_width_x_height()
         self.originalWidth = self.width
@@ -173,6 +181,8 @@ class Render:
             inputFile=inputFile,
             width=self.width,
             height=self.height,
+            start_time=start_time,
+            end_time=end_time,
             borderX=self.borderX,
             borderY=self.borderY,
             hdr_mode=hdr_mode,
@@ -183,6 +193,8 @@ class Render:
             outputFile=outputFile,
             width=self.width,
             height=self.height,
+            start_time=start_time,
+            end_time=end_time,
             fps=self.fps,
             crf=crf,
             audio_bitrate=audio_bitrate,
