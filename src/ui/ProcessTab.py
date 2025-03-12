@@ -357,7 +357,7 @@ class ProcessTab:
                     preview.setPosition(value)
                     
                 self.parent.renderQueue.clear()
-                self.parent.VideoPreview.setVisible(True)
+                
                 player = QMediaPlayer()
                 player.setSource(QUrl.fromLocalFile(self.currentRenderOptions.outputPath))
                 player.setVideoOutput(self.parent.VideoPreview)
@@ -373,6 +373,7 @@ class ProcessTab:
             except Exception as e:
                 log(f"Error: {e}")
 
+            
     def onRenderCompletion(self):
         try:
             self.renderProcess.wait()

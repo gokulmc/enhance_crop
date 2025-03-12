@@ -98,6 +98,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.videoHeight = None
         self.isVideoLoaded = False
         self.anyBackendsInstalled = True
+        self.videoLength = 1
+
         
         settings = Settings()
         settings.readSettings()
@@ -243,6 +245,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # connect getting default output file
 
     def renderPreview(self):
+        self.renderQueue.clear()
         renderOptions = self.getCurrentRenderOptions()
         renderOptions.outputPath = os.path.join(TEMP_DOWNLOAD_PATH, f"{os.path.basename(renderOptions.inputFile)}_preview.mkv")
         renderOptions.startTime = self.startTimeSpinBox.value()
@@ -255,7 +258,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         renderOptions.isPreview = True
         if renderOptions:
             self.renderQueue.add(renderOptions)
-            self.startRender()
+            self.startRender(self.renderQueue)
             
 
     def setButtonsUnchecked(self, buttonToIgnore):
@@ -479,14 +482,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         )
         self.renderQueue.add(renderOptions)
 
-    def startRender(self):
-        if len(self.renderQueue.queue) == 0:
+    def startRender(self, renderQueue=None):
+        if not renderQueue:
+            renderQueue = self.renderQueue
+        if len(renderQueue.queue) == 0:
             NotificationOverlay("Render queue is empty!", self, timeout=1500)
             return
         self.startRenderButton.setEnabled(False)
+        self.VideoPreview.setVisible(False)
+        self.previewLabel.setVisible(True)
 
         self.disableProcessPage()
-        self.processTab.run(self.renderQueue)
+        self.processTab.run(renderQueue)
 
     def disableProcessPage(self):
         for child in self.generalSettings.children():
@@ -495,6 +502,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             child.setEnabled(False)
         for child in self.renderQueueTab.children():
             child.setEnabled(False)
+        self.RenderedPreviewControlsContainer.setEnabled(False)
 
     def enableProcessPage(self):
         for child in self.generalSettings.children():
@@ -503,6 +511,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             child.setEnabled(True)
         for child in self.renderQueueTab.children():
             child.setEnabled(True)
+        self.RenderedPreviewControlsContainer.setEnabled(True)
 
     def loadVideo(self, inputFile):
         videoHandler = VideoLoader(inputFile)

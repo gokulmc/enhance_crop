@@ -253,7 +253,6 @@ class RenderOptions:
     def isPreview(self, value: bool):
         self._isPreview = value
         
-        
 
 
 class RenderQueue:
@@ -266,6 +265,11 @@ class RenderQueue:
         self.queue.append(renderable)
         self.qlistwidget.addItem(renderable.inputFile)
         self.inputNameList.append(renderable.inputFile)
+    
+    def addToStart(self, renderable: RenderOptions):
+        self.queue.insert(0, renderable)
+        self.qlistwidget.insertItem(0, renderable.inputFile)
+        self.inputNameList.insert(0, renderable.inputFile)
 
     def clear(self):
         self.queue.clear()
