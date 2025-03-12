@@ -247,6 +247,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         renderOptions.outputPath = os.path.join(TEMP_DOWNLOAD_PATH, f"{os.path.basename(renderOptions.inputFile)}_preview.mkv")
         renderOptions.startTime = self.startTimeSpinBox.value()
         renderOptions.endTime = self.endTimeSpinBox.value()
+        if renderOptions.endTime <= renderOptions.startTime:
+            NotificationOverlay("End time must be greater than start time!", self, timeout=1500)
+            return
+        
+
         renderOptions.isPreview = True
         if renderOptions:
             self.renderQueue.add(renderOptions)
@@ -371,6 +376,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.settings.readSettings()
         self.setDefaultOutputFile(self.settings.settings["output_folder_location"])
         self.updateVideoGUIText()
+        self.startTimeSpinBox.setMaximum(self.videoLength)
+        self.endTimeSpinBox.setMaximum(self.videoLength)
         self.timeInVideoScrollBar.setMaximum(self.videoLength)
 
     def getCurrentRenderOptions(self):

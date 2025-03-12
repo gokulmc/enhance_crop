@@ -746,18 +746,58 @@ QLabel{
                         </widget>
                        </item>
                        <item>
-                        <widget class="QPushButton" name="renderPreviewBtn">
-                         <property name="font">
-                          <font>
-                           <bold>false</bold>
-                          </font>
-                         </property>
-                         <property name="layoutDirection">
-                          <enum>Qt::LayoutDirection::LeftToRight</enum>
-                         </property>
-                         <property name="text">
-                          <string>Render Preview</string>
-                         </property>
+                        <widget class="QWidget" name="widget_14" native="true">
+                         <layout class="QHBoxLayout" name="horizontalLayout_48">
+                          <property name="leftMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="rightMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>0</number>
+                          </property>
+                          <item>
+                           <widget class="QPushButton" name="renderPreviewBtn">
+                            <property name="font">
+                             <font>
+                              <bold>false</bold>
+                             </font>
+                            </property>
+                            <property name="layoutDirection">
+                             <enum>Qt::LayoutDirection::LeftToRight</enum>
+                            </property>
+                            <property name="text">
+                             <string>Render Preview</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QLabel" name="label_63">
+                            <property name="maximumSize">
+                             <size>
+                              <width>25</width>
+                              <height>25</height>
+                             </size>
+                            </property>
+                            <property name="toolTip">
+                             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Render Preview:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;     - Renders a small portion of the video to show the results (most useful for upscaling)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                            </property>
+                            <property name="text">
+                             <string/>
+                            </property>
+                            <property name="pixmap">
+                             <pixmap resource="resources.qrc">:/icons/icons/info.svg</pixmap>
+                            </property>
+                            <property name="scaledContents">
+                             <bool>true</bool>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
                         </widget>
                        </item>
                        <item>
@@ -951,7 +991,7 @@ background-color:#343b47
                           </size>
                          </property>
                          <property name="currentIndex">
-                          <number>0</number>
+                          <number>2</number>
                          </property>
                          <widget class="QWidget" name="generalSettings">
                           <property name="sizePolicy">
