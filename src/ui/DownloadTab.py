@@ -9,8 +9,9 @@ from ..ModelHandler import (
     pytorchUpscaleModels,
 )
 from .Updater import ApplicationUpdater
-from ..constants import IS_FLATPAK, MODELS_PATH, PLATFORM
+from ..constants import IS_FLATPAK, MODELS_PATH, PLATFORM, CWD
 from ..GetAvailableTorchVersions import TorchScraper
+from ..Util import FileHandler
 
 def downloadModelsBasedOnInstalledBackend(installed_backends: list):
     if NetworkCheckPopup():
@@ -48,6 +49,10 @@ class DownloadTab:
         # set this all to not visible, as scrapping the idea for now.
         if PLATFORM != "linux":
             disable_combobox_item_by_text(self.parent.pytorch_backend, "ROCm (Linux Only)")
+        if IS_FLATPAK:
+            self.parent.uninstallAppBtn.setDisabled(True)
+        else:
+            self.parent.uninstallAppBtn.clicked.connect(self.uninstallApp)
 
         self.parent.ApplicationUpdateContainer.setVisible(False)
         # elif self.applicationUpdater.check_for_updates():
@@ -93,6 +98,8 @@ class DownloadTab:
             lambda: self.parent.importCustomModel("ncnn")
         )
 
+    def uninstallApp(self):
+        FileHandler().removeFolder(CWD)
 
     def download(self, dep, install: bool = True):
         """
