@@ -1,4 +1,4 @@
-PySide6==6.6.0
+PySide6==6.6.0 # 6.6.0 due to windows QMediaPlayer bug with newer versions
 opencv-python-headless==4.11.0.86
 requests
 numpy==1.26.4
