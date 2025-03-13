@@ -289,30 +289,32 @@ class ProcessTab:
             for line in iter(self.renderProcess.stdout.readline, b""):
                 if self.renderProcess.poll() is not None:
                     break  # Exit the loop if the process has terminated
-
-                line = str(line.strip())
-                if "it/s" in line:
-                    textOutput = textOutput[:-1]
-                if "FPS" in line:
-                    textOutput = textOutput[
-                        :-1
-                    ]  # slice the list to only get the last updated data
-                    self.currentFrame = int(
-                        re.search(r"Current Frame: (\d+)", line).group(1)
-                    )
-                    self.fps = re.search(r"FPS: (\d+)", line).group(1)
-                    self.eta = re.search(r"ETA: (.+)", line).group(1)
-                    self.status = "Rendering"
                 
-                if "this may take a while" in line.lower():
-                    self.status = "Building Engine"
+                try:
+                    line = str(line.strip())
+                    if "it/s" in line:
+                        textOutput = textOutput[:-1]
+                    if "FPS" in line:
+                        textOutput = textOutput[
+                            :-1
+                        ]  # slice the list to only get the last updated data
+                        self.currentFrame = int(
+                            re.search(r"Current Frame: (\d+)", line).group(1)
+                        )
+                        self.fps = re.search(r"FPS: (\d+)", line).group(1)
+                        self.eta = re.search(r"ETA: (.+)", line).group(1)
+                        self.status = "Rendering"
                     
+                    if "this may take a while" in line.lower():
+                        self.status = "Building Engine"
+                        
 
-                if any(char.isalpha() for char in line):
-                    textOutput.append(line)
-                # self.setRenderOutputContent(textOutput)
-                self.renderTextOutputList = textOutput.copy()
-                
+                    if any(char.isalpha() for char in line):
+                        textOutput.append(line)
+                    # self.setRenderOutputContent(textOutput)
+                    self.renderTextOutputList = textOutput.copy()
+                except Exception as e:
+                    pass
                 if "Time to complete render" in line:
                     break
             self.return_codes.append(self.renderProcess.wait())

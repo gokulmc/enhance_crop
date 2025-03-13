@@ -69,7 +69,8 @@ class FileHandler:
         """
         Removes the file of the current working directory
         """
-        os.remove(file)
+        if os.path.isfile(file):
+            os.remove(file)
 
     @staticmethod
     def copy(prev: str, new: str):
