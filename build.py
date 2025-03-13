@@ -268,6 +268,9 @@ if __name__ == "__main__":
     BuildManager().build_resources()
     BuildManager().build_gui()
     BuildManager().python_manager.setup_python()
+    if PLATFORM is not 'win32':
+        BuildManager().python_manager.pip_install_package_in_venv("PySide6==6.8.0") # linux/mac not impacted
+
     match args.build:
         case "pyinstaller":
             builder = PyInstaller()
