@@ -1,3 +1,4 @@
+import os
 from PySide6.QtWidgets import QMainWindow
 from .QTcustom import RegularQTPopup, NetworkCheckPopup, addNotificationToButton, disable_combobox_item_by_text
 from ..DownloadDeps import DownloadDependencies
@@ -8,6 +9,7 @@ from ..ModelHandler import (
     ncnnUpscaleModels,
     pytorchUpscaleModels,
 )
+from PySide6.QtWidgets import QMessageBox
 from .Updater import ApplicationUpdater
 from ..constants import IS_FLATPAK, MODELS_PATH, PLATFORM, CWD
 from ..GetAvailableTorchVersions import TorchScraper
@@ -99,7 +101,17 @@ class DownloadTab:
         )
 
     def uninstallApp(self):
-        FileHandler().removeFolder(CWD)
+        reply = QMessageBox.question(
+            self,
+            "",
+            "Are you sure you want to uninstall?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No,  # type: ignore
+        )
+        if reply == QMessageBox.Yes:  # type: ignore
+            FileHandler().removeFolder(CWD)
+            os._exit(0)
+        
 
     def download(self, dep, install: bool = True):
         """
@@ -113,7 +125,7 @@ class DownloadTab:
         pytorch_backend = self.parent.pytorch_backend.currentText().split()[0]
         torchvision_ver = TorchScraper().torchvision_version
 
-        if pytorch_backend.lower() == "cuda" or dep == "tensorrt":
+        if dep.lower() == "pytorch" or dep.lower() == "tensorrt":
             if install:
                 RegularQTPopup("Warning: RTX 50 series needs torch 2.7.0 nightly to function.\nPlease select the nightly version if you have a 50 series card.")
             pytorch_backend = TorchScraper().cuda_version
