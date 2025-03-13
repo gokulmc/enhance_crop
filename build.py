@@ -185,8 +185,6 @@ class PyInstaller(BuildManager):
 
     def build(self):
         print("Building executable")
-        self.build_gui()
-        self.build_resources()
 
         PythonManager.pip_install_package_in_venv(self.pyinstaller_version)
         PythonManager.run_venv_python(
@@ -208,8 +206,6 @@ class CxFreeze(BuildManager):
 
     def build(self):
         print("Building executable")
-        self.build_gui()
-        self.build_resources()
 
         PythonManager.pip_install_package_in_venv(self.cx_freeze_version)
         PythonManager.run_venv_python(
@@ -245,9 +241,6 @@ class Nuitka(BuildManager):
 
     def build(self):
         print("Building executable")
-        
-        self.build_gui()
-        self.build_resources()
 
         PythonManager.pip_install_package_in_venv(self.nuitka_version)
         PythonManager.run_venv_python(
@@ -271,6 +264,10 @@ if __name__ == "__main__":
     args = argparse.ArgumentParser()
     args.add_argument("--build", help="Build the application with a specific builder.", default="gui", choices=["pyinstaller", "cx_freeze", "nuitka", "gui"])
     args = args.parse_args()
+    BuildManager().python_manager.pip_install_package_in_venv("PySide6==6.8.0") # up to date pyside6 version to build the GUI
+    BuildManager().build_resources()
+    BuildManager().build_gui()
+    BuildManager().python_manager.setup_python()
     match args.build:
         case "pyinstaller":
             builder = PyInstaller()
@@ -279,8 +276,6 @@ if __name__ == "__main__":
         case "nuitka":
             builder = Nuitka()
         case "gui":
-            BuildManager().build_resources()
-            BuildManager().build_gui()
             exit()
         case _:
             raise ValueError("Invalid build option")
