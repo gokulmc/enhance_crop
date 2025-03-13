@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>869</width>
-    <height>592</height>
+    <width>887</width>
+    <height>689</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -226,7 +226,7 @@ QScrollBar:horizontal{
              <string notr="true"/>
             </property>
             <property name="currentIndex">
-             <number>4</number>
+             <number>2</number>
             </property>
             <widget class="QWidget" name="homePage">
              <property name="styleSheet">
@@ -1075,7 +1075,7 @@ background-color:#343b47
                                    <x>0</x>
                                    <y>0</y>
                                    <width>378</width>
-                                   <height>437</height>
+                                   <height>522</height>
                                   </rect>
                                  </property>
                                  <layout class="QVBoxLayout" name="verticalLayout_32">
@@ -1741,8 +1741,8 @@ border-radius:10px;
                                <rect>
                                 <x>0</x>
                                 <y>0</y>
-                                <width>363</width>
-                                <height>452</height>
+                                <width>369</width>
+                                <height>496</height>
                                </rect>
                               </property>
                               <layout class="QVBoxLayout" name="verticalLayout_33">
@@ -2834,8 +2834,8 @@ QTabWidget::pane { /* The tab widget frame */
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>403</width>
-                   <height>428</height>
+                   <width>426</width>
+                   <height>488</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_18">
@@ -2877,8 +2877,8 @@ QTabWidget::pane { /* The tab widget frame */
                              <rect>
                               <x>0</x>
                               <y>0</y>
-                              <width>423</width>
-                              <height>170</height>
+                              <width>429</width>
+                              <height>176</height>
                              </rect>
                             </property>
                             <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -4810,7 +4810,7 @@ background-color:white;
                      <rect>
                       <x>0</x>
                       <y>0</y>
-                      <width>724</width>
+                      <width>712</width>
                       <height>178</height>
                      </rect>
                     </property>

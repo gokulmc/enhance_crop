@@ -1,19 +1,12 @@
 import sys
 import os
 os.environ["PYTHONNOUSERSITE"] = "1" # Prevents python from installing packages in user site
-os.environ["QT_MEDIA_BACKEND"] = "gstreamer"
 
-from PySide6.QtCore import QLockFile, QUrl
-from PySide6.QtWidgets import (
-    QApplication,
-    QMainWindow,
-    QFileDialog,
-    QMessageBox,
-    
-)
+from PySide6.QtCore import *
+from PySide6.QtWidgets import *
 from PySide6.QtGui import QIcon
-from PySide6.QtMultimedia import QMediaPlayer
-from PySide6.QtMultimediaWidgets import QVideoWidget
+from PySide6.QtMultimedia import *
+from PySide6.QtMultimediaWidgets import *
 from mainwindow import Ui_MainWindow
 from PySide6 import QtSvg  # Import the QtSvg module so svg icons can be used on windows
 from src.version import version
@@ -227,8 +220,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
     
         #player = QMediaPlayer()
-        #player.setPosition()
-        #player.setSource(QUrl.fromLocalFile("./CodeGeassR2-OP2.webm"))
+        #player.setSource(QUrl.fromLocalFile(r"C:\Users\tntwi\Downloads\CodeGeass-OP3.webm"))
         #player.setVideoOutput(self.VideoPreview)
         #self.VideoPreview.show()
         #self.playbutton.clicked.connect(lambda: player.play())
@@ -249,6 +241,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         renderOptions = self.getCurrentRenderOptions()
         renderOptions.outputPath = os.path.join(TEMP_DOWNLOAD_PATH, f"{os.path.basename(renderOptions.inputFile)}_preview.mkv")
         renderOptions.startTime = self.startTimeSpinBox.value()
+        FileHandler().removeFile(renderOptions.outputPath)
         renderOptions.endTime = self.endTimeSpinBox.value()
         if renderOptions.endTime <= renderOptions.startTime:
             NotificationOverlay("End time must be greater than start time!", self, timeout=1500)
