@@ -2,11 +2,16 @@ import sys
 import os
 os.environ["PYTHONNOUSERSITE"] = "1" # Prevents python from installing packages in user site
 
-from PySide6.QtCore import *
-from PySide6.QtWidgets import *
+from PySide6.QtCore import QLockFile
+from PySide6.QtWidgets import (
+    QApplication,
+    QMainWindow,
+    QFileDialog,
+    QMessageBox,
+    
+)
 from PySide6.QtGui import QIcon
-from PySide6.QtMultimedia import *
-from PySide6.QtMultimediaWidgets import *
+
 from mainwindow import Ui_MainWindow
 from PySide6 import QtSvg  # Import the QtSvg module so svg icons can be used on windows
 from src.version import version
