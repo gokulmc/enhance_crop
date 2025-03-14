@@ -207,3 +207,4 @@ class InterpolateGIMMTorch(BaseInterpolate):
             self.copyTensor(self.frame0, frame1, self.copyStream)
 
         self.stream.synchronize()
+        torch.cuda.synchronize()

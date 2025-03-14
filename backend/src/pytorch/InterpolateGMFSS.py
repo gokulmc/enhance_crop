@@ -177,4 +177,5 @@ class InterpolateGMFSSTorch(BaseInterpolate):
             self.copyTensor(self.frame0, frame1, self.prepareStream)
 
         self.stream.synchronize()
+        torch.cuda.synchronize()
 
