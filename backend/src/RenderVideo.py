@@ -108,6 +108,7 @@ class Render:
         # also used to help with performace and caching
         self.maxTimestep = (interpolateFactor - 1) / interpolateFactor
         self.ceilInterpolateFactor = math.ceil(self.interpolateFactor)
+        
         # self.setupRender = self.returnFrame  # set it to not convert the bytes to array by default, and just pass chunk through
         self.setupFrame0 = None
         self.interpolateOption = None
@@ -260,7 +261,6 @@ class Render:
                 if frame is None:
                     self.informationHandler.stopWriting()
                     break
-
                 if self.interpolateModel:
                     self.interpolateOption(
                         img1=frame,
@@ -275,7 +275,7 @@ class Render:
                 self.informationHandler.setPreviewFrame(frame)
                 self.informationHandler.setFramesRendered(frames_rendered)
                 self.writeBuffer.writeQueue.put(frame)
-                frames_rendered += int(self.ceilInterpolateFactor)
+                
             else:
                 sleep(1)
         self.writeBuffer.writeQueue.put(None)

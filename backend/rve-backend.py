@@ -145,6 +145,7 @@ class HandleApplication:
             crf=self.args.crf,
             video_encoder_preset=self.args.video_encoder_preset,
             audio_encoder_preset=self.args.audio_encoder_preset,
+            subtitle_encoder_preset=self.args.subtitle_encoder_preset,
             audio_bitrate=self.args.audio_bitrate,
             benchmark=self.args.benchmark,
             custom_encoder=self.args.custom_encoder,
