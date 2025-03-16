@@ -131,7 +131,8 @@ class BaseInterpolate(metaclass=ABCMeta):
             .reshape(self.height, self.width, 3)
             .permute(2, 0, 1)
             .unsqueeze(0)
-            .div_(65535.0 if self.hdr_mode else 255.0)
+            .div(65535.0 if self.hdr_mode else 255.0)
+            .clamp_(0.0, 1.0)
         )
 
     @torch.inference_mode()
@@ -159,9 +160,7 @@ class BaseInterpolate(metaclass=ABCMeta):
         return (
             frame.squeeze(0)
             .permute(1, 2, 0)
-            .clamp(0, 1)
             .mul(65535.0 if self.hdr_mode else 255.0)
-            .round()
             .to(torch.uint16 if self.hdr_mode else torch.uint8)
             .contiguous()
             .detach()
