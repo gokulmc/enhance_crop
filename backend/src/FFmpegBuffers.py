@@ -67,10 +67,7 @@ class FFmpegRead(Buffer):
             "rawvideo",
             "-s",
             f"{self.width}x{self.height}",
-            "-ss",
-            str(self.start_time),
-            "-to",
-            str(self.end_time),
+            
             "-",
         ]
         
@@ -198,16 +195,7 @@ class FFmpegWrite(Buffer):
                 f"{self.outputWidth}x{self.outputHeight}",
                 "-i",
                 "-",
-                "-i",
-                f"{self.inputFile}",
-                "-map",
-                "0:v",  # Map video stream from input 0
-                "-map",
-                "1:a?",
-                "-map",
-                "1:s?",
-                "-to",
-                str(self.end_time-self.start_time),
+               
                 "-r",
                 f"{self.outputFPS}",
                 "-f",
@@ -307,14 +295,12 @@ class FFmpegWrite(Buffer):
                 command += self.video_encoder.getPostInputSettings().split()
                 command += [self.video_encoder.getQualityControlMode(), str(self.crf)]
 
-            command +=[
-                "-to",
-                str(self.end_time-self.start_time),
-                f"{self.outputFile}",
-            ]
 
             if self.overwrite:
                 command.append("-y")
+            command += [
+                f"{self.outputFile}",
+            ]
 
             log("Output Video Information:")
             log(f"Video Encoder: {self.video_encoder.getEncoder()}")
@@ -338,8 +324,6 @@ class FFmpegWrite(Buffer):
                 "rawvideo",
                 "-vcodec",
                 "rawvideo",
-                "-to",
-                str(self.end_time-self.start_time),
                 "-video_size",
                 f"{self.width * self.upscaleTimes}x{self.upscaleTimes * self.height}",
                 "-pix_fmt",
@@ -436,6 +420,7 @@ class MPVOutput:
     def command(self):
         command = [
         "mpv",
+        f"--audio-file={self.FFMPegWrite.inputFile}",
         "--no-config",
         "--cache=yes",
         "--cache-secs=5",                    # Cache 30 seconds of video
