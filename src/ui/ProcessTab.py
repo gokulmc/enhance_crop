@@ -338,6 +338,7 @@ class ProcessTab:
 
     def guiChangesOnRenderCompletion(self):
         if all(return_code == 0 for return_code in self.return_codes):
+            self.return_codes = [] # reset return codes
             log("All render processes completed successfully")
         else:
             log("Some render processes failed")
