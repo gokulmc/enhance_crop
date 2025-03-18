@@ -231,7 +231,7 @@ class CxFreeze(BuildManager):
                     input_file = "libxcb-cursor.so.0"
                 except requests.exceptions.ConnectionError:
                     raise FileNotFoundError("libxcbcursor not installed, and no network available to download it!")
-            
+            print("Copying libcursor to qt lib directory")
             shutil.copy(input_file, f"{OUTPUT_FOLDER}/lib/PySide6/Qt/lib")
             
 
