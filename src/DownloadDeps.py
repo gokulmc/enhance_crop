@@ -35,7 +35,6 @@ from .ui.QTcustom import (
     RegularQTPopup,
     needs_network_else_exit,
 )
-from .GetAvailableTorchVersions import TorchScraper
 import os
 from platform import machine
 import subprocess

@@ -57,9 +57,6 @@ class DownloadTab:
             self.parent.uninstallAppBtn.clicked.connect(self.uninstallApp)
 
         self.parent.ApplicationUpdateContainer.setVisible(False)
-        # elif self.applicationUpdater.check_for_updates():
-        #    addNotificationToButton(button=self.parent.UpdateApplicationButton)
-        #    addNotificationToButton(button=self.parent.downloadBtn)
         self.QButtonConnect()
 
     def QButtonConnect(self):

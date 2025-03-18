@@ -3,7 +3,8 @@ name: build-prerelease
 
 on:
   workflow_dispatch:
-  
+
+version: "2.2.5"
 jobs:
   
   build-Linux:
