@@ -1,6 +1,7 @@
 import sys
 import os
 os.environ["PYTHONNOUSERSITE"] = "1" # Prevents python from installing packages in user site
+os.environ["NVIDIA_TENSORRT_DISABLE_INTERNAL_PIP"] = "0"
 
 from PySide6.QtCore import QLockFile
 from PySide6.QtWidgets import (
