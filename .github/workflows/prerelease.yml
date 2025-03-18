@@ -175,7 +175,9 @@ jobs:
       - name: Compute SHA256 checksums
         run: |
           for file in artifacts/*; do
-            sha256sum "$file" >> RELEASE_BODY.md
+            for file1 in $file/*; do
+              sha256sum "$file1" >> RELEASE_BODY.md
+            done
           done
           
       - name: Create Release and Upload Release Asset
