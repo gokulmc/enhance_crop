@@ -174,9 +174,7 @@ class InterpolateRIFENCNN:
     def __call__(
         self,
         img1,
-        writeQueue: Queue,
         transition=False,
-        upscaleModel: UpscaleNCNN = None,
     ):
         if self.frame0 is None:
             self.frame0 = img1
@@ -186,17 +184,14 @@ class InterpolateRIFENCNN:
                 self.frame0, img1, self.max_timestep
             )  # get the cache to skip to next frame
             self.frame0 = img1
-            if upscaleModel is not None:
-                img1 = upscaleModel(img1)
+            
             for n in range(self.interpolateFactor - 1):
-                writeQueue.put(img1)
+                yield img1
             return
         for n in range(self.interpolateFactor - 1):
             while self.paused:
                 sleep(1)
             timestep = (n + 1) * 1.0 / (self.interpolateFactor)
             frame = self.render.process_bytes(self.frame0, img1, timestep)
-            if upscaleModel is not None:
-                frame = upscaleModel(frame)
-            writeQueue.put(frame)
+            yield frame
         self.frame0 = img1
