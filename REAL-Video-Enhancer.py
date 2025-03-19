@@ -375,6 +375,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.interpolateContainer_2.setVisible(isInterpolate)
         # set interpolation container visible if interpolate model is not none
         self.upscaleContainer.setVisible(isUpscale)
+        self.generalUpscaleContainer.setVisible(isUpscale)
         self.settings.readSettings()
         self.setDefaultOutputFile(self.settings.settings["output_folder_location"])
         self.updateVideoGUIText()
