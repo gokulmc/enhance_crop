@@ -152,9 +152,7 @@ class InterpolateGIMMTorch(BaseInterpolate):
     def __call__(
         self,
         img1,
-        writeQueue: Queue,
         transition=False,
-        upscaleModel: UpscalePytorch = None,
     ):  # type: ignore
         with torch.cuda.stream(self.stream):  # type: ignore
             if self.frame0 is None:
@@ -180,30 +178,14 @@ class InterpolateGIMMTorch(BaseInterpolate):
 
                     if torch.isnan(output).any():
                         # if there are nans in output, reload with float32 precision and process.... dumb fix but whatever
-                        print(
-                            "NaNs in output, returning the first image", file=sys.stderr
-                        )
-                        if upscaleModel is not None:
-                            img1 = upscaleModel(
-                                upscaleModel.frame_to_tensor(self.tensor_to_frame(img1))
-                            )
-                        writeQueue.put(img1)
+                        raise ValueError("Nans in output")
 
-                    else:
-                        if upscaleModel is not None:
-                            output = upscaleModel(
-                                upscaleModel.frame_to_tensor(
-                                    self.tensor_to_frame(output)
-                                )
-                            )
-                        else:
-                            output = self.tensor_to_frame(output)
-                        writeQueue.put(output)
+                    output = self.tensor_to_frame(output)
+                    yield output
 
                 else:
-                    if upscaleModel is not None:
-                        img1 = upscaleModel(frame1[:, :, : self.height, : self.width])
-                    writeQueue.put(img1)
+                    
+                    yield frame1
             self.copyTensor(self.frame0, frame1, self.copyStream)
 
         self.stream.synchronize()

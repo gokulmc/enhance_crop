@@ -264,14 +264,29 @@ class Render:
                     break
 
                 if self.interpolateModel:
-                    self.interpolateOption(
+                    interpolated_frames = self.interpolateOption(
                         img1=frame,
-                        writeQueue=self.writeBuffer.writeQueue,
                         transition=self.sceneDetect.detect(frame),
-                        upscaleModel=self.upscaleOption,
                     )
+                    if not interpolated_frames:
+                        return
+                    for interpolated_frame in interpolated_frames:
+                        if self.upscaleModel:
+                            interpolated_frame = self.upscaleOption(
+                                self.upscaleOption.frame_to_tensor(interpolated_frame)
+                            )
+                        if self.override_upscale_scale:
+                            interpolated_frame = bytesToImg(interpolated_frame,
+                                               width=self.width*self.upscaleTimes,
+                                               height=self.height*self.upscaleTimes,
+                                               outputWidth=self.width*self.override_upscale_scale,
+                                               outputHeight=self.height*self.override_upscale_scale,).tobytes()
+                        self.informationHandler.setPreviewFrame(interpolated_frame)
+                        self.informationHandler.setFramesRendered(frames_rendered)
+                        self.writeBuffer.writeQueue.put(interpolated_frame)
+                        
 
-                if self.upscaleModel:
+                if self.upscaleModel and not self.interpolateModel:
                     frame = self.upscaleOption(
                         self.upscaleOption.frame_to_tensor(frame)
                     )

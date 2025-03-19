@@ -311,9 +311,7 @@ class InterpolateRifeTorch(BaseInterpolate):
     def __call__(
         self,
         img1,
-        writeQueue: Queue,
         transition=False,
-        upscaleModel: UpscalePytorch = None,
     ):  # type: ignore
         if self.frame0 is None:
                 self.frame0 = self.frame_to_tensor(img1, self.prepareStream)
@@ -361,17 +359,11 @@ class InterpolateRifeTorch(BaseInterpolate):
                             self.backwarp_tenGrid,
                             closest_value,
                         )
-                    if upscaleModel is not None:
-                        output = upscaleModel(
-                            upscaleModel.frame_to_tensor(self.tensor_to_frame(output))
-                        )
-                    else:
-                        output = self.tensor_to_frame(output)
-                    writeQueue.put(output)
+                    output = self.tensor_to_frame(output)
+                    yield output
+
                 else:
-                    if upscaleModel is not None:
-                        img1 = upscaleModel(frame1[:, :, : self.height, : self.width])
-                    writeQueue.put(img1)
+                    yield frame1
 
             self.copyTensor(self.frame0, frame1, self.copyStream)
             if self.encode:
@@ -398,9 +390,7 @@ class InterpolateRifeTensorRT(InterpolateRifeTorch):
     def __call__(
         self,
         img1,
-        writeQueue: Queue,
         transition=False,
-        upscaleModel: UpscalePytorch = None,
     ):  # type: ignore
         if self.frame0 is None:
             self.frame0 = self.frame_to_tensor(img1, self.prepareStream)
@@ -429,19 +419,13 @@ class InterpolateRifeTensorRT(InterpolateRifeTorch):
                     else:
                         output = self.flownet(self.frame0, frame1, timestep, self.tenFlow_div, self.backwarp_tenGrid,)
 
-                    if upscaleModel is not None:
-                        output = upscaleModel(
-                            upscaleModel.frame_to_tensor(self.tensor_to_frame(output))
-                        )
-                    else:
-                        output = self.tensor_to_frame(output)
+                    output = self.tensor_to_frame(output)
 
-                    writeQueue.put(output)
+                    yield output
 
                 else:
-                    if upscaleModel is not None:
-                        img1 = upscaleModel(frame1[:, :, : self.height, : self.width])
-                    writeQueue.put(img1)
+                    yield frame1
+                    
 
             self.copyTensor(self.frame0, frame1, self.copyStream)
             if self.encode:
