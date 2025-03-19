@@ -159,7 +159,7 @@ class HandleApplication:
             sceneDetectSensitivity=self.args.scene_detect_threshold,
             sharedMemoryID=self.args.preview_shared_memory_id,
             trt_optimization_level=self.args.tensorrt_opt_profile,
-            upscale_output_resolution=self.args.upscale_output_resolution,
+            override_upscale_scale=self.args.override_upscale_scale,
             UHD_mode=self.args.UHD_mode,
             slomo_mode=self.args.slomo_mode,
             dynamic_scaled_optical_flow=self.args.dynamic_scaled_optical_flow,
@@ -434,9 +434,9 @@ class HandleApplication:
             default=True,
         )
         parser.add_argument(
-            "--upscale_output_resolution",
+            "--override_upscale_scale",
             help="Resolution of output video, this is helpful for 4x models when you only want 2x upscaling. Ex: (1920x1080)",
-            type=str,
+            type=int,
             default=None,
         )
         parser.add_argument(

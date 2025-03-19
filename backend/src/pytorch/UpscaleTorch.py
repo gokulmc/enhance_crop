@@ -2,6 +2,7 @@ import os
 import math
 
 import gc
+from typing import override
 import torch as torch
 import torch.nn.functional as F
 import sys
@@ -62,6 +63,7 @@ class UpscalePytorch:
         backend: str = "pytorch",
         gpu_id: int = 0,
         hdr_mode: bool = False,
+        override_upscale_scale: int | None = None,
         # trt options
         trt_workspace_size: int = 0,
         trt_cache_dir: str = None,
@@ -294,7 +296,7 @@ class UpscalePytorch:
         return output
 
     def getScale(self):
-        return self.scale
+        return self.scale 
 
     @torch.inference_mode()
     def renderTiledImage(

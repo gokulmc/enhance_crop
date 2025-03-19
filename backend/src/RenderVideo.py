@@ -11,7 +11,7 @@ from .FFmpegBuffers import FFmpegRead, FFmpegWrite, MPVOutput
 from .FFmpeg import InformationWriteOut
 from .utils.Encoders import EncoderSettings
 from .utils.SceneDetect import SceneDetect
-from .utils.Util import printAndLog, log
+from .utils.Util import printAndLog, log, bytesToImg
 from .utils.BorderDetect import BorderDetect
 from .utils.VideoInfo import OpenCVInfo
 
@@ -89,7 +89,7 @@ class Render:
         sceneDetectSensitivity: float = 3.0,
         sharedMemoryID: Optional[str] = None,
         trt_optimization_level: int = 3,
-        upscale_output_resolution: Optional[str] = None,
+        override_upscale_scale: int | None = None,
         UHD_mode: bool = False,
         slomo_mode: bool = False,
         dynamic_scaled_optical_flow: bool = False,
@@ -126,6 +126,7 @@ class Render:
         self.ncnn_gpu_id = ncnn_gpu_id
         self.outputFrameChunkSize = None
         self.hdr_mode = hdr_mode
+        self.override_upscale_scale = override_upscale_scale
 
         videoInfo = OpenCVInfo(input_file=inputFile, start_time=start_time, end_time=end_time)
         
@@ -261,6 +262,7 @@ class Render:
                 if frame is None:
                     self.informationHandler.stopWriting()
                     break
+
                 if self.interpolateModel:
                     self.interpolateOption(
                         img1=frame,
@@ -268,10 +270,19 @@ class Render:
                         transition=self.sceneDetect.detect(frame),
                         upscaleModel=self.upscaleOption,
                     )
+
                 if self.upscaleModel:
                     frame = self.upscaleOption(
                         self.upscaleOption.frame_to_tensor(frame)
                     )
+                
+                if self.override_upscale_scale:
+                    frame = bytesToImg(frame,
+                                       width=self.width*self.upscaleTimes,
+                                       height=self.height*self.upscaleTimes,
+                                       outputWidth=self.width*self.override_upscale_scale,
+                                       outputHeight=self.height*self.override_upscale_scale,).tobytes()     
+
                 self.informationHandler.setPreviewFrame(frame)
                 self.informationHandler.setFramesRendered(frames_rendered)
                 self.writeBuffer.writeQueue.put(frame)
@@ -304,14 +315,14 @@ class Render:
                 trt_optimization_level=self.trt_optimization_level,
                 hdr_mode=self.hdr_mode
             )
-            self.upscaleTimes = self.upscaleOption.getScale()
+            self.upscaleTimes = self.upscaleOption.getScale() if not self.override_upscale_scale else self.override_upscale_scale
 
         if self.backend == "ncnn":
             from .ncnn.UpscaleNCNN import UpscaleNCNN, getNCNNScale
 
             path, last_folder = os.path.split(self.upscaleModel)
             self.upscaleModel = os.path.join(path, last_folder, last_folder)
-            self.upscaleTimes = getNCNNScale(modelPath=self.upscaleModel)
+            self.upscaleTimes = getNCNNScale(modelPath=self.upscaleModel) if not self.override_upscale_scale else self.override_upscale_scale
             self.upscaleOption = UpscaleNCNN(
                 modelPath=self.upscaleModel,
                 num_threads=1,

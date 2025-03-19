@@ -1470,7 +1470,7 @@ background-color:#343b47
                                    <widget class="QWidget" name="generalUpscaleContainer" native="true">
                                     <layout class="QHBoxLayout" name="horizontalLayout_50">
                                      <property name="spacing">
-                                      <number>0</number>
+                                      <number>6</number>
                                      </property>
                                      <property name="leftMargin">
                                       <number>0</number>
@@ -1493,6 +1493,28 @@ background-color:#343b47
                                        </property>
                                        <property name="text">
                                         <string>Upscale Scale</string>
+                                       </property>
+                                      </widget>
+                                     </item>
+                                     <item>
+                                      <widget class="QLabel" name="label_73">
+                                       <property name="maximumSize">
+                                        <size>
+                                         <width>25</width>
+                                         <height>25</height>
+                                        </size>
+                                       </property>
+                                       <property name="toolTip">
+                                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Upscale Scale:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;   - &lt;/span&gt;Custom output scale no matter the model. Will run AI on video frame once, and scale the image to match the multiplier. Useful for 4x models.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                                       </property>
+                                       <property name="text">
+                                        <string/>
+                                       </property>
+                                       <property name="pixmap">
+                                        <pixmap resource="resources.qrc">:/icons/icons/info.svg</pixmap>
+                                       </property>
+                                       <property name="scaledContents">
+                                        <bool>true</bool>
                                        </property>
                                       </widget>
                                      </item>
