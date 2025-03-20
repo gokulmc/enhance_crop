@@ -286,7 +286,7 @@ class Render:
                         self.writeBuffer.writeQueue.put(interpolated_frame)
                         
 
-                if self.upscaleModel and not self.interpolateModel:
+                if self.upscaleModel:
                     frame = self.upscaleOption(
                         self.upscaleOption.frame_to_tensor(frame)
                     )
