@@ -127,6 +127,7 @@ class Render:
         self.outputFrameChunkSize = None
         self.hdr_mode = hdr_mode
         self.override_upscale_scale = override_upscale_scale
+        
 
         videoInfo = OpenCVInfo(input_file=inputFile, start_time=start_time, end_time=end_time)
         
@@ -171,6 +172,7 @@ class Render:
             printAndLog("Using Upscaling Model: " + self.upscaleModel)
         else:
             self.upscaleTimes = 1  # if no upscaling, it will default to 1
+            self.modelScale = 1
 
         if interpolateModel:
             self.setupInterpolate()

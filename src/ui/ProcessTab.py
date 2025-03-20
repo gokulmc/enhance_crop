@@ -501,8 +501,7 @@ class ProcessTab:
             f"{self.settings.settings['pytorch_gpu_id']}",
             "--cwd",
             f"{CWD}",
-            "--override_upscale_scale",
-            f"{renderOptions.overrideUpscaleScale}",
+            
         ]
         if renderOptions.startTime is not None:
             command += [
@@ -530,6 +529,8 @@ class ProcessTab:
                     "--tilesize",
                     f"{renderOptions.tilesize}",
                 ]
+            "--override_upscale_scale",
+            f"{renderOptions.overrideUpscaleScale}",
 
         if renderOptions.interpolateModel:
             command += [
