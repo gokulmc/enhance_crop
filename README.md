@@ -121,7 +121,7 @@ git clone https://github.com/TNTwise/REAL-Video-Enhancer
 </p>
 
 ```
-python3 build.py --build BUILD_OPTION
+python3 build.py --build BUILD_OPTION --copy_backend
 ```
 
 # Colab Notebook
