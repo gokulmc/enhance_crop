@@ -184,8 +184,8 @@ class InterpolateGIMMTorch(BaseInterpolate):
                     yield output
 
                 else:
-                    
-                    yield frame1
+                    yield img1
+
             self.copyTensor(self.frame0, frame1, self.copyStream)
 
         self.stream.synchronize()

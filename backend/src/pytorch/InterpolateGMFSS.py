@@ -163,7 +163,8 @@ class InterpolateGMFSSTorch(BaseInterpolate):
                     output = self.tensor_to_frame(output)
                     yield output
                 else:
-                    yield frame1
+                    yield img1
+
 
             self.copyTensor(self.frame0, frame1, self.prepareStream)
 
