@@ -350,6 +350,35 @@ def get_gpus_ncnn():
         log(str(e))
         return "Unable to get NCNN GPU"
 
+def resize_image_bytes(image_bytes: bytes, width: int, height: int, target_width: int, target_height: int) -> bytes:
+    """
+    Resizes the image to the target resolution.
+    
+    Args:
+        image_bytes (bytes): The input image in bytes.
+        target_width (int): The target width for resizing.
+        target_height (int): The target height for resizing.
+    
+    Returns:
+        bytes: The resized image in bytes.
+    """
+    channels = len(image_bytes) // (height * width) # 3 if RGB24/SDR, 6 if RGB48/HDR
+    dtype = np.uint8 if channels == 0 else np.uint16
+    # Convert bytes to numpy array
+    if target_width < width or target_height < height:
+        # Best for downscaling
+        interpolation = cv2.INTER_AREA
+    else:
+        # Best for upscaling
+        interpolation = cv2.INTER_LANCZOS4
+    image_array = np.frombuffer(image_bytes, dtype=dtype)
+    image_array = image_array.reshape((height, width, 3))
+
+    # Resize the image
+    resized_image = cv2.resize(image_array, (target_width, target_height), interpolation=interpolation)
+
+    # Convert the resized image back to bytes
+    return resized_image.tobytes()
 
 def padFrame(
     frame_bytes: bytes,

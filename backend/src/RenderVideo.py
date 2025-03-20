@@ -11,7 +11,7 @@ from .FFmpegBuffers import FFmpegRead, FFmpegWrite, MPVOutput
 from .FFmpeg import InformationWriteOut
 from .utils.Encoders import EncoderSettings
 from .utils.SceneDetect import SceneDetect
-from .utils.Util import printAndLog, log, bytesToImg
+from .utils.Util import printAndLog, log, bytesToImg, resize_image_bytes
 from .utils.BorderDetect import BorderDetect
 from .utils.VideoInfo import OpenCVInfo
 
@@ -276,11 +276,11 @@ class Render:
                                 self.upscaleOption.frame_to_tensor(interpolated_frame)
                             )
                         if self.override_upscale_scale:
-                            interpolated_frame = bytesToImg(interpolated_frame,
-                                               width=self.width*self.upscaleTimes,
-                                               height=self.height*self.upscaleTimes,
-                                               outputWidth=self.width*self.override_upscale_scale,
-                                               outputHeight=self.height*self.override_upscale_scale,).tobytes()
+                            interpolated_frame = resize_image_bytes(interpolated_frame,
+                                               width=self.width*self.modelScale,
+                                               height=self.height*self.modelScale,
+                                               target_width=self.width*self.override_upscale_scale,
+                                               target_height=self.height*self.override_upscale_scale,)
                         self.informationHandler.setPreviewFrame(interpolated_frame)
                         self.informationHandler.setFramesRendered(frames_rendered)
                         self.writeBuffer.writeQueue.put(interpolated_frame)
@@ -292,11 +292,11 @@ class Render:
                     )
                 
                 if self.override_upscale_scale:
-                    frame = bytesToImg(frame,
-                                       width=self.width*self.upscaleTimes,
-                                       height=self.height*self.upscaleTimes,
-                                       outputWidth=self.width*self.override_upscale_scale,
-                                       outputHeight=self.height*self.override_upscale_scale,).tobytes()     
+                    frame = resize_image_bytes(frame,
+                                               width=self.width*self.modelScale,
+                                               height=self.height*self.modelScale,
+                                               target_width=self.width*self.override_upscale_scale,
+                                               target_height=self.height*self.override_upscale_scale,)
 
                 self.informationHandler.setPreviewFrame(frame)
                 self.informationHandler.setFramesRendered(frames_rendered)
@@ -330,14 +330,16 @@ class Render:
                 trt_optimization_level=self.trt_optimization_level,
                 hdr_mode=self.hdr_mode
             )
-            self.upscaleTimes = self.upscaleOption.getScale() if not self.override_upscale_scale else self.override_upscale_scale
+            self.modelScale = self.upscaleOption.getScale() 
+            self.upscaleTimes = self.modelScale if not self.override_upscale_scale else self.override_upscale_scale
 
         if self.backend == "ncnn":
             from .ncnn.UpscaleNCNN import UpscaleNCNN, getNCNNScale
 
             path, last_folder = os.path.split(self.upscaleModel)
             self.upscaleModel = os.path.join(path, last_folder, last_folder)
-            self.upscaleTimes = getNCNNScale(modelPath=self.upscaleModel) if not self.override_upscale_scale else self.override_upscale_scale
+            self.modelScale = getNCNNScale(modelPath=self.upscaleModel) 
+            self.upscaleTimes = self.modelScale if not self.override_upscale_scale else self.override_upscale_scale
             self.upscaleOption = UpscaleNCNN(
                 modelPath=self.upscaleModel,
                 num_threads=1,
