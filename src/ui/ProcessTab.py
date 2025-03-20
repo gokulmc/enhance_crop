@@ -128,6 +128,9 @@ class ProcessTab:
         self.parent.upscaleModelComboBox.currentIndexChanged.connect(
             self.parent.updateVideoGUIDetails
         )
+        self.parent.upscaleScaleSpinBox.valueChanged.connect(
+            self.parent.updateVideoGUIDetails
+        )
         self.parent.interpolateModelComboBox.currentIndexChanged.connect(
             self.parent.updateVideoGUIDetails
         )

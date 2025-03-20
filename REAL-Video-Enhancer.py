@@ -326,7 +326,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if upscaleModelName == "None" or upscaleModelName == "":
             scale = 1
         else:
-            scale = totalModels[upscaleModelName][2]
+            scale = int(self.upscaleScaleSpinBox.value())
         return scale
 
     def setDefaultOutputFile(self, outputDirectory):
@@ -423,7 +423,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if upscale:
             upscaleModelFile = upscaleModels[upscale][0]
             upscaleDownloadFile = upscaleModels[upscale][1]
-            upscaleTimes = upscaleModels[upscale][2]
+            #upscaleTimes = upscaleModels[upscale][2]
+            upscaleTimes = int(self.upscaleScaleSpinBox.value())
             upscaleModelArch = upscaleModels[upscale][3]
             if upscaleModelArch != "custom":
                 dm = DownloadModel(
