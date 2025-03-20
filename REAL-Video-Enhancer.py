@@ -463,6 +463,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             interpolateModelFile=interpolateModelFile if interpolate else None,
             hdrMode=self.hdrModeCheckBox.isChecked(),
             mergeSubtitles=self.mergeSubtitlesCheckBox.isChecked(),
+            overrideUpscaleScale=int(self.upscaleScaleSpinBox.value()),
         )
 
     def addToRenderQueue(self):

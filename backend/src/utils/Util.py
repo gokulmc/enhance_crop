@@ -375,8 +375,10 @@ def resize_image_bytes(image_bytes: bytes, width: int, height: int, target_width
     image_array = image_array.reshape((height, width, 3))
 
     # Resize the image
-    resized_image = cv2.resize(image_array, (target_width, target_height), interpolation=interpolation)
-
+    try:
+        resized_image = cv2.resize(image_array, (target_width, target_height), interpolation=interpolation)
+    except Exception:
+        resized_image = cv2.resize(image_array, (target_width, target_height))
     # Convert the resized image back to bytes
     return resized_image.tobytes()
 

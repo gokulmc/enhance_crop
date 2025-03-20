@@ -31,6 +31,7 @@ class RenderOptions:
         startTime: float | None = None,
         endTime: float | None = None,
         isPreview: bool = False,
+        overrideUpscaleScale: int | None = None,
     ):
         self._inputFile = inputFile
         self._outputPath = outputPath
@@ -57,6 +58,7 @@ class RenderOptions:
         self._startTime = startTime
         self._endTime = endTime
         self._isPreview = isPreview
+        self._overrideUpscaleScale = overrideUpscaleScale
 
     @property
     def inputFile(self):
@@ -252,6 +254,13 @@ class RenderOptions:
     @isPreview.setter
     def isPreview(self, value: bool):
         self._isPreview = value
+    
+    @property
+    def overrideUpscaleScale(self):
+        return self._overrideUpscaleScale
+    @overrideUpscaleScale.setter
+    def overrideUpscaleScale(self, value: int):
+        self._overrideUpscaleScale = value
         
 
 
