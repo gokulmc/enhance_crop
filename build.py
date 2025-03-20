@@ -263,6 +263,7 @@ if __name__ == "__main__":
     
     args = argparse.ArgumentParser()
     args.add_argument("--build", help="Build the application with a specific builder.", default="gui", choices=["pyinstaller", "cx_freeze", "nuitka", "gui"])
+    args.add_argument("--copy_backend", help="Copy the backend to the build directory", action="store_true")    
     args = args.parse_args()
     BuildManager().python_manager.pip_install_package_in_venv("PySide6==6.8.0") # up to date pyside6 version to build the GUI
     BuildManager().build_resources()
@@ -283,4 +284,8 @@ if __name__ == "__main__":
         case _:
             raise ValueError("Invalid build option")
     builder.build()
+    if args.copy_backend:
+        builder.copy_backend()
+    print("Build complete")
 
+    

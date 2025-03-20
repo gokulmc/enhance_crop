@@ -180,6 +180,11 @@ class Render:
 
         if upscaleModel: # load model after interpolation model is loaded, this saves on vram if the user builds 2 separate engines
             self.upscaleOption.hotReload()
+        
+        log(f"Upscale Times: {self.upscaleTimes}")
+        log(f"Interpolate Factor: {self.interpolateFactor}")
+        log(f"Total Output Frames: {self.totalOutputFrames}")
+        log("Model Scale: " + str(self.modelScale))
 
         self.readBuffer = FFmpegRead(  # input width
             inputFile=inputFile,

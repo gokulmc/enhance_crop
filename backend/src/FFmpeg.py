@@ -1,8 +1,20 @@
 from multiprocessing import shared_memory
 import sys
 import time
+import numpy as np
 
 from .utils.Util import log, padFrame
+
+
+def hdr_to_sdr(hdr_frame, width, height):
+    """
+    Converts HDR frame to SDR
+    """
+    # Convert HDR to SDR
+    hdr_frame = np.frombuffer(hdr_frame, dtype=np.uint16)
+    hdr_frame = hdr_frame.reshape((height, width, 3))
+    sdr_frame = hdr_frame.astype(np.uint8)
+    return sdr_frame.tobytes()
 
 
 def convertTime(remaining_time):
