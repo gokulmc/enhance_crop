@@ -150,6 +150,12 @@ ncnnUpscaleModels = {
         3,
         "compact",
     ),
+    "RealESRGAN RealisticVideo (4X) (Fast)": (
+        "realesr-general-x4v3",
+        "realesr-general-x4v3.tar.gz",
+        4,
+        "Compact",
+    ),
     "RealESRGAN OpenProteus (Realistic) (HD Input) (2X) (Fast)": (
         "2x_OpenProteus_Compact_i2_70K",
         "2x_OpenProteus_Compact_i2_70K.tar.gz",
