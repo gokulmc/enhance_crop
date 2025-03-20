@@ -243,6 +243,12 @@ pytorchUpscaleModels = {
         4,
         "SPAN",
     ),
+    "RealESRGAN RealisticVideo (4X) (Fast)": (
+        "realesr-general-x4v3.pth",
+        "realesr-general-x4v3.pth",
+        4,
+        "Compact",
+    ),
     "RealESRGAN OpenProteus (Realistic) (HD Input) (2X) (Fast)": (
         "2x_OpenProteus_Compact_i2_70K.pth",
         "2x_OpenProteus_Compact_i2_70K.pth",
