@@ -450,13 +450,11 @@ class FFmpegWrite(Buffer):
             with open(FFMPEG_LOG_FILE, "r") as f:
                 print("FULL FFMPEG LOG:", file=sys.stderr)
                 for line in f.readlines():
-                    print("\n")
                     print(line, file=sys.stderr)
 
             with open(FFMPEG_LOG_FILE, "r") as f:
                 for line in f.readlines():
                     if f"[{self.outputFileExtension}" in line:
-                        print("\n")
                         print(line, file=sys.stderr)
 
             if self.video_encoder.getPresetTag() == "x264_vulkan":
