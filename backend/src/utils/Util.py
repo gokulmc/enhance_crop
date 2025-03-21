@@ -74,7 +74,7 @@ def log(message: str):
 def bytesToImg(
     image: bytes, width, height, outputWidth: int = None, outputHeight: int = None
 ) -> np.ndarray:
-    channels = len(image) // (height * width) # 3 if RGB24/SDR, 6 if RGB48/HDR
+    channels = len(image) / (height * width) # 3 if RGB24/SDR, 6 if RGB48/HDR
     hdr = channels == 6
     frame = np.frombuffer(image, dtype=np.uint16 if hdr else np.uint8).reshape(height, width, 3).astype(np.uint8) # downgrade to sdr for scenedetect... its good enough.
     if outputHeight and outputWidth:
@@ -364,7 +364,7 @@ def resize_image_bytes(image_bytes: bytes, width: int, height: int, target_width
     """
     if target_width == width and target_height == height:
         return image_bytes
-    channels = len(image_bytes) // (height * width) # 3 if RGB24/SDR, 6 if RGB48/HDR
+    channels = len(image_bytes) / (height * width) # 3 if RGB24/SDR, 6 if RGB48/HDR
     dtype = np.uint8 if channels == 0 else np.uint16
     # Convert bytes to numpy array
     if target_width < width or target_height < height:

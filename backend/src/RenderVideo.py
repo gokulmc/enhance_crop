@@ -232,6 +232,7 @@ class Render:
             croppedOutputHeight=self.height * self.upscaleTimes,
             totalOutputFrames=self.totalOutputFrames,
             border_detect=border_detect,
+            hdr_mode=hdr_mode,
         )
         # has to be after to detect upscale times
         sharedMemoryChunkSize = (

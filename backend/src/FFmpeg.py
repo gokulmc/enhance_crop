@@ -64,6 +64,7 @@ class InformationWriteOut:
         croppedOutputHeight,
         totalOutputFrames,
         border_detect: bool = False,
+        hdr_mode: bool = False,
     ):
         self.startTime = time.time()
         self.frameChunkSize = outputWidth * outputHeight * 3
@@ -78,6 +79,7 @@ class InformationWriteOut:
         self.previewFrame = None
         self.last_length = 0
         self.framesRendered = 1
+        self.hdr_mode = hdr_mode
 
         if self.sharedMemoryID is not None:
             self.shm = shared_memory.SharedMemory(
@@ -124,7 +126,7 @@ class InformationWriteOut:
         return f"{hours}:{minutes}:{seconds}"
 
     def setPreviewFrame(self, frame):
-        self.previewFrame = frame
+        self.previewFrame = frame if not self.hdr_mode else hdr_to_sdr(frame, self.width, self.height)
 
     def setFramesRendered(self, framesRendered: int):
         self.framesRendered = framesRendered
