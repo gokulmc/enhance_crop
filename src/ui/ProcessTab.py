@@ -259,8 +259,8 @@ class ProcessTab:
             self.currentRenderOptions = renderOptions
 
             self.workerThread.setOutputVideoRes(
-                renderOptions.videoWidth * renderOptions.upscaleTimes,
-                renderOptions.videoHeight * renderOptions.upscaleTimes,
+                renderOptions.videoWidth * renderOptions.modelScale,
+                renderOptions.videoHeight * renderOptions.modelScale,
             )
             self.parent.progressBar.setRange(
                 0,

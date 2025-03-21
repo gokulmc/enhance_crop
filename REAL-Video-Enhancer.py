@@ -420,10 +420,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 )
                 return
         upscaleTimes = 1
+        modelScale = 1
         if upscale:
             upscaleModelFile = upscaleModels[upscale][0]
             upscaleDownloadFile = upscaleModels[upscale][1]
-            #upscaleTimes = upscaleModels[upscale][2]
+            modelScale = upscaleModels[upscale][2]
             upscaleTimes = int(self.upscaleScaleSpinBox.value())
             upscaleModelArch = upscaleModels[upscale][3]
             if upscaleModelArch != "custom":
@@ -460,6 +461,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             ensemble=self.ensembleCheckBox.isChecked(),
             upscaleModelArch=upscaleModelArch,
             upscaleTimes=upscaleTimes,
+            modelScale=modelScale,
             upscaleModelFile=upscaleModelFile if upscale else None,
             interpolateModelFile=interpolateModelFile if interpolate else None,
             hdrMode=self.hdrModeCheckBox.isChecked(),

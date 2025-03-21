@@ -298,6 +298,8 @@ class Render:
                     frame = self.upscaleOption(
                         self.upscaleOption.frame_to_tensor(frame)
                     )
+
+                self.informationHandler.setPreviewFrame(frame)
                 
                 if self.override_upscale_scale:
                     frame = resize_image_bytes(frame,
@@ -306,7 +308,7 @@ class Render:
                                                target_width=self.width*self.override_upscale_scale,
                                                target_height=self.height*self.override_upscale_scale,)
 
-                self.informationHandler.setPreviewFrame(frame)
+                
                 self.informationHandler.setFramesRendered(frames_rendered)
                 self.writeBuffer.writeQueue.put(frame)
                 frames_rendered += int(self.ceilInterpolateFactor)

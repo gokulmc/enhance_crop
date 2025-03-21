@@ -18,6 +18,7 @@ class RenderOptions:
         interpolateModel: str | None,
         upscaleModel: str | None,
         upscaleTimes: int,
+        modelScale: int,
         upscaleModelArch: str,
         interpolateTimes: int,
         benchmarkMode: bool,
@@ -47,6 +48,7 @@ class RenderOptions:
         self._upscaleModel = upscaleModel
         self._upscaleModelFile = upscaleModelFile
         self._upscaleTimes = upscaleTimes
+        self._modelScale = modelScale
         self._upscaleModelArch = upscaleModelArch
         self._interpolateTimes = interpolateTimes
         self._benchmarkMode = benchmarkMode
@@ -131,6 +133,13 @@ class RenderOptions:
     @backend.setter
     def backend(self, value: str):
         self._backend = value
+    
+    @property
+    def modelScale(self):
+        return self._modelScale
+    @modelScale.setter
+    def modelScale(self, value: int):
+        self._modelScale = value
 
     @property
     def interpolateModel(self):
