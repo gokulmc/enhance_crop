@@ -308,7 +308,7 @@ class FFmpegWrite(Buffer):
                 ]
                 encoder_tags = ["libx265", "x265_nvenc"]
                 if self.video_encoder.getPresetTag() not in encoder_tags:
-                    print("HDR mode is enabled, but the encoder does not support HDR. Please use x265 for HDR.",file=sys.stderr)
+                    print("\n\nHDR mode is enabled, but the encoder does not support HDR. Please use libx265 for HDR.\n",file=sys.stderr)
                     os._exit(1)
                 
                 # override pixel format
