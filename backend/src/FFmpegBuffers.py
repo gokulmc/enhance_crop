@@ -62,7 +62,7 @@ class FFmpegRead(Buffer):
             "-f",
             "image2pipe",
             "-pix_fmt",
-            "rgb48" if self.hdr_mode else "rgb24",
+            "rgb48le" if self.hdr_mode else "rgb24",
             "-vcodec",
             "rawvideo",
             "-s",
@@ -191,7 +191,7 @@ class FFmpegWrite(Buffer):
                 "-f",
                 "rawvideo",
                 "-pix_fmt",
-                "rgb48" if self.hdr_mode else "rgb24",
+                "rgb48le" if self.hdr_mode else "rgb24",
                 "-vcodec",
                 "rawvideo",
                 "-s",
@@ -205,10 +205,39 @@ class FFmpegWrite(Buffer):
                 f"{self.outputFPS}",
                 "-f",
                 "matroska",
-                "-pix_fmt",
-                "yuv420p",
+                
                 "-af",
                 f"atrim=start={self.start_time},asetpts=PTS-STARTPTS",
+                
+            ]
+            if self.hdr_mode:
+                
+                # override pixel format
+                pxfmtdict = {
+                    "yuv420p": "yuv420p10le",
+                    "yuv422": "yuv422p10le",
+                    "yuv444": "yuv444p10le",
+                }
+
+                if self.pixelFormat in pxfmtdict:
+                    self.pixelFormat = pxfmtdict[self.pixelFormat]
+                
+                command += [
+                    "-colorspace",
+                    "bt2020nc",
+                    "-color_trc",
+                    "smpte2084",
+                    "-color_primaries", 
+                    "bt2020", 
+                    "-pix_fmt",
+                    "yuv420p10le",
+                ]
+            else:
+                command += [
+                    "-pix_fmt",
+                    self.pixelFormat,
+                ]
+            command += [
                 "-",
             ]
             log("FFMPEG WRITE COMMAND: " + str(command))
@@ -233,7 +262,7 @@ class FFmpegWrite(Buffer):
                 "-f",
                 "rawvideo",
                 "-pix_fmt",
-                "rgb48" if self.hdr_mode else "rgb24",
+                "rgb48le" if self.hdr_mode else "rgb24",
                 "-vcodec",
                 "rawvideo",
                 "-s",
@@ -269,14 +298,19 @@ class FFmpegWrite(Buffer):
 
 
             if self.hdr_mode:
-
                 command += [
-                    "-color_primaries", "bt2020",
-                    "-color_trc", "smpte2084",
-                    "-colorspace", "bt2020nc",
-                    "-color_range", "pc",
+                    "-colorspace",
+                    "bt2020nc",
+                    "-color_trc",
+                    "smpte2084",
+                    "-color_primaries", 
+                    "bt2020", 
                 ]
-
+                encoder_tags = ["libx265", "x265_nvenc"]
+                if self.video_encoder.getPresetTag() not in encoder_tags:
+                    print("HDR mode is enabled, but the encoder does not support HDR. Please use x265 for HDR.",file=sys.stderr)
+                    os._exit(1)
+                
                 # override pixel format
                 pxfmtdict = {
                     "yuv420p": "yuv420p10le",
@@ -286,6 +320,24 @@ class FFmpegWrite(Buffer):
 
                 if self.pixelFormat in pxfmtdict:
                     self.pixelFormat = pxfmtdict[self.pixelFormat]
+                
+                if self.video_encoder.getPresetTag() == "libx265" or self.video_encoder.getPresetTag() == "x265_nvenc":
+                    command += [
+                        "-x265-params",
+                            "hdr-opt=1:colorprim=bt2020:transfer=smpte2084:colormatrix=bt2020nc",
+                    ]
+                elif self.video_encoder.getPresetTag() == "prores":
+                    command += [
+                        "-profile:v",
+                        "4",
+                        "-vendor",
+                        "ap10",
+                        "-color_range",
+                        "full",
+                    ]
+
+                
+                    
 
             command += [
                 "-pix_fmt",
@@ -336,7 +388,7 @@ class FFmpegWrite(Buffer):
                 "-video_size",
                 f"{self.width * self.upscaleTimes}x{self.upscaleTimes * self.height}",
                 "-pix_fmt",
-                "rgb48" if self.hdr_mode else "rgb24",
+                "rgb48le" if self.hdr_mode else "rgb24",
                 "-r",
                 str(self.outputFPS),
                 "-i",
@@ -395,6 +447,12 @@ class FFmpegWrite(Buffer):
     def onErroredExit(self):
         print("FFmpeg failed to render the video.", file=sys.stderr)
         try:
+            with open(FFMPEG_LOG_FILE, "r") as f:
+                print("FULL FFMPEG LOG:", file=sys.stderr)
+                for line in f.readlines():
+                    print("\n")
+                    print(line, file=sys.stderr)
+
             with open(FFMPEG_LOG_FILE, "r") as f:
                 for line in f.readlines():
                     if f"[{self.outputFileExtension}" in line:

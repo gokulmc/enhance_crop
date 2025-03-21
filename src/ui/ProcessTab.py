@@ -211,6 +211,7 @@ class ProcessTab:
         self,
         renderQueue: RenderQueue,
     ):
+        self.return_codes = [] # reset return codes
         # gui changes
         show_layout_widgets(self.parent.onRenderButtonsContiainer)
         self.parent.startRenderButton.setVisible(False)
@@ -341,7 +342,7 @@ class ProcessTab:
 
     def guiChangesOnRenderCompletion(self):
         if all(return_code == 0 for return_code in self.return_codes):
-            self.return_codes = [] # reset return codes
+            
             log("All render processes completed successfully")
         else:
             log("Some render processes failed")

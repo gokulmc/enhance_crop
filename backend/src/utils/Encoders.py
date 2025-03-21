@@ -99,7 +99,7 @@ class ffv1(VideoEncoder):
 class prores(VideoEncoder):
     preset_tag = "prores"
     preInputsettings = None
-    postInputSettings = "-c:v prores"
+    postInputSettings = "-c:v prores_ks"
 
 
 class x264_vulkan(VideoEncoder):
