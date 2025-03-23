@@ -194,7 +194,7 @@ class PyInstaller(BuildManager):
             + " --icon=icons/logo-v2.ico" 
             + " --noconfirm"
             + " --noupx" 
-            + " --noconsole"
+            + " --noconsole" # i think this fixes weird macos dir shit
             + " --distpath"
             + f" {OUTPUT_FOLDER}"
             )
