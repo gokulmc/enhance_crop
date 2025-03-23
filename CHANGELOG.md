@@ -16,7 +16,7 @@
  - Selectable torch 2.7.0-test
  - Bump ROCm to 6.2.4
  - Enabled tensorrt and torch in flatpak.
- - No more terminal runnning when using RVE on windows.
+ - No more terminal running when using RVE on windows.
 ### Fixed
  - Fixed HDR Mode
  
