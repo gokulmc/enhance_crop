@@ -3,7 +3,7 @@
         New features will be added to this release over time, the current changelog is not final. 
 ### Added
  - Updates backend and python version.
- - MacOS support.
+ - Render preview. 
  - Lock to make sure the app does not have duplicates open.
  - Switchable pytorch backend and version.
  - Experimental Blackwell GPU support. 
@@ -18,9 +18,7 @@
  - Enabled tensorrt and torch in flatpak.
  - No more terminal runnning when using RVE on windows.
 ### Fixed
- - Fixed lossless encoders
  - Fixed HDR Mode
- - libxcb-cursor0 not found on Linux XORG installations.
  
 # RVE 2.2.0 
 ### Added
