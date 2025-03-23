@@ -110,7 +110,11 @@
 
 # Cloning:
 ```
+# Nightly
 git clone https://github.com/TNTwise/REAL-Video-Enhancer
+
+# Stable
+git clone https://github.com/TNTwise/REAL-Video-Enhancer --branch 2.2.1
 ```
 # Building:
 
