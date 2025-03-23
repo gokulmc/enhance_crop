@@ -275,7 +275,7 @@ class HandleApplication:
         )
         parser.add_argument(
             "--video_encoder_preset",
-            help="encoder preset that sets default encoder settings useful for hardware encoders.",
+            help="encoder preset that sets default encoder settings useful for hardware encoders. (Overwritten by custom encoder)",
             default="libx264",
             choices=[
                 "libx264",
@@ -296,7 +296,7 @@ class HandleApplication:
         )
         parser.add_argument(
             "--video_pixel_format",
-            help="pixel format for output video",
+            help="pixel format for output video. (Overwritten by custom encoder)",
             default="yuv420p",
             choices=[
                 "yuv420p",
@@ -311,7 +311,7 @@ class HandleApplication:
 
         parser.add_argument(
             "--audio_encoder_preset",
-            help="encoder preset that sets default encoder settings",
+            help="encoder preset that sets default encoder settings. (Overwritten by custom encoder)",
             default="copy_audio",
             choices=[
                 "aac",

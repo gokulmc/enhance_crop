@@ -290,67 +290,68 @@ class FFmpegWrite(Buffer):
                 command += self.audio_encoder.getPostInputSettings().split()
                 command += self.subtitle_encoder.getPostInputSettings().split()
 
+                
+
+            if self.custom_encoder is not None:
+                for i in self.custom_encoder.split():
+                    command.append(i)
+                log(f"Custom Encoder Settings: {self.custom_encoder}")
+            else:
                 if not self.audio_encoder.getPresetTag() == "copy_audio":
                     command += [
                         "-b:a",
                         self.audio_bitrate,
                     ]
-
-
-            if self.hdr_mode:
-                command += [
-                    "-colorspace",
-                    "bt2020nc",
-                    "-color_trc",
-                    "smpte2084",
-                    "-color_primaries", 
-                    "bt2020", 
-                ]
-                encoder_tags = ["libx265", "x265_nvenc"]
-                if self.video_encoder.getPresetTag() not in encoder_tags:
-                    print("\n\nHDR mode is enabled, but the encoder does not support HDR. Please use libx265 for HDR.\n",file=sys.stderr)
-                    os._exit(1)
-                
-                # override pixel format
-                pxfmtdict = {
-                    "yuv420p": "yuv420p10le",
-                    "yuv422": "yuv422p10le",
-                    "yuv444": "yuv444p10le",
-                }
-
-                if self.pixelFormat in pxfmtdict:
-                    self.pixelFormat = pxfmtdict[self.pixelFormat]
-                
-                if self.video_encoder.getPresetTag() == "libx265" or self.video_encoder.getPresetTag() == "x265_nvenc":
-                    command += [
-                        "-x265-params",
-                            "hdr-opt=1:colorprim=bt2020:transfer=smpte2084:colormatrix=bt2020nc",
-                    ]
-                elif self.video_encoder.getPresetTag() == "prores":
-                    command += [
-                        "-profile:v",
-                        "4",
-                        "-vendor",
-                        "ap10",
-                        "-color_range",
-                        "full",
-                    ]
-
-                
-                    
-
-            command += [
-                "-pix_fmt",
-                self.pixelFormat,
-
-            ]
-
-            if self.custom_encoder is not None:
-                for i in self.custom_encoder.split():
-                    command.append(i)
-            else:
                 command += self.video_encoder.getPostInputSettings().split()
                 command += [self.video_encoder.getQualityControlMode(), str(self.crf)]
+                command += [
+                    "-pix_fmt",
+                    self.pixelFormat,
+
+                ]
+                if self.hdr_mode:
+                    command += [
+                        "-colorspace",
+                        "bt2020nc",
+                        "-color_trc",
+                        "smpte2084",
+                        "-color_primaries", 
+                        "bt2020", 
+                    ]
+                    encoder_tags = ["libx265", "x265_nvenc"]
+                    if self.video_encoder.getPresetTag() not in encoder_tags:
+                        print("\n\nHDR mode is enabled, but the encoder does not support HDR. Please use libx265 for HDR.\n",file=sys.stderr)
+                        os._exit(1)
+                    
+                    # override pixel format
+                    pxfmtdict = {
+                        "yuv420p": "yuv420p10le",
+                        "yuv422": "yuv422p10le",
+                        "yuv444": "yuv444p10le",
+                    }
+
+                    if self.pixelFormat in pxfmtdict:
+                        self.pixelFormat = pxfmtdict[self.pixelFormat]
+                    
+                    if self.video_encoder.getPresetTag() == "libx265" or self.video_encoder.getPresetTag() == "x265_nvenc":
+                        command += [
+                            "-x265-params",
+                                "hdr-opt=1:colorprim=bt2020:transfer=smpte2084:colormatrix=bt2020nc",
+                        ]
+                    elif self.video_encoder.getPresetTag() == "prores":
+                        command += [
+                            "-profile:v",
+                            "4",
+                            "-vendor",
+                            "ap10",
+                            "-color_range",
+                            "full",
+                        ]
+
+                log(f"Video Encoder: {self.video_encoder.getEncoder()}")
+                log(f"Video Pixel Format: {self.pixelFormat}")
+                log(f"Audio Enocder: {self.audio_encoder.getEncoder()}")
+                log(f"Subtitle Enocder: {self.subtitle_encoder.getEncoder()}")
 
             command +=[
                 "-to",
@@ -362,10 +363,6 @@ class FFmpegWrite(Buffer):
                 command.append("-y")
 
             log("Output Video Information:")
-            log(f"Video Encoder: {self.video_encoder.getEncoder()}")
-            log(f"Video Pixel Format: {self.pixelFormat}")
-            log(f"Audio Enocder: {self.audio_encoder.getEncoder()}")
-            log(f"Subtitle Enocder: {self.subtitle_encoder.getEncoder()}")
             log(f"Resolution: {self.outputWidth}x{self.outputHeight}")
             log(f"FPS: {self.outputFPS}")
             if self.slowmo_mode:
