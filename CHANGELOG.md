@@ -6,15 +6,16 @@
  - Render preview. 
  - Lock to make sure the app does not have duplicates open.
  - Switchable pytorch backend and version.
- - Experimental Blackwell GPU support. 
+ - Blackwell GPU support. 
  - Selectable upscale scale independent of model scale.
 ### Changed
  - Installes to a preset directory, and updates python and backend dynamically.
  - Improved RIFE TensorRT speeds
  - Backend to python 3.12
  - Bump tensorrt to 10.9
- - Selectable torch 2.7.0-test
- - Bump ROCm to 6.2.4
+ - Bump torch to 2.7
+ - Bump ROCm to 6.3
+ - Bump CUDA to 12.8
  - Enabled tensorrt and torch in flatpak.
  - No more terminal running when using RVE on windows.
 ### Fixed

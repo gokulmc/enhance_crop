@@ -266,9 +266,7 @@ class DownloadDependencies:
                 "--upgrade",
                 "--no-warn-script-location",
                 "--extra-index-url",
-                "https://download.pytorch.org/whl/nightly/",
-                "--extra-index-url",
-                "https://download.pytorch.org/whl/",  # switch to normal whl and test
+                "https://download.pytorch.org/whl/test/",
                 "--extra-index-url",
                 "https://pypi.nvidia.com",
             ]
@@ -321,7 +319,7 @@ class DownloadDependencies:
         ]
         return platformIndependentdeps
     
-    def downloadPythonDeps(self, backend, torch_version: Optional[str] = "2.6.0", torchvision_version: Optional[str] = "0.21.0", torch_backend: Optional[str] = "cu126", install: bool = True):
+    def downloadPythonDeps(self, backend, torch_version: Optional[str] = "2.7.0", torchvision_version: Optional[str] = "0.22.0", torch_backend: Optional[str] = "cu126", install: bool = True):
         deps = []
 
         if install: # dont uninstall platform independent deps
@@ -357,6 +355,11 @@ class DownloadDependencies:
                 return_codes.append(return_code)
 
                 if backend == "tensorrt":
+                    torch_trt_link = "https://github.com/TNTwise/real-video-enhancer-models/releases/download/models/torch_tensorrt-2.7.0.dev20250323+cu128-cp312-cp312-"
+                    if PLATFORM == 'linux':
+                        torch_trt_link += "linux_x86_64.whl"
+                    elif PLATFORM == 'win32':
+                        torch_trt_link += "win_amd64.whl"
                     
                     deps = [
                         "tensorrt==10.9.0.34",
@@ -364,7 +367,7 @@ class DownloadDependencies:
                         "tensorrt-cu12_libs==10.9.0.34",
                         "tensorrt_cu12_bindings==10.9.0.34",
                         "--no-deps",
-                        f"torch_tensorrt=={torch_version}+{torch_backend}",
+                        f"{torch_trt_link}",
                     ]
                     return_code = self.pip(deps, install)
                     return_codes.append(return_code)
@@ -372,4 +375,4 @@ class DownloadDependencies:
         for return_code in return_codes:
             if return_code != 0:
                 return return_code
-        return return_code
+        return 0

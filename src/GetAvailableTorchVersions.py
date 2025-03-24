@@ -20,22 +20,16 @@ class TorchVersion:
 
 class TorchScraper:
     def __init__(self):
-        settings = Settings()
-        torch_version = settings.settings["pytorch_version"].split()[0] # has to be in the format "2.6.0" or "2.7.0.dev20220301"
-        nightly = "dev" in torch_version
-        if nightly:
-            nightly_date = torch_version.split(".dev")[1]
+        #settings = Settings()
+        #torch_version = settings.settings["pytorch_version"].split()[0] # has to be in the format "2.6.0" or "2.7.0.dev20220301"
+
         
 
-        self.torchvision_version = "0.21.0"
-        self.cuda_version = "cu126"
-        self.rocm_version = "rocm6.2.4"
+        self.torchvision_version = "0.22.0"
+        self.cuda_version = "cu128"
+        self.rocm_version = "rocm6.3"
         self.xpu_version = "xpu"
-        if nightly:
-            self.torchvision_version = "0.22.0.dev" + nightly_date
-            self.cuda_version = "cu128"
-            self.rocm_version = "rocm6.3"
-            self.xpu_version = "xpu"
+        
         """
         torch cuda 2.6 -> cuda 12.6
         torch cuda 2.7 -> cuda 12.8
