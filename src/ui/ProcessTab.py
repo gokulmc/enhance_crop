@@ -374,7 +374,7 @@ class ProcessTab:
                 self.parent.VideoPreview.show()
                 self.parent.VideoPreview.setVisible(True)
                 self.parent.previewLabel.setVisible(False)
-                self.parent.timeInVideoScrollBar.setRange(0, (self.currentRenderOptions.endTime-self.currentRenderOptions.startTime)*10) # convert to ms
+                self.parent.timeInVideoScrollBar.setRange(0, ((self.currentRenderOptions.endTime-self.currentRenderOptions.startTime)-1)*10) # convert to ms
                 self.parent.timeInVideoScrollBar.valueChanged.connect(lambda: onScroll(player, int(self.parent.timeInVideoScrollBar.value()*100)))
 
             except Exception as e:
