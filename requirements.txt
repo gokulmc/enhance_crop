@@ -13,4 +13,3 @@ validators
 packaging
 pyserial==3.5
 pynput==1.7.7
-patchelf
