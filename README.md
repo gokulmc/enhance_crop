@@ -123,7 +123,7 @@ git clone https://github.com/TNTwise/REAL-Video-Enhancer --branch 2.2.1
     - cx_freeze (recommended for Linux) <br/>
     - nuitka (experimental)
 </p>
-<p>3 supported python versions: </p>
+<p>supported python versions: </p>
 <p> - 3.10 3.11, 3.12 <br/>
 </p>
 
