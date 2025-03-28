@@ -3,7 +3,6 @@
         New features will be added to this release over time, the current changelog is not final. 
 ### Added
  - Updates backend and python version.
- - Render preview. 
  - Lock to make sure the app does not have duplicates open.
  - Switchable pytorch backend and version.
  - Blackwell GPU support. 
@@ -11,8 +10,6 @@
 ### Changed
  - Installes to a preset directory, and updates python and backend dynamically.
  - Improved RIFE TensorRT speeds
- - Backend to python 3.12
- - Bump tensorrt to 10.9
  - Bump torch to 2.7
  - Bump ROCm to 6.3
  - Bump CUDA to 12.8
