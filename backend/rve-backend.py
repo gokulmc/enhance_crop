@@ -7,7 +7,7 @@ os.environ["HSA_OVERRIDE_GFX_VERSION"] = "10.3.0"
 import argparse
 import sys
 from src.version import __version__
-from src.utils.Util import (
+from src.utils.BackendChecks import (
     checkForPytorchCUDA,
     checkForPytorchROCM,
     checkForPytorchXPU,
