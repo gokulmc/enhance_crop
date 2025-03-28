@@ -150,7 +150,7 @@ class BuildManager:
             )
 
     
-    def copy_backend(self, build_dir=None):
+    def copy_backend(self, build_dir="dist"):
         print("Copying backend")
         if PLATFORM == "win32":
             if build_dir is None:
@@ -163,10 +163,8 @@ class BuildManager:
                 os.system(
                     f'xcopy "./backend" "./{build_dir}/REAL-Video-Enhancer/backend" /E /I'
                 )
-        if PLATFORM == "linux":
-            if build_dir is None:
-                build_dir = "bin"
-            os.system(f"cp -r backend {build_dir}/")
+        else:
+            os.system(f"cp -r backend {build_dir}/backend")
 
 
 class PyInstaller(BuildManager):
