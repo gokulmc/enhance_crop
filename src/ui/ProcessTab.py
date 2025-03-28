@@ -9,7 +9,6 @@ from PySide6 import QtGui
 from PySide6.QtGui import QPixmap, QPainter, QPainterPath, QColor
 from PySide6.QtCore import Qt, QSize, QUrl
 from PySide6.QtWidgets import QMessageBox
-from PySide6.QtMultimedia import QMediaPlayer
 
 from .RenderQueue import RenderQueue
 
@@ -359,6 +358,7 @@ class ProcessTab:
         self.parent.ETA.setText("ETA: ")
         self.parent.STATUS.setText("Status: ")
         if self.currentRenderOptions.isPreview:
+            from PySide6.QtMultimedia import QMediaPlayer
             try:
                 def onScroll(preview:QMediaPlayer, value):
                     preview.setPosition(value)

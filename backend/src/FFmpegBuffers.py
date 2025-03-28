@@ -125,6 +125,7 @@ class FFmpegWrite(Buffer):
         hdr_mode: bool,
         mpv_output: bool,
         merge_subtitles: bool,
+        override_upscale_scale: int,
     ):
         self.inputFile = inputFile
         self.outputFile = outputFile
@@ -157,6 +158,7 @@ class FFmpegWrite(Buffer):
         self.framesRendered: int = 1
         self.writeProcess = None
         self.merge_subtitles = merge_subtitles
+        self.override_upscale_scale = override_upscale_scale
         self.outputFPS = (
             (self.fps * self.interpolateFactor)
             if not self.slowmo_mode
@@ -242,6 +244,12 @@ class FFmpegWrite(Buffer):
             ]
             log("FFMPEG WRITE COMMAND: " + str(command))
             return command
+        
+        #if self.override_upscale_scale and self.width * self.override_upscale_scale != self.outputWidth: # checks if the command is paresed, and if there is a need to change the resolution
+        #    command += [
+        #        "-vf",
+        #        f"scale={self.width * self.override_upscale_scale}:{self.width * }",  # Resize to the desired resolution
+        #    ]
 
         if not self.benchmark:
             # maybe i can split this so i can just use ffmpeg normally like with vspipe
