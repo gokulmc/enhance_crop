@@ -418,6 +418,7 @@ class SettingUpBackendPopup(QtWidgets.QDialog):
     def startThread(self):
         self.workerThread = SubprocessThread(command=self.command)
         self.workerThread.fullOutput.connect(self.setOutput)
+        self.workerThread.return_code.connect(self.setReturnCode)
         self.workerThread.finished.connect(self.close)
         self.workerThread.finished.connect(self.workerThread.deleteLater)
         self.workerThread.finished.connect(self.workerThread.quit)
@@ -425,9 +426,15 @@ class SettingUpBackendPopup(QtWidgets.QDialog):
             self.workerThread.wait
         )  # need quit and wait to allow process to exit safely
         self.workerThread.start()
+    
+    def setReturnCode(self, return_code):
+        self.return_code = return_code
 
     def setOutput(self, output):
         self.output = output
+
+    def getReturnCode(self):
+        return self.return_code
 
     def getOutput(self):
         return self.output

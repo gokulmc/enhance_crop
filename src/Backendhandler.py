@@ -1,11 +1,10 @@
 import os
-import sys
 
-from .constants import BACKEND_PATH, PYTHON_EXECUTABLE_PATH, PLATFORM, IS_INSTALLED, IS_FLATPAK, HAS_NETWORK_ON_STARTUP
+from .constants import BACKEND_PATH, PYTHON_EXECUTABLE_PATH, PYTHON_DIRECTORY, PLATFORM, IS_INSTALLED, IS_FLATPAK, HAS_NETWORK_ON_STARTUP, CWD
 from .Util import (
-    log,
     FileHandler
 )
+from PySide6.QtWidgets import QMessageBox
 from .version import version
 
 
@@ -63,7 +62,7 @@ class BackendHandler:
 
 
     def getAvailableBackends(self):
-        from .ui.QTcustom import SettingUpBackendPopup
+        from .ui.QTcustom import SettingUpBackendPopup, RegularQTPopup
 
         output = SettingUpBackendPopup(
             [
@@ -74,7 +73,21 @@ class BackendHandler:
                 "--list_backends",
             ]
         )
+        return_code = str(output.getReturnCode()).strip()
         output: str = output.getOutput()
+        print(return_code)
+        
+        if return_code == "1":
+            reply = QMessageBox.question(
+                self.parent,
+                "",
+                f"Getting available backends failed!\nDelete {PYTHON_DIRECTORY} and exit?",
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No,  # type: ignore
+            )
+            if reply == QMessageBox.Yes:  # type: ignore
+                FileHandler.removeFolder(PYTHON_DIRECTORY)
+                os._exit(0)
         output = output.split(" ")
         # hack to filter out bad find
         new_out = ""
