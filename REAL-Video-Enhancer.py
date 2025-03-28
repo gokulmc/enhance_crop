@@ -1,3 +1,5 @@
+from src.constants import CUSTOM_MODELS_PATH, MODELS_PATH, CWD, LOCKFILE, IS_INSTALLED, TEMP_DOWNLOAD_PATH
+import os
 import sys
 import os
 os.environ["PYTHONNOUSERSITE"] = "1" # Prevents python from installing packages in user site
@@ -30,7 +32,6 @@ from src.Util import (
     log,
     createDirectory
 )
-from src.constants import CUSTOM_MODELS_PATH, MODELS_PATH, CWD, LOCKFILE, IS_INSTALLED, TEMP_DOWNLOAD_PATH
 
 createDirectory(os.path.join(CWD, "python"))
 createDirectory(os.path.join(CWD, "bin"))

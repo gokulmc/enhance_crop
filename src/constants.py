@@ -47,6 +47,8 @@ if IS_FLATPAK:
             )
         )
 os.mkdir(CWD) if not os.path.exists(CWD) else None
+os.chdir(CWD)
+
 
 EXE_NAME = "REAL-Video-Enhancer.exe" if PLATFORM == "win32" else "REAL-Video-Enhancer"
 LIBS_NAME = "_internal" if PLATFORM == "win32" else "lib"
