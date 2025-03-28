@@ -11,7 +11,7 @@ from ..ModelHandler import (
 )
 from PySide6.QtWidgets import QMessageBox
 from .Updater import ApplicationUpdater
-from ..constants import IS_FLATPAK, MODELS_PATH, PLATFORM, CWD
+from ..constants import IS_FLATPAK, MODELS_PATH, PLATFORM, CWD, USE_LOCAL_BACKEND
 from ..GetAvailableTorchVersions import TorchScraper
 from ..Util import FileHandler
 
@@ -51,7 +51,7 @@ class DownloadTab:
         # set this all to not visible, as scrapping the idea for now.
         if PLATFORM != "linux":
             disable_combobox_item_by_text(self.parent.pytorch_backend, "ROCm (Linux Only)")
-        if IS_FLATPAK:
+        if IS_FLATPAK or USE_LOCAL_BACKEND:
             self.parent.uninstallAppBtn.setDisabled(True)
         else:
             self.parent.uninstallAppBtn.clicked.connect(self.uninstallApp)
