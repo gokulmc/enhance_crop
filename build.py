@@ -189,7 +189,7 @@ class PyInstaller(BuildManager):
             
 class CxFreeze(BuildManager):
 
-    cx_freeze_version = "cx_freeze==7.0.0"
+    cx_freeze_version = "cx_freeze==8.0.0"
 
     def build(self):
         print("Building executable")
@@ -253,12 +253,10 @@ if __name__ == "__main__":
     args.add_argument("--build", help="Build the application with a specific builder.", default="gui", choices=["pyinstaller", "cx_freeze", "nuitka", "gui"])
     args.add_argument("--copy_backend", help="Copy the backend to the build directory", action="store_true")    
     args = args.parse_args()
+    BuildManager().python_manager.setup_python()
     BuildManager().build_resources()
     BuildManager().build_gui()
-    BuildManager().python_manager.setup_python()
-    if PLATFORM == 'win32':
-        BuildManager().python_manager.pip_install_package_in_venv("PySide6==6.6.0") # linux/mac not impacted
-
+    
     match args.build:
         case "pyinstaller":
             builder = PyInstaller()

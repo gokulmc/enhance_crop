@@ -75,7 +75,6 @@ class BackendHandler:
         )
         return_code = str(output.getReturnCode()).strip()
         output: str = output.getOutput()
-        print(return_code)
         
         if return_code == "1":
             reply = QMessageBox.question(

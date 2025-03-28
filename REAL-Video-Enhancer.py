@@ -240,6 +240,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.downloadBtn.clicked.connect(self.switchToDownloadPage)
         self.renderPreviewBtn.clicked.connect(self.renderPreview)
         self.VideoPreview.setVisible(False)
+        self.RenderedPreviewControlsContainer.setVisible(False)
         # connect getting default output file
 
     def renderPreview(self):
