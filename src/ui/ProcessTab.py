@@ -51,6 +51,7 @@ class ProcessTab:
         self.fps = 0
         self.eta = 0
         self.isPreview = False
+        self.userKilled = False
         self.currentRenderOptions = None
         self.status = "Idle"
         self.animationHandler = AnimationHandler()
@@ -144,6 +145,7 @@ class ProcessTab:
 
     def killRenderProcess(self):
         try:  # kills  render process if necessary
+            self.userKilled = True
             self.renderProcess.terminate()
         except AttributeError:
             log("No render process!")
@@ -211,6 +213,7 @@ class ProcessTab:
         renderQueue: RenderQueue,
     ):
         self.return_codes = [] # reset return codes
+        self.userKilled = False # reset userkilled
         # gui changes
         show_layout_widgets(self.parent.onRenderButtonsContiainer)
         self.parent.startRenderButton.setVisible(False)
@@ -251,9 +254,9 @@ class ProcessTab:
         renderQueue: RenderQueue,
     ):
         self.createPausedSharedMemory()
-        
+
         for renderOptions in renderQueue.getQueue():
-            
+
             self.isPreview = renderOptions.isPreview
             self.currentRenderOptions = renderOptions
 
@@ -282,7 +285,7 @@ class ProcessTab:
             if PLATFORM == "win32":
                 kwargs["startupinfo"] = subprocess.STARTUPINFO()
                 kwargs["startupinfo"].dwFlags |= subprocess.STARTF_USESHOWWINDOW
-               
+
 
             self.renderProcess = subprocess.Popen(
                 command,
@@ -292,7 +295,7 @@ class ProcessTab:
             for line in iter(self.renderProcess.stdout.readline, b""):
                 if self.renderProcess.poll() is not None:
                     break  # Exit the loop if the process has terminated
-                
+
                 try:
                     line = str(line.strip())
                     if "it/s" in line:
@@ -307,10 +310,10 @@ class ProcessTab:
                         self.fps = re.search(r"FPS: (\d+)", line).group(1)
                         self.eta = re.search(r"ETA: (.+)", line).group(1)
                         self.status = "Rendering"
-                    
+
                     if "this may take a while" in line.lower():
                         self.status = "Building Engine"
-                        
+
 
                     if any(char.isalpha() for char in line):
                         textOutput.append(line)
@@ -328,20 +331,19 @@ class ProcessTab:
             self.parent.OutputFilesListWidget.addItem(
                 renderOptions.outputPath
             )  # add the file to the list widget
-            
+
             self.workerThread.unlink_shared_memory()
         try:
             self.pausedSharedMemory.close()
             self.pausedSharedMemory.unlink()
         except Exception: # too lazy to patch why this errors maybe on exit
             pass
-        
+
         renderQueue.clear()
         self.onRenderCompletion()
 
     def guiChangesOnRenderCompletion(self):
-        if all(return_code == 0 for return_code in self.return_codes):
-            
+        if all(return_code == 0 for return_code in self.return_codes) or self.userKilled:
             log("All render processes completed successfully")
         else:
             log("Some render processes failed")
@@ -362,9 +364,9 @@ class ProcessTab:
             try:
                 def onScroll(preview:QMediaPlayer, value):
                     preview.setPosition(value)
-                    
+
                 self.parent.renderQueue.clear()
-                
+
                 player = QMediaPlayer()
                 player.setSource(QUrl.fromLocalFile(self.currentRenderOptions.outputPath))
                 player.setVideoOutput(self.parent.VideoPreview)
@@ -380,7 +382,7 @@ class ProcessTab:
             except Exception as e:
                 log(f"Error: {e}")
 
-            
+
     def onRenderCompletion(self):
         try:
             self.renderProcess.wait()
@@ -502,7 +504,7 @@ class ProcessTab:
             f"{self.settings.settings['pytorch_gpu_id']}",
             "--cwd",
             f"{CWD}",
-            
+
         ]
         if renderOptions.startTime is not None:
             command += [
@@ -586,12 +588,12 @@ class ProcessTab:
 
         if self.isOverwrite:
             command += ["--overwrite"]
-        
+
         if renderOptions.hdrMode:
             command += ["--hdr_mode"]
 
         if renderOptions.mergeSubtitles:
             command += ["--merge_subtitles"]
-            
+
 
         return command
