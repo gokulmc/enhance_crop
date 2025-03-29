@@ -9,7 +9,7 @@ import sys
 from time import sleep
 
 
-from ..utils.Util import (
+from ..utils.BackendChecks import (
     check_bfloat16_support,
     get_gpus_torch,
 )
@@ -70,7 +70,7 @@ class UpscalePytorch:
         trt_optimization_level: int = 3,
         trt_max_aux_streams: int | None = None,
         trt_debug: bool = False,
-        
+
     ):
         if device == "default":
             if torch.cuda.is_available():
@@ -162,7 +162,7 @@ class UpscalePytorch:
                     export_format="fallback",
                     dynamo_export_format="fallback",
                     trt_optimization_level=self.trt_optimization_level,
-                    
+
                 )
 
                 self.trt_engine_path = os.path.join(
@@ -194,13 +194,13 @@ class UpscalePytorch:
                     ]
 
                     # inference and get re-load state dict due to issue with span.
-                    
+
                     model = self.model
                     model(inputs[0])
                     self.model.load_state_dict(model.state_dict())
                     del model
                     torch.cuda.empty_cache()
-                    
+
 
                     trtHandler.build_engine(
                         self.model,
@@ -210,7 +210,7 @@ class UpscalePytorch:
                         trt_engine_path=self.trt_engine_path,
                         trt_multi_precision_engine=False,
                     )
-                    
+
 
                 self.set_self_model(backend="tensorrt")
         torch.cuda.empty_cache()
@@ -296,7 +296,7 @@ class UpscalePytorch:
         return output
 
     def getScale(self):
-        return self.scale 
+        return self.scale
 
     @torch.inference_mode()
     def renderTiledImage(

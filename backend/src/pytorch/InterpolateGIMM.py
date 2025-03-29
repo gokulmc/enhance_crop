@@ -16,9 +16,11 @@ import sys
 from ..utils.Util import (
     printAndLog,
     errorAndLog,
-    check_bfloat16_support,
     warnAndLog,
     log,
+)
+from ..utils.BackendChecks import (
+    check_bfloat16_support,
     get_gpus_torch,
 )
 from ..constants import HAS_SYSTEM_CUDA

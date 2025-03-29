@@ -3,12 +3,10 @@ from queue import Queue
 
 # from backend.src.pytorch.InterpolateArchs.GIMM import GIMM
 from .BaseInterpolate import BaseInterpolate, DynamicScale
-from .UpscaleTorch import UpscalePytorch
 import math
 import logging
 import sys
 from ..utils.Util import (
-    
     warnAndLog,
     log,
 )
@@ -138,7 +136,7 @@ class InterpolateGMFSSTorch(BaseInterpolate):
         img1,
         transition=False,
     ):  # type: ignore
-        
+
         with torch.cuda.stream(self.stream):  # type: ignore
             if self.frame0 is None:
                 self.frame0 = self.frame_to_tensor(img1, self.prepareStream)
@@ -159,7 +157,7 @@ class InterpolateGMFSSTorch(BaseInterpolate):
                         sleep(1)
                     timestep = self.timestepDict[timestep]
                     output = self.flownet(self.frame0, frame1, timestep, closest_value)
-                    
+
                     output = self.tensor_to_frame(output)
                     yield output
                 else:
@@ -170,4 +168,3 @@ class InterpolateGMFSSTorch(BaseInterpolate):
 
         self.stream.synchronize()
         torch.cuda.synchronize()
-

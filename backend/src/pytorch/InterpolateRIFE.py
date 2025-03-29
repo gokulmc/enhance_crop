@@ -8,10 +8,8 @@ from ..utils.SSIM import SSIM
 # from backend.src.pytorch.InterpolateArchs.GIMM import GIMM
 from .BaseInterpolate import BaseInterpolate, DynamicScale
 from .InterpolateArchs.DetectInterpolateArch import ArchDetect
-from .UpscaleTorch import UpscalePytorch
 import math
 import os
-import logging
 import sys
 from ..utils.Util import (
     errorAndLog,
@@ -76,7 +74,7 @@ class InterpolateRifeTorch(BaseInterpolate):
         self.copyStream = torch.cuda.Stream()
         self.f2tStream = torch.cuda.Stream()
         with torch.cuda.stream(self.prepareStream):  # type: ignore
-            
+
             state_dict = torch.load(
                 self.interpolateModel,
                 map_location=self.device,
@@ -156,7 +154,7 @@ class InterpolateRifeTorch(BaseInterpolate):
                 )
                 self.timestepDict[timestep] = timestep_tens
             # rife specific setup
-            
+
             self.tenFlow_div = torch.tensor(
             [(self.pw - 1.0) / 2.0, (self.ph - 1.0) / 2.0],
                 dtype=torch.float32,
@@ -173,7 +171,7 @@ class InterpolateRifeTorch(BaseInterpolate):
                 .expand(-1, -1, -1, self.pw)
             ).to(dtype=torch.float32, device=self.device)
             self.backwarp_tenGrid = torch.cat([tenHorizontal, tenVertical], 1)
-            
+
 
             self.flownet = IFNet(
                 scale=self.scale,
@@ -285,27 +283,27 @@ class InterpolateRifeTorch(BaseInterpolate):
                         )
 
                     trtHandler.build_engine(self.flownet,  self.dtype, self.device, flownet_inputs, trt_engine_path, trt_multi_precision_engine=True)
-                    
-                    if self.encode:    
+
+                    if self.encode:
                         trtHandler.build_engine(self.encode, self.dtype, self.device, encode_inputs, encode_trt_engine_path, trt_multi_precision_engine=False)
-                        
+
                 self.flownet = trtHandler.load_engine(trt_engine_path)
-                
+
                 if self.encode:
                     self.encode = trtHandler.load_engine(encode_trt_engine_path)
 
 
-                    
+
 
         torch.cuda.empty_cache()
         self.prepareStream.synchronize()
-    
+
     def debug_save_tensor_as_img(self, img: torch.Tensor, name: str):
         import cv2
         img = img.squeeze().permute(1,2,0).detach().cpu().numpy()
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
         cv2.imwrite(name, img)
-        
+
 
     @torch.inference_mode()
     def __call__(
@@ -324,7 +322,7 @@ class InterpolateRifeTorch(BaseInterpolate):
             encode1 = self.encode_Frame(frame1, self.f2tStream)
 
         with torch.cuda.stream(self.stream):  # type: ignore
-            
+
 
             if self.dynamicScaledOpticalFlow:
                 closest_value = self.dynamicScale.dynamicScaleCalculation(
@@ -371,7 +369,7 @@ class InterpolateRifeTorch(BaseInterpolate):
                 self.copyTensor(self.encode0, encode1, self.copyStream)  # type: ignore
 
             # self.debug_save_tensor_as_img(self.frame0, "frame0.png")
-            
+
 
         self.stream.synchronize()
         torch.cuda.synchronize()
@@ -395,7 +393,7 @@ class InterpolateRifeTensorRT(InterpolateRifeTorch):
     ):  # type: ignore
         if self.frame0 is None:
             self.frame0 = self.frame_to_tensor(img1, self.prepareStream)
-            
+
             if self.encode:
                 self.encode0 = self.encode_Frame(self.frame0, self.prepareStream)
             return
@@ -416,7 +414,7 @@ class InterpolateRifeTensorRT(InterpolateRifeTorch):
 
                     if self.encode:
                         output = self.flownet(self.frame0, frame1, timestep, self.tenFlow_div, self.backwarp_tenGrid, self.encode0, encode1) # type: ignore
-                        
+
                     else:
                         output = self.flownet(self.frame0, frame1, timestep, self.tenFlow_div, self.backwarp_tenGrid,)
 
@@ -426,7 +424,7 @@ class InterpolateRifeTensorRT(InterpolateRifeTorch):
 
                 else:
                     yield img1
-                    
+
 
             self.copyTensor(self.frame0, frame1, self.copyStream)
             if self.encode:
