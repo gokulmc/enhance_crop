@@ -73,7 +73,7 @@ class FFmpegRead(Buffer):
             str(self.end_time),
             "-",
         ]
-        
+
         log("FFMPEG READ COMMAND: " + str(command))
         return command
 
@@ -125,7 +125,6 @@ class FFmpegWrite(Buffer):
         hdr_mode: bool,
         mpv_output: bool,
         merge_subtitles: bool,
-        override_upscale_scale: int,
     ):
         self.inputFile = inputFile
         self.outputFile = outputFile
@@ -158,7 +157,6 @@ class FFmpegWrite(Buffer):
         self.framesRendered: int = 1
         self.writeProcess = None
         self.merge_subtitles = merge_subtitles
-        self.override_upscale_scale = override_upscale_scale
         self.outputFPS = (
             (self.fps * self.interpolateFactor)
             if not self.slowmo_mode
@@ -186,7 +184,7 @@ class FFmpegWrite(Buffer):
         if self.mpv_output:
             command = [
                 f"{FFMPEG_PATH}",
-                "-loglevel", 
+                "-loglevel",
                 "error",
                 "-framerate",
                 f"{self.fps*self.ceilInterpolateFactor}",
@@ -200,20 +198,20 @@ class FFmpegWrite(Buffer):
                 f"{self.outputWidth}x{self.outputHeight}",
                 "-i",
                 "-",
-                
+
                 "-to",
                 str(self.end_time-self.start_time),
                 "-r",
                 f"{self.outputFPS}",
                 "-f",
                 "matroska",
-                
+
                 "-af",
                 f"atrim=start={self.start_time},asetpts=PTS-STARTPTS",
-                
+
             ]
             if self.hdr_mode:
-                
+
                 # override pixel format
                 pxfmtdict = {
                     "yuv420p": "yuv420p10le",
@@ -223,14 +221,14 @@ class FFmpegWrite(Buffer):
 
                 if self.pixelFormat in pxfmtdict:
                     self.pixelFormat = pxfmtdict[self.pixelFormat]
-                
+
                 command += [
                     "-colorspace",
                     "bt2020nc",
                     "-color_trc",
                     "smpte2084",
-                    "-color_primaries", 
-                    "bt2020", 
+                    "-color_primaries",
+                    "bt2020",
                     "-pix_fmt",
                     "yuv420p10le",
                 ]
@@ -244,18 +242,13 @@ class FFmpegWrite(Buffer):
             ]
             log("FFMPEG WRITE COMMAND: " + str(command))
             return command
-        
-        #if self.override_upscale_scale and self.width * self.override_upscale_scale != self.outputWidth: # checks if the command is paresed, and if there is a need to change the resolution
-        #    command += [
-        #        "-vf",
-        #        f"scale={self.width * self.override_upscale_scale}:{self.width * }",  # Resize to the desired resolution
-        #    ]
+
 
         if not self.benchmark:
             # maybe i can split this so i can just use ffmpeg normally like with vspipe
             command = [
                 f"{FFMPEG_PATH}",
-                "-loglevel", 
+                "-loglevel",
                 "error",
             ]
 
@@ -298,7 +291,7 @@ class FFmpegWrite(Buffer):
                 command += self.audio_encoder.getPostInputSettings().split()
                 command += self.subtitle_encoder.getPostInputSettings().split()
 
-                
+
 
             if self.custom_encoder is not None:
                 for i in self.custom_encoder.split():
@@ -323,14 +316,14 @@ class FFmpegWrite(Buffer):
                         "bt2020nc",
                         "-color_trc",
                         "smpte2084",
-                        "-color_primaries", 
-                        "bt2020", 
+                        "-color_primaries",
+                        "bt2020",
                     ]
                     encoder_tags = ["libx265", "x265_nvenc"]
                     if self.video_encoder.getPresetTag() not in encoder_tags:
                         print("\n\nHDR mode is enabled, but the encoder does not support HDR. Please use libx265 for HDR.\n",file=sys.stderr)
                         os._exit(1)
-                    
+
                     # override pixel format
                     pxfmtdict = {
                         "yuv420p": "yuv420p10le",
@@ -340,7 +333,7 @@ class FFmpegWrite(Buffer):
 
                     if self.pixelFormat in pxfmtdict:
                         self.pixelFormat = pxfmtdict[self.pixelFormat]
-                    
+
                     if self.video_encoder.getPresetTag() == "libx265" or self.video_encoder.getPresetTag() == "x265_nvenc":
                         command += [
                             "-x265-params",
@@ -381,7 +374,7 @@ class FFmpegWrite(Buffer):
             command = [
                 f"{FFMPEG_PATH}",
                 "-hide_banner",
-                "-loglevel", 
+                "-loglevel",
                 "error",
                 "-stats",
                 "-f",
@@ -441,14 +434,14 @@ class FFmpegWrite(Buffer):
         except Exception as e:
             print(str(e), file=sys.stderr)
             self.onErroredExit()
-        
+
         if exit_code != 0:
             self.onErroredExit()
             return
-     
 
-    
-            
+
+
+
     def onErroredExit(self):
         print("FFmpeg failed to render the video.", file=sys.stderr)
         try:
@@ -474,7 +467,7 @@ class FFmpegWrite(Buffer):
 
         time.sleep(1)
         os._exit(1)
-    
+
     def __del__(self):
         self.ffmpeg_log.close()
 

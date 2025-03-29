@@ -11,7 +11,7 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QFileDialog,
     QMessageBox,
-    
+
 )
 from PySide6.QtGui import QIcon
 
@@ -100,11 +100,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.anyBackendsInstalled = True
         self.videoLength = 1
 
-        
+
         settings = Settings()
         settings.readSettings()
         self.settings = settings
-        
+
 
         # setup application
         FileHandler.createDirectory(TEMP_DOWNLOAD_PATH)
@@ -117,20 +117,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         backendHandler = BackendHandler(self, self.settings)
         backendHandler.enableCorrectBackends()
-            
+
         self.renderQueue = RenderQueue(self.renderQueueListWidget)
 
-        
-        if not IS_INSTALLED: 
+
+        if not IS_INSTALLED:
             for dep in Dependency.__subclasses__():
                 d = dep()
                 d.download()
-        
+
         for dep in Dependency.__subclasses__():
             d = dep()
             if d.get_if_update_available():
                 d.update_if_updates_available()
-        
+
 
         self.backends, self.fullOutput = (
             backendHandler.getAvailableBackends()
@@ -147,8 +147,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.downloadBtn.setChecked(True)
             self.processBtn.setToolTip("Please install at least one backend to enable processing.")
             self.processBtn.setToolTipDuration(0)
-            
-            
+
+
 
         backendHandler.hideUninstallButtons()
         backendHandler.showUninstallButton(self.backends)
@@ -224,14 +224,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if not self.anyBackendsInstalled:
             RegularQTPopup("Welcome to REAL Video Enhancer!\nPlease install at least one backend to get started.")
-        
-    
+
+
         #player = QMediaPlayer()
         #player.setSource(QUrl.fromLocalFile(r"C:\Users\tntwi\Downloads\CodeGeass-OP3.webm"))
         #player.setVideoOutput(self.VideoPreview)
         #self.VideoPreview.show()
         #self.playbutton.clicked.connect(lambda: player.play())
-        
+
 
     def QConnect(self):
         # connect buttons to switch menus
@@ -254,13 +254,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if renderOptions.endTime <= renderOptions.startTime:
             NotificationOverlay("End time must be greater than start time!", self, timeout=1500)
             return
-        
+
 
         renderOptions.isPreview = True
         if renderOptions:
             self.renderQueue.add(renderOptions)
             self.startRender(self.renderQueue)
-            
+
 
     def setButtonsUnchecked(self, buttonToIgnore):
         buttons = [
@@ -396,12 +396,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if not self.isVideoLoaded:
             NotificationOverlay("Video is not loaded!", self, timeout=1500)
-            return
-        
+            return 1
+
         if not interpolate and not upscale:
             NotificationOverlay("Please select at least one model!", self, timeout=1500)
-            return
-        
+            return 1
+
         backend = self.backendComboBox.currentText()
         upscaleModelArch = "custom"
         interpolateModels, upscaleModels = getModels(backend)
@@ -420,7 +420,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     self,
                     timeout=1500,
                 )
-                return
+                return 1
         upscaleTimes = 1
         modelScale = 1
         if upscale:
@@ -440,8 +440,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         self,
                         timeout=2500,
                     )
-                    return
-                
+                    return 1
+
         return RenderOptions(
             inputFile=self.inputFileText.text(),
             outputPath=output_path,
@@ -474,14 +474,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def addToRenderQueue(self):
         self.settings.readSettings()
         output_path = self.outputFileText.text()
-        
-        
+
+
         for renderOptions in self.renderQueue.getQueue():
             if output_path == renderOptions.outputPath:
                 NotificationOverlay("Output file already in queue!", self, timeout=1500)
                 return
 
         renderOptions = self.getCurrentRenderOptions()
+        if renderOptions == 1:
+            return
         # alert user that item has been added to queue
         NotificationOverlay(
             f"{self.inputFileText.text()} Added to queue!", self, timeout=1500
@@ -680,7 +682,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         )
 
     def closeEvent(self, event):
-        
+
         reply = QMessageBox.question(
             self,
             "",
@@ -702,16 +704,16 @@ def main():
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
     app.setPalette(Palette())
-    
+
     if not "--unlock" in sys.argv:
         lock_file = QLockFile(LOCKFILE)
         if not lock_file.tryLock(10):
             QMessageBox.warning(None, "Instance Running", "Another instance is already running.")
             sys.exit(0)
-    
+
     # setting the pallette
     window = MainWindow()
-    
+
     if "--fullscreen" in sys.argv:
         window.showFullScreen()
     window.show()

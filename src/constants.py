@@ -41,13 +41,13 @@ if not USE_LOCAL_BACKEND:
 else:
     CWD = os.getcwd()
 if IS_FLATPAK:
-        CWD = (
-            os.path.join(
-                HOME_PATH, ".var", "app", "io.github.tntwise.REAL-Video-Enhancer"
-            )
+    CWD = (
+        os.path.join(
+            HOME_PATH, ".var", "app", "io.github.tntwise.REAL-Video-Enhancer"
         )
+    )
 os.mkdir(CWD) if not os.path.exists(CWD) else None
-os.chdir(CWD)
+os.chdir(CWD) # need to actually chdir into the directory to have everything run correctly
 
 
 EXE_NAME = "REAL-Video-Enhancer.exe" if PLATFORM == "win32" else "REAL-Video-Enhancer"
