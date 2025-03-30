@@ -305,11 +305,7 @@ class FFmpegWrite(Buffer):
                     ]
                 command += self.video_encoder.getPostInputSettings().split()
                 command += [self.video_encoder.getQualityControlMode(), str(self.crf)]
-                command += [
-                    "-pix_fmt",
-                    self.pixelFormat,
-
-                ]
+                
                 if self.hdr_mode:
                     command += [
                         "-colorspace",
@@ -353,7 +349,11 @@ class FFmpegWrite(Buffer):
                 log(f"Video Pixel Format: {self.pixelFormat}")
                 log(f"Audio Enocder: {self.audio_encoder.getEncoder()}")
                 log(f"Subtitle Enocder: {self.subtitle_encoder.getEncoder()}")
+                command += [
+                    "-pix_fmt",
+                    self.pixelFormat,
 
+                ]
             command +=[
                 "-to",
                 str(self.end_time-self.start_time),

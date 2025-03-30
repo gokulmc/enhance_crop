@@ -45,10 +45,22 @@ class SettingsTab:
         self.settings.writeSetting(
                 "audio_bitrate", self.parent.audio_bitrate.currentText()
         )
+        pixel_fmt = self.settings.settings['video_pixel_format']
+        hdr_mode = self.parent.hdrModeCheckBox.isChecked() 
+        if hdr_mode:
+            pxfmtdict = {
+                        "yuv420p": "yuv420p10le",
+                        "yuv422": "yuv422p10le",
+                        "yuv444": "yuv444p10le",
+                    }
+
+            if pixel_fmt in pxfmtdict:
+                pixel_fmt = pxfmtdict[pixel_fmt]
+
         command = FFMpegCommand(
         self.settings.settings['encoder'].replace(' (experimental)', '').replace(' (40 series and up)', ''),
         self.settings.settings['video_quality'],
-        self.settings.settings['video_pixel_format'],
+        pixel_fmt,
         self.settings.settings['audio_encoder'],
         self.settings.settings['audio_bitrate'],
         self.settings.settings['subtitle_encoder']).build_command()
@@ -56,6 +68,8 @@ class SettingsTab:
          
 
     def connectWriteSettings(self):
+        
+
         self.parent.precision.currentIndexChanged.connect(
             lambda: self.settings.writeSetting(
                 "precision", self.parent.precision.currentText()
@@ -77,6 +91,9 @@ class SettingsTab:
             self.updateFFMpegCommand
         )
         self.parent.audio_bitrate.currentIndexChanged.connect(
+            self.updateFFMpegCommand
+        )
+        self.parent.hdrModeCheckBox.stateChanged.connect(
             self.updateFFMpegCommand
         )
         self.parent.preview_enabled.stateChanged.connect(
