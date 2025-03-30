@@ -7,6 +7,7 @@
  - Switchable pytorch backend and version.
  - Blackwell GPU support. 
  - Selectable upscale scale independent of model scale.
+ - Custom ffmpeg args in front end.
 ### Changed
  - Installes to a preset directory, and updates python and backend dynamically.
  - Improved RIFE TensorRT speeds
