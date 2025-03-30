@@ -469,6 +469,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             hdrMode=self.hdrModeCheckBox.isChecked(),
             mergeSubtitles=self.mergeSubtitlesCheckBox.isChecked(),
             overrideUpscaleScale=int(self.upscaleScaleSpinBox.value()),
+            encoderCommand=self.EncoderCommand.text(),
         )
 
     def addToRenderQueue(self):

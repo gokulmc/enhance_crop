@@ -4,7 +4,7 @@ from PySide6.QtWidgets import QMainWindow, QFileDialog
 from ..constants import PLATFORM, HOME_PATH
 from ..Util import currentDirectory, checkForWritePermissions, open_folder
 from .QTcustom import RegularQTPopup
-
+from ..GenerateFFMpegCommand import FFMpegCommand
 
 class SettingsTab:
     def __init__(
@@ -28,6 +28,32 @@ class SettingsTab:
         self.parent.pytorch_gpu_id.setMaximum(total_pytorch_gpus)
         self.parent.ncnn_gpu_id.setMaximum(total_ncnn_gpus)
         self.parent.openRVEFolderBtn.clicked.connect(lambda:open_folder(currentDirectory()))
+    
+    def updateFFMpegCommand(self):
+        """
+        Updates the FFMpegCommand object with the current settings.
+        """
+        self.settings.writeSetting(
+                "encoder", self.parent.encoder.currentText()
+        )
+        self.settings.writeSetting(
+                "audio_encoder", self.parent.audio_encoder.currentText()
+        )
+        self.settings.writeSetting(
+                "subtitle_encoder", self.parent.subtitle_encoder.currentText()
+        )
+        self.settings.writeSetting(
+                "audio_bitrate", self.parent.audio_bitrate.currentText()
+        )
+        command = FFMpegCommand(
+        self.settings.settings['encoder'].replace(' (experimental)', '').replace(' (40 series and up)', ''),
+        self.settings.settings['video_quality'],
+        self.settings.settings['video_pixel_format'],
+        self.settings.settings['audio_encoder'],
+        self.settings.settings['audio_bitrate'],
+        self.settings.settings['subtitle_encoder']).build_command()
+        self.parent.EncoderCommand.setText(" ".join(command))
+         
 
     def connectWriteSettings(self):
         self.parent.precision.currentIndexChanged.connect(
@@ -42,24 +68,16 @@ class SettingsTab:
             )
         )
         self.parent.encoder.currentIndexChanged.connect(
-            lambda: self.settings.writeSetting(
-                "encoder", self.parent.encoder.currentText()
-            )
+            self.updateFFMpegCommand
         )
         self.parent.audio_encoder.currentIndexChanged.connect(
-            lambda: self.settings.writeSetting(
-                "audio_encoder", self.parent.audio_encoder.currentText()
-            )
+            self.updateFFMpegCommand
         )
         self.parent.subtitle_encoder.currentIndexChanged.connect(
-            lambda: self.settings.writeSetting(
-                "subtitle_encoder", self.parent.subtitle_encoder.currentText()
-            )
+            self.updateFFMpegCommand
         )
         self.parent.audio_bitrate.currentIndexChanged.connect(
-            lambda: self.settings.writeSetting(
-                "audio_bitrate", self.parent.audio_bitrate.currentText()
-            )
+            self.updateFFMpegCommand
         )
         self.parent.preview_enabled.stateChanged.connect(
             lambda: self.settings.writeSetting(

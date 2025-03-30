@@ -404,8 +404,8 @@ p, li { white-space: pre-wrap; }
 hr { height: 1px; border-width: 0; }
 li.unchecked::marker { content: "\2610"; }
 li.checked::marker { content: "\2612"; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'Adwaita Sans'; font-size:11pt; font-weight:400; font-style:normal;"&gt;
-&lt;p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Cantarell';"&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'Noto Sans'; font-size:10pt; font-weight:400; font-style:normal;"&gt;
+&lt;p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Cantarell'; font-size:11pt;"&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                  </widget>
                 </item>
@@ -1085,8 +1085,8 @@ background-color:#343b47
                                   <rect>
                                    <x>0</x>
                                    <y>0</y>
-                                   <width>370</width>
-                                   <height>470</height>
+                                   <width>378</width>
+                                   <height>533</height>
                                   </rect>
                                  </property>
                                  <layout class="QVBoxLayout" name="verticalLayout_32">
@@ -1664,13 +1664,13 @@ p, li { white-space: pre-wrap; }
 hr { height: 1px; border-width: 0; }
 li.unchecked::marker { content: "\2610"; }
 li.checked::marker { content: "\2612"; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'Adwaita Sans'; font-size:11pt; font-weight:400; font-style:normal;"&gt;
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif'; font-size:10pt;"&gt;FPS:&lt;/span&gt;&lt;/p&gt;
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif'; font-size:10pt;"&gt;Resolution:&lt;/span&gt;&lt;/p&gt;
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif'; font-size:10pt;"&gt;Frame Count:&lt;/span&gt;&lt;/p&gt;
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif'; font-size:10pt;"&gt;Bitrate:&lt;/span&gt;&lt;/p&gt;
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif'; font-size:10pt;"&gt;Encoder:&lt;/span&gt;&lt;/p&gt;
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif'; font-size:10pt;"&gt;Container:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'Noto Sans'; font-size:10pt; font-weight:400; font-style:normal;"&gt;
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif';"&gt;FPS:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif';"&gt;Resolution:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif';"&gt;Frame Count:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif';"&gt;Bitrate:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif';"&gt;Encoder:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif';"&gt;Container:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                                     </property>
                                    </widget>
                                   </item>
@@ -1837,8 +1837,14 @@ border-radius:10px;
                            <string>Advanced</string>
                           </attribute>
                           <layout class="QVBoxLayout" name="verticalLayout_29">
-                           <item>
+                           <item alignment="Qt::AlignmentFlag::AlignTop">
                             <widget class="QScrollArea" name="scrollArea_5">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
                              <property name="widgetResizable">
                               <bool>true</bool>
                              </property>
@@ -1850,12 +1856,102 @@ border-radius:10px;
                                <rect>
                                 <x>0</x>
                                 <y>0</y>
-                                <width>376</width>
-                                <height>474</height>
+                                <width>369</width>
+                                <height>578</height>
                                </rect>
                               </property>
                               <layout class="QVBoxLayout" name="verticalLayout_33">
-                               <item>
+                               <item alignment="Qt::AlignmentFlag::AlignTop">
+                                <widget class="QWidget" name="widget_34" native="true">
+                                 <layout class="QVBoxLayout" name="verticalLayout_36">
+                                  <property name="spacing">
+                                   <number>0</number>
+                                  </property>
+                                  <property name="leftMargin">
+                                   <number>0</number>
+                                  </property>
+                                  <property name="topMargin">
+                                   <number>0</number>
+                                  </property>
+                                  <property name="rightMargin">
+                                   <number>0</number>
+                                  </property>
+                                  <property name="bottomMargin">
+                                   <number>0</number>
+                                  </property>
+                                  <item>
+                                   <widget class="QWidget" name="widget_33" native="true">
+                                    <layout class="QVBoxLayout" name="verticalLayout_9">
+                                     <property name="leftMargin">
+                                      <number>0</number>
+                                     </property>
+                                     <property name="topMargin">
+                                      <number>0</number>
+                                     </property>
+                                     <property name="rightMargin">
+                                      <number>0</number>
+                                     </property>
+                                     <property name="bottomMargin">
+                                      <number>0</number>
+                                     </property>
+                                     <item>
+                                      <widget class="QLabel" name="label_74">
+                                       <property name="font">
+                                        <font>
+                                         <pointsize>15</pointsize>
+                                         <underline>true</underline>
+                                        </font>
+                                       </property>
+                                       <property name="text">
+                                        <string>Encoder Command</string>
+                                       </property>
+                                      </widget>
+                                     </item>
+                                     <item>
+                                      <widget class="QWidget" name="widget_32" native="true">
+                                       <layout class="QHBoxLayout" name="horizontalLayout_51">
+                                        <item alignment="Qt::AlignmentFlag::AlignTop">
+                                         <widget class="QLineEdit" name="EncoderCommand">
+                                          <property name="minimumSize">
+                                           <size>
+                                            <width>0</width>
+                                            <height>30</height>
+                                           </size>
+                                          </property>
+                                         </widget>
+                                        </item>
+                                        <item alignment="Qt::AlignmentFlag::AlignTop">
+                                         <widget class="QLabel" name="label_75">
+                                          <property name="maximumSize">
+                                           <size>
+                                            <width>25</width>
+                                            <height>25</height>
+                                           </size>
+                                          </property>
+                                          <property name="toolTip">
+                                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;Encoder command:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;     -&lt;/span&gt; Encoder settings passed to FFMpeg, can be manually tweaked.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                                          </property>
+                                          <property name="text">
+                                           <string />
+                                          </property>
+                                          <property name="pixmap">
+                                           <pixmap resource="resources.qrc">:/icons/icons/info.svg</pixmap>
+                                          </property>
+                                          <property name="scaledContents">
+                                           <bool>true</bool>
+                                          </property>
+                                         </widget>
+                                        </item>
+                                       </layout>
+                                      </widget>
+                                     </item>
+                                    </layout>
+                                   </widget>
+                                  </item>
+                                 </layout>
+                                </widget>
+                               </item>
+                               <item alignment="Qt::AlignmentFlag::AlignTop">
                                 <widget class="QWidget" name="generalContainer" native="true">
                                  <property name="sizePolicy">
                                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -2120,7 +2216,7 @@ border-radius:10px;
                                  </layout>
                                 </widget>
                                </item>
-                               <item>
+                               <item alignment="Qt::AlignmentFlag::AlignTop">
                                 <widget class="QWidget" name="upscaleContainer" native="true">
                                  <property name="minimumSize">
                                   <size>
@@ -2310,7 +2406,7 @@ border-radius:10px;
                                  </layout>
                                 </widget>
                                </item>
-                               <item>
+                               <item alignment="Qt::AlignmentFlag::AlignTop">
                                 <widget class="QWidget" name="interpolateContainer_2" native="true">
                                  <layout class="QVBoxLayout" name="interpolateContainer">
                                   <property name="spacing">
@@ -2570,8 +2666,8 @@ p, li { white-space: pre-wrap; }
 hr { height: 1px; border-width: 0; }
 li.unchecked::marker { content: "\2610"; }
 li.checked::marker { content: "\2612"; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'Adwaita Sans'; font-size:13pt; font-weight:400; font-style:normal;"&gt;
-&lt;p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Noto Sans';"&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'Noto Sans'; font-size:13pt; font-weight:400; font-style:normal;"&gt;
+&lt;p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                              </property>
                             </widget>
                            </item>
@@ -2943,8 +3039,8 @@ QTabWidget::pane { /* The tab widget frame */
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>480</width>
-                   <height>515</height>
+                   <width>460</width>
+                   <height>506</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_18">
@@ -2986,8 +3082,8 @@ QTabWidget::pane { /* The tab widget frame */
                              <rect>
                               <x>0</x>
                               <y>0</y>
-                              <width>472</width>
-                              <height>172</height>
+                              <width>465</width>
+                              <height>180</height>
                              </rect>
                             </property>
                             <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -4914,7 +5010,7 @@ background-color:white;
                      <rect>
                       <x>0</x>
                       <y>0</y>
-                      <width>928</width>
+                      <width>797</width>
                       <height>178</height>
                      </rect>
                     </property>

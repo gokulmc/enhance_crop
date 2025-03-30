@@ -1,200 +1,201 @@
-from .ui.SettingsTab import Settings
 
 class FFMpegCommand:
-    def __init__(self, hdr_mode):
-        self._settings = Settings()
-        self._settings.readSettings()
-        self._video_encoder = self._settings.settings['encoder']
-        self._video_quality = self._settings.settings['video_quality']
-        self._video_pixel_format = self._settings.settings['video_pixel_format']
+    def __init__(self,
+                 video_encoder: str,
+                 video_quality: str,
+                 video_pixel_format: str,
+                 audio_encoder: str,
+                 audio_bitrate: str,
+                 subtitle_encoder: str):
+        self._video_encoder = video_encoder
+        self._video_quality = video_quality
+        self._video_pixel_format = video_pixel_format
+        self._audio_encoder = audio_encoder
+        self._audio_bitrate = audio_bitrate
+        self._subtitle_encoder = subtitle_encoder
 
-        self.audio_encoder = self._settings.settings['audio_encoder']
-        self.audio_bitrate = self._settings.settings['audio_bitrate']
-        self.subtitle_encoder = self._settings.settings['subtitle_encoder']
-        self.hdr_mode = hdr_mode
+        
 
     def build_command(self):
-        self._command = []
+        command = []
         match self._video_encoder:
             case "libx264":
-                self._command +=["-c:v","libx264"]
+                command +=["-c:v","libx264"]
                 match self._video_quality:
                     case "Very High":
-                        self._command +=["-crf","15"]
+                        command +=["-crf","15"]
                     case "High":
-                        self._command +=["-crf","18"]
+                        command +=["-crf","18"]
                     case "Medium":
-                        self._command +=["-crf","23"]
+                        command +=["-crf","23"]
                     case "Low":
-                        self._command +=["-crf","28"]
-                if self.hdr_mode:
-                    self._command +=["-x264-params","colorprim=bt2020:transfer=smpte2084:colormatrix=bt2020nc:master-display=G(13250,34500)B(7500,3000)R(34000,16000)WP(15635,16450)L(10000000,1)"]
+                        command +=["-crf","28"]
+                
                 
             case "libx265":
-                self._command +=["-c:v","libx265"]
+                command +=["-c:v","libx265"]
                 match self._video_quality:
                     case "Very High":
-                        self._command +=["-crf","15"]
+                        command +=["-crf","15"]
                     case "High":
-                        self._command +=["-crf","18"]
+                        command +=["-crf","18"]
                     case "Medium":
-                        self._command +=["-crf","23"]
+                        command +=["-crf","23"]
                     case "Low":
-                        self._command +=["-crf","28"]
-                if self.hdr_mode:
-                    self._command +=["-x265-params","colorprim=bt2020:transfer=smpte2084:colormatrix=bt2020nc:master-display=G(13250,34500)B(7500,3000)R(34000,16000)WP(15635,16450)L(10000000,1)"]
+                        command +=["-crf","28"]
+                
             case "vp9":
-                self._command +=["-c:v","libvpx-vp9"]
+                command +=["-c:v","libvpx-vp9"]
                 match self._video_quality:
                     case "Very High":
-                        self._command +=["-cq:v","15"]
+                        command +=["-cq:v","15"]
                     case "High":
-                        self._command +=["-cq:v","18"]
+                        command +=["-cq:v","18"]
                     case "Medium":
-                        self._command +=["-cq:v","23"]
+                        command +=["-cq:v","23"]
                     case "Low":
-                        self._command +=["-cq:v","28"]
+                        command +=["-cq:v","28"]
             case "av1":
-                self._command +=["-c:v","libsvtav1"]
+                command +=["-c:v","libsvtav1"]
                 match self._video_quality:
                     case "Very High":
-                        self._command +=["-cq:v","15"]
+                        command +=["-cq:v","15"]
                     case "High":
-                        self._command +=["-cq:v","18"]
+                        command +=["-cq:v","18"]
                     case "Medium":
-                        self._command +=["-cq:v","23"]
+                        command +=["-cq:v","23"]
                     case "Low":
-                        self._command +=["-cq:v","28"]
+                        command +=["-cq:v","28"]
             case "ffv1":
-                self._command +=["-c:v","ffv1"]
+                command +=["-c:v","ffv1"]
                 match self._video_quality:
                     case "Very High":
-                        self._command +=["-level","3"]
+                        command +=["-level","3"]
                     case "High":
-                        self._command +=["-level","4"]
+                        command +=["-level","4"]
                     case "Medium":
-                        self._command +=["-level","5"]
+                        command +=["-level","5"]
                     case "Low":
-                        self._command +=["-level","6"]
+                        command +=["-level","6"]
             case "prores":
-                self._command +=["-c:v","prores_ks"]
+                command +=["-c:v","prores_ks"]
                 match self._video_quality:
                     case "Very High":
-                        self._command +=["-profile:v","3"]
+                        command +=["-profile:v","3"]
                     case "High":
-                        self._command +=["-profile:v","2"]
+                        command +=["-profile:v","2"]
                     case "Medium":
-                        self._command +=["-profile:v","1"]
+                        command +=["-profile:v","1"]
                     case "Low":
-                        self._command +=["-profile:v","0"]
+                        command +=["-profile:v","0"]
             case "x264_vulkan":
-                self._command +=["-c:v","h264_vulkan"]
-                self._command +=["-quality","0"]
+                command +=["-c:v","h264_vulkan"]
+                command +=["-quality","0"]
             case "x264_nvenc":
-                self._command +=["-c:v","h264_nvenc"]
+                command +=["-c:v","h264_nvenc"]
                 match self._video_quality:
                     case "Very High":
-                        self._command +=["-cq:v","15"]
+                        command +=["-cq:v","15"]
                     case "High":
-                        self._command +=["-cq:v","18"]
+                        command +=["-cq:v","18"]
                     case "Medium":
-                        self._command +=["-cq:v","23"]
+                        command +=["-cq:v","23"]
                     case "Low":
-                        self._command +=["-cq:v","28"]
+                        command +=["-cq:v","28"]
             case "x265_nvenc":
-                self._command +=["-c:v","hevc_nvenc"]
+                command +=["-c:v","hevc_nvenc"]
                 match self._video_quality:
                     case "Very High":
-                        self._command +=["-cq:v","15"]
+                        command +=["-cq:v","15"]
                     case "High":
-                        self._command +=["-cq:v","18"]
+                        command +=["-cq:v","18"]
                     case "Medium":
-                        self._command +=["-cq:v","23"]
+                        command +=["-cq:v","23"]
                     case "Low":
-                        self._command +=["-cq:v","28"]
+                        command +=["-cq:v","28"]
             case "av1_nvenc":
-                self._command +=["-c:v","av1_nvenc"]
+                command +=["-c:v","av1_nvenc"]
                 match self._video_quality:
                     case "Very High":
-                        self._command +=["-cq:v","15"]
+                        command +=["-cq:v","15"]
                     case "High":
-                        self._command +=["-cq:v","18"]
+                        command +=["-cq:v","18"]
                     case "Medium":
-                        self._command +=["-cq:v","23"]
+                        command +=["-cq:v","23"]
                     case "Low":
-                        self._command +=["-cq:v","28"]
+                        command +=["-cq:v","28"]
             case "h264_vaapi":
-                self._command +=["-c:v","h264_vaapi"]
+                command +=["-c:v","h264_vaapi"]
                 match self._video_quality:
                     case "Very High":
-                        self._command +=["-crf","15"]
+                        command +=["-crf","15"]
                     case "High":
-                        self._command +=["-crf","18"]
+                        command +=["-crf","18"]
                     case "Medium":
-                        self._command +=["-crf","23"]
+                        command +=["-crf","23"]
                     case "Low":
-                        self._command +=["-crf","28"]
+                        command +=["-crf","28"]
             case "h265_vaapi":
-                self._command +=["-c:v","hevc_vaapi"]
+                command +=["-c:v","hevc_vaapi"]
                 match self._video_quality:
                     case "Very High":
-                        self._command +=["-crf","15"]
+                        command +=["-crf","15"]
                     case "High":
-                        self._command +=["-crf","18"]
+                        command +=["-crf","18"]
                     case "Medium":
-                        self._command +=["-crf","23"]
+                        command +=["-crf","23"]
                     case "Low":
-                        self._command +=["-crf","28"]
+                        command +=["-crf","28"]
             case "av1_vaapi":
-                self._command +=["-c:v","av1_vaapi"]
+                command +=["-c:v","av1_vaapi"]
                 match self._video_quality:
                     case "Very High":
-                        self._command +=["-crf","15"]
+                        command +=["-crf","15"]
                     case "High":
-                        self._command +=["-crf","18"]
+                        command +=["-crf","18"]
                     case "Medium":
-                        self._command +=["-crf","23"]
+                        command +=["-crf","23"]
                     case "Low":
-                        self._command +=["-crf","28"]
+                        command +=["-crf","28"]
 
             case _:
-                self._command +=["-c:v","libx264"]
+                command +=["-c:v","libx264"]
                 match self._video_quality:
                     case "Very High":
-                        self._command +=["-crf","15"]
+                        command +=["-crf","15"]
                     case "High":
-                        self._command +=["-crf","18"]
+                        command +=["-crf","18"]
                     case "Medium":
-                        self._command +=["-crf","23"]
+                        command +=["-crf","23"]
                     case "Low":
-                        self._command +=["-crf","28"]
+                        command +=["-crf","28"]
         
-        self._command += ["-pix_fmt",self._video_pixel_format]
+        command += ["-pix_fmt",self._video_pixel_format]
 
-        match self.audio_encoder:
+        match self._audio_encoder:
             case "copy_audio":
-                self._command +=["-c:a","copy"]
+                command +=["-c:a","copy"]
             case "aac":
-                self._command +=["-c:a","aac"]
+                command +=["-c:a","aac"]
             case "libmp3lame":
-                self._command +=["-c:a","libmp3lame"]
+                command +=["-c:a","libmp3lame"]
             case "opus":
-                self._command +=["-c:a","libopus"]
+                command +=["-c:a","libopus"]
             case _:
-                self._command +=["-c:a","copy"]
+                command +=["-c:a","copy"]
         
-        if self.audio_encoder != "copy_audio":
-            self._command += ["-b:a",self.audio_bitrate]
+        if self._audio_encoder != "copy_audio":
+            command += ["-b:a",self._audio_bitrate]
         
-        match self.subtitle_encoder:
+        match self._subtitle_encoder:
             case "copy_subtitle":
-                self._command +=["-c:s","copy"]
+                command +=["-c:s","copy"]
             case "srt":
-                self._command +=["-c:s","srt"]
+                command +=["-c:s","srt"]
             case "ass":
-                self._command +=["-c:s", "ass"]
+                command +=["-c:s", "ass"]
             case "webvtt":
-                self._command +=["-c:s", "webvtt"]
+                command +=["-c:s", "webvtt"]
 
-        return self._command
+        return command
 

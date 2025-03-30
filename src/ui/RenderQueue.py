@@ -33,6 +33,7 @@ class RenderOptions:
         endTime: float | None = None,
         isPreview: bool = False,
         overrideUpscaleScale: int | None = None,
+        encoderCommand: str | None = None,
     ):
         self._inputFile = inputFile
         self._outputPath = outputPath
@@ -61,6 +62,7 @@ class RenderOptions:
         self._endTime = endTime
         self._isPreview = isPreview
         self._overrideUpscaleScale = overrideUpscaleScale
+        self._encoderCommand = encoderCommand
 
     @property
     def inputFile(self):
@@ -270,6 +272,14 @@ class RenderOptions:
     @overrideUpscaleScale.setter
     def overrideUpscaleScale(self, value: int):
         self._overrideUpscaleScale = value
+    
+    @property
+    def encoderCommand(self):
+        return self._encoderCommand
+    @encoderCommand.setter
+    def encoderCommand(self, value: str):
+        self._encoderCommand = value
+        
         
 
 
