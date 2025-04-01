@@ -138,7 +138,7 @@ class ProcessTab:
         self.parent.backendComboBox.currentIndexChanged.connect(
             lambda: self.populateModels(self.parent.backendComboBox.currentText())
         )
-        self.parent.EncoderCommand.textChanged.connect(lambda: self.parent.EncoderCommand.setFixedWidth(max(200, QFontMetrics(self.parent.EncoderCommand.font()).horizontalAdvance(self.parent.EncoderCommand.text()) + 10)))
+        self.parent.EncoderCommand.textChanged.connect(lambda: self.parent.EncoderCommand.setFixedWidth(max(50, QFontMetrics(self.parent.EncoderCommand.font()).horizontalAdvance(self.parent.EncoderCommand.text()) + 10)))
         # connect up pausing
         hide_layout_widgets(self.parent.onRenderButtonsContiainer)
         self.parent.pauseRenderButton.clicked.connect(self.pauseRender)
