@@ -1,4 +1,4 @@
-from .Util import log
+from .Util import log, suppress_stdout_stderr, printAndLog
 
 def checkForPytorchCUDA() -> bool:
     """
