@@ -6,7 +6,7 @@ import math
 from multiprocessing import shared_memory
 
 from PySide6 import QtGui
-from PySide6.QtGui import QPixmap, QPainter, QPainterPath, QColor
+from PySide6.QtGui import QPixmap, QPainter, QPainterPath, QColor, QFontMetrics
 from PySide6.QtCore import Qt, QSize, QUrl
 from PySide6.QtWidgets import QMessageBox
 
@@ -138,6 +138,7 @@ class ProcessTab:
         self.parent.backendComboBox.currentIndexChanged.connect(
             lambda: self.populateModels(self.parent.backendComboBox.currentText())
         )
+        self.parent.EncoderCommand.textChanged.connect(lambda: self.parent.EncoderCommand.setFixedWidth(max(200, QFontMetrics(self.parent.EncoderCommand.font()).horizontalAdvance(self.parent.EncoderCommand.text()) + 10)))
         # connect up pausing
         hide_layout_widgets(self.parent.onRenderButtonsContiainer)
         self.parent.pauseRenderButton.clicked.connect(self.pauseRender)

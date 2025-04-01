@@ -404,8 +404,8 @@ p, li { white-space: pre-wrap; }
 hr { height: 1px; border-width: 0; }
 li.unchecked::marker { content: "\2610"; }
 li.checked::marker { content: "\2612"; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'Noto Sans'; font-size:10pt; font-weight:400; font-style:normal;"&gt;
-&lt;p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Cantarell'; font-size:11pt;"&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'Adwaita Sans'; font-size:11pt; font-weight:400; font-style:normal;"&gt;
+&lt;p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Cantarell';"&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                  </widget>
                 </item>
@@ -1085,8 +1085,8 @@ background-color:#343b47
                                   <rect>
                                    <x>0</x>
                                    <y>0</y>
-                                   <width>370</width>
-                                   <height>470</height>
+                                   <width>378</width>
+                                   <height>527</height>
                                   </rect>
                                  </property>
                                  <layout class="QVBoxLayout" name="verticalLayout_32">
@@ -1664,13 +1664,13 @@ p, li { white-space: pre-wrap; }
 hr { height: 1px; border-width: 0; }
 li.unchecked::marker { content: "\2610"; }
 li.checked::marker { content: "\2612"; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'Noto Sans'; font-size:10pt; font-weight:400; font-style:normal;"&gt;
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif';"&gt;FPS:&lt;/span&gt;&lt;/p&gt;
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif';"&gt;Resolution:&lt;/span&gt;&lt;/p&gt;
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif';"&gt;Frame Count:&lt;/span&gt;&lt;/p&gt;
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif';"&gt;Bitrate:&lt;/span&gt;&lt;/p&gt;
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif';"&gt;Encoder:&lt;/span&gt;&lt;/p&gt;
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif';"&gt;Container:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'Adwaita Sans'; font-size:11pt; font-weight:400; font-style:normal;"&gt;
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif'; font-size:10pt;"&gt;FPS:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif'; font-size:10pt;"&gt;Resolution:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif'; font-size:10pt;"&gt;Frame Count:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif'; font-size:10pt;"&gt;Bitrate:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif'; font-size:10pt;"&gt;Encoder:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif'; font-size:10pt;"&gt;Container:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                                     </property>
                                    </widget>
                                   </item>
@@ -1856,8 +1856,8 @@ border-radius:10px;
                                <rect>
                                 <x>0</x>
                                 <y>0</y>
-                                <width>369</width>
-                                <height>578</height>
+                                <width>376</width>
+                                <height>589</height>
                                </rect>
                               </property>
                               <layout class="QVBoxLayout" name="verticalLayout_33">
@@ -1910,17 +1910,48 @@ border-radius:10px;
                                      <item>
                                       <widget class="QWidget" name="widget_32" native="true">
                                        <layout class="QHBoxLayout" name="horizontalLayout_51">
-                                        <item alignment="Qt::AlignmentFlag::AlignTop">
-                                         <widget class="QLineEdit" name="EncoderCommand">
+                                        <item>
+                                         <widget class="QScrollArea" name="scrollArea_6">
                                           <property name="minimumSize">
                                            <size>
                                             <width>0</width>
-                                            <height>30</height>
+                                            <height>50</height>
                                            </size>
                                           </property>
+                                          <property name="verticalScrollBarPolicy">
+                                           <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+                                          </property>
+                                          <property name="horizontalScrollBarPolicy">
+                                           <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
+                                          </property>
+                                          <property name="widgetResizable">
+                                           <bool>true</bool>
+                                          </property>
+                                          <widget class="QWidget" name="scrollAreaWidgetContents_6">
+                                           <property name="geometry">
+                                            <rect>
+                                             <x>0</x>
+                                             <y>0</y>
+                                             <width>918</width>
+                                             <height>48</height>
+                                            </rect>
+                                           </property>
+                                           <layout class="QHBoxLayout" name="horizontalLayout_54">
+                                            <item>
+                                             <widget class="QLineEdit" name="EncoderCommand">
+                                              <property name="minimumSize">
+                                               <size>
+                                                <width>900</width>
+                                                <height>30</height>
+                                               </size>
+                                              </property>
+                                             </widget>
+                                            </item>
+                                           </layout>
+                                          </widget>
                                          </widget>
                                         </item>
-                                        <item alignment="Qt::AlignmentFlag::AlignTop">
+                                        <item>
                                          <widget class="QLabel" name="label_75">
                                           <property name="maximumSize">
                                            <size>
@@ -2666,8 +2697,8 @@ p, li { white-space: pre-wrap; }
 hr { height: 1px; border-width: 0; }
 li.unchecked::marker { content: "\2610"; }
 li.checked::marker { content: "\2612"; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'Noto Sans'; font-size:13pt; font-weight:400; font-style:normal;"&gt;
-&lt;p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'Adwaita Sans'; font-size:13pt; font-weight:400; font-style:normal;"&gt;
+&lt;p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Noto Sans';"&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                              </property>
                             </widget>
                            </item>
@@ -3039,8 +3070,8 @@ QTabWidget::pane { /* The tab widget frame */
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>443</width>
-                   <height>506</height>
+                   <width>495</width>
+                   <height>515</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_18">
@@ -3082,8 +3113,8 @@ QTabWidget::pane { /* The tab widget frame */
                              <rect>
                               <x>0</x>
                               <y>0</y>
-                              <width>448</width>
-                              <height>174</height>
+                              <width>487</width>
+                              <height>182</height>
                              </rect>
                             </property>
                             <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -5010,7 +5041,7 @@ background-color:white;
                      <rect>
                       <x>0</x>
                       <y>0</y>
-                      <width>797</width>
+                      <width>928</width>
                       <height>178</height>
                      </rect>
                     </property>

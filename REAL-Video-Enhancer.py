@@ -1,4 +1,4 @@
-from src.constants import CUSTOM_MODELS_PATH, MODELS_PATH, CWD, LOCKFILE, IS_INSTALLED, TEMP_DOWNLOAD_PATH
+from src.constants import CUSTOM_MODELS_PATH, MODELS_PATH, CWD, LOCKFILE, IS_INSTALLED, TEMP_DOWNLOAD_PATH, USE_LOCAL_BACKEND
 import os
 import sys
 import os
@@ -182,6 +182,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             + "\nSoftware Information:\n"
             + f"REAL Video Enhancer Version: {version}\n"
             + f"Python Version: {Python().get_version()}\n"
+            + f"Utilizing local backend: {USE_LOCAL_BACKEND}\n"
             + f"Working Directory: {CWD}\n"
             + self.fullOutput
         )
