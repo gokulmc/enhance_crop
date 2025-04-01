@@ -604,7 +604,7 @@ def NetworkCheckPopup(hostname="https://raw.githubusercontent.com") -> bool:
 
 def needs_network_else_exit():
     if not HAS_NETWORK_ON_STARTUP:
-        RegularQTPopup("Network is required for this action!\nPlease connect to a network.\nClosing app.")
+        RegularQTPopup("Network is required for this action!\nPlease connect to a network.")
         os._exit(1)
 
 

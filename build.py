@@ -119,13 +119,10 @@ class BuildManager:
         shutil.rmtree(OUTPUT_FOLDER, ignore_errors=True)
         self.python_manager = PythonManager()
 
-    
-
     @abstractmethod
     def build(self):
         ...
     
-
     def build_gui(self):
         print("Building GUI")
         zero_mainwindow_size()
@@ -150,26 +147,24 @@ class BuildManager:
             )
 
     
-    def copy_backend(self, build_dir="dist"):
+    def copy_backend(self):
         print("Copying backend")
-        if PLATFORM == "win32":
-            if build_dir is None:
-                build_dir = "dist"
+        if "pyinstaller" in self.__str__().lower():
+            backend_dir = os.path.join(f"{OUTPUT_FOLDER}/REAL-Video-Enhancer/backend")
             try:
-                os.system(f"cp -r backend {build_dir}/REAL-Video-Enhancer/backend")
+                shutil.copytree("backend",backend_dir)
             except Exception:
-                pass
-            if not os.path.exists(rf"{build_dir}\\REAL-Video-Enhancer\\backend"):
-                os.system(
-                    f'xcopy "./backend" "./{build_dir}/REAL-Video-Enhancer/backend" /E /I'
-                )
+                raise FileNotFoundError("Backend failed to copy!")
+            if not os.path.exists(backend_dir):
+                raise FileNotFoundError("Backend failed to copy!")
         else:
-            os.system(f"cp -r backend {build_dir}/backend")
+            shutil.copytree("backend", f"{OUTPUT_FOLDER}/backend")
 
 
 class PyInstaller(BuildManager):
     pyinstaller_version = "pyinstaller==6.12.0"
 
+  
     def build(self):
         print("Building executable")
 
