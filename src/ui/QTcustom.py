@@ -56,8 +56,8 @@ from PySide6.QtWidgets import (
     QGridLayout,
     QMainWindow,
 )
-
-from .QTstyle import styleSheet
+from multiprocessing import Process
+from .QTstyle import styleSheet, Palette
 from ..constants import HAS_NETWORK_ON_STARTUP, PLATFORM
 from ..Util import log, networkCheck
 
@@ -560,7 +560,7 @@ class DisplayCommandOutputPopup(QtWidgets.QDialog):
 
 class RegularQTPopup(QtWidgets.QDialog):
     def __init__(self, message):
-        super().__init__()
+        super().__init__(None)
         self.setWindowTitle("REAL Video Enhancer")
         self.setFixedSize(400, 100)
         self.setStyleSheet(styleSheet())
@@ -594,6 +594,57 @@ class RegularQTPopup(QtWidgets.QDialog):
         self.setLayout(layout)
         self.exec()
 
+class IndependentQTPopup(QtWidgets.QDialog):
+    def __init__(self, message=None):
+        if message is not None:
+            self.start(message)
+    def start(self, message):
+        app = QApplication(sys.argv)
+        app.setStyle("Fusion")
+        app.setPalette(Palette())
+        super().__init__()
+        self.setWindowTitle("REAL Video Enhancer")
+        self.setFixedSize(400, 100)
+        self.setStyleSheet(styleSheet())
+        
+        # Create main layout
+        layout = QtWidgets.QVBoxLayout()
+        
+        # Add message label
+        label = QtWidgets.QLabel(message)
+        layout.addWidget(label)
+        
+        # Create horizontal layout for button
+        button_layout = QtWidgets.QHBoxLayout()
+        
+        # Add spacer to push button to the right
+        spacer = QtWidgets.QSpacerItem(
+            40, 20, 
+            QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Minimum
+        )
+        button_layout.addItem(spacer)
+        
+        # Add button layout to main layout
+        layout.addLayout(button_layout)
+        
+        self.setLayout(layout)
+        self.exec()
+        app.exec_()
+        
+    
+
+"""class ThreadedQTPopup():
+    def __init__(self, message):
+        self.message = message
+        popup = IndependentQTPopup()
+        self.proc = Process(popup.start, args=(message,))
+        self.proc.start()
+
+    def terminate(self):
+        if self.proc.is_alive():
+            self.proc.terminate()
+            self.proc.join()     """
 
 def NetworkCheckPopup(hostname="https://raw.githubusercontent.com") -> bool:
     if not networkCheck(hostname=hostname):

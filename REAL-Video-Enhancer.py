@@ -2,6 +2,7 @@ from src.constants import CUSTOM_MODELS_PATH, MODELS_PATH, CWD, LOCKFILE, IS_INS
 import os
 import sys
 import os
+from multiprocessing import Process
 os.environ["PYTHONNOUSERSITE"] = "1" # Prevents python from installing packages in user site
 os.environ["NVIDIA_TENSORRT_DISABLE_INTERNAL_PIP"] = "0"
 
@@ -47,7 +48,7 @@ from src.Backendhandler import BackendHandler
 from src.ModelHandler import totalModels
 from src.ui.AnimationHandler import AnimationHandler
 from src.ui.QTstyle import Palette
-from src.ui.QTcustom import RegularQTPopup, NotificationOverlay
+from src.ui.QTcustom import RegularQTPopup, NotificationOverlay, IndependentQTPopup
 from src.ui.RenderQueue import RenderQueue, RenderOptions
 
 svg = (
@@ -109,8 +110,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # setup application
         FileHandler.createDirectory(TEMP_DOWNLOAD_PATH)
 
-
-
         # Set up the user interface from Designer.
         self.setupUi(self)
         #self.VideoPreview.setVisible(False)
@@ -125,16 +124,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             for dep in Dependency.__subclasses__():
                 d = dep()
                 d.download()
+        
+        popupthread = Process(target=IndependentQTPopup, args=("Checking for dependency updates...",))
+        popupthread.start() 
 
         for dep in Dependency.__subclasses__():
             d = dep()
             if d.get_if_update_available():
                 d.update_if_updates_available()
-
-
+        
+        popupthread.terminate()
         self.backends, self.fullOutput = (
             backendHandler.getAvailableBackends()
         )
+
+        
 
         # set default home page
         self.stackedWidget.setCurrentIndex(0)
