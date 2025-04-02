@@ -3,7 +3,7 @@ from typing import List
 import subprocess
 import re
 import cv2
-from .Util import log
+from .Util import log, subprocess_popen_without_terminal
 from typing import Optional
 
 if not __name__ == "__main__":
@@ -41,7 +41,7 @@ class FFMpegInfoWrapper(VideoInfo):
                 "null",
         ]
 
-        self.ffmpeg_output = subprocess.Popen(command,  stderr=subprocess.PIPE, errors="replace").stderr.read()
+        self.ffmpeg_output = subprocess_popen_without_terminal(command,  stderr=subprocess.PIPE, errors="replace").stderr.read()
 
     def get_duration_seconds(self) -> float:
         total_duration:float = 0.0

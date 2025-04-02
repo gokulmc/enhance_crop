@@ -478,3 +478,16 @@ def open_folder(folder):
         subprocess.Popen(["open", folder])
     else:
         subprocess.Popen(["xdg-open", folder])
+
+
+class subprocess_popen_without_terminal(subprocess.Popen):
+    """
+    A class that allows you to run a subprocess without opening a terminal window.
+    """
+    def __init__(self, *args, **kwargs):
+        if PLATFORM == "win32":
+                kwargs["startupinfo"] = subprocess.STARTUPINFO()
+                kwargs["startupinfo"].dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        super().__init__(*args, **kwargs)
+    
+    

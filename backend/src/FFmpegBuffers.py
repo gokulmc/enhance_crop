@@ -13,6 +13,7 @@ from .utils.Util import (
     log,
     printAndLog,
     removeFile,
+    subprocess_popen_without_terminal
 )
 from threading import Thread
 import numpy as np
@@ -41,11 +42,10 @@ class FFmpegRead(Buffer):
         else:
             self.inputFrameChunkSize = width * height * 3
 
-        self.readProcess = subprocess.Popen(
+        self.readProcess = subprocess_popen_without_terminal(
             self.command(),
             stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL,
-            creationflags=subprocess.CREATE_NO_WINDOW if platform.system() == "Windows" else 0,  # Prevent opening a new window on Windows
         )
         self.readQueue = queue.Queue(maxsize=100)
 
@@ -165,14 +165,13 @@ class FFmpegWrite(Buffer):
         self.ffmpeg_log = open(FFMPEG_LOG_FILE, "w")
         try:
 
-            self.writeProcess = subprocess.Popen(
+            self.writeProcess = subprocess_popen_without_terminal(
                 self.command(),
                 stdin=subprocess.PIPE,
                 stderr=self.ffmpeg_log,
                 stdout=subprocess.PIPE if self.mpv_output else self.ffmpeg_log,
                 text=True,
                 universal_newlines=True,
-                creationflags=subprocess.CREATE_NO_WINDOW if platform.system() == "Windows" else 0,  # Prevent opening a new window on Windows
             )
         except Exception as e:
             self.onErroredExit()
@@ -502,12 +501,11 @@ class MPVOutput:
         with open('mpv_log.txt', "w") as f:
             while not self.FFMPegWrite.writeProcess:
                 time.sleep(1)
-            self.proc = subprocess.Popen(
+            self.proc = subprocess_popen_without_terminal(
                 self.command(),
                 stdin=self.FFMPegWrite.writeProcess.stdout,
                 stderr=f,
                 stdout=f,
-                creationflags=subprocess.CREATE_NO_WINDOW if platform.system() == "Windows" else 0,  # Prevent opening a new window on Windows
             )
             self.FFMPegWrite.writeProcess.stdout.close()
             self.proc.wait()

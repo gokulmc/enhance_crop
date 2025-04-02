@@ -1,5 +1,5 @@
 from ..constants import FFMPEG_PATH, PLATFORM
-from ..utils.Util import log
+from ..utils.Util import log, subprocess_popen_without_terminal
 import subprocess
 import os
 import platform
@@ -21,18 +21,12 @@ class BorderDetect:
             "-",
         ]
         try:
-            startupinfo = None
-            if PLATFORM == "win32":
-                startupinfo = subprocess.STARTUPINFO()
-                startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-
-            process = subprocess.Popen(
+            process = subprocess_popen_without_terminal(
                 command,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
                 universal_newlines=True,
-                startupinfo=startupinfo,
             )
             output = process.communicate()
             return output

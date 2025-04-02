@@ -27,6 +27,7 @@ from .Util import (
     extractTarGZ,
     downloadFile,
     removeFolder,
+    subprocess_popen_without_terminal
 )
 from .ui.QTcustom import (
     DownloadProgressPopup,
@@ -107,8 +108,16 @@ class Backend(Dependency):
     
     def get_if_update_available(self) -> bool:
         try:
-            output = subprocess.run([PYTHON_EXECUTABLE_PATH, os.path.join(BACKEND_PATH, "rve-backend.py"), "--version"], check=True, capture_output=True, text=True)
-            output = output.stdout.strip() # this extracts the version number from the output
+            process = subprocess_popen_without_terminal(
+                [PYTHON_EXECUTABLE_PATH, os.path.join(BACKEND_PATH, "rve-backend.py"), "--version"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True
+                )
+            stdout, stderr = process.communicate()
+            if process.returncode != 0:
+                raise subprocess.CalledProcessError(process.returncode, process.args, stdout, stderr)
+            output = stdout.strip() # this extracts the version number from the output
             log(f"\nBackend Version: {output}\n")
             update_available = not output == backend_dev_version
             self.is_update_available = update_available

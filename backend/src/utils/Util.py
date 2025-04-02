@@ -1,4 +1,6 @@
 import os
+import sys
+import subprocess
 import warnings
 import contextlib
 # non standard python libraries
@@ -27,9 +29,10 @@ def suppress_stdout_stderr():
             os.close(old_stderr_fd)
 
 try:
-    from ..constants import CWD
+    from ..constants import CWD, PLATFORM
 except ImportError:
     CWD = os.getcwd()
+    PLATFORM = sys.platform
 
 with open(os.path.join(CWD, "backend_log.txt"), "w") as f:
     pass
@@ -181,6 +184,16 @@ def padFrame(
     # Convert the padded frame back to bytes
     return padded_frame.tobytes()
 
+class subprocess_popen_without_terminal(subprocess.Popen):
+    """
+    A class that allows you to run a subprocess without opening a terminal window.
+    """
+    def __init__(self, *args, **kwargs):
+        if PLATFORM == "win32":
+                kwargs["startupinfo"] = subprocess.STARTUPINFO()
+                kwargs["startupinfo"].dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        super().__init__(*args, **kwargs)
+    
 
 if __name__ == "__main__":
     print(get_gpus_ncnn())

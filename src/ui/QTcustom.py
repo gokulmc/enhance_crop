@@ -59,7 +59,7 @@ from PySide6.QtWidgets import (
 from multiprocessing import Process
 from .QTstyle import styleSheet, Palette
 from ..constants import HAS_NETWORK_ON_STARTUP, PLATFORM
-from ..Util import log, networkCheck
+from ..Util import log, networkCheck, subprocess_popen_without_terminal
 
 def disable_combobox_item(combobox: QComboBox, index):
     """
@@ -280,11 +280,8 @@ class SubprocessThread(QThread):
             "universal_newlines": True,
             "bufsize": 1,
         }
-        if PLATFORM == "win32":
-                kwargs["startupinfo"] = subprocess.STARTUPINFO()
-                kwargs["startupinfo"].dwFlags |= subprocess.STARTF_USESHOWWINDOW
 
-        self.process = subprocess.Popen(
+        self.process = subprocess_popen_without_terminal(
             self.command,
             **kwargs,
         )
