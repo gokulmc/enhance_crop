@@ -31,10 +31,29 @@ def zero_mainwindow_size():
 
     set_mainwindow_size_zero()
 
+
 def download_file(url, destination):
         print(f"Downloading file from {url}")
         urllib.request.urlretrieve(url, destination)
         print("File downloaded successfully")
+
+def get_libxcb_cursor_binary():
+    try:
+        if not os.path.isfile('/usr/lib/x86_64-linux-gnu/libxcb-cursor.so.0'):
+            raise FileNotFoundError("Unable to build as libxcbcursor is not installed!")
+        
+        input_file = "/usr/lib/x86_64-linux-gnu/libxcb-cursor.so.0"
+    except FileNotFoundError:
+        try:
+            print("libxcbcursor not found, downloading...")
+            
+            download_file("https://github.com/TNTwise/real-video-enhancer-models/releases/download/models/libxcb-cursor.so.0","libxcb-cursor.so.0")
+            input_file = "libxcb-cursor.so.0"
+        except Exception as e:
+            print(e)
+            raise FileNotFoundError("libxcbcursor not installed, and no network available to download it!")
+    return input_file
+    
 
 class PythonManager:
 
@@ -160,6 +179,9 @@ class BuildManager:
         else:
             shutil.copytree("backend", f"{OUTPUT_FOLDER}/backend")
 
+    @abstractmethod
+    def patch_for_xcbcursor(self):
+        ...
 
 class PyInstaller(BuildManager):
     pyinstaller_version = "pyinstaller==6.12.0"
@@ -181,10 +203,16 @@ class PyInstaller(BuildManager):
             + f" {OUTPUT_FOLDER}"
             )
         )
+
+    def patch_for_xcbcursor(self):
+        if PLATFORM == "linux":
+            input_file = get_libxcb_cursor_binary()
+            print("Copying libcursor to qt lib directory")
+            shutil.copy(input_file, f"{OUTPUT_FOLDER}/REAL-Video-Enhancer/_internal/PySide6/Qt/lib/")
             
 class CxFreeze(BuildManager):
 
-    cx_freeze_version = "cx_freeze==7.0.0"
+    cx_freeze_version = "cx_freeze==8.1.0"
 
     def build(self):
         print("Building executable")
@@ -199,21 +227,10 @@ class CxFreeze(BuildManager):
             + f" {OUTPUT_FOLDER}"
             )
         )
+
+    def patch_for_xcbcursor(self):
         if PLATFORM == "linux":
-            try:
-                if not os.path.isfile('/usr/lib/x86_64-linux-gnu/libxcb-cursor.so.0'):
-                    raise FileNotFoundError("Unable to build as libxcbcursor is not installed!")
-                
-                input_file = "/usr/lib/x86_64-linux-gnu/libxcb-cursor.so.0"
-            except FileNotFoundError:
-                try:
-                    print("libxcbcursor not found, downloading...")
-                    
-                    download_file("https://github.com/TNTwise/real-video-enhancer-models/releases/download/models/libxcb-cursor.so.0","libxcb-cursor.so.0")
-                    input_file = "libxcb-cursor.so.0"
-                except Exception as e:
-                    print(e)
-                    raise FileNotFoundError("libxcbcursor not installed, and no network available to download it!")
+            input_file = get_libxcb_cursor_binary()
             print("Copying libcursor to qt lib directory")
             shutil.copy(input_file, f"{OUTPUT_FOLDER}/lib/PySide6/Qt/lib")
             
@@ -242,6 +259,14 @@ class Nuitka(BuildManager):
             )
         )
 
+    def patch_for_xcbcursor(self):
+        if PLATFORM == "linux":
+            raise NotImplementedError("Nuitka is not working on linux.")
+            input_file = get_libxcb_cursor_binary()
+            print("Copying libcursor to qt lib directory")
+            shutil.copy(input_file, f"{OUTPUT_FOLDER}/lib/PySide6/Qt/lib")
+
+
 if __name__ == "__main__":
     
     args = argparse.ArgumentParser()
@@ -265,6 +290,7 @@ if __name__ == "__main__":
         case _:
             raise ValueError("Invalid build option")
     builder.build()
+    builder.patch_for_xcbcursor()
     if args.copy_backend:
         builder.copy_backend()
     print("Build complete")
