@@ -88,7 +88,7 @@ class Dependency(ABC):
 
 class Backend(Dependency):
     updatable: bool = True
-    is_update_available: bool
+    is_update_available: bool = False
     download_path = os.path.join(CWD, "backend.tar.gz")
     installed_path = BACKEND_PATH
 
@@ -109,11 +109,12 @@ class Backend(Dependency):
         try:
             output = subprocess.run([PYTHON_EXECUTABLE_PATH, os.path.join(BACKEND_PATH, "rve-backend.py"), "--version"], check=True, capture_output=True, text=True)
             output = output.stdout.strip() # this extracts the version number from the output
-            log(f"Backend Version: {output}")
+            log(f"\nBackend Version: {output}\n")
             update_available = not output == backend_dev_version
             self.is_update_available = update_available
             return update_available
-        except subprocess.CalledProcessError: # if the backend is not found
+        except subprocess.CalledProcessError as e: # if the backend is not found
+            log("Backend not found, downloading..." + str(e))
             self.download()
             self.is_update_available = False
             return False

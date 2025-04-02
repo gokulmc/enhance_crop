@@ -11,7 +11,7 @@ from ..ModelHandler import (
 )
 from PySide6.QtWidgets import QMessageBox
 from .Updater import ApplicationUpdater
-from ..constants import IS_FLATPAK, MODELS_PATH, PLATFORM, CWD, USE_LOCAL_BACKEND
+from ..constants import IS_FLATPAK, MODELS_PATH, PLATFORM, CWD, USE_LOCAL_BACKEND, HOME_PATH
 from ..BuiltInTorchVersions import TorchVersion
 from ..Util import FileHandler
 
@@ -103,13 +103,14 @@ class DownloadTab:
 
     def uninstallApp(self):
         reply = QMessageBox.question(
-            self,
+            self.parent,
             "",
             "Are you sure you want to uninstall?",
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
             QMessageBox.StandardButton.No,  # type: ignore
         )
         if reply == QMessageBox.Yes:  # type: ignore
+            os.chdir(HOME_PATH)
             FileHandler().removeFolder(CWD)
             os._exit(0)
         
