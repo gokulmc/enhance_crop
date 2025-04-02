@@ -28,6 +28,7 @@ from src.Util import (
     getRAMAmount,
     getCPUInfo,
     checkForWritePermissions,
+    create_independent_process,
     getAvailableDiskSpace,
     FileHandler,
     log,
@@ -125,7 +126,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 d = dep()
                 d.download()
         
-        popupthread = Process(target=IndependentQTPopup, args=("Checking for dependency updates...",))
+        popupthread = create_independent_process(IndependentQTPopup, "Checking for dependency updates...")
         popupthread.start() 
 
         for dep in Dependency.__subclasses__():

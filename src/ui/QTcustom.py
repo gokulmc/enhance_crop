@@ -596,9 +596,13 @@ class IndependentQTPopup(QtWidgets.QDialog):
         if message is not None:
             self.start(message)
     def start(self, message):
-        app = QApplication(sys.argv)
-        app.setStyle("Fusion")
-        app.setPalette(Palette())
+        try:
+            app = QApplication(sys.argv)
+            app.setStyle("Fusion")
+            app.setPalette(Palette())
+        except Exception as e:
+            log(f"Error starting application: {e}")
+            raise e
         super().__init__()
         self.setWindowTitle("REAL Video Enhancer")
         self.setFixedSize(400, 100)

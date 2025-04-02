@@ -123,7 +123,7 @@ class DownloadTab:
         Returns:
         - None
         """
-        if install:
+        if install and ("torch" in dep.lower() or "tensorrt" in dep.lower()):
             reply = QMessageBox.question(
                 self.parent,
                 "",
