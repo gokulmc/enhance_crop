@@ -12,7 +12,7 @@ from ..ModelHandler import (
 from PySide6.QtWidgets import QMessageBox
 from .Updater import ApplicationUpdater
 from ..constants import IS_FLATPAK, MODELS_PATH, PLATFORM, CWD, USE_LOCAL_BACKEND
-from ..GetAvailableTorchVersions import TorchScraper
+from ..BuiltInTorchVersions import TorchVersion
 from ..Util import FileHandler
 
 def downloadModelsBasedOnInstalledBackend(installed_backends: list):
@@ -44,6 +44,7 @@ class DownloadTab:
         backends: list,
     ):
         self.parent = parent
+        self.torch_versions:list[TorchVersion] = [version for version in TorchVersion.__subclasses__()]
         self.downloadDeps = DownloadDependencies()
         self.backends = backends
         self.applicationUpdater = ApplicationUpdater()
@@ -96,6 +97,9 @@ class DownloadTab:
         self.parent.selectNCNNCustomModel.clicked.connect(
             lambda: self.parent.importCustomModel("ncnn")
         )
+        self.parent.pytorch_version.addItems(
+            [version.torch_version for version in self.torch_versions]
+        )
 
     def uninstallApp(self):
         reply = QMessageBox.question(
@@ -118,22 +122,42 @@ class DownloadTab:
         Returns:
         - None
         """
-        pytorch_ver = self.parent.pytorch_version.currentText().split()[0]
-        pytorch_backend = self.parent.pytorch_backend.currentText().split()[0]
-        torchvision_ver = TorchScraper().torchvision_version
-
-        if dep.lower() == "pytorch" or dep.lower() == "tensorrt":
-            
-            pytorch_backend = TorchScraper().cuda_version
-        elif pytorch_backend.lower() == "rocm":
-            pytorch_backend = TorchScraper().rocm_version
+        reply = QMessageBox.question(
+            self,
+            "",
+            "NVIDIA RTX 50 series gpus require torch version 2.7.0.\nContinue installation?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No,  # type: ignore
+        )
+        if reply == QMessageBox.Yes:  # type: ignore
+            pass
         else:
-            pytorch_backend = TorchScraper().xpu_version
+            return
+        pytorch_ver:TorchVersion|None = None
+        current_pytorch_version = self.parent.pytorch_version.currentText().split()[0]
+        current_pytorch_backend = self.parent.pytorch_backend.currentText().split()[0].lower()
+        for version in self.torch_versions:
+            if version.torch_version == current_pytorch_version:
+                pytorch_ver = version
+                torchvision_ver = version.torchvision_version
+
+        if not pytorch_ver:
+            RegularQTPopup(
+                "Please select a valid PyTorch version from the dropdown."
+            )
+            return
+        
+        if current_pytorch_backend == "cuda" or dep.lower() == "tensorrt":
+            pytorch_backend = pytorch_ver.cuda_version
+        elif current_pytorch_backend == "rocm":
+            pytorch_backend = pytorch_ver.rocm_version
+        else:
+            pytorch_backend = pytorch_ver.xpu_version
         
         if NetworkCheckPopup(
             "https://pypi.org/"
         ):  # check for network before installing
-            return_code = self.downloadDeps.downloadPythonDeps(dep, pytorch_ver, torchvision_ver, pytorch_backend, install)
+            return_code = self.downloadDeps.downloadPythonDeps(dep, pytorch_ver.torch_version, torchvision_ver, pytorch_backend, install)
             if return_code == 0:
                 RegularQTPopup(
                     "Download Complete\nPlease restart the application to apply changes."

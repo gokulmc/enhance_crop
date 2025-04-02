@@ -263,12 +263,11 @@ class DownloadDependencies:
         os.environ["TMPDIR"] = TEMP_DOWNLOAD_PATH
         if install:
             command += [
-                "--upgrade",
                 "--no-warn-script-location",
                 "--extra-index-url",
                 "https://download.pytorch.org/whl/test/",
-                "--extra-index-url",
-                "https://pypi.nvidia.com",
+                "--trusted-host",
+                "download.pytorch.org",
             ]
         else:
             command += ["-y"]
@@ -321,6 +320,11 @@ class DownloadDependencies:
     
     def downloadPythonDeps(self, backend, torch_version: Optional[str] = "2.7.0", torchvision_version: Optional[str] = "0.22.0", torch_backend: Optional[str] = "cu126", install: bool = True):
         deps = []
+        log("Downloading Python Deps for " + backend)
+        log("Torch Version: " + torch_version)
+        log("Torch Backend: " + torch_backend)
+        log("Torchvision Version: " + torchvision_version)
+        
 
         if install: # dont uninstall platform independent deps
             deps = self.getPlatformIndependentDeps()
@@ -347,28 +351,35 @@ class DownloadDependencies:
                 return_code = self.pip(deps, install)
                 return_codes.append(return_code)
 
-                deps = [
-                    "--no-deps",
-                    f"torchvision=={torchvision_version}+{torch_backend}",
-                ]
-                return_code = self.pip(deps, install)
+                if install:
+                    deps = [
+                        "--no-deps",
+                        f"torchvision=={torchvision_version}+{torch_backend}",
+                    ]
+                    return_code = self.pip(deps, install)
+                    
                 return_codes.append(return_code)
 
                 if backend == "tensorrt":
-                    torch_trt_link = "https://github.com/TNTwise/real-video-enhancer-models/releases/download/models/torch_tensorrt-2.7.0.dev20250323+cu128-cp312-cp312-"
-                    if PLATFORM == 'linux':
-                        torch_trt_link += "linux_x86_64.whl"
-                    elif PLATFORM == 'win32':
-                        torch_trt_link += "win_amd64.whl"
+                    if torch_version == "2.7.0":
+                        torch_trt_link = "https://github.com/TNTwise/real-video-enhancer-models/releases/download/models/torch_tensorrt-2.7.0.dev20250323+cu128-cp312-cp312-"
+                        if PLATFORM == 'linux':
+                            torch_trt_link += "linux_x86_64.whl"
+                        elif PLATFORM == 'win32':
+                            torch_trt_link += "win_amd64.whl"
+                    else:
+                        torch_trt_link = "torch-tensorrt==2.6.0+cu126"
                     
                     deps = [
                         "tensorrt==10.9.0.34",
                         "tensorrt_cu12==10.9.0.34",
                         "tensorrt-cu12_libs==10.9.0.34",
                         "tensorrt_cu12_bindings==10.9.0.34",
-                        "--no-deps",
-                        f"{torch_trt_link}",
+                        
                     ]
+                    if install:
+                        deps += ["--no-deps",torch_trt_link]
+
                     return_code = self.pip(deps, install)
                     return_codes.append(return_code)
         
