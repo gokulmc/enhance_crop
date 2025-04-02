@@ -122,17 +122,18 @@ class DownloadTab:
         Returns:
         - None
         """
-        reply = QMessageBox.question(
-            self,
-            "",
-            "NVIDIA RTX 50 series gpus require torch version 2.7.0.\nContinue installation?",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-            QMessageBox.StandardButton.No,  # type: ignore
-        )
-        if reply == QMessageBox.Yes:  # type: ignore
-            pass
-        else:
-            return
+        if install:
+            reply = QMessageBox.question(
+                self.parent,
+                "",
+                "NVIDIA RTX 50 series GPUS require torch version 2.7.0.\nContinue installation?",
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No,  # type: ignore
+            )
+            if reply == QMessageBox.Yes:  # type: ignore
+                pass
+            else:
+                return
         pytorch_ver:TorchVersion|None = None
         current_pytorch_version = self.parent.pytorch_version.currentText().split()[0]
         current_pytorch_backend = self.parent.pytorch_backend.currentText().split()[0].lower()

@@ -265,7 +265,9 @@ class DownloadDependencies:
             command += [
                 "--no-warn-script-location",
                 "--extra-index-url",
-                "https://download.pytorch.org/whl/test/",
+                "https://download.pytorch.org/whl/test/", 
+                "--extra-index-url",
+                "https://download.pytorch.org/whl/", # search this first, needs to be last in the list 
                 "--trusted-host",
                 "download.pytorch.org",
             ]
@@ -357,7 +359,7 @@ class DownloadDependencies:
                         f"torchvision=={torchvision_version}+{torch_backend}",
                     ]
                     return_code = self.pip(deps, install)
-                    
+
                 return_codes.append(return_code)
 
                 if backend == "tensorrt":
