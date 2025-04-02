@@ -110,7 +110,7 @@ class DownloadTab:
             QMessageBox.StandardButton.No,  # type: ignore
         )
         if reply == QMessageBox.Yes:  # type: ignore
-            os.chdir(HOME_PATH)
+            os.chdir(HOME_PATH) # fix for windows, as you cant delete a directory in use.
             FileHandler().removeFolder(CWD)
             os._exit(0)
         

@@ -235,12 +235,26 @@ class VCRedList(Dependency):
             needs_network_else_exit()
 
             download_link = self.get_download_link()
-            DownloadProgressPopup(link = download_link, downloadLocation=self.download_path, title = "Downloading VCRedist")
-            if not run_executable(
-                [self.download_path, "/install", "/quiet", "/norestart"]
-            ):  # keep trying until user says yes
+            DownloadProgressPopup(link=download_link, downloadLocation=self.download_path, title="Downloading VCRedist")
+            
+            # Use ShellExecute to properly handle admin elevation
+            import ctypes
+            try:
+                result = ctypes.windll.shell32.ShellExecuteW(
+                    None,                          # hwnd
+                    "runas",                       # operation (runas = run as admin)
+                    self.download_path,            # file
+                    "/install /norestart /quiet",         # parameters
+                    None,                          # directory
+                    1                              # show command (1 = normal window)
+                )
+                if result <= 32:  # Error codes are <= 32
+                    RegularQTPopup(
+                        "Failed to launch VCRedist installer. Please run it manually."
+                    )
+            except Exception as e:
                 RegularQTPopup(
-                    "Please click yes to allow VCRedlist to install!\nThe installer will now close."
+                    f"Error launching VCRedist installer: {str(e)}\nThe installer will now close."
                 )
 
 
