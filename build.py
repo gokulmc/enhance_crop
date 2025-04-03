@@ -54,11 +54,10 @@ def get_libxcb_cursor_binary():
             raise FileNotFoundError("libxcbcursor not installed, and no network available to download it!")
     return input_file
     
-
 class PythonManager:
 
     PYTHON_VENV_PATH = "venv\\Scripts\\python.exe" if PLATFORM == "win32" else "venv/bin/python3"
-    PYTHON_SYSTEM_EXECUTABLE = "python3"
+    PYTHON_SYSTEM_EXECUTABLE = sys.executable
 
     def __init__(self):
         if not os.path.exists("venv"):
