@@ -388,7 +388,7 @@ class DownloadDependencies:
 
                 if backend == "tensorrt":
                     if torch_version == "2.7.0":
-                        torch_trt_link = "https://github.com/TNTwise/real-video-enhancer-models/releases/download/models/torch_tensorrt-2.7.0.dev20250323+cu128-cp312-cp312-"
+                        torch_trt_link = "https://github.com/TNTwise/real-video-enhancer-models/releases/download/models/torch_tensorrt-2.7.0-cp312-cp312-"
                         if PLATFORM == 'linux':
                             torch_trt_link += "linux_x86_64.whl"
                         elif PLATFORM == 'win32':
