@@ -136,9 +136,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for dep in Dependency.__subclasses__():
             d = dep()
             if d.get_if_update_available():
+                popupthread.terminate()
                 d.update_if_updates_available()
         
-        popupthread.terminate()
+        try:
+            popupthread.terminate()
+        except Exception:
+            pass
         self.backends, self.fullOutput = (
             backendHandler.getAvailableBackends()
         )
