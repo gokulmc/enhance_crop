@@ -212,7 +212,7 @@ class PyInstaller(BuildManager):
             
 class CxFreeze(BuildManager):
 
-    cx_freeze_version = "cx_freeze==7.0.0"
+    cx_freeze_version = "cx_freeze==7.2.10"
 
     def build(self):
         print("Building executable")

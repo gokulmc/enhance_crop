@@ -1,8 +1,12 @@
 from src.constants import CUSTOM_MODELS_PATH, MODELS_PATH, CWD, LOCKFILE, IS_INSTALLED, TEMP_DOWNLOAD_PATH, USE_LOCAL_BACKEND
 import os
+try: 
+    os.makedirs(CWD) if not os.path.exists(CWD) else None
+    # os.chdir(CWD) # need to actually chdir into the directory to have everything run correctly
+except:
+    pass
 import sys
 import os
-from multiprocessing import Process
 os.environ["PYTHONNOUSERSITE"] = "1" # Prevents python from installing packages in user site
 os.environ["NVIDIA_TENSORRT_DISABLE_INTERNAL_PIP"] = "0"
 
