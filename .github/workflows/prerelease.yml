@@ -39,7 +39,7 @@ jobs:
       - name: compress archive
         run: |
           mv dist/ bin/
-          zip -r REAL-Video-Enhancer-2.2.5-Linux.zip bin/
+          zip -r REAL-Video-Enhancer-2.2.5-Linux-portable.zip bin/
 
       - name: compress backend
         run: |
@@ -48,8 +48,8 @@ jobs:
       - name: Save Archive as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: REAL-Video-Enhancer-2.2.5-Linux.zip
-          path: REAL-Video-Enhancer-2.2.5-Linux.zip
+          name: REAL-Video-Enhancer-2.2.5-Linux-portable.zip
+          path: REAL-Video-Enhancer-2.2.5-Linux-portable.zip
 
       - name: Save Archive as artifact
         uses: actions/upload-artifact@v4
@@ -72,7 +72,6 @@ jobs:
         run: |
           python3 -m pip install -r requirements.txt
       
-
       - name: Build
         run: python3 build.py --build pyinstaller --copy_backend
       
@@ -81,13 +80,24 @@ jobs:
             cd dist
             tar -a -c -f REAL-Video-Enhancer-2.2.5-Windows.zip REAL-Video-Enhancer
             cd ..
-            cp dist/REAL-Video-Enhancer-2.2.5-Windows.zip REAL-Video-Enhancer-2.2.5-Windows.zip
+            cp dist/REAL-Video-Enhancer-2.2.5-Windows.zip REAL-Video-Enhancer-2.2.5-Windows-portable.zip
+
+      - name: create windows installer
+        run: |
+            winget install nsis
+            makensis /DVERSION=2.2.5 /DARCH=x64 REAL-Video-Enhancer.nsi
 
       - name: Save Archive as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: REAL-Video-Enhancer-2.2.5-Windows.zip
-          path: REAL-Video-Enhancer-2.2.5-Windows.zip
+          name: REAL-Video-Enhancer-2.2.5-Windows-portable.zip
+          path: REAL-Video-Enhancer-2.2.5-Windows-portable.zip
+          
+      - name: Save Archive as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: REAL-Video-Enhancer-Setup.exe
+          path: REAL-Video-Enhancer-2.2.5-Windows-portable.zip
 
   build-MacOS:
     runs-on: macos-13
