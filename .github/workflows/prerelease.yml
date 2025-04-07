@@ -84,7 +84,7 @@ jobs:
 
       - name: create windows installer
         run: |
-            winget install nsis
+            choco install nsis
             makensis /DVERSION=2.2.5 /DARCH=x64 REAL-Video-Enhancer.nsi
 
       - name: Save Archive as artifact
