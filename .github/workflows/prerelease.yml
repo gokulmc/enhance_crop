@@ -211,7 +211,7 @@ jobs:
           
           files: |
               artifacts/REAL-Video-Enhancer-2.2.5-Windows-portable.zip/REAL-Video-Enhancer-2.2.5-Windows-portable.zip
-              artifacts/REAL-Video-Enhancer-2.2.5-Windows-Setup.exe/REAL-Video-Enhancer-2.2.5-Windows-Setup.exe.zip
+              artifacts/REAL-Video-Enhancer-2.2.5-Windows-Setup.exe/REAL-Video-Enhancer-2.2.5-Windows-Setup.exe
               artifacts/REAL-Video-Enhancer-2.2.5-Linux-portable.zip/REAL-Video-Enhancer-2.2.5-Linux-portable.zip
               artifacts/REAL-Video-Enhancer-2.2.5-MacOS_x86_64.zip/REAL-Video-Enhancer-2.2.5-MacOS_x86_64.zip
               artifacts/REAL-Video-Enhancer-2.2.5-MacOS_arm64.zip/REAL-Video-Enhancer-2.2.5-MacOS_arm64.zip
