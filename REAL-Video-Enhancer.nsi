@@ -23,7 +23,7 @@
 ; General
 
   Name "${NAME}"
-  OutFile "${NAME}-${DISPLAYVERSION}-Windows-Setup.exe"
+  OutFile "REAL-Video-Enhancer-${DISPLAYVERSION}-Windows-Setup.exe"
   InstallDir "$PROGRAMFILES\${NAME}"
   InstallDirRegKey HKCU "Software\${NAME}" ""
   RequestExecutionLevel admin
