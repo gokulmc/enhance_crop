@@ -96,8 +96,8 @@ jobs:
       - name: Save Archive as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: REAL-Video-Enhancer-Setup.exe
-          path: REAL-Video-Enhancer-2.2.5-Windows-portable.zip
+          name: REAL-Video-Enhancer-Windows-Setup.exe
+          path: REAL-Video-Enhancer-Windows-Setup.exe
 
   build-MacOS:
     runs-on: macos-13
@@ -210,8 +210,9 @@ jobs:
           prerelease: true
           
           files: |
-              artifacts/REAL-Video-Enhancer-2.2.5-Windows.zip/REAL-Video-Enhancer-2.2.5-Windows.zip
-              artifacts/REAL-Video-Enhancer-2.2.5-Linux.zip/REAL-Video-Enhancer-2.2.5-Linux.zip
+              artifacts/REAL-Video-Enhancer-2.2.5-Windows-portable.zip/REAL-Video-Enhancer-2.2.5-Windows-portable.zip
+              artifacts/REAL-Video-Enhancer-2.2.5-Windows-Setup.exe/REAL-Video-Enhancer-2.2.5-Windows-Setup.exe.zip
+              artifacts/REAL-Video-Enhancer-2.2.5-Linux-portable.zip/REAL-Video-Enhancer-2.2.5-Linux-portable.zip
               artifacts/REAL-Video-Enhancer-2.2.5-MacOS_x86_64.zip/REAL-Video-Enhancer-2.2.5-MacOS_x86_64.zip
               artifacts/REAL-Video-Enhancer-2.2.5-MacOS_arm64.zip/REAL-Video-Enhancer-2.2.5-MacOS_arm64.zip
               artifacts/backend-v2.2.5.tar.gz/backend-v2.2.5.tar.gz

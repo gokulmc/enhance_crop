@@ -15,6 +15,7 @@
   !define VERSIONMAJOR 2
   !define VERSIONMINOR 2
   !define VERSIONBUILD 5
+  !define DISPLAYVERSION "${VERSIONMAJOR}.${VERSIONMINOR}.${VERSIONBUILD}"
   !define INSTALLSIZE 297000
 
 
@@ -22,7 +23,7 @@
 ; General
 
   Name "${NAME}"
-  OutFile "${NAME}-Setup.exe"
+  OutFile "${NAME}-${DISPLAYVERSION}-Windows-Setup.exe"
   InstallDir "$PROGRAMFILES\${NAME}"
   InstallDirRegKey HKCU "Software\${NAME}" ""
   RequestExecutionLevel admin
@@ -68,7 +69,7 @@ Section "install"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${NAME}" "QuietUninstallString" "$\"$INSTDIR\uninstall.exe$\" /S"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${NAME}" "InstallLocation" "$\"$INSTDIR$\""
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${NAME}" "DisplayIcon" "$\"$INSTDIR\logo-v2.ico$\""
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${NAME}" "DisplayVersion" "$\"${VERSIONMAJOR}.${VERSIONMINOR}.${VERSIONBUILD}$\""
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${NAME}" "DisplayVersion" "$\"${DISPLAYVERSION}$\""
     WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${NAME}" "VersionMajor" ${VERSIONMAJOR}
     WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${NAME}" "VersionMinor" ${VERSIONMINOR}
     # There is no option for modifying or repairing the install
