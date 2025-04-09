@@ -23,7 +23,7 @@ class FileHandler:
         Returns the available disk space in GB.
         """
         try:
-            total, used, free = shutil.disk_usage("/")
+            total, used, free = shutil.disk_usage(CWD)
             available_space = free / (1024**3)
             return available_space
         except Exception as e:
