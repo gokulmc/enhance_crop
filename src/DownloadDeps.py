@@ -404,7 +404,7 @@ class DownloadDependencies:
                         
                     ]
                     if install:
-                        deps += ["--no-deps",torch_trt_link]
+                        deps += ["--no-deps",f"torch-tensorrt=={torch_version}"]
 
                     return_code = self.pip(deps, install)
                     return_codes.append(return_code)
