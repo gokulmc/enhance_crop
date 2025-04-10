@@ -8,7 +8,7 @@
 ; Custom defines
   !define NAME "REAL Video Enhancer"
   !define APPFILE "REAL-Video-Enhancer.exe"
-  !define VERSION "7.0.0"
+  !define VERSION "2.2.5"
   !define SLUG "${NAME} v${VERSION}"
   !define COMPANYNAME "TNTwise"
   !define VERSIONMAJOR 2
