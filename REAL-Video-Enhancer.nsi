@@ -10,7 +10,6 @@
   !define APPFILE "REAL-Video-Enhancer.exe"
   !define VERSION "7.0.0"
   !define SLUG "${NAME} v${VERSION}"
-  !define INSTDIR_DATA "$LOCALAPPDATA\REAL-Video-Enhancer"
   !define COMPANYNAME "TNTwise"
   !define VERSIONMAJOR 2
   !define VERSIONMINOR 2
@@ -125,12 +124,7 @@ Section "Uninstall"
 
   ;Delete Folder
   RMDir /r "$INSTDIR"
-  RMDir /r "$INSTDIR_DATA"
   ${RMDirUP} "$INSTDIR"
-  ${RMDirUP} "$INSTDIR_DATA"
-  RMDir /r "$APPDATA\REAL-Video-Enhancer"
-  RMDir /r "$APPDATA\local\REAL-Video-Enhancer"
-  RMDir /r "$LOCALAPPDATA\local\REAL-Video-Enhancer"
   RMDir /r "$LOCALAPPDATA\REAL-Video-Enhancer"
 
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${NAME}"
