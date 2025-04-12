@@ -9,7 +9,7 @@
       <img src="https://img.shields.io/discord/1041502781808328704?label=Discord" alt="Discord Shield"/></a>
 <br/>
 <a href="https://flathub.org/apps/io.github.tntwise.REAL-Video-Enhancer">
-    <img src="https://dl.flathub.org/assets/badges/flathub-badge-en.svg" height="30px"/>
+    <img src="https://dl.flathub.org/assets/badges/flathub-badge-en.svg" height="50px"/>
   </a>
 
 
