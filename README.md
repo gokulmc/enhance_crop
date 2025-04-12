@@ -62,7 +62,7 @@
 | CPU | Dual Core x64 bit | Quad Core x64 bit
 | GPU | Vulkan 1.3 capable device (4GB VRAM for ncnn) | Nvidia RTX GPU (20 series and up) (8GB VRAM tensorrt) 
 | RAM | 8 GB | 16 GB
-| Storage | 1 GB free (NCNN install only) | 10 GB free (TensorRT install)
+| Storage | 1 GB free (NCNN install only) | 16 GB free (TensorRT install)
 | Operating System | Windows 10/11 64bit / MacOS 13+ | Any modern Linux distro (Ubuntu 20.04+)
 
 # Models:
