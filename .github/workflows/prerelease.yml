@@ -39,23 +39,23 @@ jobs:
       - name: compress archive
         run: |
           mv dist/ bin/
-          zip -r REAL-Video-Enhancer-2.2.5-Linux-portable.zip bin/
+          zip -r REAL-Video-Enhancer-2.3.0-Linux-portable.zip bin/
 
       - name: compress backend
         run: |
-          tar czf backend-v2.2.5.tar.gz backend/
+          tar czf backend-v2.3.0.tar.gz backend/
 
       - name: Save Archive as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: REAL-Video-Enhancer-2.2.5-Linux-portable.zip
-          path: REAL-Video-Enhancer-2.2.5-Linux-portable.zip
+          name: REAL-Video-Enhancer-2.3.0-Linux-portable.zip
+          path: REAL-Video-Enhancer-2.3.0-Linux-portable.zip
 
       - name: Save Archive as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: backend-v2.2.5.tar.gz 
-          path: backend-v2.2.5.tar.gz 
+          name: backend-v2.3.0.tar.gz 
+          path: backend-v2.3.0.tar.gz 
           
   build-Windows:
     runs-on: windows-2019
@@ -78,9 +78,9 @@ jobs:
       - name: compress archive
         run: |
             cd dist
-            tar -a -c -f REAL-Video-Enhancer-2.2.5-Windows.zip REAL-Video-Enhancer
+            tar -a -c -f REAL-Video-Enhancer-2.3.0-Windows.zip REAL-Video-Enhancer
             cd ..
-            cp dist/REAL-Video-Enhancer-2.2.5-Windows.zip REAL-Video-Enhancer-2.2.5-Windows-portable.zip
+            cp dist/REAL-Video-Enhancer-2.3.0-Windows.zip REAL-Video-Enhancer-2.3.0-Windows-portable.zip
 
       - name: create windows installer
         run: |
@@ -90,14 +90,14 @@ jobs:
       - name: Save Archive as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: REAL-Video-Enhancer-2.2.5-Windows-portable.zip
-          path: REAL-Video-Enhancer-2.2.5-Windows-portable.zip
+          name: REAL-Video-Enhancer-2.3.0-Windows-portable.zip
+          path: REAL-Video-Enhancer-2.3.0-Windows-portable.zip
           
       - name: Save Archive as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: REAL-Video-Enhancer-2.2.5-Windows-Setup.exe
-          path: REAL-Video-Enhancer-2.2.5-Windows-Setup.exe
+          name: REAL-Video-Enhancer-2.3.0-Windows-Setup.exe
+          path: REAL-Video-Enhancer-2.3.0-Windows-Setup.exe
 
   build-MacOS:
     runs-on: macos-13
@@ -125,13 +125,13 @@ jobs:
     
       - name: compress archive
         run: |
-          zip -r REAL-Video-Enhancer-2.2.5-MacOS_x86_64.zip dist/
+          zip -r REAL-Video-Enhancer-2.3.0-MacOS_x86_64.zip dist/
 
       - name: Save Archive as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: REAL-Video-Enhancer-2.2.5-MacOS_x86_64.zip
-          path: REAL-Video-Enhancer-2.2.5-MacOS_x86_64.zip
+          name: REAL-Video-Enhancer-2.3.0-MacOS_x86_64.zip
+          path: REAL-Video-Enhancer-2.3.0-MacOS_x86_64.zip
 
   build-MacOS_arm64:
 
@@ -161,13 +161,13 @@ jobs:
         run: |
 
 
-          zip -r REAL-Video-Enhancer-2.2.5-MacOS_arm64.zip dist/
+          zip -r REAL-Video-Enhancer-2.3.0-MacOS_arm64.zip dist/
 
       - name: Save Archive as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: REAL-Video-Enhancer-2.2.5-MacOS_arm64.zip
-          path: REAL-Video-Enhancer-2.2.5-MacOS_arm64.zip
+          name: REAL-Video-Enhancer-2.3.0-MacOS_arm64.zip
+          path: REAL-Video-Enhancer-2.3.0-MacOS_arm64.zip
           
   Release:
     needs: [build-Windows, build-Linux, build-MacOS, build-MacOS_arm64]
@@ -203,19 +203,19 @@ jobs:
       - name: Create Release and Upload Release Asset
         uses: softprops/action-gh-release@v1        
         with:
-          name: REAL Video Enhancer 2.2.5 Pre-Release
-          tag_name: RVE-2.2.5
+          name: REAL Video Enhancer 2.3.0 Pre-Release
+          tag_name: RVE-2.3.0
           body_path: ./RELEASE_BODY.md
           draft: false
           prerelease: true
           
           files: |
-              artifacts/REAL-Video-Enhancer-2.2.5-Windows-portable.zip/REAL-Video-Enhancer-2.2.5-Windows-portable.zip
-              artifacts/REAL-Video-Enhancer-2.2.5-Windows-Setup.exe/REAL-Video-Enhancer-2.2.5-Windows-Setup.exe
-              artifacts/REAL-Video-Enhancer-2.2.5-Linux-portable.zip/REAL-Video-Enhancer-2.2.5-Linux-portable.zip
-              artifacts/REAL-Video-Enhancer-2.2.5-MacOS_x86_64.zip/REAL-Video-Enhancer-2.2.5-MacOS_x86_64.zip
-              artifacts/REAL-Video-Enhancer-2.2.5-MacOS_arm64.zip/REAL-Video-Enhancer-2.2.5-MacOS_arm64.zip
-              artifacts/backend-v2.2.5.tar.gz/backend-v2.2.5.tar.gz
+              artifacts/REAL-Video-Enhancer-2.3.0-Windows-portable.zip/REAL-Video-Enhancer-2.3.0-Windows-portable.zip
+              artifacts/REAL-Video-Enhancer-2.3.0-Windows-Setup.exe/REAL-Video-Enhancer-2.3.0-Windows-Setup.exe
+              artifacts/REAL-Video-Enhancer-2.3.0-Linux-portable.zip/REAL-Video-Enhancer-2.3.0-Linux-portable.zip
+              artifacts/REAL-Video-Enhancer-2.3.0-MacOS_x86_64.zip/REAL-Video-Enhancer-2.3.0-MacOS_x86_64.zip
+              artifacts/REAL-Video-Enhancer-2.3.0-MacOS_arm64.zip/REAL-Video-Enhancer-2.3.0-MacOS_arm64.zip
+              artifacts/backend-v2.3.0.tar.gz/backend-v2.3.0.tar.gz
 
               
               
