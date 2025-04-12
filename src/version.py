@@ -1,2 +1,2 @@
 version = "2.2.5"
-backend_dev_version = "2.2.5-dev04042025"  # has to match version of backend, update this wehenver updating pre release
+backend_dev_version = "2.2.5"  # has to match version of backend, update this wehenver updating pre release
