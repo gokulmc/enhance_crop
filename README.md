@@ -7,6 +7,11 @@
 ![downloads_total](https://img.shields.io/github/downloads/tntwise/REAL-Video-Enhancer/total.svg?label=downloads%40total)
 <a href="https://discord.gg/hwGHXga8ck">
       <img src="https://img.shields.io/discord/1041502781808328704?label=Discord" alt="Discord Shield"/></a>
+<br/>
+<a href="https://flathub.org/apps/io.github.tntwise.REAL-Video-Enhancer">
+    <img src="https://dl.flathub.org/assets/badges/flathub-badge-en.svg" height="30px"/>
+  </a>
+
 
 <p align=center>
   <img src="https://github.com/TNTwise/REAL-Video-Enhancer/raw/2.0/icons/logo-v2.svg" width = "25%">
