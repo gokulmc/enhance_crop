@@ -131,6 +131,8 @@ class HandleApplication:
             interpolateModel=self.args.interpolate_model,
             interpolateFactor=self.args.interpolate_factor,
             upscaleModel=self.args.upscale_model,
+            denoiseModel=self.args.denoise_model,
+            compressionFixModel=self.args.compression_fix_model,
             tile_size=self.args.tilesize,
             # backend settings
             device="default",
@@ -221,7 +223,17 @@ class HandleApplication:
         )
         parser.add_argument(
             "--upscale_model",
-            help="Direct path to upscaling model, will automatically upscale if model is valid.",
+            help="Direct path to upscaling model, will automatically upscale if model is valid. (arbitrary scale)",
+            type=str,
+        )
+        parser.add_argument(
+            "--denoise_model",
+            help="Direct path to denoise model, will automatically denoise if model is valid. (1x only)",
+            type=str,
+        )
+        parser.add_argument(
+            "--compression_fix_model",
+            help="Direct path to a compression fixer model, will automatically inference if model is valid. (1x only)",
             type=str,
         )
         parser.add_argument(

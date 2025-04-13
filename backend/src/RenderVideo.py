@@ -67,6 +67,8 @@ class Render:
         upscaleModel=None,
         interpolateModel=None,
         interpolateFactor: int = 1,
+        denoiseModel=None,
+        compressionFixModel=None,
         tile_size=None,
         # ffmpeg settings
         start_time=None,
@@ -100,6 +102,8 @@ class Render:
         self.backend = backend
         self.upscaleModel = upscaleModel
         self.interpolateModel = interpolateModel
+        self.compressionFixModel = compressionFixModel
+        self.denoiseModel = denoiseModel
         self.tilesize = tile_size
         self.device = device
         self.precision = precision
@@ -113,6 +117,8 @@ class Render:
         self.setupFrame0 = None
         self.interpolateOption = None
         self.upscaleOption = None
+        self.denoiseOption = None
+        self.compressionFixOption = None
         self.isPaused = False
         self.sceneDetectMethod = sceneDetectMethod
         self.sceneDetectSensitivty = sceneDetectSensitivity
@@ -279,6 +285,15 @@ class Render:
                     if not interpolated_frames:
                         return
                     for interpolated_frame in interpolated_frames:
+                        
+                        if self.denoiseModel:
+                            interpolated_frame = self.denoiseOption(
+                                self.denoiseOption.frame_to_tensor(interpolated_frame)
+                            )
+                        if self.compressionFixModel:
+                            interpolated_frame = self.compressionFixOption(
+                                self.compressionFixOption.frame_to_tensor(interpolated_frame)
+                            )
                         if self.upscaleModel:
                             interpolated_frame = self.upscaleOption(
                                 self.upscaleOption.frame_to_tensor(interpolated_frame)
@@ -293,12 +308,21 @@ class Render:
                         self.informationHandler.setFramesRendered(frames_rendered)
                         self.writeBuffer.writeQueue.put(interpolated_frame)
                         
+                if self.denoiseModel:
+                    frame = self.denoiseOption(
+                        self.denoiseOption.frame_to_tensor(frame)
+                    )
+                if self.compressionFixModel:
+                    frame = self.compressionFixOption(
+                        self.compressionFixOption.frame_to_tensor(frame)
+                    )
 
                 if self.upscaleModel:
                     frame = self.upscaleOption(
                         self.upscaleOption.frame_to_tensor(frame)
                     )
-
+                
+                
                 self.informationHandler.setPreviewFrame(frame)
                 
                 if self.override_upscale_scale:
@@ -315,31 +339,57 @@ class Render:
             else:
                 sleep(1)
         self.writeBuffer.writeQueue.put(None)
+    
+    def upscalePytorchObject(self):
+        from .pytorch.UpscaleTorch import UpscalePytorch
+        return UpscalePytorch(
+            self.upscaleModel,
+            device=self.device,
+            precision=self.precision,
+            width=self.width,
+            height=self.height,
+            backend=self.backend,
+            tilesize=self.tilesize,
+            trt_optimization_level=self.trt_optimization_level,
+            hdr_mode=self.hdr_mode
+        )
+    
+    def upscaleNCNNObject(self, scale=None):
+        from .ncnn.UpscaleNCNN import UpscaleNCNN
+        path, last_folder = os.path.split(self.upscaleModel)
+        self.upscaleModel = os.path.join(path, last_folder, last_folder)
+        return UpscaleNCNN(
+            modelPath=self.upscaleModel,
+            num_threads=1,
+            scale=self.upscaleTimes if scale is None else scale,
+            gpuid=self.ncnn_gpu_id,  # might have this be a setting
+            width=self.width,
+            height=self.height,
+            tilesize=self.tilesize,
+        )
+
+    def setupDenoise(self):
+        printAndLog("Setting up Denoise")
+        if self.backend == "pytorch" or self.backend == "tensorrt":
+            self.denoiseOption = self.upscalePytorchObject()
+        
+        if self.backend == "ncnn":
+            self.denoiseOption = self.upscaleNCNNObject(scale=1)
+
+    def setupCompressionFix(self):
+        printAndLog("Setting up Compression Fix")
+        if self.backend == "pytorch" or self.backend == "tensorrt":
+            self.compressionFixOption = self.upscalePytorchObject()
+        
+        if self.backend == "ncnn":
+            self.compressionFixOption = self.upscaleNCNNObject(scale=1)
 
     def setupUpscale(self):
-        """
-        This is called to setup an upscaling model if it exists.
-        Maps the self.upscaleTimes to the actual scale of the model
-        Maps the self.setupRender function that can setup frames to be rendered
-        Maps the self.upscale the upscale function in the respective backend.
-        For interpolation:
-        Mapss the self.undoSetup to the tensor_to_frame function, which undoes the prep done in the FFMpeg thread. Used for SCDetect
-        """
         printAndLog("Setting up Upscale")
         if self.backend == "pytorch" or self.backend == "tensorrt":
             from .pytorch.UpscaleTorch import UpscalePytorch
 
-            self.upscaleOption = UpscalePytorch(
-                self.upscaleModel,
-                device=self.device,
-                precision=self.precision,
-                width=self.width,
-                height=self.height,
-                backend=self.backend,
-                tilesize=self.tilesize,
-                trt_optimization_level=self.trt_optimization_level,
-                hdr_mode=self.hdr_mode
-            )
+            self.upscaleOption = self.upscalePytorchObject()
             self.modelScale = self.upscaleOption.getScale() 
             self.upscaleTimes = self.modelScale if not self.override_upscale_scale else self.override_upscale_scale
 
@@ -350,15 +400,7 @@ class Render:
             self.upscaleModel = os.path.join(path, last_folder, last_folder)
             self.modelScale = getNCNNScale(modelPath=self.upscaleModel) 
             self.upscaleTimes = self.modelScale if not self.override_upscale_scale else self.override_upscale_scale
-            self.upscaleOption = UpscaleNCNN(
-                modelPath=self.upscaleModel,
-                num_threads=1,
-                scale=self.upscaleTimes,
-                gpuid=self.ncnn_gpu_id,  # might have this be a setting
-                width=self.width,
-                height=self.height,
-                tilesize=self.tilesize,
-            )
+            self.upscaleOption = self.upscaleNCNNObject(scale=self.upscaleTimes)
 
         if self.backend == "directml":  # i dont want to work with this shit
             from .onnx.UpscaleONNX import UpscaleONNX
