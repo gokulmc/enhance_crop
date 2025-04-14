@@ -332,14 +332,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.videoInfoTextEdit.setText(text)
 
     def getInterpolationMultiplier(self, interpolateModelName):
-        if interpolateModelName == "None":
+        if interpolateModelName == "None" or not self.interpolateCheckBox.isChecked():
             interpolateTimes = 1
         else:
             interpolateTimes = self.interpolationMultiplierSpinBox.value()
         return interpolateTimes
 
     def getUpscaleModelScale(self, upscaleModelName):
-        if upscaleModelName == "None" or upscaleModelName == "":
+        if upscaleModelName == "None" or upscaleModelName == "" or not self.upscaleCheckBox.isChecked():
             scale = 1
         else:
             scale = int(self.upscaleScaleSpinBox.value())
