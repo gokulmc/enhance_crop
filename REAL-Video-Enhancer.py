@@ -130,19 +130,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 d = dep()
                 d.download()
         
-        popupthread = create_independent_process(IndependentQTPopup, "Checking for dependency updates...")
-        popupthread.start() 
+        #popupthread = create_independent_process(IndependentQTPopup, "Checking for dependency updates...")
+        #popupthread.start() 
 
         for dep in Dependency.__subclasses__():
             d = dep()
             if d.get_if_update_available():
-                popupthread.terminate()
+        #        popupthread.terminate()
                 d.update_if_updates_available()
         
-        try:
-            popupthread.terminate()
-        except Exception:
-            pass
+        #try:
+        #    popupthread.terminate()
+        #except Exception:
+        #    pass
         self.backends, self.fullOutput = (
             backendHandler.getAvailableBackends()
         )
