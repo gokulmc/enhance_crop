@@ -398,7 +398,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.startTimeSpinBox.setMaximum(self.videoLength)
         self.endTimeSpinBox.setMaximum(self.videoLength)
         self.timeInVideoScrollBar.setMaximum(self.videoLength)
-
+        
     def getCurrentRenderOptions(self):
         interpolate = self.interpolateModelComboBox.currentText()
         upscale = self.upscaleModelComboBox.currentText()

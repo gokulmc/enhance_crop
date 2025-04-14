@@ -1086,11 +1086,23 @@ background-color:#343b47
                                    <x>0</x>
                                    <y>0</y>
                                    <width>370</width>
-                                   <height>538</height>
+                                   <height>542</height>
                                   </rect>
                                  </property>
                                  <layout class="QVBoxLayout" name="verticalLayout_32">
                                   <property name="spacing">
+                                   <number>11</number>
+                                  </property>
+                                  <property name="leftMargin">
+                                   <number>11</number>
+                                  </property>
+                                  <property name="topMargin">
+                                   <number>11</number>
+                                  </property>
+                                  <property name="rightMargin">
+                                   <number>11</number>
+                                  </property>
+                                  <property name="bottomMargin">
                                    <number>11</number>
                                   </property>
                                   <item>
@@ -1426,6 +1438,9 @@ background-color:#343b47
                                             <width>230</width>
                                             <height>0</height>
                                            </size>
+                                          </property>
+                                          <property name="currentIndex">
+                                           <number>-1</number>
                                           </property>
                                          </widget>
                                         </item>
@@ -2031,8 +2046,8 @@ border-radius:10px;
                                <rect>
                                 <x>0</x>
                                 <y>0</y>
-                                <width>376</width>
-                                <height>607</height>
+                                <width>380</width>
+                                <height>611</height>
                                </rect>
                               </property>
                               <property name="sizePolicy">
@@ -2050,6 +2065,18 @@ border-radius:10px;
                               <layout class="QVBoxLayout" name="verticalLayout_33">
                                <property name="spacing">
                                 <number>9</number>
+                               </property>
+                               <property name="leftMargin">
+                                <number>11</number>
+                               </property>
+                               <property name="topMargin">
+                                <number>11</number>
+                               </property>
+                               <property name="rightMargin">
+                                <number>11</number>
+                               </property>
+                               <property name="bottomMargin">
+                                <number>11</number>
                                </property>
                                <item alignment="Qt::AlignmentFlag::AlignTop">
                                 <widget class="QWidget" name="widget_34" native="true">

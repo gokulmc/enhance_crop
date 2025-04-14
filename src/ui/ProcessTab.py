@@ -85,6 +85,7 @@ class ProcessTab:
         self.parent.interpolateModelComboBox.addItems(
             list(interpolateModels.keys())
         )
+        self.parent.interpolateModelComboBox.setCurrentIndex(len(list(interpolateModels.keys()))-1)
         self.parent.upscaleModelComboBox.addItems(list(upscaleModels.keys()))
 
     def onTilingSwitch(self):
