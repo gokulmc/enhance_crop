@@ -1,13 +1,17 @@
-# RVE 2.2.5 pre-release
- - NOTE: Pre-releases are unstable, please use the stable build if you experience issues. 
+# RVE 2.3.0 pre-release
+- NOTE: Pre-releases are unstable, please use the stable build if you experience issues. 
         New features will be added to this release over time, the current changelog is not final. 
+### Changed
+ - GUI Modifications.
 ### Added
+# RVE 2.2.5
  - Updates backend and python version.
  - Lock to make sure the app does not have duplicates open.
  - Switchable pytorch backend and version.
  - Blackwell GPU support. 
  - Selectable upscale scale independent of model scale.
  - Custom ffmpeg args in front end.
+ - Windows installer.
 ### Changed
  - Installes to a preset directory, and updates python and backend dynamically.
  - Improved RIFE TensorRT speeds
