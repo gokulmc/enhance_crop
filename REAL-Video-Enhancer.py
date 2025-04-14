@@ -384,8 +384,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return output_file
 
     def updateVideoGUIDetails(self):
-        isInterpolate = self.interpolateModelComboBox.currentText() != "None"
-        isUpscale = self.upscaleModelComboBox.currentText() != "None"
+        isInterpolate = self.interpolateCheckBox.isChecked()
+        isUpscale = self.upscaleCheckBox.isChecked()
 
         self.interpolationContainer.setVisible(isInterpolate)
         self.interpolateContainer_2.setVisible(isInterpolate)
@@ -403,9 +403,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         interpolate = self.interpolateModelComboBox.currentText()
         upscale = self.upscaleModelComboBox.currentText()
         output_path = self.outputFileText.text()
-        if interpolate == "None":
+        if not self.interpolateCheckBox.isChecked():
             interpolate = None
-        if upscale == "None":
+        if not self.upscaleCheckBox.isChecked():
             upscale = None
 
         if not self.isVideoLoaded:

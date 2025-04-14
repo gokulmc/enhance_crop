@@ -83,9 +83,9 @@ class ProcessTab:
         self.parent.interpolateModelComboBox.clear()
         self.parent.upscaleModelComboBox.clear()
         self.parent.interpolateModelComboBox.addItems(
-            ["None"] + list(interpolateModels.keys())
+            list(interpolateModels.keys())
         )
-        self.parent.upscaleModelComboBox.addItems(["None"] + list(upscaleModels.keys()))
+        self.parent.upscaleModelComboBox.addItems(list(upscaleModels.keys()))
 
     def onTilingSwitch(self):
         if self.parent.tilingCheckBox.isChecked():
@@ -117,6 +117,7 @@ class ProcessTab:
         # set tile size visible to false by default
         self.parent.tileSizeContainer.setVisible(False)
         # set slo mo container visable to false by default
+        
         self.parent.interpolateContainer_2.setVisible(False)
         # connect up tilesize container visiable
         self.parent.tilingCheckBox.stateChanged.connect(self.onTilingSwitch)
@@ -134,6 +135,8 @@ class ProcessTab:
         self.parent.interpolateModelComboBox.currentIndexChanged.connect(
             self.parent.updateVideoGUIDetails
         )
+        self.parent.interpolateCheckBox.clicked.connect(self.parent.updateVideoGUIDetails)
+        self.parent.upscaleCheckBox.clicked.connect(self.parent.updateVideoGUIDetails)
 
         self.parent.backendComboBox.currentIndexChanged.connect(
             lambda: self.populateModels(self.parent.backendComboBox.currentText())
