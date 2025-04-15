@@ -70,6 +70,7 @@ class Render:
         denoiseModel=None,
         compressionFixModel=None,
         tile_size=None,
+        drba=False,
         # ffmpeg settings
         start_time=None,
         end_time=None,
@@ -120,6 +121,7 @@ class Render:
         self.denoiseOption = None
         self.compressionFixOption = None
         self.isPaused = False
+        self.drba = drba
         self.sceneDetectMethod = sceneDetectMethod
         self.sceneDetectSensitivty = sceneDetectSensitivity
         self.sharedMemoryID = sharedMemoryID
@@ -445,6 +447,7 @@ class Render:
             self.interpolateOption = InterpolateFactory.build_interpolation_method(
                 self.interpolateModel,
                 self.backend,
+                self.drba,
             )(
                 modelPath=self.interpolateModel,
                 ceilInterpolateFactor=self.ceilInterpolateFactor,

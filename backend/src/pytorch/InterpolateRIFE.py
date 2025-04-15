@@ -8,6 +8,7 @@ from ..utils.SSIM import SSIM
 # from backend.src.pytorch.InterpolateArchs.GIMM import GIMM
 from .BaseInterpolate import BaseInterpolate, DynamicScale
 from .InterpolateArchs.DetectInterpolateArch import ArchDetect
+from .DRBA.infer import DRBA_RVE
 import math
 import os
 import sys
@@ -34,6 +35,7 @@ class InterpolateRifeTorch(BaseInterpolate):
         UHDMode: bool = False,
         ensemble: bool = False,
         dynamicScaledOpticalFlow: bool = False,
+        drba:bool = False,
         gpu_id: int = 0,
         # trt options
         trt_optimization_level: int = 5,
@@ -65,6 +67,10 @@ class InterpolateRifeTorch(BaseInterpolate):
         self.UHDMode = UHDMode
         if self.UHDMode:
             self.scale = 0.5
+        
+        if drba:
+            fps = 24
+            self.drba = DRBA_RVE(model_type="rife", model_path="./rife_426_heavy.pkl", times=ceilInterpolateFactor, dst_fps=fps*ceilInterpolateFactor, fps=fps)
         self._load()
 
     @torch.inference_mode()
@@ -432,3 +438,19 @@ class InterpolateRifeTensorRT(InterpolateRifeTorch):
 
         self.stream.synchronize()
         torch.cuda.synchronize()
+
+class InterpolateRIFEDRBA(InterpolateRifeTorch):
+    
+    @torch.inference_mode()
+    def __call__(
+        self,
+        img1,
+        transition=False,
+    ):
+        if self.frame0 is None:
+            self.frame0 = img1
+            out = self.drba.header(self.frame0, img1)
+            yield out
+        with torch.cuda.stream(self.stream):  # type: ignore
+            out = self.drba.inference(img1)
+            yield out

@@ -9,18 +9,20 @@ from ..utils.SSIM import SSIM
 from .InterpolateArchs.DetectInterpolateArch import ArchDetect
 from .InterpolateGIMM import InterpolateGIMMTorch
 from .InterpolateGMFSS import InterpolateGMFSSTorch
-from .InterpolateRIFE import InterpolateRifeTorch, InterpolateRifeTensorRT
+from .InterpolateRIFE import InterpolateRifeTorch, InterpolateRifeTensorRT, InterpolateRIFEDRBA
 
 
 class InterpolateFactory:
     @staticmethod
-    def build_interpolation_method(interpolate_model_path, backend):
+    def build_interpolation_method(interpolate_model_path, backend, drba=False):
         ad = ArchDetect(interpolate_model_path)
         base_arch = ad.getArchBase()
         match base_arch:
             case "rife":
                 if backend == "tensorrt":
                     return InterpolateRifeTensorRT
+                if drba:
+                    return InterpolateRIFEDRBA
                 return InterpolateRifeTorch
             case "gmfss":
                 return InterpolateGMFSSTorch

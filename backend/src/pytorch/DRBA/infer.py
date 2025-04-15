@@ -14,14 +14,15 @@ if torch.cuda.is_available():
     torch.backends.cudnn.benchmark = True
 
 class DRBA_RVE:
-    def __init__(self, model_type, dst_fps, times, scale, fps):
+    def __init__(self, model_type, model_path, dst_fps, times, scale, fps):
         
         self.model_type = model_type  # model network type
         self.scale = scale  # flow scale
         self.dst_fps = dst_fps
         self.times = times
         self.src_fps = fps
-        self.pad_size = 32
+        self.model_path = model_path
+        self.pad_size = 64
         self.enable_scdet = True
         self.scdet_threshold = 0.3
         self.idx = 0
@@ -39,15 +40,15 @@ class DRBA_RVE:
         if model_type == 'rife':
             from models.rife import RIFE
 
-            model = RIFE(weights=r'weights/train_log_rife_426_heavy', scale=self.scale, device=device)
+            model = RIFE(weights=self.model_path, scale=self.scale, device=device)
         elif model_type == 'gmfss':
             from models.gmfss import GMFSS
 
-            model = GMFSS(weights=r'weights/train_log_gmfss', scale=self.scale, device=device)
+            model = GMFSS(weights=self.model_path, scale=self.scale, device=device)
         elif model_type == 'gmfss_union':
             from models.gmfss_union import GMFSS_UNION
 
-            model = GMFSS_UNION(weights=r'weights/train_log_gmfss_union', scale=self.scale, device=device)
+            model = GMFSS_UNION(weights=self.model_path, scale=self.scale, device=device)
         else:
             raise ValueError(f'model_type must in {model_type}')
 
