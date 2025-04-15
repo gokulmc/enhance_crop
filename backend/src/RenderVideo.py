@@ -457,6 +457,7 @@ class Render:
                 dtype=self.precision,
                 backend=self.backend,
                 UHDMode=self.UHD_mode,
+                drba=self.drba,
                 trt_optimization_level=self.trt_optimization_level,
                 ensemble=self.ensemble,
                 dynamicScaledOpticalFlow=self.dynamic_scaled_optical_flow,

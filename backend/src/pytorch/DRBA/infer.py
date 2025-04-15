@@ -38,15 +38,15 @@ class DRBA_RVE:
 
     def load_model(self, model_type):
         if model_type == 'rife':
-            from models.rife import RIFE
+            from .models.rife import RIFE
 
             model = RIFE(weights=self.model_path, scale=self.scale, device=device)
         elif model_type == 'gmfss':
-            from models.gmfss import GMFSS
+            from .models.gmfss import GMFSS
 
             model = GMFSS(weights=self.model_path, scale=self.scale, device=device)
         elif model_type == 'gmfss_union':
-            from models.gmfss_union import GMFSS_UNION
+            from .models.gmfss_union import GMFSS_UNION
 
             model = GMFSS_UNION(weights=self.model_path, scale=self.scale, device=device)
         else:
@@ -101,7 +101,7 @@ class DRBA_RVE:
             output.extend(self.model.inference_ts(I0, I1, right_ts))
 
         for x in output:
-            yield to_out(x, self.src_size)
+            yield x
 
     def tail(self):
         # tail
@@ -113,7 +113,7 @@ class DRBA_RVE:
         output.extend([self.I1 for _ in right_ts])
 
         for x in output:
-            yield (to_out(x, self.src_size))
+            yield x
         self.idx += 1
 
 
@@ -156,7 +156,7 @@ class DRBA_RVE:
         #     output[i] = mark_tensor(output[i], f"{ts[i] + idx}")
 
         for x in output:
-            yield (to_out(x, self.src_size))
+            yield x
 
         self.i0, self.i1 = self.i1, i2
         self.I0, self.I1 = self.I1, I2

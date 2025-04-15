@@ -1,22 +1,22 @@
 # for real-time playback(+TensorRT)
-from models.rife_426_heavy.IFNet_HDv3 import IFNet
-from models.drm import calc_drm_rife
-from models.utils.tools import *
+from ..models.rife_426_heavy.IFNet_HDv3 import IFNet
+from ..models.drm import calc_drm_rife
+from ..models.utils.tools import *
 import torch
 import os
 
 if check_cupy_env():
-    from models.softsplat.softsplat import softsplat as warp
+    from ..models.softsplat.softsplat import softsplat as warp
 else:
     print("System does not have CUDA installed, falling back to PyTorch")
-    from models.softsplat.softsplat_torch import softsplat as warp
+    from ..models.softsplat.softsplat_torch import softsplat as warp
 
 
 class RIFE:
     def __init__(self, weights='weights/train_log_rife_426_heavy', scale=1.0,
                  device=torch.device("cuda" if torch.cuda.is_available() else "cpu")):
         self.ifnet = IFNet().to(device).eval()
-        self.ifnet.load_state_dict(convert(torch.load(os.path.join(weights, 'flownet.pkl'), map_location='cpu')),
+        self.ifnet.load_state_dict(convert(torch.load(weights, map_location='cpu')),
                                    strict=False)
         self.scale = scale
         self.scale_list = [16 / scale, 8 / scale, 4 / scale, 2 / scale, 1 / scale]

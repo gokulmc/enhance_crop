@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from models.rife_426_heavy.warplayer import warp
+from .warplayer import warp
 
 # from train_log.refine import *
 

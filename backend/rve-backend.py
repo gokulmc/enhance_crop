@@ -163,6 +163,7 @@ class HandleApplication:
             trt_optimization_level=self.args.tensorrt_opt_profile,
             override_upscale_scale=self.args.override_upscale_scale,
             UHD_mode=self.args.UHD_mode,
+            drba=True,
             slomo_mode=self.args.slomo_mode,
             dynamic_scaled_optical_flow=self.args.dynamic_scaled_optical_flow,
             ensemble=self.args.ensemble,

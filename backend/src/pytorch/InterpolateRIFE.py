@@ -70,7 +70,7 @@ class InterpolateRifeTorch(BaseInterpolate):
         
         if drba:
             fps = 24
-            self.drba = DRBA_RVE(model_type="rife", model_path="./rife_426_heavy.pkl", times=ceilInterpolateFactor, dst_fps=fps*ceilInterpolateFactor, fps=fps)
+            self.drba = DRBA_RVE(model_type="rife", model_path="./flownet.pkl", times=ceilInterpolateFactor, dst_fps=fps*ceilInterpolateFactor, fps=fps, scale=1)
         self._load()
 
     @torch.inference_mode()
@@ -450,7 +450,7 @@ class InterpolateRIFEDRBA(InterpolateRifeTorch):
         if self.frame0 is None:
             self.frame0 = img1
             out = self.drba.header(self.frame0, img1)
-            yield out
+            yield self.tensor_to_frame(out)
         with torch.cuda.stream(self.stream):  # type: ignore
             out = self.drba.inference(img1)
-            yield out
+            yield self.tensor_to_frame(out)
