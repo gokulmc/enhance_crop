@@ -82,6 +82,11 @@
 | 2x-OpenProteus | SiroSky | [OpenProteus](https://github.com/Sirosky/Upscale-Hub/releases/tag/OpenProteus) 
 | 2x-AnimeJaNai V2 and V3 Sharp | The Database | [AnimeJanai](https://github.com/the-database/mpv-upscale-2x_animejanai)
 
+### Decompression Models:
+|--|--|--|
+| DeH264 | Helaman | [1xDeH264_realplksr](https://github.com/Phhofm/models/releases/tag/1xDeH264_realplksr) 
+
+
 # Backends
   | Backend | Hardware | 
   |--|--|
