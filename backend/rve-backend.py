@@ -163,7 +163,7 @@ class HandleApplication:
             trt_optimization_level=self.args.tensorrt_opt_profile,
             override_upscale_scale=self.args.override_upscale_scale,
             UHD_mode=self.args.UHD_mode,
-            drba=True,
+            drba=self.args.drba,
             slomo_mode=self.args.slomo_mode,
             dynamic_scaled_optical_flow=self.args.dynamic_scaled_optical_flow,
             ensemble=self.args.ensemble,
@@ -403,6 +403,12 @@ class HandleApplication:
         parser.add_argument(
             "--dynamic_scaled_optical_flow",
             help="Scale the optical flow based on the difference between frames, currently only works with the pytorch backend.",
+            action="store_true",
+            default=False,
+        )
+        parser.add_argument(
+            "--drba",
+            help="Use DRBA model for interpolation",
             action="store_true",
             default=False,
         )
