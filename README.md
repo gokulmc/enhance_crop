@@ -83,6 +83,7 @@
 | 2x-AnimeJaNai V2 and V3 Sharp | The Database | [AnimeJanai](https://github.com/the-database/mpv-upscale-2x_animejanai)
 
 ### Decompression Models:
+| Model | Author | Link |
 |--|--|--|
 | DeH264 | Helaman | [1xDeH264_realplksr](https://github.com/Phhofm/models/releases/tag/1xDeH264_realplksr) 
 
