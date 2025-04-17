@@ -386,9 +386,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def updateVideoGUIDetails(self):
         isInterpolate = self.interpolateCheckBox.isChecked()
         isUpscale = self.upscaleCheckBox.isChecked()
+        isDecompress = self.decompressCheckBox.isChecked()
 
         self.interpolationContainer.setVisible(isInterpolate)
         self.interpolateContainer_2.setVisible(isInterpolate)
+        self.decompressContainer.setVisible(isDecompress)
         # set interpolation container visible if interpolate model is not none
         self.upscaleContainer.setVisible(isUpscale)
         self.generalUpscaleContainer.setVisible(isUpscale)

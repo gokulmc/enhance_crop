@@ -120,6 +120,7 @@ class ProcessTab:
         # set slo mo container visable to false by default
         
         self.parent.interpolateContainer_2.setVisible(False)
+        self.parent.decompressContainer.setVisible(False)
         # connect up tilesize container visiable
         self.parent.tilingCheckBox.stateChanged.connect(self.onTilingSwitch)
 
@@ -138,6 +139,7 @@ class ProcessTab:
         )
         self.parent.interpolateCheckBox.clicked.connect(self.parent.updateVideoGUIDetails)
         self.parent.upscaleCheckBox.clicked.connect(self.parent.updateVideoGUIDetails)
+        self.parent.decompressCheckBox.clicked.connect(self.parent.updateVideoGUIDetails)
 
         self.parent.backendComboBox.currentIndexChanged.connect(
             lambda: self.populateModels(self.parent.backendComboBox.currentText())
