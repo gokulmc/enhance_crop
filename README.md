@@ -143,7 +143,7 @@ python3 build.py --build BUILD_OPTION --copy_backend
 ```
 
 # Colab Notebook
- <a href="https://colab.research.google.com/github/TNTwise/REAL-Video-Enhancer-Colab/blob/main/RVEColab.ipynb">Colab Notebook</a>
+ <a href="https://github.com/tntwise/REAL-Video-Enhancer-Colab">Colab Notebook</a>
 
 # Credits:
 ### People:
