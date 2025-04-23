@@ -387,10 +387,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         isInterpolate = self.interpolateCheckBox.isChecked()
         isUpscale = self.upscaleCheckBox.isChecked()
         isDecompress = self.decompressCheckBox.isChecked()
-
+        
         self.interpolationContainer.setVisible(isInterpolate)
         self.interpolateContainer_2.setVisible(isInterpolate)
         self.decompressContainer.setVisible(isDecompress)
+        
+        # disable decompress for now
+        self.decompressCheckBoxContainer.setVisible(False)
+        self.decompressContainer.setVisible(False)
+        
         # set interpolation container visible if interpolate model is not none
         self.upscaleContainer.setVisible(isUpscale)
         self.generalUpscaleContainer.setVisible(isUpscale)

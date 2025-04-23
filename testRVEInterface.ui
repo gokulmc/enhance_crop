@@ -892,7 +892,7 @@ background-color: #1f232a
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>400</width>
+                  <width>500</width>
                   <height>16777215</height>
                  </size>
                 </property>
@@ -1748,7 +1748,7 @@ background-color:#343b47
                                    </widget>
                                   </item>
                                   <item>
-                                   <widget class="QWidget" name="widget_40" native="true">
+                                   <widget class="QWidget" name="decompressCheckBoxContainer" native="true">
                                     <layout class="QHBoxLayout" name="horizontalLayout_59">
                                      <property name="leftMargin">
                                       <number>0</number>
