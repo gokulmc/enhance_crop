@@ -18,7 +18,7 @@ class TorchVersion:
 class Torch2_6(TorchVersion):
     torch_version = "2.6.0"
     torchvision_version = "0.21.0"
-    cuda_version = "cu126"
+    cuda_version = "cu118"
     rocm_version = "rocm6.2.4"
     xpu_version = "xpu"
 

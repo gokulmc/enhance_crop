@@ -127,7 +127,7 @@ class DownloadTab:
             reply = QMessageBox.question(
                 self.parent,
                 "",
-                "NVIDIA RTX 50 series GPUS require torch version 2.7.0.\nContinue installation?",
+                "Old GTX cards require torch version 2.6.0.\nContinue installation?",
                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
                 QMessageBox.StandardButton.No,  # type: ignore
             )

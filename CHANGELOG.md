@@ -3,6 +3,7 @@
         New features will be added to this release over time, the current changelog is not final. 
 ### Changed
  - GUI Modifications.
+ - Make torch 2.7 default, 2.6 now uses cuda 11.8
 ### Added
 # RVE 2.2.5
  - Updates backend and python version.

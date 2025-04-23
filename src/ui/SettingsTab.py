@@ -320,7 +320,7 @@ class Settings:
             "auto_border_cropping": "False",
             "video_container": "mkv",
             "video_pixel_format": "yuv420p",
-            "pytorch_version": "2.6.0",
+            "pytorch_version": "2.7.0",
             "pytorch_backend": "CUDA"
         }
         self.allowedSettings = {
