@@ -31,7 +31,7 @@ jobs:
           distrobox enter ubuntu-20-04 -- ./python/bin/python3 -m pip install -r requirements.txt
       - name: install other requirements
         run : |
-          distrobox enter ubuntu-20-04 -- sudo apt-get install '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev  -y
+          distrobox enter ubuntu-20-04 -- sudo apt-get install libx11-xcb-dev libglu1-mesa-dev libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev  -y
           distrobox enter ubuntu-20-04 -- ./python/bin/python3 -m pip install patchelf
       - name: Build
         run: distrobox enter ubuntu-20-04 -- ./python/bin/python3 build.py --build cx_freeze --copy_backend
