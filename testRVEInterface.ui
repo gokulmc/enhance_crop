@@ -1071,6 +1071,11 @@ background-color:#343b47
                                   <height>16777215</height>
                                  </size>
                                 </property>
+                                <property name="font">
+                                 <font>
+                                  <pointsize>12</pointsize>
+                                 </font>
+                                </property>
                                 <property name="verticalScrollBarPolicy">
                                  <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
                                 </property>
@@ -1085,7 +1090,7 @@ background-color:#343b47
                                   <rect>
                                    <x>0</x>
                                    <y>0</y>
-                                   <width>370</width>
+                                   <width>470</width>
                                    <height>668</height>
                                   </rect>
                                  </property>
@@ -1107,7 +1112,7 @@ background-color:#343b47
                                   </property>
                                   <item>
                                    <widget class="QWidget" name="inputFileContainer" native="true">
-                                    <layout class="QHBoxLayout" name="horizontalLayout_4">
+                                    <layout class="QGridLayout" name="gridLayout_11">
                                      <property name="leftMargin">
                                       <number>0</number>
                                      </property>
@@ -1120,7 +1125,7 @@ background-color:#343b47
                                      <property name="bottomMargin">
                                       <number>0</number>
                                      </property>
-                                     <item>
+                                     <item row="0" column="0">
                                       <widget class="QPushButton" name="inputFileSelectButton">
                                        <property name="minimumSize">
                                         <size>
@@ -1147,7 +1152,7 @@ background-color:#343b47
                                        </property>
                                       </widget>
                                      </item>
-                                     <item>
+                                     <item row="0" column="1">
                                       <widget class="QLineEdit" name="inputFileText">
                                        <property name="sizePolicy">
                                         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
@@ -2172,7 +2177,7 @@ border-radius:10px;
                                <rect>
                                 <x>0</x>
                                 <y>0</y>
-                                <width>380</width>
+                                <width>452</width>
                                 <height>611</height>
                                </rect>
                               </property>
