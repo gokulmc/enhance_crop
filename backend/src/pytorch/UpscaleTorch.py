@@ -13,7 +13,26 @@ from ..utils.BackendChecks import (
     check_bfloat16_support,
     get_gpus_torch,
 )
+import numpy as np
+def process_output(output, hdr_mode):
+    # Step 1: Squeeze the first dimension
+    output = np.squeeze(output, axis=0)
 
+    # Step 2: Permute axes from (C, H, W) to (H, W, C)
+    output = np.transpose(output, (1, 2, 0))
+
+    # Step 3: Clamp values to the range [0, 1]
+    output = np.clip(output, 0, 1)
+
+    # Step 4: Multiply by scaling factor
+    scale_factor = 65535.0 if hdr_mode else 255.0
+    output = output * scale_factor
+
+    # Step 5: Convert to appropriate dtype
+    dtype = np.uint16 if hdr_mode else np.uint8
+    output = output.astype(dtype)
+
+    return output
 
 class UpscalePytorch:
     """A class for upscaling images using PyTorch.
@@ -106,6 +125,7 @@ class UpscalePytorch:
         # streams
         self.stream = torch.cuda.Stream()
         self.prepareStream = torch.cuda.Stream()
+        self.convertStream = torch.cuda.Stream()
         self._load()
 
     @torch.inference_mode()
@@ -151,8 +171,9 @@ class UpscalePytorch:
                     * modulo
                 )
             else:
-                self.pad_w = self.videoWidth
-                self.pad_h = self.videoHeight
+                modulo = 128
+                self.pad_w = math.ceil(self.videoWidth / modulo) * modulo
+                self.pad_h = math.ceil(self.videoHeight / modulo) * modulo
 
             if self.backend == "tensorrt":
                 from .TensorRTHandler import TorchTensorRTHandler
@@ -270,19 +291,34 @@ class UpscalePytorch:
 
     @torch.inference_mode()
     def __call__(self, image: torch.Tensor) -> torch.Tensor:
-        with torch.cuda.stream(self.stream):
+        with torch.cuda.stream(self.stream), torch.amp.autocast(
+            enabled=self.dtype == torch.float16,device_type="cuda"):
             while self.model is None:
                 sleep(1)
             if self.tilesize == 0:
+                # Pad input to match the shape TRT engine was built for, if needed
+                _, _, h, w = image.shape
+                if self.backend == "tensorrt" and (h != self.pad_h or w != self.pad_w):
+                    image = F.pad(image, (0, self.pad_w - w, 0, self.pad_h - h), "replicate")
+                    
                 output = self.model(image)
+
+                # Crop output back to original size if padding was applied
+                if self.backend == "tensorrt" and (h != self.pad_h or w != self.pad_w):
+                     output = output[:, :, :h * self.scale, :w * self.scale]
             else:
                 output = self.renderTiledImage(image)
+            
+        self.stream.synchronize()
+        
+        with torch.cuda.stream(self.convertStream):
             output =  (
-            output.squeeze(0)
+            output
+                
+                .squeeze(0)
                 .permute(1, 2, 0)
                 .clamp(0, 1)
                 .mul(65535.0 if self.hdr_mode else 255.0)
-                .round()
                 .to(torch.uint16 if self.hdr_mode else torch.uint8)
                 .contiguous()
                 .detach()
@@ -291,10 +327,10 @@ class UpscalePytorch:
             )
             # torch.save(self.model.state_dict(), "Sudo_Shuffle_Span_no_update_params.pth")
             # exit()
-        self.stream.synchronize()
+        self.convertStream.synchronize()
         torch.cuda.synchronize()
         return output
-
+ 
     def getScale(self):
         return self.scale
 
@@ -311,7 +347,7 @@ class UpscalePytorch:
         output_shape = (batch, channel, height * scale, width * scale)
 
         # start with black image
-        output = img.new_zeros(output_shape)
+        output = img.new_zeros(output_shape).to(device=self.device, dtype=self.dtype)
 
         tiles_x = math.ceil(width / tile[0])
         tiles_y = math.ceil(height / tile[1])
@@ -344,7 +380,7 @@ class UpscalePytorch:
                     :,
                     input_start_y_pad:input_end_y_pad,
                     input_start_x_pad:input_end_x_pad,
-                ]
+                ].to(device=self.device, dtype=self.dtype)
 
                 h, w = input_tile.shape[2:]
                 input_tile = F.pad(
@@ -353,7 +389,7 @@ class UpscalePytorch:
 
                 # process tile
                 output_tile = self.model(
-                    input_tile.to(device=self.device, dtype=self.dtype)
+                    input_tile
                 )
 
                 output_tile = output_tile[:, :, : h * scale, : w * scale]
