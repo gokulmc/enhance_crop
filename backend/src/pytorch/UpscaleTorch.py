@@ -171,7 +171,8 @@ class UpscalePytorch:
                     * modulo
                 )
             else:
-                modulo = 128
+                
+                modulo = 128 if self.videoWidth < 720 or self.videoHeight < 720 else 1
                 self.pad_w = math.ceil(self.videoWidth / modulo) * modulo
                 self.pad_h = math.ceil(self.videoHeight / modulo) * modulo
 
