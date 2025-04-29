@@ -7,18 +7,7 @@ os.environ["HSA_OVERRIDE_GFX_VERSION"] = "10.3.0"
 import argparse
 import sys
 from src.version import __version__
-from src.utils.BackendChecks import (
-    checkForPytorchCUDA,
-    checkForPytorchROCM,
-    checkForPytorchXPU,
-    checkForNCNN,
-    checkForTensorRT,
-    check_bfloat16_support,
-    checkForDirectML,
-    checkForDirectMLHalfPrecisionSupport,
-    get_gpus_ncnn,
-    get_gpus_torch,
-)
+
 
 
 class HandleApplication:
@@ -53,6 +42,18 @@ class HandleApplication:
             return False
 
     def listBackends(self):
+        from src.utils.BackendChecks import (
+            checkForPytorchCUDA,
+            checkForPytorchROCM,
+            checkForPytorchXPU,
+            checkForNCNN,
+            checkForTensorRT,
+            check_bfloat16_support,
+            checkForDirectML,
+            checkForDirectMLHalfPrecisionSupport,
+            get_gpus_ncnn,
+            get_gpus_torch,
+        )
         half_prec_supp = False
         availableBackends = []
         printMSG = ""

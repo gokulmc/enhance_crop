@@ -108,7 +108,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
         settings = Settings()
-        settings.readSettings()
         self.settings = settings
 
 
