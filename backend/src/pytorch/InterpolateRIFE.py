@@ -91,7 +91,7 @@ class InterpolateRifeTorch(BaseInterpolate):
 
             ad = ArchDetect(self.interpolateModel)
             interpolateArch = ad.getArchName()
-            _pad = 128
+            _pad = 128 if self.width < 720 or self.height < 720 else 32
             num_ch_for_encode = 0
             self.encode = None
 
@@ -129,7 +129,7 @@ class InterpolateRifeTorch(BaseInterpolate):
                 case "rife425":
                     from .InterpolateArchs.RIFE.rife425IFNET import IFNet, Head
 
-                    _pad = 128
+                    _pad = 128 if self.width < 720 or self.height < 720 else 64
                     num_ch_for_encode = 4
                     self.encode = Head()
 
