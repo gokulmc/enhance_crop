@@ -91,7 +91,7 @@ class InterpolateRifeTorch(BaseInterpolate):
 
             ad = ArchDetect(self.interpolateModel)
             interpolateArch = ad.getArchName()
-            _pad = 128 if self.width < 720 or self.height < 720 else 32
+            _pad = 32
             num_ch_for_encode = 0
             self.encode = None
 
@@ -129,7 +129,7 @@ class InterpolateRifeTorch(BaseInterpolate):
                 case "rife425":
                     from .InterpolateArchs.RIFE.rife425IFNET import IFNet, Head
 
-                    _pad = 128 if self.width < 720 or self.height < 720 else 64
+                    _pad = 64
                     num_ch_for_encode = 4
                     self.encode = Head()
 
@@ -246,7 +246,6 @@ class InterpolateRifeTorch(BaseInterpolate):
                     (
                         f"{os.path.basename(self.interpolateModel)}"
                         + f"_{self.width}x{self.height}"
-                        + f"_{self.pw}x{self.ph}"
                         + f"_{'fp16' if self.dtype == torch.float16 else 'fp32'}"
                         + f"_scale-{self.scale}"
                         + f"_{torch.cuda.get_device_name(self.device)}"
