@@ -4,6 +4,8 @@
 ### Changed
  - GUI Modifications.
  - Make torch 2.7 default, 2.6 now uses cuda 11.8
+ - Downgrade to trt 10.8, due to black screen issues at certain resolutions.
+ - Improve Startup Time.
 ### Added
 # RVE 2.2.5
  - Updates backend and python version.

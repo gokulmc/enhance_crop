@@ -246,6 +246,7 @@ class InterpolateRifeTorch(BaseInterpolate):
                     (
                         f"{os.path.basename(self.interpolateModel)}"
                         + f"_{self.width}x{self.height}"
+                        + f"_{self.pw}x{self.ph}"
                         + f"_{'fp16' if self.dtype == torch.float16 else 'fp32'}"
                         + f"_scale-{self.scale}"
                         + f"_{torch.cuda.get_device_name(self.device)}"
