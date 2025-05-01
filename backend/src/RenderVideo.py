@@ -399,7 +399,7 @@ class Render:
             from .ncnn.UpscaleNCNN import UpscaleNCNN, getNCNNScale
 
             path, last_folder = os.path.split(self.upscaleModel)
-            self.upscaleModel = os.path.join(path, last_folder, last_folder)
+            self.upscaleModel = os.path.join(path, last_folder)
             self.modelScale = getNCNNScale(modelPath=self.upscaleModel) 
             self.upscaleTimes = self.modelScale if not self.override_upscale_scale else self.override_upscale_scale
             self.upscaleOption = self.upscaleNCNNObject(scale=self.upscaleTimes)
