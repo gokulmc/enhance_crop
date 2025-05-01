@@ -162,7 +162,7 @@ class FFmpegWrite(Buffer):
             if not self.slowmo_mode
             else self.fps
         )
-        self.ffmpeg_log = open(FFMPEG_LOG_FILE, "w")
+        self.ffmpeg_log = open(FFMPEG_LOG_FILE, "w", encoding='utf-8')
         try:
 
             self.writeProcess = subprocess_popen_without_terminal(
