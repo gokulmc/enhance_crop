@@ -171,7 +171,7 @@ class UpscalePytorch:
                     * modulo
                 )
             else:
-                modulo = 128 if self.videoWidth < 720 or self.videoHeight < 720 else 1
+                modulo = 1 if self.videoWidth < 720 or self.videoHeight < 720 else 1
                 self.pad_w = math.ceil(self.videoWidth / modulo) * modulo
                 self.pad_h = math.ceil(self.videoHeight / modulo) * modulo
 
@@ -180,7 +180,7 @@ class UpscalePytorch:
 
 
                 trtHandler = TorchTensorRTHandler(
-                    export_format="fallback",
+                    export_format="torchscript",
                     dynamo_export_format="fallback",
                     trt_optimization_level=self.trt_optimization_level,
 
@@ -201,7 +201,7 @@ class UpscalePytorch:
                             if self.trt_workspace_size > 0
                             else ""
                         )
-                        + ".dyn"
+                        + ".ts"
                     ),
                 )
 
