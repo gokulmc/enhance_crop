@@ -180,7 +180,7 @@ class UpscalePytorch:
 
 
                 trtHandler = TorchTensorRTHandler(
-                    export_format="torchscript",
+                    export_format="torchscript", # torchscript due to wonky resolution issues with dynamo
                     dynamo_export_format="fallback",
                     trt_optimization_level=self.trt_optimization_level,
 
