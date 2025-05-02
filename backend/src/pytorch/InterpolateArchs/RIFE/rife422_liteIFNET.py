@@ -97,7 +97,7 @@ class Head(nn.Module):
         x3 = self.cnn3(x)
         if feat:
             return [x0, x1, x2, x3]
-        return x3
+        return x3.float()
 
 
 class ResConv(nn.Module):

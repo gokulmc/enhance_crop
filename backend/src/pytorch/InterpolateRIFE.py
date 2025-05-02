@@ -105,7 +105,7 @@ class InterpolateRifeTorch(BaseInterpolate):
                     self.encode = torch.nn.Sequential(
                         torch.nn.Conv2d(3, 16, 3, 2, 1),
                         torch.nn.ConvTranspose2d(16, 4, 4, 2, 1),
-                    )
+                    ).float()
                 case "rife413":
                     from .InterpolateArchs.RIFE.rife413IFNET import IFNet, Head
 
@@ -239,6 +239,7 @@ class InterpolateRifeTorch(BaseInterpolate):
 
                 trtHandler = TorchTensorRTHandler(
                     trt_optimization_level=self.trt_optimization_level,
+                    dynamo_export_format="nn2exportedprogram"
                 )
 
                 base_trt_engine_path = os.path.join(
@@ -419,7 +420,7 @@ class InterpolateRifeTensorRT(InterpolateRifeTorch):
                     timestep = self.timestepDict[timestep]
 
                     if self.encode:
-                        output = self.flownet(self.frame0, frame1, timestep, self.tenFlow_div, self.backwarp_tenGrid, self.encode0, encode1) # type: ignore
+                        output = self.flownet(self.frame0, frame1, timestep, self.tenFlow_div, self.backwarp_tenGrid, self.encode0.to(self.dtype), encode1.to(self.dtype)) # type: ignore
 
                     else:
                         output = self.flownet(self.frame0, frame1, timestep, self.tenFlow_div, self.backwarp_tenGrid,)
