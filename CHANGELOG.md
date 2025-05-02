@@ -5,6 +5,7 @@
  - GUI Modifications.
  - Make torch 2.7 default, 2.6 now uses cuda 11.8
  - Improve Startup Time.
+ - Fix completely black output using highly specific resolutions with tensorrt.
 ### Added
 # RVE 2.2.5
  - Updates backend and python version.
