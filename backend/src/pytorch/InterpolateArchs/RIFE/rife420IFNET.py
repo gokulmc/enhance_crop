@@ -253,6 +253,6 @@ class IFNet(nn.Module):
             warped_img0 = self.warp(img0, flow[:, :2])
             warped_img1 = self.warp(img1, flow[:, 2:4])
         mask = torch.sigmoid(mask)
-        return (warped_img0 * mask + warped_img1 * (1 - mask))[
+        return (warped_img0 * mask + warped_img1 * (1 - mask)).float()[
             :, :, : self.height, : self.width
         ]

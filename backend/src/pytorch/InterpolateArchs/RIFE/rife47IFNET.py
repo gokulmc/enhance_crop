@@ -234,6 +234,6 @@ class IFNet(nn.Module):
         mask = torch.sigmoid(mask)
         return (
             warped_img0 * mask + warped_img1 * (1 - mask)
-        )[  # maybe try padding here
+        ).float()[  # maybe try padding here
             :, :, : self.height, : self.width
         ]
