@@ -292,7 +292,7 @@ class InterpolateRifeTorch(BaseInterpolate):
                     trtHandler.build_engine(self.flownet,  self.dtype, self.device, flownet_inputs, trt_engine_path, trt_multi_precision_engine=True)
 
                     if self.encode:
-                        trtHandler.build_engine(self.encode, self.dtype, self.device, encode_inputs, encode_trt_engine_path, trt_multi_precision_engine=False)
+                        trtHandler.build_engine(self.encode, self.dtype, self.device, encode_inputs, encode_trt_engine_path, trt_multi_precision_engine=True)
 
                 self.flownet = trtHandler.load_engine(trt_engine_path)
 
@@ -425,10 +425,7 @@ class InterpolateRifeTensorRT(InterpolateRifeTorch):
                     else:
                         output = self.flownet(self.frame0, frame1, timestep, self.tenFlow_div, self.backwarp_tenGrid,)
 
-                    output = self.tensor_to_frame(output[
-            :, :, : self.height, : self.width
-        ]
-)
+                    output = self.tensor_to_frame(output)
 
                     yield output
 

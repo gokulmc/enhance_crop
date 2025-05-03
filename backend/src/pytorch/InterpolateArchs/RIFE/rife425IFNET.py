@@ -174,8 +174,7 @@ class IFNet(nn.Module):
     def forward(
         self, img0, img1, timestep, tenFlow_div, backwarp_tenGrid, f0, f1, scale=None
     ):
-        img0 = img0.clamp(0.0, 1.0)
-        img1 = img1.clamp(0.0, 1.0)
+
         warped_img0 = img0
         warped_img1 = img1
         flow = None

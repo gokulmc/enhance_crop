@@ -113,12 +113,7 @@ tensorrtInterpolateModels = {
         1,
         "rife422-lite",
     ),
-    "RIFE 4.25 (Latest General Model, Recommended)": (
-        "rife4.25.pkl",
-        "rife4.25.pkl",
-        1,
-        "rife425",
-    ),
+    
 }
 ncnnUpscaleModels = {
     "SPAN Spanimation (Animation) (2X) (Fast)": (
