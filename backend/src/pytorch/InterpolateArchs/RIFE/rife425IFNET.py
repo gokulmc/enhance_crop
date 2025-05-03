@@ -82,7 +82,7 @@ class Head(nn.Module):
         x3 = self.cnn3(x)
         if feat:
             return [x0, x1, x2, x3]
-        return x3.float()
+        return x3
 
 
 class ResConv(nn.Module):
@@ -213,6 +213,4 @@ class IFNet(nn.Module):
             warped_img0 = self.warp(img0, flow[:, :2], tenFlow_div, backwarp_tenGrid)
             warped_img1 = self.warp(img1, flow[:, 2:4], tenFlow_div, backwarp_tenGrid)
         mask = torch.sigmoid(mask)
-        return (warped_img0 * mask + warped_img1 * (1 - mask)).float()[
-            :, :, : self.height, : self.width
-        ]
+        return (warped_img0 * mask + warped_img1 * (1 - mask)).float()

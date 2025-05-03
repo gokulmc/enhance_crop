@@ -420,12 +420,15 @@ class InterpolateRifeTensorRT(InterpolateRifeTorch):
                     timestep = self.timestepDict[timestep]
 
                     if self.encode:
-                        output = self.flownet(self.frame0, frame1, timestep, self.tenFlow_div, self.backwarp_tenGrid, self.encode0.to(self.dtype), encode1.to(self.dtype)) # type: ignore
+                        output = self.flownet(self.frame0, frame1, timestep, self.tenFlow_div, self.backwarp_tenGrid, self.encode0, encode1) # type: ignore
 
                     else:
                         output = self.flownet(self.frame0, frame1, timestep, self.tenFlow_div, self.backwarp_tenGrid,)
 
-                    output = self.tensor_to_frame(output)
+                    output = self.tensor_to_frame(output[
+            :, :, : self.height, : self.width
+        ]
+)
 
                     yield output
 
