@@ -364,7 +364,7 @@ class InterpolateRifeTorch(BaseInterpolate):
                             self.backwarp_tenGrid,
                             closest_value,
                         )
-                    output = self.tensor_to_frame(output)
+                    output = self.tensor_to_frame(output[:, :, :self.height, :self.width])
                     yield output
 
                 else:
@@ -425,7 +425,7 @@ class InterpolateRifeTensorRT(InterpolateRifeTorch):
                     else:
                         output = self.flownet(self.frame0, frame1, timestep, self.tenFlow_div, self.backwarp_tenGrid,)
 
-                    output = self.tensor_to_frame(output)
+                    output = self.tensor_to_frame(output[:, :, :self.height, :self.width])
 
                     yield output
 
