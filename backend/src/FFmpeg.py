@@ -161,6 +161,7 @@ class InformationWriteOut:
             log(f"Shared memory name: {self.shm.name}")
 
         while not self.stop:
+            
             if self.previewFrame is not None and self.framesRendered > 0:
                 # print out data to stdout
                 fps = round(self.framesRendered / (time.time() - self.startTime))
@@ -177,8 +178,14 @@ class InformationWriteOut:
                             self.croppedOutputWidth,
                             self.croppedOututHeight,
                         )
-                        self.shm.buf[:fcs] = bytes(padded_frame)
+                        try:
+                            self.shm.buf[:fcs] = bytes(padded_frame)
+                        except Exception:
+                            pass
                     else:
-                        self.shm.buf[:fcs] = bytes(self.previewFrame)
+                        try:
+                            self.shm.buf[:fcs] = bytes(self.previewFrame)
+                        except Exception:
+                            pass
                 self.isPaused = self.pausedManager.pause_manager()
             time.sleep(0.5) # setting this to a higher value will reduce the cpu usage, and increase fps
