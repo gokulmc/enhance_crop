@@ -111,7 +111,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         settings = Settings()
         self.settings = settings
 
+        if self.settings.settings['rocm_override_hack']:
+            os.environ["HSA_OVERRIDE_GFX_VERSION"] = "11.0.0"
+            # os.environ["HCC_AMDGPU_TARGET"] = "gfx1100"
 
+        log(str(os.environ))
         # setup application
         FileHandler.createDirectory(TEMP_DOWNLOAD_PATH)
 
