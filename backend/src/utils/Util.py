@@ -110,6 +110,7 @@ def get_pytorch_vram() -> int:
         log(str(e))
         return 0
 
+
 def resize_image_bytes(image_bytes: bytes, width: int, height: int, target_width: int, target_height: int) -> bytes:
     """
     Resizes the image to the target resolution.

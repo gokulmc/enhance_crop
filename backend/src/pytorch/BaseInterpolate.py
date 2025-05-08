@@ -1,6 +1,5 @@
 
 import torch
-import torch.nn.functional as F
 from abc import ABCMeta, abstractmethod
 from queue import Queue
 
@@ -14,17 +13,8 @@ import os
 import logging
 import gc
 import sys
-from ..utils.Util import (
-    printAndLog,
-    errorAndLog,
-    warnAndLog,
-    log,
-)
-from ..utils.BackendChecks import (
-    check_bfloat16_support,
-    get_gpus_torch,
-)
-from ..constants import HAS_SYSTEM_CUDA
+
+
 from time import sleep
 
 torch.set_float32_matmul_precision("medium")
@@ -65,37 +55,8 @@ class BaseInterpolate(metaclass=ABCMeta):
         self.hdr_mode = False
         self.CompareNet = None
 
-    @staticmethod
-    def handleDevice(device: str, gpu_id: int = 0) -> torch.device:
-        if device == "default":
-            if torch.cuda.is_available():
-                torchdevice = torch.device(
-                    "cuda", gpu_id
-                )  # 0 is the device index, may have to change later
-            else:
-                torchdevice = torch.device("cpu")
-        else:
-            torchdevice = torch.device(device)
-        device = get_gpus_torch()[gpu_id]
-        print("Using GPU: " + str(device), file=sys.stderr)
-        return torchdevice
+    
 
-    def handlePrecision(self, precision) -> torch.dtype:
-        if precision == "auto":
-            return torch.float16 if check_bfloat16_support() else torch.float32
-        if precision == "float32":
-            return torch.float32
-        if precision == "float16":
-            return torch.float16
-        if precision == "bfloat16":
-            return torch.bfloat16
-        return torch.float32
-
-    @torch.inference_mode()
-    def copyTensor(self, tensorToCopy: torch.Tensor, tensorCopiedTo: torch.Tensor, stream):
-        with torch.cuda.stream(stream):  # type: ignore
-            tensorToCopy.copy_(tensorCopiedTo, non_blocking=True)
-        self.stream.synchronize()
 
     def hotUnload(self):
         self.flownet = None
@@ -123,49 +84,11 @@ class BaseInterpolate(metaclass=ABCMeta):
     ):  # type: ignore
         """Perform processing"""
 
-    def initLog(self):
-        printAndLog("Using dtype: " + str(self.dtype))
 
-    @torch.inference_mode()
-    def norm(self, frame: torch.Tensor):
-        return (
-            frame
-            .reshape(self.height, self.width, 3)
-            .permute(2, 0, 1)
-            .unsqueeze(0)
-            .div(65535.0 if self.hdr_mode else 255.0)
-            .clamp_(0.0, 1.0)
-        )
-
-    @torch.inference_mode()
-    def frame_to_tensor(self, frame, stream: torch.cuda.Stream) -> torch.Tensor:
-        with torch.cuda.stream(stream):  # type: ignore
-            frame = self.norm(
-                torch.frombuffer(
-                    frame,
-                    dtype=torch.uint16 if self.hdr_mode else torch.uint8,
-                ).to(device=self.device, non_blocking=True, dtype=torch.float32 if self.hdr_mode else self.dtype) # torch dies in hdr mode if we dont cast to float before half
-            ).to(dtype=self.dtype, non_blocking=True)
-            frame = F.pad(frame, self.padding)
-        stream.synchronize()
-        return frame
-
+    
     @torch.inference_mode()
     def uncacheFrame(self):
         self.f0encode = None
         self.img0 = None
 
-    @torch.inference_mode()
-    def tensor_to_frame(self, frame: torch.Tensor):
-        # Choose conversion parameters based on hdr_mode flag
-
-        return (
-            frame.squeeze(0)
-            .permute(1, 2, 0)
-            .mul(65535.0 if self.hdr_mode else 255.0)
-            .to(torch.uint16 if self.hdr_mode else torch.uint8)
-            .contiguous()
-            .detach()
-            .cpu()
-            .numpy()
-    )
+    

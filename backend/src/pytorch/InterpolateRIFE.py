@@ -9,13 +9,14 @@ from ..utils.SSIM import SSIM
 from .BaseInterpolate import BaseInterpolate, DynamicScale
 from .InterpolateArchs.DetectInterpolateArch import ArchDetect
 from .DRBA.infer import DRBA_RVE
+from .TorchUtils import TorchUtils
 import math
 import os
 import sys
 from ..utils.Util import (
     errorAndLog,
 )
-from ..constants import HAS_SYSTEM_CUDA
+from ..constants import HAS_PYTORCH_CUDA
 from time import sleep
 
 torch.set_float32_matmul_precision("medium")
@@ -47,8 +48,9 @@ class InterpolateRifeTorch(BaseInterpolate):
         self.width = width
         self.height = height
 
-        self.device: torch.device = self.handleDevice(device, gpu_id=gpu_id)
-        self.dtype = self.handlePrecision(dtype)
+        
+        self.device: torch.device = TorchUtils.handle_device(device, gpu_id=gpu_id)
+        self.dtype = TorchUtils.handle_precision(dtype)
         self.backend = backend
         self.ceilInterpolateFactor = ceilInterpolateFactor
         self.dynamicScaledOpticalFlow = dynamicScaledOpticalFlow
@@ -75,11 +77,12 @@ class InterpolateRifeTorch(BaseInterpolate):
 
     @torch.inference_mode()
     def _load(self):
-        self.stream = torch.cuda.Stream()
-        self.prepareStream = torch.cuda.Stream()
-        self.copyStream = torch.cuda.Stream()
-        self.f2tStream = torch.cuda.Stream()
-        with torch.cuda.stream(self.prepareStream):  # type: ignore
+        self.stream = TorchUtils.init_stream()
+        self.prepareStream = TorchUtils.init_stream()
+        self.copyStream = TorchUtils.init_stream()
+        self.f2tStream = TorchUtils.init_stream()
+            
+        with TorchUtils.run_stream(self.prepareStream): 
 
             state_dict = torch.load(
                 self.interpolateModel,
@@ -147,6 +150,12 @@ class InterpolateRifeTorch(BaseInterpolate):
             self.pw = math.ceil(self.width / tmp) * tmp
             self.ph = math.ceil(self.height / tmp) * tmp
             self.padding = (0, self.pw - self.width, 0, self.ph - self.height)
+            self.torchUtils = TorchUtils(
+                            width=self.width,
+                            height=self.height,
+                            hdr_mode=self.hdr_mode,
+                            padding=self.padding,
+                            )
             # caching the timestep tensor in a dict with the timestep as a float for the key
 
             self.timestepDict = {}
@@ -299,10 +308,8 @@ class InterpolateRifeTorch(BaseInterpolate):
                 if self.encode:
                     self.encode = trtHandler.load_engine(encode_trt_engine_path)
 
-
-
-
-        torch.cuda.empty_cache()
+        TorchUtils.clear_cache()
+        
         self.prepareStream.synchronize()
 
     def debug_save_tensor_as_img(self, img: torch.Tensor, name: str):
@@ -319,15 +326,15 @@ class InterpolateRifeTorch(BaseInterpolate):
         transition=False,
     ):  # type: ignore
         if self.frame0 is None:
-                self.frame0 = self.frame_to_tensor(img1, self.prepareStream)
+                self.frame0 = self.torchUtils.frame_to_tensor(img1, self.prepareStream, device=self.device, dtype=self.dtype)
                 if self.encode:
                     self.encode0 = self.encode_Frame(self.frame0, self.prepareStream)
                 return
 
-        frame1 = self.frame_to_tensor(img1, self.f2tStream)
+        frame1 = self.torchUtils.frame_to_tensor(img1, self.f2tStream, device=self.device, dtype=self.dtype)
         if self.encode:
             encode1 = self.encode_Frame(frame1, self.f2tStream)
-
+        
         with torch.cuda.stream(self.stream):  # type: ignore
 
 
@@ -364,28 +371,28 @@ class InterpolateRifeTorch(BaseInterpolate):
                             self.backwarp_tenGrid,
                             closest_value,
                         )
-                    output = self.tensor_to_frame(output[:, :, :self.height, :self.width])
+                    output = TorchUtils.tensor_to_frame(output[:, :, :self.height, :self.width])
                     yield output
 
                 else:
                     yield img1
 
 
-            self.copyTensor(self.frame0, frame1, self.copyStream)
+            self.torchUtils.copy_tensor(self.frame0, frame1, self.copyStream)
             if self.encode:
-                self.copyTensor(self.encode0, encode1, self.copyStream)  # type: ignore
+                self.torchUtils.copy_tensor(self.encode0, encode1, self.copyStream)  # type: ignore
 
             # self.debug_save_tensor_as_img(self.frame0, "frame0.png")
 
 
         self.stream.synchronize()
-        torch.cuda.synchronize()
+        TorchUtils.sync_all_streams()
 
     @torch.inference_mode()
     def encode_Frame(self, frame: torch.Tensor, stream: torch.cuda.Stream):
         while self.encode is None:
             sleep(1)
-        with torch.cuda.stream(stream):  # type: ignore
+        with TorchUtils.run_stream(stream):  # type: ignore
             frame = self.encode(frame)
         stream.synchronize()
         return frame
@@ -399,7 +406,7 @@ class InterpolateRifeTensorRT(InterpolateRifeTorch):
         transition=False,
     ):  # type: ignore
         if self.frame0 is None:
-            self.frame0 = self.frame_to_tensor(img1, self.prepareStream)
+            self.frame0 = self.torchUtils.frame_to_tensor(img1, self.prepareStream)
 
             if self.encode:
                 self.encode0 = self.encode_Frame(self.frame0, self.prepareStream)
@@ -425,7 +432,7 @@ class InterpolateRifeTensorRT(InterpolateRifeTorch):
                     else:
                         output = self.flownet(self.frame0, frame1, timestep, self.tenFlow_div, self.backwarp_tenGrid,)
 
-                    output = self.tensor_to_frame(output[:, :, :self.height, :self.width])
+                    output = TorchUtils.tensor_to_frame(output[:, :, :self.height, :self.width])
 
                     yield output
 
