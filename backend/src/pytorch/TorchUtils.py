@@ -43,19 +43,17 @@ class TorchUtils:
             torch.cpu.synchronize()
     
     @staticmethod
-    def handle_device(device:str="default", gpu_id: int = 0) -> torch.device:
+    def handle_device(device, gpu_id: int = 0) -> torch.device:
         """
         returns device based on gpu id and device parameter
-        """
-        if device == "default":
-            if torch.cuda.is_available():
-                torchdevice = torch.device(
-                    "cuda", gpu_id
-                )  # 0 is the device index, may have to change later
-            else:
-                torchdevice = torch.device("cpu")
+    """
+        if device == "cuda":
+            torchdevice = torch.device(
+                device, gpu_id
+            )  # 0 is the device index, may have to change later
         else:
             torchdevice = torch.device(device)
+    
         device = get_gpus_torch()[gpu_id]
         print("Using Device: " + str(device), file=sys.stderr)
         return torchdevice
@@ -108,7 +106,6 @@ class TorchUtils:
         if HAS_PYTORCH_CUDA:
             torch.cuda.empty_cache()
     
-    @staticmethod
     @torch.inference_mode()
     def tensor_to_frame(self, frame: torch.Tensor):
         # Choose conversion parameters based on hdr_mode flag
