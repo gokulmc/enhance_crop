@@ -408,7 +408,7 @@ class InterpolateRifeTorch(BaseInterpolate):
 
 
         self.stream.synchronize()
-        TorchUtils.sync_all_streams()
+        self.torchUtils.sync_all_streams()
 
     @torch.inference_mode()
     def encode_Frame(self, frame: torch.Tensor, stream: torch.Stream):

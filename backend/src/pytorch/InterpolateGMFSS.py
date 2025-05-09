@@ -1,6 +1,5 @@
 import torch
-from queue import Queue
-
+from .TorchUtils import TorchUtils
 # from backend.src.pytorch.InterpolateArchs.GIMM import GIMM
 from .BaseInterpolate import BaseInterpolate, DynamicScale
 import math
@@ -41,8 +40,7 @@ class InterpolateGMFSSTorch(BaseInterpolate):
         self.interpolateModel = modelPath
         self.width = width
         self.height = height
-        self.device = self.handleDevice(device, gpu_id=gpu_id)
-        self.dtype = self.handlePrecision(dtype)
+        
         self.backend = backend
         self.ceilInterpolateFactor = ceilInterpolateFactor
         # set up streams for async processing
@@ -55,12 +53,28 @@ class InterpolateGMFSSTorch(BaseInterpolate):
         self.max_timestep = max_timestep
         if UHDMode:
             self.scale = 0.5
+        _pad = 64
+        if self.dynamicScaledOpticalFlow:
+            tmp = max(_pad, int(_pad / 0.25))
+        else:
+            tmp = max(_pad, int(_pad / self.scale))
+        self.pw = math.ceil(self.width / tmp) * tmp
+        self.ph = math.ceil(self.height / tmp) * tmp
+        self.padding = (0, self.pw - self.width, 0, self.ph - self.height)
+        self.torchUtils = TorchUtils(
+            self.width,
+            self.height,
+            hdr_mode=self.hdr_mode,
+            padding=self.padding,
+        )
+        self.device = self.torchUtils.handle_device(device, gpu_id=gpu_id)
+        self.dtype = self.torchUtils.handle_precision(dtype)
         self._load()
 
     @torch.inference_mode()
     def _load(self):
-        self.stream = torch.cuda.Stream()
-        self.prepareStream = torch.cuda.Stream()
+        self.stream = self.torchUtils.init_stream()
+        self.prepareStream = self.torchUtils.init_stream()
         with torch.cuda.stream(self.prepareStream):  # type: ignore
             if self.dynamicScaledOpticalFlow:
                 from ..utils.SSIM import SSIM
@@ -88,14 +102,7 @@ class InterpolateGMFSSTorch(BaseInterpolate):
                     )
             from .InterpolateArchs.GMFSS.GMFSS import GMFSS
 
-            _pad = 64
-            if self.dynamicScaledOpticalFlow:
-                tmp = max(_pad, int(_pad / 0.25))
-            else:
-                tmp = max(_pad, int(_pad / self.scale))
-            self.pw = math.ceil(self.width / tmp) * tmp
-            self.ph = math.ceil(self.height / tmp) * tmp
-            self.padding = (0, self.pw - self.width, 0, self.ph - self.height)
+            
             # caching the timestep tensor in a dict with the timestep as a float for the key
             self.timestepDict = {}
             for n in range(self.ceilInterpolateFactor):
@@ -137,12 +144,12 @@ class InterpolateGMFSSTorch(BaseInterpolate):
         transition=False,
     ):  # type: ignore
 
-        with torch.cuda.stream(self.stream):  # type: ignore
+        with self.torchUtils.run_stream(self.stream):  # type: ignore
             if self.frame0 is None:
-                self.frame0 = self.frame_to_tensor(img1, self.prepareStream)
+                self.frame0 = self.torchUtils.frame_to_tensor(img1, self.prepareStream, self.device, self.dtype)
                 self.stream.synchronize()
                 return
-            frame1 = self.frame_to_tensor(img1, self.prepareStream)
+            frame1 = self.torchUtils.frame_to_tensor(img1, self.prepareStream, self.device, self.dtype)
             if self.dynamicScaledOpticalFlow:
                 closest_value = self.dynamicScale.dynamicScaleCalculation(
                     self.frame0, frame1
@@ -158,13 +165,12 @@ class InterpolateGMFSSTorch(BaseInterpolate):
                     timestep = self.timestepDict[timestep]
                     output = self.flownet(self.frame0, frame1, timestep, closest_value)
 
-                    output = self.tensor_to_frame(output)
+                    output = self.torchUtils.tensor_to_frame(output)
                     yield output
                 else:
                     yield img1
 
 
-            self.copyTensor(self.frame0, frame1, self.prepareStream)
+            self.torchUtils.copy_tensor(self.frame0, frame1, self.prepareStream)
 
-        self.stream.synchronize()
-        torch.cuda.synchronize()
+        self.torchUtils.sync_all_streams()
