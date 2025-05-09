@@ -13,6 +13,10 @@ from ..utils.Util import (
     log,
 )
 
+class DummyStream(torch.Stream):
+    def synchronize(self):
+        pass
+
 class TorchUtils:
     # device and precision are in string formats, loaded straight from the command line arguments
     def __init__(self, width, height, hdr_mode=False, padding=None, ):
@@ -26,7 +30,7 @@ class TorchUtils:
         if HAS_PYTORCH_CUDA:
             return torch.cuda.Stream()
         else:
-            return torch.Stream()
+            return DummyStream()
         
     @staticmethod
     def run_stream(stream):

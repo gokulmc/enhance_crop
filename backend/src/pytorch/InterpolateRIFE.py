@@ -407,7 +407,6 @@ class InterpolateRifeTorch(BaseInterpolate):
             # self.debug_save_tensor_as_img(self.frame0, "frame0.png")
 
 
-        self.stream.synchronize()
         self.torchUtils.sync_all_streams()
 
     @torch.inference_mode()
