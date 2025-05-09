@@ -26,7 +26,7 @@ class TorchUtils:
         if HAS_PYTORCH_CUDA:
             return torch.cuda.Stream()
         else:
-            return torch.cpu.Stream()
+            return torch.Stream()
         
     @staticmethod
     def run_stream(stream):
