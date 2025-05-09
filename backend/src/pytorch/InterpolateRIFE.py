@@ -150,11 +150,12 @@ class InterpolateRifeTorch(BaseInterpolate):
             self.pw = math.ceil(self.width / tmp) * tmp
             self.ph = math.ceil(self.height / tmp) * tmp
             self.padding = (0, self.pw - self.width, 0, self.ph - self.height)
+            need_pad = any(p > 0 for p in self.padding)
             self.torchUtils = TorchUtils(
                             width=self.width,
                             height=self.height,
                             hdr_mode=self.hdr_mode,
-                            padding=self.padding,
+                            padding=self.padding if need_pad else None,
                             )
             # caching the timestep tensor in a dict with the timestep as a float for the key
 
