@@ -389,10 +389,10 @@ class DownloadDependencies:
                 if backend == "tensorrt":
                     
                     deps = [
-                        "tensorrt==10.9.0.34",
-                        "tensorrt_cu12==10.9.0.34",
-                        "tensorrt-cu12_libs==10.9.0.34",
-                        "tensorrt_cu12_bindings==10.9.0.34",
+                        "tensorrt==10.10.0.31",
+                        "tensorrt_cu12==10.10.0.31",
+                        "tensorrt-cu12_libs==10.10.0.31",
+                        "tensorrt_cu12_bindings==10.10.0.31",
                         
                     ]
                     if install:
