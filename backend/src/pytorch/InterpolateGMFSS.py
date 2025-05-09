@@ -66,6 +66,7 @@ class InterpolateGMFSSTorch(BaseInterpolate):
             self.height,
             hdr_mode=self.hdr_mode,
             padding=self.padding,
+            device_type=device
         )
         self.device = self.torchUtils.handle_device(device, gpu_id=gpu_id)
         self.dtype = self.torchUtils.handle_precision(dtype)
@@ -135,7 +136,7 @@ class InterpolateGMFSSTorch(BaseInterpolate):
                 warnAndLog(
                     "TensorRT is not implemented for GMFSS yet, falling back to PyTorch"
                 )
-        self.prepareStream.synchronize()
+        self.torchUtils.sync_stream(self.prepareStream)  # type: ignore
 
     @torch.inference_mode()
     def __call__(
@@ -147,7 +148,6 @@ class InterpolateGMFSSTorch(BaseInterpolate):
         with self.torchUtils.run_stream(self.stream):  # type: ignore
             if self.frame0 is None:
                 self.frame0 = self.torchUtils.frame_to_tensor(img1, self.prepareStream, self.device, self.dtype)
-                self.stream.synchronize()
                 return
             frame1 = self.torchUtils.frame_to_tensor(img1, self.prepareStream, self.device, self.dtype)
             if self.dynamicScaledOpticalFlow:

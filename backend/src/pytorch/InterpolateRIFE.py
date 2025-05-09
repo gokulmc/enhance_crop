@@ -30,7 +30,7 @@ class InterpolateRifeTorch(BaseInterpolate):
         ceilInterpolateFactor: int = 2,
         width: int = 1920,
         height: int = 1080,
-        device: str = "default",
+        device: str = "auto",
         dtype: str = "auto",
         backend: str = "pytorch",
         UHDMode: bool = False,
@@ -47,8 +47,7 @@ class InterpolateRifeTorch(BaseInterpolate):
         self.interpolateModel = modelPath
         self.width = width
         self.height = height
-
-        
+        self.device_type = device
         self.device: torch.device = TorchUtils.handle_device(device, gpu_id=gpu_id)
         self.dtype = TorchUtils.handle_precision(dtype)
         self.backend = backend
@@ -77,241 +76,242 @@ class InterpolateRifeTorch(BaseInterpolate):
 
     @torch.inference_mode()
     def _load(self):
-        self.stream = TorchUtils.init_stream()
-        self.prepareStream = TorchUtils.init_stream()
-        self.copyStream = TorchUtils.init_stream()
-        self.f2tStream = TorchUtils.init_stream()
             
-        with TorchUtils.run_stream(self.prepareStream): 
 
-            state_dict = torch.load(
-                self.interpolateModel,
-                map_location=self.device,
-                weights_only=True,
-                mmap=True,
-            )
-            # detect what rife arch to use
+        state_dict = torch.load(
+            self.interpolateModel,
+            map_location=self.device,
+            weights_only=True,
+            mmap=True,
+        )
+        # detect what rife arch to use
 
-            ad = ArchDetect(self.interpolateModel)
-            interpolateArch = ad.getArchName()
-            _pad = 32
-            num_ch_for_encode = 0
-            self.encode = None
+        ad = ArchDetect(self.interpolateModel)
+        interpolateArch = ad.getArchName()
+        _pad = 32
+        num_ch_for_encode = 0
+        self.encode = None
 
-            match interpolateArch.lower():
-                case "rife46":
-                    from .InterpolateArchs.RIFE.rife46IFNET import IFNet
-                case "rife47":
-                    from .InterpolateArchs.RIFE.rife47IFNET import IFNet
+        match interpolateArch.lower():
+            case "rife46":
+                from .InterpolateArchs.RIFE.rife46IFNET import IFNet
+            case "rife47":
+                from .InterpolateArchs.RIFE.rife47IFNET import IFNet
 
-                    num_ch_for_encode = 4
-                    self.encode = torch.nn.Sequential(
-                        torch.nn.Conv2d(3, 16, 3, 2, 1),
-                        torch.nn.ConvTranspose2d(16, 4, 4, 2, 1),
-                    ).float()
-                case "rife413":
-                    from .InterpolateArchs.RIFE.rife413IFNET import IFNet, Head
+                num_ch_for_encode = 4
+                self.encode = torch.nn.Sequential(
+                    torch.nn.Conv2d(3, 16, 3, 2, 1),
+                    torch.nn.ConvTranspose2d(16, 4, 4, 2, 1),
+                ).float()
+            case "rife413":
+                from .InterpolateArchs.RIFE.rife413IFNET import IFNet, Head
 
-                    num_ch_for_encode = 8
-                    self.encode = Head()
-                case "rife420":
-                    from .InterpolateArchs.RIFE.rife420IFNET import IFNet, Head
+                num_ch_for_encode = 8
+                self.encode = Head()
+            case "rife420":
+                from .InterpolateArchs.RIFE.rife420IFNET import IFNet, Head
 
-                    num_ch_for_encode = 8
-                    self.encode = Head()
-                case "rife421":
-                    from .InterpolateArchs.RIFE.rife421IFNET import IFNet, Head
+                num_ch_for_encode = 8
+                self.encode = Head()
+            case "rife421":
+                from .InterpolateArchs.RIFE.rife421IFNET import IFNet, Head
 
-                    num_ch_for_encode = 8
-                    self.encode = Head()
-                case "rife422lite":
-                    from .InterpolateArchs.RIFE.rife422_liteIFNET import IFNet, Head
+                num_ch_for_encode = 8
+                self.encode = Head()
+            case "rife422lite":
+                from .InterpolateArchs.RIFE.rife422_liteIFNET import IFNet, Head
 
-                    self.encode = Head()
-                    num_ch_for_encode = 4
-                case "rife425":
-                    from .InterpolateArchs.RIFE.rife425IFNET import IFNet, Head
+                self.encode = Head()
+                num_ch_for_encode = 4
+            case "rife425":
+                from .InterpolateArchs.RIFE.rife425IFNET import IFNet, Head
 
-                    _pad = 64
-                    num_ch_for_encode = 4
-                    self.encode = Head()
+                _pad = 64
+                num_ch_for_encode = 4
+                self.encode = Head()
 
-                case _:
-                    errorAndLog("Invalid Interpolation Arch")
-                    exit()
+            case _:
+                errorAndLog("Invalid Interpolation Arch")
+                exit()
 
-            # model unspecific setup
-            if self.dynamicScaledOpticalFlow:
-                tmp = max(
-                    _pad, int(_pad / 0.25)
-                )  # set pad to higher for better dynamic optical scale support
-            else:
-                tmp = max(_pad, int(_pad / self.scale))
-            self.pw = math.ceil(self.width / tmp) * tmp
-            self.ph = math.ceil(self.height / tmp) * tmp
-            self.padding = (0, self.pw - self.width, 0, self.ph - self.height)
-            need_pad = any(p > 0 for p in self.padding)
-            self.torchUtils = TorchUtils(
-                            width=self.width,
-                            height=self.height,
-                            hdr_mode=self.hdr_mode,
-                            padding=self.padding if need_pad else None,
-                            )
-            # caching the timestep tensor in a dict with the timestep as a float for the key
+        # model unspecific setup
+        if self.dynamicScaledOpticalFlow:
+            tmp = max(
+                _pad, int(_pad / 0.25)
+            )  # set pad to higher for better dynamic optical scale support
+        else:
+            tmp = max(_pad, int(_pad / self.scale))
+        self.pw = math.ceil(self.width / tmp) * tmp
+        self.ph = math.ceil(self.height / tmp) * tmp
+        self.padding = (0, self.pw - self.width, 0, self.ph - self.height)
+        need_pad = any(p > 0 for p in self.padding)
+        self.torchUtils = TorchUtils(
+                        width=self.width,
+                        height=self.height,
+                        hdr_mode=self.hdr_mode,
+                        padding=self.padding if need_pad else None,
+                        device_type=self.device_type,
+                        )
+        
+        self.stream = self.torchUtils.init_stream()
+        self.prepareStream = self.torchUtils.init_stream()
+        self.copyStream = self.torchUtils.init_stream()
+        self.f2tStream = self.torchUtils.init_stream()
 
-            self.timestepDict = {}
-            for n in range(self.ceilInterpolateFactor):
-                timestep = n / (self.ceilInterpolateFactor)
-                timestep_tens = torch.full(
-                    (1, 1, self.ph, self.pw),
-                    timestep,
-                    dtype=self.dtype,
-                    device=self.device,
-                )
-                self.timestepDict[timestep] = timestep_tens
-            # rife specific setup
+        # caching the timestep tensor in a dict with the timestep as a float for the key
 
-            self.tenFlow_div = torch.tensor(
-            [(self.pw - 1.0) / 2.0, (self.ph - 1.0) / 2.0],
-                dtype=torch.float32,
-                device=self.device,
-            )
-            tenHorizontal = (
-                torch.linspace(-1.0, 1.0, self.pw, dtype=torch.float32, device=self.device)
-                .view(1, 1, 1, self.pw)
-                .expand(-1, -1, self.ph, -1)
-            ).to(dtype=torch.float32, device=self.device)
-            tenVertical = (
-                torch.linspace(-1.0, 1.0, self.ph, dtype=torch.float32, device=self.device)
-                .view(1, 1, self.ph, 1)
-                .expand(-1, -1, -1, self.pw)
-            ).to(dtype=torch.float32, device=self.device)
-            self.backwarp_tenGrid = torch.cat([tenHorizontal, tenVertical], 1)
-
-
-            self.flownet = IFNet(
-                scale=self.scale,
-                ensemble=self.ensemble,
+        self.timestepDict = {}
+        for n in range(self.ceilInterpolateFactor):
+            timestep = n / (self.ceilInterpolateFactor)
+            timestep_tens = torch.full(
+                (1, 1, self.ph, self.pw),
+                timestep,
                 dtype=self.dtype,
                 device=self.device,
-                width=self.width,
-                height=self.height,
+            )
+            self.timestepDict[timestep] = timestep_tens
+        # rife specific setup
+
+        self.tenFlow_div = torch.tensor(
+        [(self.pw - 1.0) / 2.0, (self.ph - 1.0) / 2.0],
+            dtype=torch.float32,
+            device=self.device,
+        )
+        tenHorizontal = (
+            torch.linspace(-1.0, 1.0, self.pw, dtype=torch.float32, device=self.device)
+            .view(1, 1, 1, self.pw)
+            .expand(-1, -1, self.ph, -1)
+        ).to(dtype=torch.float32, device=self.device)
+        tenVertical = (
+            torch.linspace(-1.0, 1.0, self.ph, dtype=torch.float32, device=self.device)
+            .view(1, 1, self.ph, 1)
+            .expand(-1, -1, -1, self.pw)
+        ).to(dtype=torch.float32, device=self.device)
+        self.backwarp_tenGrid = torch.cat([tenHorizontal, tenVertical], 1)
+
+
+        self.flownet = IFNet(
+            scale=self.scale,
+            ensemble=self.ensemble,
+            dtype=self.dtype,
+            device=self.device,
+            width=self.width,
+            height=self.height,
+        )
+
+        state_dict = {
+            k.replace("module.", ""): v
+            for k, v in state_dict.items()
+            if "module." in k
+        }
+        head_state_dict = {
+            k.replace("encode.", ""): v
+            for k, v in state_dict.items()
+            if "encode." in k
+        }
+        if self.encode:
+            self.encode.load_state_dict(state_dict=head_state_dict, strict=True)
+            self.encode.eval().to(device=self.device, dtype=self.dtype)
+        self.flownet.load_state_dict(state_dict=state_dict, strict=False)
+        self.flownet.eval().to(device=self.device, dtype=self.dtype)
+
+        if self.dynamicScaledOpticalFlow:
+            if self.backend == "tensorrt":
+                print(
+                    "Dynamic Scaled Optical Flow does not work with TensorRT, disabling",
+                    file=sys.stderr,
+                )
+
+            elif self.UHDMode:
+                print(
+                    "Dynamic Scaled Optical Flow does not work with UHD Mode, disabling",
+                    file=sys.stderr,
+                )
+            else:
+                from ..utils.SSIM import SSIM
+
+                CompareNet = SSIM().to(device=self.device, dtype=self.dtype)
+                possible_values = {
+                    0.25: 0.25,
+                    0.37: 0.5,
+                    0.5: 1.0,
+                    0.69: 1.5,
+                    1.0: 2.0,
+                }  # closest_value:representative_scale
+                self.dynamicScale = DynamicScale(
+                    possible_values=possible_values, CompareNet=CompareNet
+                )
+                print("Dynamic Scaled Optical Flow Enabled")
+
+        if self.backend == "tensorrt":
+            import tensorrt
+            import torch_tensorrt
+            from .TensorRTHandler import TorchTensorRTHandler
+
+            trtHandler = TorchTensorRTHandler(
+                trt_optimization_level=self.trt_optimization_level,
+                dynamo_export_format="nn2exportedprogram"
             )
 
-            state_dict = {
-                k.replace("module.", ""): v
-                for k, v in state_dict.items()
-                if "module." in k
-            }
-            head_state_dict = {
-                k.replace("encode.", ""): v
-                for k, v in state_dict.items()
-                if "encode." in k
-            }
-            if self.encode:
-                self.encode.load_state_dict(state_dict=head_state_dict, strict=True)
-                self.encode.eval().to(device=self.device, dtype=self.dtype)
-            self.flownet.load_state_dict(state_dict=state_dict, strict=False)
-            self.flownet.eval().to(device=self.device, dtype=self.dtype)
+            base_trt_engine_path = os.path.join(
+                os.path.realpath(self.trt_cache_dir),
+                (
+                    f"{os.path.basename(self.interpolateModel)}"
+                    + f"_{self.width}x{self.height}"
+                    + f"_{'fp16' if self.dtype == torch.float16 else 'fp32'}"
+                    + f"_scale-{self.scale}"
+                    + f"_{torch.cuda.get_device_name(self.device)}"
+                    + f"_trt-{trtHandler.tensorrt_version}"
+                    + f"_ensemble-{self.ensemble}"
+                    + f"_torch_tensorrt-{trtHandler.torch_tensorrt_version}"
+                    + (
+                        f"_level-{self.trt_optimization_level}"
+                        if self.trt_optimization_level is not None
+                        else ""
+                    )
+                ),
+            )
 
-            if self.dynamicScaledOpticalFlow:
-                if self.backend == "tensorrt":
-                    print(
-                        "Dynamic Scaled Optical Flow does not work with TensorRT, disabling",
-                        file=sys.stderr,
+            trt_engine_path = base_trt_engine_path + ".dyn"
+            encode_trt_engine_path = base_trt_engine_path + "_encode.dyn"
+
+            # lay out inputs
+            # load flow engine
+            if not os.path.isfile(trt_engine_path):
+                if self.encode:
+                    flownet_inputs = (
+                        torch.zeros([1, 3, self.ph, self.pw], dtype=self.dtype, device=self.device),
+                        torch.zeros([1, 3, self.ph, self.pw], dtype=self.dtype, device=self.device),
+                        torch.zeros([1, 1, self.ph, self.pw], dtype=self.dtype, device=self.device),
+                        torch.zeros([2], dtype=torch.float, device=self.device),
+                        torch.zeros([1, 2, self.ph, self.pw], dtype=torch.float, device=self.device),
+                        torch.zeros([1, num_ch_for_encode, self.ph, self.pw], dtype=self.dtype, device=self.device),
+                        torch.zeros([1, num_ch_for_encode, self.ph, self.pw], dtype=self.dtype, device=self.device),
                     )
 
-                elif self.UHDMode:
-                    print(
-                        "Dynamic Scaled Optical Flow does not work with UHD Mode, disabling",
-                        file=sys.stderr,
-                    )
+                    encode_inputs = (torch.zeros([1, 3, self.ph, self.pw], dtype=self.dtype, device=self.device),)
+
                 else:
-                    from ..utils.SSIM import SSIM
-
-                    CompareNet = SSIM().to(device=self.device, dtype=self.dtype)
-                    possible_values = {
-                        0.25: 0.25,
-                        0.37: 0.5,
-                        0.5: 1.0,
-                        0.69: 1.5,
-                        1.0: 2.0,
-                    }  # closest_value:representative_scale
-                    self.dynamicScale = DynamicScale(
-                        possible_values=possible_values, CompareNet=CompareNet
+                    flownet_inputs = (
+                        torch.zeros([1, 3, self.ph, self.pw], dtype=self.dtype, device=self.device),
+                        torch.zeros([1, 3, self.ph, self.pw], dtype=self.dtype, device=self.device),
+                        torch.zeros([1, 1, self.ph, self.pw], dtype=self.dtype, device=self.device),
+                        torch.zeros([2], dtype=torch.float, device=self.device),
+                        torch.zeros([1, 2, self.ph, self.pw], dtype=torch.float, device=self.device),
                     )
-                    print("Dynamic Scaled Optical Flow Enabled")
 
-            if self.backend == "tensorrt":
-                import tensorrt
-                import torch_tensorrt
-                from .TensorRTHandler import TorchTensorRTHandler
-
-                trtHandler = TorchTensorRTHandler(
-                    trt_optimization_level=self.trt_optimization_level,
-                    dynamo_export_format="nn2exportedprogram"
-                )
-
-                base_trt_engine_path = os.path.join(
-                    os.path.realpath(self.trt_cache_dir),
-                    (
-                        f"{os.path.basename(self.interpolateModel)}"
-                        + f"_{self.width}x{self.height}"
-                        + f"_{'fp16' if self.dtype == torch.float16 else 'fp32'}"
-                        + f"_scale-{self.scale}"
-                        + f"_{torch.cuda.get_device_name(self.device)}"
-                        + f"_trt-{trtHandler.tensorrt_version}"
-                        + f"_ensemble-{self.ensemble}"
-                        + f"_torch_tensorrt-{trtHandler.torch_tensorrt_version}"
-                        + (
-                            f"_level-{self.trt_optimization_level}"
-                            if self.trt_optimization_level is not None
-                            else ""
-                        )
-                    ),
-                )
-
-                trt_engine_path = base_trt_engine_path + ".dyn"
-                encode_trt_engine_path = base_trt_engine_path + "_encode.dyn"
-
-                # lay out inputs
-                # load flow engine
-                if not os.path.isfile(trt_engine_path):
-                    if self.encode:
-                        flownet_inputs = (
-                            torch.zeros([1, 3, self.ph, self.pw], dtype=self.dtype, device=self.device),
-                            torch.zeros([1, 3, self.ph, self.pw], dtype=self.dtype, device=self.device),
-                            torch.zeros([1, 1, self.ph, self.pw], dtype=self.dtype, device=self.device),
-                            torch.zeros([2], dtype=torch.float, device=self.device),
-                            torch.zeros([1, 2, self.ph, self.pw], dtype=torch.float, device=self.device),
-                            torch.zeros([1, num_ch_for_encode, self.ph, self.pw], dtype=self.dtype, device=self.device),
-                            torch.zeros([1, num_ch_for_encode, self.ph, self.pw], dtype=self.dtype, device=self.device),
-                        )
-
-                        encode_inputs = (torch.zeros([1, 3, self.ph, self.pw], dtype=self.dtype, device=self.device),)
-
-                    else:
-                        flownet_inputs = (
-                            torch.zeros([1, 3, self.ph, self.pw], dtype=self.dtype, device=self.device),
-                            torch.zeros([1, 3, self.ph, self.pw], dtype=self.dtype, device=self.device),
-                            torch.zeros([1, 1, self.ph, self.pw], dtype=self.dtype, device=self.device),
-                            torch.zeros([2], dtype=torch.float, device=self.device),
-                            torch.zeros([1, 2, self.ph, self.pw], dtype=torch.float, device=self.device),
-                        )
-
-                    trtHandler.build_engine(self.flownet,  self.dtype, self.device, flownet_inputs, trt_engine_path, trt_multi_precision_engine=True)
-
-                    if self.encode:
-                        trtHandler.build_engine(self.encode, self.dtype, self.device, encode_inputs, encode_trt_engine_path, trt_multi_precision_engine=True)
-
-                self.flownet = trtHandler.load_engine(trt_engine_path)
+                trtHandler.build_engine(self.flownet,  self.dtype, self.device, flownet_inputs, trt_engine_path, trt_multi_precision_engine=True)
 
                 if self.encode:
-                    self.encode = trtHandler.load_engine(encode_trt_engine_path)
+                    trtHandler.build_engine(self.encode, self.dtype, self.device, encode_inputs, encode_trt_engine_path, trt_multi_precision_engine=True)
 
-        TorchUtils.clear_cache()
+            self.flownet = trtHandler.load_engine(trt_engine_path)
+
+            if self.encode:
+                self.encode = trtHandler.load_engine(encode_trt_engine_path)
+
         
-        self.prepareStream.synchronize()
+        self.torchUtils.sync_all_streams()
 
     def debug_save_tensor_as_img(self, img: torch.Tensor, name: str):
         import cv2
@@ -415,7 +415,7 @@ class InterpolateRifeTorch(BaseInterpolate):
             sleep(1)
         with self.torchUtils.run_stream(stream):  # type: ignore
             frame = self.encode(frame)
-        stream.synchronize()
+        self.torchUtils.sync_stream(stream)
         return frame
 
 

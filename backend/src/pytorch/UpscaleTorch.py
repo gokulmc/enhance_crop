@@ -91,7 +91,7 @@ class UpscalePytorch:
         trt_debug: bool = False,
 
     ):
-        self.torchUtils = TorchUtils(width=width, height=height,hdr_mode=hdr_mode)  
+        self.torchUtils = TorchUtils(width=width, height=height,hdr_mode=hdr_mode,device_type=device)  
         device = self.torchUtils.handle_device(device, gpu_id)
         self.tile_pad = tile_pad
         self.dtype = self.torchUtils.handle_precision(precision)
@@ -282,7 +282,7 @@ class UpscalePytorch:
             else:
                 output = self.renderTiledImage(image)
             
-        self.stream.synchronize()
+        self.torchUtils.sync_stream(self.stream)
         
         with self.torchUtils.run_stream(self.convertStream):
             output = self.torchUtils.tensor_to_frame(output)

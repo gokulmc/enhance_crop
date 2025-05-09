@@ -53,6 +53,7 @@ class InterpolateGIMMTorch(BaseInterpolate):
             height=height,
             hdr_mode=hdr_mode,
             padding=padding,
+            device_type=device,
         )
         self.device = self.torchUtils.handle_device(device, gpu_id=gpu_id)
         self.dtype = self.torchUtils.handle_precision(dtype)
@@ -77,7 +78,7 @@ class InterpolateGIMMTorch(BaseInterpolate):
         self.stream = self.torchUtils.init_stream()
         self.prepareStream = self.torchUtils.init_stream()
         self.copyStream = self.torchUtils.init_stream()
-        with torch.cuda.stream(self.prepareStream):  # type: ignore
+        with self.torchUtils.run_stream(self.prepareStream):  # type: ignore
             from .InterpolateArchs.GIMM.gimmvfi_r import GIMMVFI_R
 
             self.flownet = GIMMVFI_R(
@@ -143,7 +144,7 @@ class InterpolateGIMMTorch(BaseInterpolate):
                 warnAndLog(
                     "TensorRT is not implemented for GIMM yet, falling back to PyTorch"
                 )
-        self.prepareStream.synchronize()
+        self.torchUtils.sync_stream(self.prepareStream)  # type: ignore
 
     @torch.inference_mode()
     def __call__(
@@ -154,7 +155,6 @@ class InterpolateGIMMTorch(BaseInterpolate):
         with self.torchUtils.run_stream(self.stream):  # type: ignore
             if self.frame0 is None:
                 self.frame0 = self.torchUtils.frame_to_tensor(img1, self.prepareStream, self.device, self.dtype)
-                self.stream.synchronize()
                 return
             frame1 = self.torchUtils.frame_to_tensor(img1, self.prepareStream, self.device, self.dtype)
             for n in range(self.ceilInterpolateFactor - 1):
