@@ -13,7 +13,7 @@ import os
 import logging
 import gc
 import sys
-
+from ..constants import HAS_PYTORCH_CUDA
 
 from time import sleep
 
@@ -65,9 +65,10 @@ class BaseInterpolate(metaclass=ABCMeta):
         self.backwarp_tenGrid = None
         self.f0encode = None
         gc.collect()
-        torch.cuda.empty_cache()
-        torch.cuda.reset_max_memory_allocated()
-        torch.cuda.reset_max_memory_cached()
+        if HAS_PYTORCH_CUDA:
+            torch.cuda.empty_cache()
+            torch.cuda.reset_max_memory_allocated()
+            torch.cuda.reset_max_memory_cached()
 
     @torch.inference_mode()
     def hotReload(self):

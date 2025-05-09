@@ -113,6 +113,7 @@ class TorchUtils:
         return (
             frame.squeeze(0)
             .permute(1, 2, 0)
+            .clamp(0, 1)
             .mul(65535.0 if self.hdr_mode else 255.0)
             .to(torch.uint16 if self.hdr_mode else torch.uint8)
             .contiguous()

@@ -2,12 +2,12 @@ import os
 import math
 
 import gc
-from typing import override
+from .TorchUtils import TorchUtils
 import torch as torch
 import torch.nn.functional as F
 import sys
 from time import sleep
-
+from ..constants import HAS_PYTORCH_CUDA
 
 from ..utils.BackendChecks import (
     check_bfloat16_support,
@@ -91,19 +91,10 @@ class UpscalePytorch:
         trt_debug: bool = False,
 
     ):
-        if device == "default":
-            if torch.cuda.is_available():
-                device = torch.device(
-                    "cuda", gpu_id
-                )  # 0 is the device index, may have to change later
-            else:
-                device = torch.device("cpu")
-        else:
-            device = torch.device(device)
-        device_str = get_gpus_torch()[gpu_id]
-        print("Using GPU: " + str(device_str), file=sys.stderr)
+        self.torchUtils = TorchUtils(width=width, height=height,hdr_mode=hdr_mode)  
+        device = self.torchUtils.handle_device(device, gpu_id)
         self.tile_pad = tile_pad
-        self.dtype = self.handlePrecision(precision)
+        self.dtype = self.torchUtils.handle_precision(precision)
         self.device = device
         self.videoWidth = width
         self.videoHeight = height
@@ -111,6 +102,7 @@ class UpscalePytorch:
         self.tile = [self.tilesize, self.tilesize]
         self.modelPath = modelPath
         self.backend = backend
+        
         if trt_cache_dir is None:
             trt_cache_dir = os.path.dirname(
                 modelPath
@@ -123,9 +115,10 @@ class UpscalePytorch:
         self.hdr_mode = hdr_mode
 
         # streams
-        self.stream = torch.cuda.Stream()
-        self.prepareStream = torch.cuda.Stream()
-        self.convertStream = torch.cuda.Stream()
+        self.stream = self.torchUtils.init_stream()
+        self.f2tstream = self.torchUtils.init_stream()  
+        self.prepareStream = self.torchUtils.init_stream()
+        self.convertStream = self.torchUtils.init_stream()
         self._load()
 
     @torch.inference_mode()
@@ -147,7 +140,7 @@ class UpscalePytorch:
 
     @torch.inference_mode()
     def _load(self):
-        with torch.cuda.stream(self.prepareStream):
+        with self.torchUtils.run_stream(self.prepareStream):
             self.set_self_model(backend="pytorch")
 
             match self.scale:
@@ -234,25 +227,18 @@ class UpscalePytorch:
 
 
                 self.set_self_model(backend="tensorrt")
-        torch.cuda.empty_cache()
-        self.prepareStream.synchronize()
 
-    @torch.inference_mode()
-    def handlePrecision(self, precision):
-        if precision == "auto":
-            return torch.float16 if check_bfloat16_support() else torch.float32
-        if precision == "float32":
-            return torch.float32
-        if precision == "float16":
-            return torch.float16
+        self.torchUtils.clear_cache()
+        self.torchUtils.sync_all_streams()
 
     @torch.inference_mode()
     def hotUnload(self):
         self.model = None
         gc.collect()
-        torch.cuda.empty_cache()
-        torch.cuda.reset_max_memory_allocated()
-        torch.cuda.reset_max_memory_cached()
+        self.torchUtils.clear_cache()
+        if HAS_PYTORCH_CUDA:
+            torch.cuda.reset_max_memory_allocated()
+            torch.cuda.reset_max_memory_cached()
 
     @torch.inference_mode()
     def hotReload(self):
@@ -274,24 +260,11 @@ class UpscalePytorch:
         model.eval().to(self.device, dtype=self.dtype)
         return model
 
+    
     @torch.inference_mode()
-    def frame_to_tensor(self, frame):
-        with torch.cuda.stream(self.prepareStream):
-            output = (
-                torch.frombuffer(frame, dtype=torch.uint16 if self.hdr_mode else torch.uint8)
-                .to(self.device, dtype=self.dtype, non_blocking=True)
-                .reshape(self.videoHeight, self.videoWidth, 3)
-                .permute(2, 0, 1)
-                .unsqueeze(0)
-                .mul_(1 / 65535.0 if self.hdr_mode else 1 / 255.0)
-                .clamp(0,1)
-            )
-        self.prepareStream.synchronize()
-        return output
-
-    @torch.inference_mode()
-    def __call__(self, image: torch.Tensor) -> torch.Tensor:
-        with torch.cuda.stream(self.stream), torch.amp.autocast(
+    def __call__(self, image: bytes) -> torch.Tensor:
+        image = self.torchUtils.frame_to_tensor(image, self.f2tstream, self.device, self.dtype)
+        with self.torchUtils.run_stream(self.stream), torch.amp.autocast(
             enabled=self.dtype == torch.float16,device_type="cuda"):
             while self.model is None:
                 sleep(1)
@@ -311,24 +284,10 @@ class UpscalePytorch:
             
         self.stream.synchronize()
         
-        with torch.cuda.stream(self.convertStream):
-            output =  (
-            output
-                
-                .squeeze(0)
-                .permute(1, 2, 0)
-                .clamp(0, 1)
-                .mul(65535.0 if self.hdr_mode else 255.0)
-                .to(torch.uint16 if self.hdr_mode else torch.uint8)
-                .contiguous()
-                .detach()
-                .cpu()
-                .numpy()
-            )
-            # torch.save(self.model.state_dict(), "Sudo_Shuffle_Span_no_update_params.pth")
-            # exit()
-        self.convertStream.synchronize()
-        torch.cuda.synchronize()
+        with self.torchUtils.run_stream(self.convertStream):
+            output = self.torchUtils.tensor_to_frame(output)
+            
+        self.torchUtils.sync_all_streams()
         return output
  
     def getScale(self):
