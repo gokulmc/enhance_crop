@@ -48,7 +48,10 @@ class TorchUtils:
         returns device based on gpu id and device parameter
     """
         if device == "auto":
-            torchdevice = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
+            if torch.cuda.is_available():
+                torchdevice = torch.device("cuda", gpu_id)
+            else:
+                torchdevice = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
         
         elif device == "cuda":
             torchdevice = torch.device(
