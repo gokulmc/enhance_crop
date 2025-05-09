@@ -9,7 +9,7 @@ from ..utils.SSIM import SSIM
 from .InterpolateArchs.DetectInterpolateArch import ArchDetect
 from .InterpolateGIMM import InterpolateGIMMTorch
 from .InterpolateGMFSS import InterpolateGMFSSTorch
-from .InterpolateRIFE import InterpolateRifeTorch, InterpolateRifeTensorRT, InterpolateRIFEDRBA
+from .InterpolateRIFE import InterpolateRifeTorch,  InterpolateRIFEDRBA
 
 
 class InterpolateFactory:
@@ -19,8 +19,6 @@ class InterpolateFactory:
         base_arch = ad.getArchBase()
         match base_arch:
             case "rife":
-                if backend == "tensorrt":
-                    return InterpolateRifeTensorRT
                 if drba:
                     return InterpolateRIFEDRBA
                 return InterpolateRifeTorch

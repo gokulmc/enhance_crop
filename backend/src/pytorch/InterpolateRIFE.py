@@ -325,17 +325,18 @@ class InterpolateRifeTorch(BaseInterpolate):
         img1,
         transition=False,
     ):  # type: ignore
+        
         if self.frame0 is None:
                 self.frame0 = self.torchUtils.frame_to_tensor(img1, self.prepareStream, device=self.device, dtype=self.dtype)
                 if self.encode:
                     self.encode0 = self.encode_Frame(self.frame0, self.prepareStream)
                 return
-
+        
         frame1 = self.torchUtils.frame_to_tensor(img1, self.f2tStream, device=self.device, dtype=self.dtype)
         if self.encode:
             encode1 = self.encode_Frame(frame1, self.f2tStream)
         
-        with torch.cuda.stream(self.stream):  # type: ignore
+        with self.torchUtils.run_stream(self.stream):  # type: ignore
 
 
             if self.dynamicScaledOpticalFlow:
@@ -351,26 +352,46 @@ class InterpolateRifeTorch(BaseInterpolate):
                     while self.flownet is None:
                         sleep(1)
                     timestep = self.timestepDict[timestep]
-                    if self.encode:
-                        output = self.flownet(
-                            self.frame0,
-                            frame1,
-                            timestep,
-                            self.tenFlow_div,
-                            self.backwarp_tenGrid,
-                            self.encode0,
-                            encode1,  # type: ignore
-                            closest_value,
-                        )
+                    if self.backend == "pytorch":
+                        if self.encode:
+                            output = self.flownet(
+                                self.frame0,
+                                frame1,
+                                timestep,
+                                self.tenFlow_div,
+                                self.backwarp_tenGrid,
+                                self.encode0,
+                                encode1,  # type: ignore
+                                closest_value,
+                            )
+                        else:
+                            output = self.flownet(
+                                self.frame0,
+                                frame1,
+                                timestep,
+                                self.tenFlow_div,
+                                self.backwarp_tenGrid,
+                                closest_value,
+                            )
                     else:
-                        output = self.flownet(
-                            self.frame0,
-                            frame1,
-                            timestep,
-                            self.tenFlow_div,
-                            self.backwarp_tenGrid,
-                            closest_value,
-                        )
+                        if self.encode:
+                            output = self.flownet(
+                                self.frame0,
+                                frame1,
+                                timestep,
+                                self.tenFlow_div,
+                                self.backwarp_tenGrid,
+                                self.encode0,
+                                encode1,  # type: ignore
+                            )
+                        else:
+                            output = self.flownet(
+                                self.frame0,
+                                frame1,
+                                timestep,
+                                self.tenFlow_div,
+                                self.backwarp_tenGrid,
+                            )
                     output = self.torchUtils.tensor_to_frame(output[:, :, :self.height, :self.width])
                     yield output
 
@@ -389,63 +410,15 @@ class InterpolateRifeTorch(BaseInterpolate):
         TorchUtils.sync_all_streams()
 
     @torch.inference_mode()
-    def encode_Frame(self, frame: torch.Tensor, stream: torch.cuda.Stream):
+    def encode_Frame(self, frame: torch.Tensor, stream: torch.Stream):
         while self.encode is None:
             sleep(1)
-        with TorchUtils.run_stream(stream):  # type: ignore
+        with self.torchUtils.run_stream(stream):  # type: ignore
             frame = self.encode(frame)
         stream.synchronize()
         return frame
 
 
-class InterpolateRifeTensorRT(InterpolateRifeTorch):
-    @torch.inference_mode()
-    def __call__(
-        self,
-        img1,
-        transition=False,
-    ):  # type: ignore
-        if self.frame0 is None:
-            self.frame0 = self.torchUtils.frame_to_tensor(img1, self.prepareStream)
-
-            if self.encode:
-                self.encode0 = self.encode_Frame(self.frame0, self.prepareStream)
-            return
-        frame1 = self.frame_to_tensor(img1, self.f2tStream)
-        if self.encode:
-            encode1 = self.encode_Frame(frame1, self.f2tStream)
-
-        with torch.cuda.stream(self.stream):  # type: ignore
-
-            for n in range(self.ceilInterpolateFactor - 1):
-
-                while self.flownet is None:
-                    sleep(1)
-
-                if not transition:
-                    timestep = (n + 1) * 1.0 / (self.ceilInterpolateFactor)
-                    timestep = self.timestepDict[timestep]
-
-                    if self.encode:
-                        output = self.flownet(self.frame0, frame1, timestep, self.tenFlow_div, self.backwarp_tenGrid, self.encode0, encode1) # type: ignore
-
-                    else:
-                        output = self.flownet(self.frame0, frame1, timestep, self.tenFlow_div, self.backwarp_tenGrid,)
-
-                    output = self.torchUtils.tensor_to_frame(output[:, :, :self.height, :self.width])
-
-                    yield output
-
-                else:
-                    yield img1
-
-
-            self.copyTensor(self.frame0, frame1, self.copyStream)
-            if self.encode:
-                self.copyTensor(self.encode0, encode1, self.copyStream)  # type: ignore
-
-        self.stream.synchronize()
-        torch.cuda.synchronize()
 
 class InterpolateRIFEDRBA(InterpolateRifeTorch):
     
