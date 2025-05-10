@@ -1,10 +1,6 @@
 from .Util import log, suppress_stdout_stderr, printAndLog
 
-def check_mps_support():
-    import torch
-    return torch.backends.mps.is_available()
-
-def checkForStrInTorchVersion(str: str) -> bool:
+def checkForPytorchCUDA() -> bool:
     """
     function that checks if the pytorch backend is available
     """
@@ -12,7 +8,7 @@ def checkForStrInTorchVersion(str: str) -> bool:
         import torch
         import torchvision
 
-        if str in torch.__version__:
+        if "cu" in torch.__version__:
             return True
         return False
     except ImportError as e:
@@ -20,10 +16,45 @@ def checkForStrInTorchVersion(str: str) -> bool:
         return False
     except Exception as e:
         log(str(e))
-def checkForPytorchCUDA() -> bool: checkForStrInTorchVersion("cu")
-def checkForPytorchROCM() -> bool: checkForStrInTorchVersion("rocm")
-def checkForPytorchMPS() -> bool: check_mps_support()
-def checkForPytorchXPU() -> bool: checkForStrInTorchVersion("xpu")
+
+
+def checkForPytorchROCM() -> bool:
+    """
+    function that checks if the pytorch backend is available
+    """
+    try:
+        import torch
+        import torchvision
+
+        if "rocm" in torch.__version__:
+            return True
+        return False
+    except ImportError as e:
+        log(str(e))
+        return False
+    except Exception as e:
+        log(str(e))
+
+def checkForPytorchXPU() -> bool:
+    """
+    function that checks if the pytorch backend is available
+    """
+    try:
+        import torch
+        import torchvision
+
+        if "xpu" in torch.__version__:
+            return True
+        return False
+    except ImportError as e:
+        log(str(e))
+        return False
+    except Exception as e:
+        log(str(e))
+
+def checkForPytorchMPS() -> bool:
+    import torch
+    return torch.backends.mps.is_available()
 
 def checkForTensorRT() -> bool:
     """

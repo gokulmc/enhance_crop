@@ -100,6 +100,7 @@ class HandleApplication:
             pyTorchGpus = get_gpus_torch()
             for i, gpu in enumerate(pyTorchGpus):
                 printMSG += f"PyTorch GPU {i}: {gpu}\n"
+
         if checkForPytorchMPS():
             availableBackends.append("pytorch (mps)")
             import torch
