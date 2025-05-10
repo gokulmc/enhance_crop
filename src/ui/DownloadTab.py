@@ -128,8 +128,9 @@ class DownloadTab:
     
     def enableCorrectBackends(self):
         if PLATFORM == "darwin":
-            self.parent.downloadTorchBtn.setEnabled(False)
+            self.parent.downloadTorchBtn.setEnabled(CPU_ARCH == "arm64")
             self.parent.downloadTensorRTBtn.setEnabled(False)
+
 
         if FileHandler.getFreeSpace() < 7:
             self.parent.downloadTorchBtn.setEnabled(False)
