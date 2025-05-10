@@ -124,7 +124,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #self.VideoPreview.setVisible(False)
 
         backendHandler = BackendHandler(self, self.settings)
-        backendHandler.enableCorrectBackends()
 
         self.renderQueue = RenderQueue(self.renderQueueListWidget)
 
@@ -167,8 +166,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 
-        backendHandler.hideUninstallButtons()
-        backendHandler.showUninstallButton(self.backends)
+        
         icon_path = ":/icons/icons/logo-v2.svg"
         self.setWindowIcon(QIcon(icon_path))
         QApplication.setWindowIcon(QIcon(icon_path))
@@ -235,6 +233,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             total_pytorch_gpus=total_pytorch_gpus,
         )
         downloadDeps = DownloadDependencies(False)
+        self.downloadTab.hideUninstallButtons()
+        self.downloadTab.showUninstallButton(self.backends)
 
         # Startup Animation
         self.animationHandler = AnimationHandler()

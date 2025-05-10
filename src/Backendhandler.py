@@ -13,54 +13,6 @@ class BackendHandler:
         self.parent = parent
         self.settings = settings
 
-    def enableCorrectBackends(self):
-        if PLATFORM == "darwin":
-            self.parent.downloadTorchBtn.setEnabled(False)
-            self.parent.downloadTensorRTBtn.setEnabled(False)
-
-        if FileHandler.getFreeSpace() < 7:
-            self.parent.downloadTorchBtn.setEnabled(False)
-        if FileHandler.getFreeSpace() < 7:
-            self.parent.downloadTensorRTBtn.setEnabled(False)
-
-        # disable as it is not complete
-        try:
-            self.parent.downloadDirectMLBtn.setEnabled(False)
-            if PLATFORM != "win32":
-                self.parent.downloadDirectMLBtn.setEnabled(False)
-        except Exception as e:
-            print(e)
-
-    def hideUninstallButtons(self):
-        self.parent.uninstallTorchBtn.setVisible(False)
-        self.parent.uninstallNCNNBtn.setVisible(False)
-        self.parent.uninstallTensorRTBtn.setVisible(False)
-        self.parent.uninstallDirectMLBtn.setVisible(False)
-
-    def showUninstallButton(self, backends):
-        if "pytorch (cuda)" in backends:
-            self.parent.downloadTorchBtn.setVisible(False)
-            self.parent.uninstallTorchBtn.setVisible(True)
-        if "pytorch (rocm)" in backends:
-            self.parent.downloadTorchBtn.setVisible(False)
-            self.parent.uninstallTorchBtn.setVisible(True)
-        if "ncnn" in backends:
-            self.parent.downloadNCNNBtn.setVisible(False)
-            self.parent.uninstallNCNNBtn.setVisible(True)
-        if "tensorrt" in backends:
-            self.parent.downloadTensorRTBtn.setVisible(False)
-            self.parent.uninstallTensorRTBtn.setVisible(True)
-
-        # disable as it is not complete
-        try:
-            self.parent.downloadDirectMLBtn.setEnabled(False)
-            if PLATFORM != "win32":
-                self.parent.downloadDirectMLBtn.setEnabled(False)
-        except Exception as e:
-            print(e)
-
-
-
     def getAvailableBackends(self):
         from .ui.QTcustom import SettingUpBackendPopup, RegularQTPopup
 
