@@ -42,6 +42,7 @@ class HandleApplication:
             checkForPytorchCUDA,
             checkForPytorchROCM,
             checkForPytorchXPU,
+            checkForPytorchMPS,
             checkForNCNN,
             checkForTensorRT,
             check_bfloat16_support,
@@ -92,6 +93,15 @@ class HandleApplication:
 
         if checkForPytorchXPU():
             availableBackends.append("pytorch (xpu)")
+            import torch
+
+            printMSG += f"PyTorch Version: {torch.__version__}\n"
+            half_prec_supp = check_bfloat16_support()
+            pyTorchGpus = get_gpus_torch()
+            for i, gpu in enumerate(pyTorchGpus):
+                printMSG += f"PyTorch GPU {i}: {gpu}\n"
+        if checkForPytorchMPS():
+            availableBackends.append("pytorch (mps)")
             import torch
 
             printMSG += f"PyTorch Version: {torch.__version__}\n"

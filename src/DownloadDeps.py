@@ -368,7 +368,7 @@ class DownloadDependencies:
                 return_codes.append(return_code)
             case "torch" | "tensorrt":
                 deps += [
-                    f"torch=={torch_version}+{torch_backend}",  #
+                    f"torch=={torch_version}{torch_backend}",  #
                     "safetensors==0.5.3",
                     "einops==0.8.1",
                     
@@ -380,7 +380,7 @@ class DownloadDependencies:
                 if install:
                     deps = [
                         "--no-deps",
-                        f"torchvision=={torchvision_version}+{torch_backend}",
+                        f"torchvision=={torchvision_version}{torch_backend}",
                     ]
                     return_code = self.pip(deps, install)
 
@@ -396,7 +396,7 @@ class DownloadDependencies:
                         
                     ]
                     if install:
-                        deps += ["--no-deps",f"torch-tensorrt=={torch_version}+{torch_backend}"]
+                        deps += ["--no-deps",f"torch-tensorrt=={torch_version}{torch_backend}"]
 
                     return_code = self.pip(deps, install)
                     return_codes.append(return_code)

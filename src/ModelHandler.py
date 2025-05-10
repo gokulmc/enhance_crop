@@ -395,18 +395,15 @@ totalModels = (
 )  # this doesnt include all models due to overwriting, but includes every case of every unique model name
 
 
-def getModels(backend):
+def getModels(backend:str):
     """
     returns models based on backend, used for populating the model comboboxes [interpolate, upscale]
     """
-    match backend:
+    match backend.split(" ")[0]:
         case "ncnn":
             interpolateModels = ncnnInterpolateModels
             upscaleModels = ncnnUpscaleModels
-        case "pytorch (cuda)":
-            interpolateModels = pytorchInterpolateModels
-            upscaleModels = pytorchUpscaleModels
-        case "pytorch (rocm)":
+        case "pytorch":
             interpolateModels = pytorchInterpolateModels
             upscaleModels = pytorchUpscaleModels
         case "tensorrt":

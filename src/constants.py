@@ -1,6 +1,7 @@
 import os
 import sys
 import requests
+import platform
 from PySide6.QtCore import QDir
 def networkCheck(hostname="https://raw.githubusercontent.com") -> bool:
     """
@@ -47,6 +48,7 @@ if IS_FLATPAK:
         )
     )
 
+CPU_ARCH = platform.machine()
 
 EXE_NAME = "REAL-Video-Enhancer.exe" if PLATFORM == "win32" else "REAL-Video-Enhancer"
 LIBS_NAME = "_internal" if PLATFORM == "win32" else "lib"

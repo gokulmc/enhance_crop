@@ -471,6 +471,8 @@ class ProcessTab:
         if (
             renderOptions.backend == "pytorch (cuda)"
             or renderOptions.backend == "pytorch (rocm)"
+            or renderOptions.backend == "pytorch (xpu)"
+            or renderOptions.backend == "pytorch (mps)"
         ):
             renderOptions.backend = (
                 "pytorch"  # pytorch is the same for both cuda and rocm
