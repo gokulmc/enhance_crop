@@ -533,7 +533,7 @@ def upflow8(flow, mode="bilinear"):
 
 
 try:
-    autocast = torch.amp.autocast
+    autocast = torch.cuda.amp.autocast
 except:
     # dummy autocast for PyTorch < 1.6
     class autocast:

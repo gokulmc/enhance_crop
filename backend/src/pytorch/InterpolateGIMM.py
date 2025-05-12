@@ -168,7 +168,7 @@ class InterpolateGIMMTorch(BaseInterpolate):
 
                     while self.flownet is None:
                         sleep(1)
-                    with torch.autocast(enabled=True, device_type="cuda"):
+                    with torch.autocast(enabled=True, device_type=self.device.type):
                         output = self.flownet(
                             xs, coord, timestep_tens, ds_factor=self.scale
                         )
