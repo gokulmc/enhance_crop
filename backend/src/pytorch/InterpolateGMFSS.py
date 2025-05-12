@@ -76,7 +76,7 @@ class InterpolateGMFSSTorch(BaseInterpolate):
     def _load(self):
         self.stream = self.torchUtils.init_stream()
         self.prepareStream = self.torchUtils.init_stream()
-        with torch.cuda.stream(self.prepareStream):  # type: ignore
+        with self.torchUtils.run_stream(self.prepareStream):  # type: ignore
             if self.dynamicScaledOpticalFlow:
                 from ..utils.SSIM import SSIM
 

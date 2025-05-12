@@ -51,10 +51,7 @@ class DySample(nn.Module):
         )
 
     def forward(self, x):
-        pd = 'border'
-        if x.device.type == "mps":
-            pd = 'zeros'
-            g = g.clamp(-1, 1)
+        
         offset = self.offset(x) * self.scope(x).sigmoid() * 0.5 + self.init_pos
         B, _, H, W = offset.shape
         offset = offset.view(B, 2, -1, H, W)
@@ -84,7 +81,10 @@ class DySample(nn.Module):
             .flatten(0, 1)
             .float()
         )
-        
+        pd = 'border'
+        if x.device.type == "mps":
+            pd = 'zeros'
+            coords = coords.clamp(-1, 1)
         output = (
             F.grid_sample(
                 x.reshape(B * self.groups, -1, H, W).float(), coords.float(), mode=pd, padding_mode="border", align_corners=False
