@@ -53,8 +53,12 @@ def checkForPytorchXPU() -> bool:
         log(str(e))
 
 def checkForPytorchMPS() -> bool:
-    import torch
-    return torch.backends.mps.is_available()
+    try:
+        import torch
+        return torch.backends.mps.is_available()
+    except ImportError as e:
+        log(str(e))
+        return False
 
 def checkForTensorRT() -> bool:
     """
