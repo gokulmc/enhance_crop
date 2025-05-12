@@ -87,7 +87,7 @@ class DySample(nn.Module):
             coords = coords.clamp(-1, 1)
         output = (
             F.grid_sample(
-                x.reshape(B * self.groups, -1, H, W).float(), coords.float(), mode=pd, padding_mode="border", align_corners=False
+                x.reshape(B * self.groups, -1, H, W).float(), coords.float(), mode="bilinear", padding_mode=pd, align_corners=False
             )
             .to(x.dtype)
             .view(B, -1, self.scale * H, self.scale * W)
