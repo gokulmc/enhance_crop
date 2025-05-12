@@ -60,9 +60,16 @@ class DownloadTab:
         if PLATFORM != "linux":
             disable_combobox_item_by_text(self.parent.pytorch_backend, "ROCm (Linux Only)")
         
-        if PLATFORM == "darwin" and CPU_ARCH == "arm64":
-            self.parent.pytorch_backend.setCurrentText("MPS (Apple Silicon)")
-            self.parent.pytorch_backend.setEnabled(False)
+        if PLATFORM == "darwin":
+            if CPU_ARCH == "arm64":
+                self.parent.pytorch_backend.clear()
+                self.parent.pytorch_backend.addItems(
+                    ["MPS (Apple Silicon)"]
+                )
+                self.parent.pytorch_backend.setCurrentText("MPS (Apple Silicon)")
+                self.parent.pytorch_backend.setEnabled(False)
+                self.parent.downloadTorchBtn.setEnabled(True)
+            self.parent.downloadTensorRTBtn.setEnabled(False)
         if IS_FLATPAK or USE_LOCAL_BACKEND:
             self.parent.uninstallAppBtn.setDisabled(True)
         else:
@@ -127,9 +134,7 @@ class DownloadTab:
         
     
     def enableCorrectBackends(self):
-        if PLATFORM == "darwin":
-            self.parent.downloadTorchBtn.setEnabled(CPU_ARCH == "arm64")
-            self.parent.downloadTensorRTBtn.setEnabled(False)
+            
 
 
         if FileHandler.getFreeSpace() < 7:
