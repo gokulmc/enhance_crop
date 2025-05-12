@@ -54,7 +54,19 @@ class DownloadTab:
         self.backends = backends
         self.applicationUpdater = ApplicationUpdater()
 
-        self.enableCorrectBackends()
+        if FileHandler.getFreeSpace() < 7:
+            self.parent.downloadTorchBtn.setEnabled(False)
+        if FileHandler.getFreeSpace() < 7:
+            self.parent.downloadTensorRTBtn.setEnabled(False)
+
+        # disable as it is not complete
+        try:
+            self.parent.downloadDirectMLBtn.setEnabled(False)
+            if PLATFORM != "win32":
+                self.parent.downloadDirectMLBtn.setEnabled(False)
+        except Exception as e:
+            print(e)
+
 
         # set this all to not visible, as scrapping the idea for now.
         if PLATFORM != "linux":
@@ -132,24 +144,8 @@ class DownloadTab:
             FileHandler().removeFolder(CWD)
             os._exit(0)
         
-    
-    def enableCorrectBackends(self):
-            
 
-
-        if FileHandler.getFreeSpace() < 7:
-            self.parent.downloadTorchBtn.setEnabled(False)
-        if FileHandler.getFreeSpace() < 7:
-            self.parent.downloadTensorRTBtn.setEnabled(False)
-
-        # disable as it is not complete
-        try:
-            self.parent.downloadDirectMLBtn.setEnabled(False)
-            if PLATFORM != "win32":
-                self.parent.downloadDirectMLBtn.setEnabled(False)
-        except Exception as e:
-            print(e)
-
+        
     def hideUninstallButtons(self):
         self.parent.uninstallTorchBtn.setVisible(False)
         self.parent.uninstallNCNNBtn.setVisible(False)
@@ -194,17 +190,18 @@ class DownloadTab:
         - None
         """
         if install and ("torch" in dep.lower() or "tensorrt" in dep.lower()):
-            reply = QMessageBox.question(
-                self.parent,
-                "",
-                "Old GTX cards require torch version 2.6.0.\nContinue installation?",
-                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-                QMessageBox.StandardButton.No,  # type: ignore
-            )
-            if reply == QMessageBox.Yes:  # type: ignore
-                pass
-            else:
-                return
+            if PLATFORM != "darwin":
+                reply = QMessageBox.question(
+                    self.parent,
+                    "",
+                    "Old GTX cards require torch version 2.6.0.\nContinue installation?",
+                    QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                    QMessageBox.StandardButton.No,  # type: ignore
+                )
+                if reply == QMessageBox.Yes:  # type: ignore
+                    pass
+                else:
+                    return
         pytorch_ver:TorchVersion|None = None
         current_pytorch_version = self.parent.pytorch_version.currentText().split()[0]
         current_pytorch_backend = self.parent.pytorch_backend.currentText().split()[0].lower()
