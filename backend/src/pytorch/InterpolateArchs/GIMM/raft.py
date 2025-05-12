@@ -14,8 +14,7 @@ import math
 import einops
 import torch.nn.functional as F
 
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
 backwarp_tenGrid = {}
 
 
@@ -48,10 +47,14 @@ def warp(tenInput, tenFlow):
     ).float()
 
     g = (backwarp_tenGrid[k] + tenFlow).permute(0, 2, 3, 1).float()
+    pd = 'border'
+    if tenInput.device.type == "mps":
+        pd = 'zeros'
+        g = g.clamp(-1, 1)
     return torch.nn.functional.grid_sample(
         input=tenInput,
         grid=g,
-        mode="bilinear",
+        mode=pd,
         padding_mode="border",
         align_corners=True,
     ).to(dtype=origdtype)
