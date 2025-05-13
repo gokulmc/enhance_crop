@@ -2,7 +2,7 @@
 - NOTE: Pre-releases are unstable, please use the stable build if you experience issues. 
         New features will be added to this release over time, the current changelog is not final. 
 ### Added
- - PyTorch MPS Support for MacOS.
+ - PyTorch MPS Support for MacOS (Special thanks to Gold John King on RVE Discord for testing the code)
 ### Changed
  - GUI Modifications.
  - Make torch 2.7 default, 2.6 now uses cuda 11.8
