@@ -200,6 +200,8 @@ class UpdateGUIThread(QThread):
             except FileNotFoundError:
                 # print("preview not available")
                 self.latestPreviewPixmap.emit(None)
+            except OSError:
+                log("Out of memory.")
             time.sleep(0.2)
 
     def convert_cv_qt(self, cv_img):

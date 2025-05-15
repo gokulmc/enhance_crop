@@ -47,7 +47,7 @@ class FFmpegRead(Buffer):
             stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL,
         )
-        self.readQueue = queue.Queue(maxsize=100)
+        self.readQueue = queue.Queue(maxsize=25)
 
     def command(self):
         log("Generating FFmpeg READ command...")
@@ -150,7 +150,7 @@ class FFmpegWrite(Buffer):
         self.subtitle_encoder = subtitle_encoder
         self.mpv_output = mpv_output
         self.hdr_mode = hdr_mode
-        self.writeQueue = queue.Queue(maxsize=100)
+        self.writeQueue = queue.Queue(maxsize=25)
         self.previewFrame = None
         self.framesRendered: int = 1
         self.writeProcess = None
@@ -196,7 +196,6 @@ class FFmpegWrite(Buffer):
                 f"{self.outputWidth}x{self.outputHeight}",
                 "-i",
                 "-",
-
                 "-to",
                 str(self.end_time-self.start_time),
                 "-r",
