@@ -1,6 +1,9 @@
-# RVE 2.3.0 pre-release
+# RVE 2.3.1 pre-release
 - NOTE: Pre-releases are unstable, please use the stable build if you experience issues. 
         New features will be added to this release over time, the current changelog is not final. 
+# Removed
+ - Fractional Interpolation.
+# RVE 2.3.0
 ### Added
  - PyTorch MPS Support for MacOS (Special thanks to Gold John King on RVE Discord for testing the code)
  - AniSD model suite.
