@@ -144,6 +144,8 @@ class IFNet(nn.Module):
         self.warp = warp
 
     def forward(self, img0, img1, timestep, tenFlow_div, backwarp_tenGrid, scale=None):
+        img0 = img0.clamp(0.,1.)
+        img1 = img1.clamp(0.,1.)
         if scale is not None:
             self.scale_list = [8 / scale, 4 / scale, 2 / scale, 1 / scale]
         warped_img0 = img0
