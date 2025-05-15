@@ -285,7 +285,7 @@ class Render:
         while True:
             if not self.informationHandler.get_is_paused():
                 frame = self.readBuffer.get()
-                self.write_bytes_to_cv2_frame_debug(frame)
+                #self.write_bytes_to_cv2_frame_debug(frame)
                 if frame is None:
                     self.informationHandler.stopWriting()
                     break
