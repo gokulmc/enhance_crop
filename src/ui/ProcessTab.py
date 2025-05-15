@@ -350,10 +350,10 @@ class ProcessTab:
         self.onRenderCompletion()
 
     def guiChangesOnRenderCompletion(self):
-        if all(return_code == 0 for return_code in self.return_codes) or self.userKilled:
+        if all(return_code == 0 or return_code == 3221225477 for return_code in self.return_codes) or self.userKilled: # 3221225477 comes up when using ncnn on windows for some reason, but no error in output itself.
             log("All render processes completed successfully")
         else:
-            log("Some render processes failed")
+            log("Some render processes failed: Error code: " + str(self.return_codes))
             RegularQTPopup("Rendering failed! Please check the logs tab!")
         # Have to swap the visibility of these here otherwise crash for some reason
         hide_layout_widgets(self.parent.onRenderButtonsContiainer)
