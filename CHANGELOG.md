@@ -13,6 +13,7 @@
 ### Fixed
  - Fixed ROCm installation not launching on linux.
  - Fix completely black output using specific resolutions with tensorrt. 
+ - Fix auto cropping.
 
 # RVE 2.2.5
  - Updates backend and python version.
