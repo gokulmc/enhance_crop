@@ -125,7 +125,7 @@ jobs:
     
       - name: compress archive
         run: |
-          zip -r REAL-Video-Enhancer-2.3.0-MacOS_x86_64.zip dist/
+          zip -r REAL-Video-Enhancer-2.3.0-MacOS_x86_64.zip dist/REAL-Video-Enhancer/
 
       - name: Save Archive as artifact
         uses: actions/upload-artifact@v4
@@ -161,7 +161,7 @@ jobs:
         run: |
 
 
-          zip -r REAL-Video-Enhancer-2.3.0-MacOS_arm64.zip dist/
+          zip -r REAL-Video-Enhancer-2.3.0-MacOS_arm64.zip dist/REAL-Video-Enhancer/
 
       - name: Save Archive as artifact
         uses: actions/upload-artifact@v4
