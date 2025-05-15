@@ -106,12 +106,7 @@ class TorchUtils:
         with self.run_stream(stream):  # type: ignore
             tensorToCopy.copy_(tensorCopiedTo, non_blocking=True)
         
-        if self.device_type == "cuda" and stream is not None:
-            stream.synchronize()
-        elif self.device_type == "mps":
-            torch.mps.synchronize() # Explicit MPS synchronization needed if results are used immediately by CPU
-        # For CPU, no explicit sync needed here as copy_ is generally synchronous,
-        # and DummyStream().synchronize() was a no-op anyway.
+            self.sync_stream(stream)
 
     @torch.inference_mode()
     def frame_to_tensor(self, frame, stream: torch.Stream, device: torch.device, dtype: torch.dtype) -> torch.Tensor: # stream might be None
@@ -134,14 +129,8 @@ class TorchUtils:
             if self.padding:
                 frame = F.pad(frame, self.padding)
                 
-        # After the context, decide on synchronization
-        if self.device_type == "cuda" and stream is not None:
-            stream.synchronize()
-        elif self.device_type == "mps":
-            # If 'frame' tensor is immediately returned and used by CPU,
-            # and 'to(device=device, non_blocking=True)' was used for MPS,
-            # an MPS sync might be needed before CPU access if not via .cpu()
-            torch.mps.synchronize() 
+            self.sync_stream(stream)
+            
         # No explicit sync for CPU here.
         return frame
     

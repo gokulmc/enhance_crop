@@ -315,7 +315,7 @@ class InterpolateRifeTorch(BaseInterpolate):
 
     def debug_save_tensor_as_img(self, img: torch.Tensor, name: str):
         import cv2
-        img = img.squeeze().permute(1,2,0).detach().cpu().numpy()
+        img = img.squeeze().permute(1,2,0).detach().cpu().numpy() * 255
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
         cv2.imwrite(name, img)
 
@@ -374,6 +374,7 @@ class InterpolateRifeTorch(BaseInterpolate):
                                 self.backwarp_tenGrid,
                                 closest_value,
                             )
+                        # self.debug_save_tensor_as_img(output, f"output/output{n}.png")
                     else:
                         if self.encode:
                             output = self.flownet(
@@ -394,6 +395,7 @@ class InterpolateRifeTorch(BaseInterpolate):
                                 self.backwarp_tenGrid,
                             )
                     output = self.torchUtils.tensor_to_frame(output[:, :, :self.height, :self.width])
+                    
                     yield output
 
                 else:

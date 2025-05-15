@@ -14,6 +14,7 @@ from .utils.SceneDetect import SceneDetect
 from .utils.Util import printAndLog, log, bytesToImg, resize_image_bytes
 from .utils.BorderDetect import BorderDetect
 from .utils.VideoInfo import OpenCVInfo
+import numpy as np
 
 
 def remove_shared_memory_block(name):
@@ -270,11 +271,21 @@ class Render:
             MPVoutThread = Thread(target=MPVOut.write_out_frames)
             MPVoutThread.start()
 
+    def write_bytes_to_cv2_frame_debug(self, frame):
+        # Convert the byte array to a numpy array
+        frame_array = np.frombuffer(frame, dtype=np.uint8)
+        # Reshape the array to the correct dimensions
+        frame_array = frame_array.reshape((self.height, self.width, 3))
+        # Convert the BGR image to RGB
+        frame_array = cv2.cvtColor(frame_array, cv2.COLOR_BGR2RGB)
+        cv2.imwrite("frame.jpg", frame_array)
+
     def render(self):
         frames_rendered = 0
         while True:
             if not self.informationHandler.get_is_paused():
                 frame = self.readBuffer.get()
+                self.write_bytes_to_cv2_frame_debug(frame)
                 if frame is None:
                     self.informationHandler.stopWriting()
                     break

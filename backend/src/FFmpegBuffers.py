@@ -56,9 +56,7 @@ class FFmpegRead(Buffer):
             "-i",
             f"{self.inputFile}",
             "-vf",
-            f"crop={self.width}:{self.height}:{self.borderX}:{self.borderY}",
-            "-vf",
-            "scale=w=iw*sar:h=ih", # fix when DAR does not match SAR https://github.com/TNTwise/REAL-Video-Enhancer/issues/63
+            f"crop={self.width}:{self.height}:{self.borderX}:{self.borderY},scale=w=iw*sar:h=ih", # fix when DAR does not match SAR https://github.com/TNTwise/REAL-Video-Enhancer/issues/63
             "-f",
             "image2pipe",
             "-pix_fmt",
@@ -157,6 +155,7 @@ class FFmpegWrite(Buffer):
         self.framesRendered: int = 1
         self.writeProcess = None
         self.merge_subtitles = merge_subtitles
+        log(f"FFmpegWrite parameters: inputFile={inputFile}, outputFile={outputFile}, width={width}, height={height}, start_time={start_time}, end_time={end_time}, fps={fps}, crf={crf}, audio_bitrate={audio_bitrate}, pixelFormat={pixelFormat}, overwrite={overwrite}, custom_encoder={custom_encoder}, benchmark={benchmark}, slowmo_mode={slowmo_mode}, upscaleTimes={upscaleTimes}, interpolateFactor={interpolateFactor}, ceilInterpolateFactor={ceilInterpolateFactor}, video_encoder={video_encoder}, audio_encoder={audio_encoder}, subtitle_encoder={subtitle_encoder}, hdr_mode={hdr_mode}, mpv_output={mpv_output}, merge_subtitles={merge_subtitles}")
         self.outputFPS = (
             (self.fps * self.interpolateFactor)
             if not self.slowmo_mode
@@ -403,6 +402,7 @@ class FFmpegWrite(Buffer):
         return self.framesRendered
 
     def put_frame_in_write_queue(self, frame):
+        
         self.writeQueue.put(frame)
 
     def write_out_frames(self):
@@ -421,6 +421,9 @@ class FFmpegWrite(Buffer):
                 frame = self.writeQueue.get()
                 if frame is None:
                     break
+                """if len(frame) < self.outputWidth * self.outputHeight * 3:
+                    print("Frame is too small, skipping...", file=sys.stderr)
+                    continue"""
                 self.writeProcess.stdin.buffer.write(frame)
 
             self.writeProcess.stdin.close()
