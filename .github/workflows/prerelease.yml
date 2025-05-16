@@ -192,13 +192,13 @@ jobs:
           echo "::set-output name=version::$version"
           echo "::set-output name=tag::$version"
           
-      - name: Compute SHA256 checksums
-        run: |
-          for file in artifacts/*; do
-            for file1 in $file/*; do
-              sha256sum "$file1" >> RELEASE_BODY.md
-            done
-          done
+      #- name: Compute SHA256 checksums
+      #  run: |
+      #    for file in artifacts/*; do
+      #      for file1 in $file/*; do
+      #        sha256sum "$file1" >> RELEASE_BODY.md
+      #      done
+      #    done
           
       - name: Create Release and Upload Release Asset
         uses: softprops/action-gh-release@v1        
