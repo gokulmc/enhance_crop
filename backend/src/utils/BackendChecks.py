@@ -43,7 +43,7 @@ def checkForPytorchXPU() -> bool:
         import torch
         import torchvision
 
-        if torch.mps.is_available():
+        if torch.xpu.is_available():
             return True
         return False
     except ImportError as e:
