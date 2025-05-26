@@ -10,13 +10,27 @@ from ..utils.Util import (
     warnAndLog,
 )
 
-class DummyStream(torch.Stream):
-   
+def dummy_function(*args, **kwargs):
+    """
+    A dummy function that does nothing.
+    This is used as a placeholder for device-specific functions that may not be available.
+    """
+    pass
 
-    def synchronize(self):
-        pass  # Dummy stream does not require synchronization
+def dummy_context_manager(*args, **kwargs):
+    """
+    A dummy context manager that does nothing.
+    This is used as a placeholder for device-specific context managers that may not be available.
+    """
+    return DummyContextManager()
 
 class DummyContextManager:
+    def __call__ (self, *args, **kwargs):
+        """
+        A dummy callable that returns a DummyContextManager instance.
+        This is used as a placeholder for device-specific context managers that may not be available.
+        """
+        return self
     def __enter__(self):
         return self  # could return any resource
 
@@ -47,7 +61,7 @@ class TorchUtils:
         if self.device_type == "mps":
             return torch.mps.synchronize
         if self.device_type == "cpu":
-            return torch.cpu.synchronize
+            return dummy_function  # CPU does not require explicit synchronization
         if self.device_type == "xpu":
             return torch.xpu.synchronize
         return lambda: warnAndLog(f"Unknown device type {self.device_type}, skipping stream synchronization.")
@@ -61,7 +75,7 @@ class TorchUtils:
         elif self.device_type == "xpu":
             return torch.xpu.Stream
         else:
-            return torch.cpu.Stream  # For CPU and MPS, we can use a dummy stream
+            return DummyContextManager # For CPU and MPS, we can use a dummy stream
     
     def __run_stream_function(self) -> callable:
         """
@@ -72,7 +86,7 @@ class TorchUtils:
         elif self.device_type == "xpu":
             return torch.xpu.stream
         else:
-            return torch.cpu.stream  # For CPU and MPS, we can use a dummy context manager
+            return  dummy_context_manager # For CPU and MPS, we can use a dummy context manager
     
     def init_stream(self):
         self.__init_stream_func()
@@ -96,7 +110,7 @@ class TorchUtils:
             if torch.cuda.is_available():
                 torchdevice = torch.device("cuda", gpu_id)
             else:
-                torchdevice = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
+                torchdevice = torch.device("mps" if torch.backends.mps.is_available() else "xpu" if torch.xpu.is_available() else "cpu")
         
         elif device == "cuda":
             torchdevice = torch.device(
