@@ -272,7 +272,7 @@ if __name__ == "__main__":
     args.add_argument("--build", help="Build the application with a specific builder.", default="gui", choices=["pyinstaller", "cx_freeze", "nuitka", "gui"])
     args.add_argument("--copy_backend", help="Copy the backend to the build directory", action="store_true")    
     args = args.parse_args()
-    if not os.path.exists("venv"):
+    if not os.path.exists("venv") or not args.build == "gui":
         BuildManager().python_manager.setup_python()
     BuildManager().build_resources()
     BuildManager().build_gui()
