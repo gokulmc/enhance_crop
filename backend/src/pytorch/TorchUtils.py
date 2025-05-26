@@ -7,15 +7,14 @@ from ..utils.BackendChecks import (
 )
 from ..constants import HAS_PYTORCH_CUDA
 from ..utils.Util import (
-    printAndLog,
-    errorAndLog,
     warnAndLog,
-    log,
 )
 
 class DummyStream(torch.Stream):
+   
+
     def synchronize(self):
-        pass
+        pass  # Dummy stream does not require synchronization
 
 class DummyContextManager:
     def __enter__(self):
@@ -35,30 +34,59 @@ class TorchUtils:
         self.hdr_mode = hdr_mode
         self.padding = padding
         if device_type == "auto":
-            self.device_type = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
+            self.device_type = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "xpu" if torch.xpu.is_available() else "cpu"    
         else:
             self.device_type = device_type
+        self.__init_stream_func = self.__init_stream_function()
+        self.__run_stream_func = self.__run_stream_function()
+        self.__sync_all_streams_func = self.__sync_all_streams_function()
+    
+    def __sync_all_streams_function(self):
+        if self.device_type == "cuda":
+            return torch.cuda.synchronize
+        if self.device_type == "mps":
+            return torch.mps.synchronize
+        if self.device_type == "cpu":
+            return torch.cpu.synchronize
+        if self.device_type == "xpu":
+            return torch.xpu.synchronize
+        return lambda: warnAndLog(f"Unknown device type {self.device_type}, skipping stream synchronization.")
+    
+    def __init_stream_function(self)-> callable:
+        """
+        Initializes the stream based on the device type.
+        """
+        if self.device_type == "cuda":
+            return torch.cuda.Stream
+        elif self.device_type == "xpu":
+            return torch.xpu.Stream
+        else:
+            return torch.cpu.Stream  # For CPU and MPS, we can use a dummy stream
+    
+    def __run_stream_function(self) -> callable:
+        """
+        Runs the stream based on the device type.
+        """
+        if self.device_type == "cuda":
+            return torch.cuda.stream
+        elif self.device_type == "xpu":
+            return torch.xpu.stream
+        else:
+            return torch.cpu.stream  # For CPU and MPS, we can use a dummy context manager
     
     def init_stream(self):
-        if self.device_type == "cuda":
-            return torch.cuda.Stream()
-        else:
-            return DummyStream()
+        self.__init_stream_func()
         
     def run_stream(self, stream):
-        if self.device_type == "cuda":
-            return torch.cuda.stream(stream)
-        else:
-            return DummyContextManager()
+        return self.__run_stream_func(stream) 
         
-    def sync_all_streams(self,):
-        if self.device_type == "cuda":
-            torch.cuda.synchronize()
-        if self.device_type == "mps":
-            torch.mps.synchronize()
-        if self.device_type == "cpu":
-            torch.cpu.synchronize()
-    
+    def sync_all_streams(self):
+        """
+        Synchronizes all streams based on the device type.
+        """
+        self.__sync_all_streams_func()
+        
+        
     @staticmethod
     def handle_device(device, gpu_id: int = 0) -> torch.device:
         """
@@ -95,10 +123,17 @@ class TorchUtils:
         return torch.float32
     
     def sync_stream(self, stream: torch.Stream):
-        if self.device_type == "cuda":
-            stream.synchronize()
-        elif self.device_type == "mps":
-            torch.mps.synchronize()
+        match self.device_type:
+            case "cuda" | "xpu":
+                stream.synchronize()
+            case "mps":
+                torch.mps.synchronize()
+            case "cpu":
+                pass  # CPU does not require explicit synchronization
+            case _:
+                warnAndLog(f"Unknown device type {self.device_type}, skipping stream synchronization.")
+                # For other devices, we assume no synchronization is needed.
+        
         
 
     @torch.inference_mode()
