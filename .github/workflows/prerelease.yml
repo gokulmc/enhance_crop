@@ -200,6 +200,10 @@ jobs:
       #        sha256sum "$file1" >> RELEASE_BODY.md
       #      done
       #    done
+
+      - name: Download flatpakref
+        run: |
+          wget https://dl.flathub.org/repo/appstream/io.github.tntwise.REAL-Video-Enhancer.flatpakref
           
       - name: Create Release and Upload Release Asset
         uses: softprops/action-gh-release@v1        
@@ -216,6 +220,7 @@ jobs:
               artifacts/REAL-Video-Enhancer-2.3.1-Linux-portable.zip/REAL-Video-Enhancer-2.3.1-Linux-portable.zip
               artifacts/REAL-Video-Enhancer-2.3.1-MacOS_x86_64.zip/REAL-Video-Enhancer-2.3.1-MacOS_x86_64.zip
               artifacts/REAL-Video-Enhancer-2.3.1-MacOS_arm64.zip/REAL-Video-Enhancer-2.3.1-MacOS_arm64.zip
+              io.github.tntwise.REAL-Video-Enhancer.flatpakref
               artifacts/backend-v2.3.1.tar.gz/backend-v2.3.1.tar.gz
 
               
