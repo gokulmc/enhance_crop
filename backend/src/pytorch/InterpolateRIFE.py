@@ -193,10 +193,6 @@ class InterpolateRifeTorch(BaseInterpolate):
         self.flownet = IFNet(
             scale=self.scale,
             ensemble=self.ensemble,
-            dtype=self.dtype,
-            device=self.device,
-            width=self.width,
-            height=self.height,
         )
 
         state_dict = {
