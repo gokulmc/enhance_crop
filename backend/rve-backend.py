@@ -132,6 +132,8 @@ class HandleApplication:
 
     def renderVideo(self):
         from src.RenderVideo import Render
+        
+
         Render(
             # model settings
             inputFile=self.args.input,
@@ -177,6 +179,7 @@ class HandleApplication:
             ensemble=self.args.ensemble,
             output_to_mpv=self.args.output_to_mpv,
         )
+        
 
     def handleArguments(self) -> argparse.ArgumentParser:
         """_summary_

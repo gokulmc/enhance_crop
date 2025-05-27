@@ -12,6 +12,8 @@ import distro
 import webbrowser
 import zipfile
 import sys
+import time
+from functools import wraps
 
 from .constants import CWD, HAS_NETWORK_ON_STARTUP, IS_FLATPAK, PLATFORM, HOME_PATH
 
@@ -518,3 +520,13 @@ def create_independent_process(target_func, *args, **kwargs):
     process.daemon = True
     
     return process
+
+def print_execution_time(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        end = time.time()
+        print(f"{func.__name__} : {end - start:.6f} seconds")
+        return result
+    return wrapper

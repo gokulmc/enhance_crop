@@ -282,6 +282,15 @@ class Render:
 
     def render(self):
         frames_rendered = 0
+        """
+        from viztracer import VizTracer
+        tracer = VizTracer()
+        tracer.start()
+        from pyinstrument import Profiler
+        profiler = Profiler()
+        profiler.start()
+        """
+
         while True:
             if not self.informationHandler.get_is_paused():
                 frame = self.readBuffer.get()
@@ -352,6 +361,12 @@ class Render:
             else:
                 sleep(1)
         self.writeBuffer.writeQueue.put(None)
+        """
+        tracer.stop()
+        tracer.save()
+        profiler.stop()
+        print(profiler.output_text(unicode=True, color=True))
+        """
     
     def upscalePytorchObject(self):
         from .pytorch.UpscaleTorch import UpscalePytorch
