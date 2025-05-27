@@ -376,7 +376,7 @@ class DownloadDependencies:
                 deps += ["cupy-cuda12x==13.3.0"] if "cu" in backend else []
                 return_code = self.pip(deps, install)
                 return_codes.append(return_code)
-
+                
                 if install:
                     deps = [
                         "--no-deps",
@@ -396,6 +396,8 @@ class DownloadDependencies:
                         
                     ]
                     if install:
+                        
+                        torch_version = torch_version[:-1] + "0" # remove the last character (2.7.1 -> 2.7.0), torch tensorrt doesnt release a new version for every new pytorch minor release
                         deps += ["--no-deps",f"torch-tensorrt=={torch_version}{torch_backend}"]
 
                     return_code = self.pip(deps, install)
