@@ -25,12 +25,8 @@ SOFTWARE.
 import torch
 import torch.nn as nn
 
-try:
-    from .interpolate import interpolate
-except:
-    from torch.nn.functional import interpolate
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
+from torch.nn.functional import interpolate
+from .warplayer import warp
 
 def conv(in_planes, out_planes, kernel_size=3, stride=1, padding=1, dilation=1):
     return nn.Sequential(
@@ -145,10 +141,6 @@ class IFNet(nn.Module):
         self,
         scale=1.0,
         ensemble=False,
-        dtype=torch.float32,
-        device: torch.device = torch.device("cuda"),
-        width=1920,
-        height=1080,
     ):
         super(IFNet, self).__init__()
         self.block0 = IFBlock(7 + 8, c=192)
@@ -157,19 +149,15 @@ class IFNet(nn.Module):
         self.block3 = IFBlock(8 + 4 + 8 + 8, c=64)
         self.block4 = IFBlock(8 + 4 + 8 + 8, c=32)
         self.encode = Head()
-        self.device = device
-        self.dtype = dtype
         self.scaleList = [16 / scale, 8 / scale, 4 / scale, 2 / scale, 1 / scale]
-        self.width = width
-        self.height = height
+
         if ensemble:
             import sys
 
             print("Ensemble is not supported with this model.", file=sys.stderr)
         self.blocks = [self.block0, self.block1, self.block2, self.block3, self.block4]
-        from .warplayer import warp
+        
 
-        self.warp = warp
 
     def forward(
         self, img0, img1, timestep, tenFlow_div, backwarp_tenGrid, f0, f1, scale=None
@@ -190,8 +178,8 @@ class IFNet(nn.Module):
                     scale=self.scaleList[i],
                 )
             else:
-                wf0 = self.warp(f0, flow[:, :2], tenFlow_div, backwarp_tenGrid)
-                wf1 = self.warp(f1, flow[:, 2:4], tenFlow_div, backwarp_tenGrid)
+                wf0 = warp(f0, flow[:, :2], tenFlow_div, backwarp_tenGrid)
+                wf1 = warp(f1, flow[:, 2:4], tenFlow_div, backwarp_tenGrid)
                 fd, m0, feat = self.blocks[i](
                     torch.cat(
                         (
@@ -210,7 +198,7 @@ class IFNet(nn.Module):
                 )
                 mask = m0
                 flow = flow + fd
-            warped_img0 = self.warp(img0, flow[:, :2], tenFlow_div, backwarp_tenGrid)
-            warped_img1 = self.warp(img1, flow[:, 2:4], tenFlow_div, backwarp_tenGrid)
+            warped_img0 = warp(img0, flow[:, :2], tenFlow_div, backwarp_tenGrid)
+            warped_img1 = warp(img1, flow[:, 2:4], tenFlow_div, backwarp_tenGrid)
         mask = torch.sigmoid(mask)
         return (warped_img0 * mask + warped_img1 * (1 - mask)).clamp(0.,1.).float()
