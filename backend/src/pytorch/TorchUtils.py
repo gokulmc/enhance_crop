@@ -89,7 +89,7 @@ class TorchUtils:
             return  dummy_context_manager # For CPU and MPS, we can use a dummy context manager
     
     def init_stream(self):
-        self.__init_stream_func()
+        return self.__init_stream_func()
         
     def run_stream(self, stream):
         return self.__run_stream_func(stream) 
