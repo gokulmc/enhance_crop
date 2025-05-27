@@ -190,7 +190,7 @@ class Render:
         if upscaleModel: # load model after interpolation model is loaded, this saves on vram if the user builds 2 separate engines
             self.upscaleOption.hotReload()
         
-        log(f"Upscale Times: {self.upscaleTimes}")
+        log(f"Upscale Times: {self.override_upscale_scale if self.override_upscale_scale else self.upscaleTimes}")
         log(f"Interpolate Factor: {self.interpolateFactor}")
         log(f"Total Output Frames: {self.totalOutputFrames}")
         log("Model Scale: " + str(self.modelScale))
@@ -221,7 +221,7 @@ class Render:
             custom_encoder=custom_encoder,
             benchmark=benchmark,
             slowmo_mode=slomo_mode,
-            upscaleTimes=self.upscaleTimes,
+            upscaleTimes=self.upscaleTimes if not self.override_upscale_scale else self.override_upscale_scale,
             interpolateFactor=self.interpolateFactor,
             ceilInterpolateFactor=self.ceilInterpolateFactor,
             video_encoder=video_encoder,
@@ -343,7 +343,6 @@ class Render:
                     frame = self.upscaleOption(
                         frame
                     )
-                
                 
                 self.informationHandler.setPreviewFrame(frame)
                 

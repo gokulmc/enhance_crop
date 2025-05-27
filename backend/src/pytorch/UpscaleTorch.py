@@ -269,16 +269,9 @@ class UpscalePytorch:
             while self.model is None:
                 sleep(1)
             if self.tilesize == 0:
-                # Pad input to match the shape TRT engine was built for, if needed
-                _, _, h, w = image.shape
-                if self.backend == "tensorrt" and (h != self.pad_h or w != self.pad_w):
-                    image = F.pad(image, (0, self.pad_w - w, 0, self.pad_h - h), "replicate")
-                    
+                
                 output = self.model(image)
-
-                # Crop output back to original size if padding was applied
-                if self.backend == "tensorrt" and (h != self.pad_h or w != self.pad_w):
-                     output = output[:, :, :h * self.scale, :w * self.scale]
+                
             else:
                 output = self.renderTiledImage(image)
             

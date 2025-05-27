@@ -526,13 +526,14 @@ class ProcessTab:
                 "--upscale_model",
                 modelPath,
             ]
+            command += ["--override_upscale_scale", f"{renderOptions.overrideUpscaleScale}"]
+            
             if renderOptions.tilingEnabled:
                 command += [
                     "--tilesize",
                     f"{renderOptions.tilesize}",
                 ]
-            "--override_upscale_scale",
-            f"{renderOptions.overrideUpscaleScale}",
+            
 
         if renderOptions.interpolateModel:
             command += [

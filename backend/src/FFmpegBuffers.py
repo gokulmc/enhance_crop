@@ -1,23 +1,18 @@
 import queue
 from abc import ABC, abstractmethod
-import cv2
 import os
 import subprocess
 import queue
 import sys
 import time
-import math
-import platform
+
 from .constants import FFMPEG_PATH, FFMPEG_LOG_FILE
 from .utils.Util import (
     log,
     printAndLog,
-    removeFile,
     subprocess_popen_without_terminal
 )
-from threading import Thread
-import numpy as np
-from .utils.Encoders import Encoder, EncoderSettings
+from .utils.Encoders import  EncoderSettings
 
 
 class Buffer(ABC):

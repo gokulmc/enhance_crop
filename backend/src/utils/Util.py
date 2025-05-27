@@ -123,10 +123,11 @@ def resize_image_bytes(image_bytes: bytes, width: int, height: int, target_width
     Returns:
         bytes: The resized image in bytes.
     """
+    log(f"Resizing image from {width}x{height} to {target_width}x{target_height}")
     if target_width == width and target_height == height:
         return image_bytes
-    channels = len(image_bytes) / (height * width) # 3 if RGB24/SDR, 6 if RGB48/HDR
-    dtype = np.uint8 if channels == 0 else np.uint16
+    channels = len(bytes(image_bytes)) / (height * width) # 3 if RGB24/SDR, 6 if RGB48/HDR
+    dtype = np.uint8 if channels == 3 else np.uint16
     # Convert bytes to numpy array
     if target_width < width or target_height < height:
         # Best for downscaling
@@ -195,7 +196,3 @@ class subprocess_popen_without_terminal(subprocess.Popen):
                 kwargs["startupinfo"].dwFlags |= subprocess.STARTF_USESHOWWINDOW
         super().__init__(*args, **kwargs)
     
-
-if __name__ == "__main__":
-    print(get_gpus_ncnn())
-    print(get_gpus_torch())
