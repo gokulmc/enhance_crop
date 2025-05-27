@@ -6,6 +6,10 @@
  - Patches for xpu (might work now)
 ### Removed
  - Fractional Interpolation.
+### Fixed
+ - Upscaling high ram usage.
+ - Incorrect upscale override.
+ - Slow upscale.
 # RVE 2.3.0
 ### Added
  - PyTorch MPS Support for MacOS (Special thanks to Gold John King on RVE Discord for testing the code)
