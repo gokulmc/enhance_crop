@@ -235,10 +235,10 @@ class Render:
         self.informationHandler = InformationWriteOut(
             sharedMemoryID=sharedMemoryID,
             paused_shared_memory_id=pause_shared_memory_id,
-            outputWidth=self.originalWidth * self.upscaleTimes,
-            outputHeight=self.originalHeight * self.upscaleTimes,
-            croppedOutputWidth=self.width * self.upscaleTimes,
-            croppedOutputHeight=self.height * self.upscaleTimes,
+            outputWidth=self.originalWidth ,
+            outputHeight=self.originalHeight,
+            croppedOutputWidth=self.width,
+            croppedOutputHeight=self.height,
             totalOutputFrames=self.totalOutputFrames,
             border_detect=border_detect,
             hdr_mode=hdr_mode,
@@ -248,8 +248,6 @@ class Render:
             self.originalHeight
             * self.originalWidth
             * 3  # channels
-            * self.upscaleTimes
-            * self.upscaleTimes
         )
 
         self.renderThread = Thread(target=self.render)
@@ -329,7 +327,9 @@ class Render:
                         self.informationHandler.setPreviewFrame(interpolated_frame)
                         self.informationHandler.setFramesRendered(frames_rendered)
                         self.writeBuffer.writeQueue.put(interpolated_frame)
-                        
+                
+                self.informationHandler.setPreviewFrame(frame)
+                
                 if self.denoiseModel:
                     frame = self.denoiseOption(
                         frame
@@ -344,7 +344,7 @@ class Render:
                         frame
                     )
                 
-                self.informationHandler.setPreviewFrame(frame)
+                
                 
                 if self.override_upscale_scale:
                     frame = resize_image_bytes(frame,
