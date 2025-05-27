@@ -388,7 +388,7 @@ class Settings:
                 "yuv422p10le",
                 "yuv444p10le",
             ),
-            "pytorch_version": "ANY",
+            "pytorch_version": ("2.7.1", "2.6.0"),
             "pytorch_backend": "ANY",
             "rocm_override_hack": ("True", "False")
         }
