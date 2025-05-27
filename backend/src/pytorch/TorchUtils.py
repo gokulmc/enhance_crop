@@ -95,7 +95,6 @@ class TorchUtils:
         return self.__run_stream_func(stream) 
 
     def sync_stream(self, stream: torch.Stream):
-        return
         match self.device_type:
             case "cuda" | "xpu":
                 stream.synchronize()
@@ -111,7 +110,6 @@ class TorchUtils:
         """
         Synchronizes all streams based on the device type.
         """
-        return
         self.__sync_all_streams_func()
         
         
