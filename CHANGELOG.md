@@ -1,6 +1,9 @@
-# RVE 2.3.1 pre-release
+# RVE 2.3.2 pre-relase
 - NOTE: Pre-releases are unstable, please use the stable build if you experience issues. 
         New features will be added to this release over time, the current changelog is not final. 
+
+# RVE 2.3.1
+
 ### Changed
  - Bump torch to 2.7.1
  - Patches for xpu (might work now)
