@@ -384,7 +384,8 @@ class HandleApplication:
                 "auto",
                 "cuda",
                 "mps",
-                "cpu"
+                "xpu",
+                "cpu",
             ]
             
         )
