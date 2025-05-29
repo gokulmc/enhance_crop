@@ -147,7 +147,7 @@ class HandleApplication:
             # backend settings
             device=self.args.device,
             backend=self.args.backend,
-            precision=self.args.precision,
+            precision=self.args.precision if self.args.device != "cpu" else "float32",
             pytorch_gpu_id=self.args.pytorch_gpu_id,
             ncnn_gpu_id=self.args.ncnn_gpu_id,
             # ffmpeg settings
@@ -378,7 +378,7 @@ class HandleApplication:
         )
         parser.add_argument(
             "--device",
-            help="Device used for inference. CUDA is used for any gpu device (cuda, rocm, xpu), MPS is for MacOS, and CPU is for well, cpu",
+            help="Device used for inference. CUDA is used for any CUDA/ROCm device, MPS is for MacOS, and CPU is for well, cpu (cuda, mps, xpu, cpu - float32 only)",
             default="auto",
             choices=[
                 "auto",
