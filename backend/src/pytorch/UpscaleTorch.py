@@ -9,10 +9,7 @@ import sys
 from time import sleep
 from ..constants import HAS_PYTORCH_CUDA
 
-from ..utils.BackendChecks import (
-    check_bfloat16_support,
-    get_gpus_torch,
-)
+from ..utils.Util import log
 import numpy as np
 def process_output(output, hdr_mode):
     # Step 1: Squeeze the first dimension
@@ -258,6 +255,14 @@ class UpscalePytorch:
         model = model.model
         model.load_state_dict(model.state_dict(), assign=True)
         model.eval().to(self.device, dtype=self.dtype)
+        try:
+            example_input = torch.zeros((1, 3, 64, 64), device=self.device, dtype=self.dtype)
+            model(example_input)
+        except Exception as e:
+            print("Error occured during model validation, falling back to float32 dtype.\n")
+            log(str(e))
+            model = model.to(self.device, dtype=torch.float32)
+            
         return model
 
     

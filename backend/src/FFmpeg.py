@@ -159,7 +159,7 @@ class InformationWriteOut:
         # Create a shared memory block
         if self.sharedMemoryID is not None:
             log(f"Shared memory name: {self.shm.name}")
-
+        i = 0
         while not self.stop:
             
             if self.previewFrame is not None and self.framesRendered > 0:
@@ -167,6 +167,9 @@ class InformationWriteOut:
                 fps = round(self.framesRendered / (time.time() - self.startTime))
                 eta = self.calculateETA(framesRendered=self.framesRendered)
                 message = f"FPS: {fps} Current Frame: {self.framesRendered} ETA: {eta}"
+                if i == 0:
+                    print("1\n", file=sys.stderr)
+                    i = 1
                 self.realTimePrint(message)
                 if self.sharedMemoryID is not None and self.previewFrame is not None:
                     # Update the shared array
