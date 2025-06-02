@@ -174,8 +174,6 @@ class IFNet(nn.Module):
             import sys
 
             print("Ensemble is not supported with this model.", file=sys.stderr)
-        self.width = width
-        self.height = height
         self.blocks = [self.block0, self.block1, self.block2, self.block3]
 
         
