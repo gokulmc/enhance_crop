@@ -16,8 +16,8 @@ class TorchVersion:
     mps_version: str
 
 
-class Torch2_7_1(TorchVersion):
-    torch_version = "2.7.1"
+class Torch2_7(TorchVersion):
+    torch_version = "2.7.0"
     torchvision_version = "0.22.0"
     cuda_version = "+cu128"
     rocm_version = "+rocm6.3"

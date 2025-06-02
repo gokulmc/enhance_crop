@@ -337,7 +337,7 @@ class Settings:
             "auto_border_cropping": "False",
             "video_container": "mkv",
             "video_pixel_format": "yuv420p",
-            "pytorch_version": "2.7.1",
+            "pytorch_version": "2.7.0",
             "pytorch_backend": "CUDA",
             "rocm_override_hack": "True",
         }
@@ -388,7 +388,7 @@ class Settings:
                 "yuv422p10le",
                 "yuv444p10le",
             ),
-            "pytorch_version": ("2.7.1", "2.6.0"),
+            "pytorch_version": ("2.7.0", "2.6.0"),
             "pytorch_backend": "ANY",
             "rocm_override_hack": ("True", "False")
         }
