@@ -1,6 +1,7 @@
-# RVE 2.3.2 pre-relase
+# RVE 2.3.3 pre-release
 - NOTE: Pre-releases are unstable, please use the stable build if you experience issues. 
         New features will be added to this release over time, the current changelog is not final. 
+# RVE 2.3.2
 ### Added
  - Fallback to float32 if float16 does not work with custom arch.
 ### Fixed
