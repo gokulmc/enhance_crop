@@ -3,6 +3,8 @@
         New features will be added to this release over time, the current changelog is not final. 
 ### Added
  - Fallback to float32 if float16 does not work with custom arch.
+### Fixed
+ - TensorRT upscaling on windows due to PyTorch version. Please completely uninstall and reinstall if this issue impacts you.
 
 # RVE 2.3.1
 ### Changed
