@@ -111,6 +111,7 @@ class ProcessTab:
             lambda: self.parent.renderQueue.moveitem("down")
         )
         self.parent.inputFileSelectButton.clicked.connect(self.parent.openInputFile)
+        self.parent.batchSelectButton.clicked.connect(self.parent.openBatchFiles)
         self.parent.inputFileText.textChanged.connect(self.parent.loadVideo)
         self.parent.outputFileSelectButton.clicked.connect(self.parent.openOutputFolder)
         # connect render button

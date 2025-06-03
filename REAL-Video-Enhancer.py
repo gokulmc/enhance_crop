@@ -106,6 +106,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.isVideoLoaded = False
         self.anyBackendsInstalled = True
         self.videoLength = 1
+        self.batchVideos = []
 
 
         settings = Settings()
@@ -349,7 +350,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             scale = int(self.upscaleScaleSpinBox.value())
         return scale
 
-    def setDefaultOutputFile(self, outputDirectory):
+    def setDefaultOutputFile(self, inputFile, outputDirectory):
         """
         Sets the default output file for the video enhancer.
         Parameters:
@@ -360,7 +361,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # check if there is a video loaded
         if self.isVideoLoaded:
-            inputFile = self.inputFileText.text()
+            if inputFile.strip().replace(" ", "") == "{MULTIPLE_FILES}":
+                inputFile = " { FILE_NAME } "
             upscaleModelName = self.upscaleModelComboBox.currentText()
             interpolateModelName = self.interpolateModelComboBox.currentText()
             interpolateTimes = self.getInterpolationMultiplier(interpolateModelName)
@@ -404,16 +406,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.upscaleContainer.setVisible(isUpscale)
         self.generalUpscaleContainer.setVisible(isUpscale)
         self.settings.readSettings()
-        self.setDefaultOutputFile(self.settings.settings["output_folder_location"])
+        self.setDefaultOutputFile(self.inputFileText.text(), self.settings.settings["output_folder_location"])
         self.updateVideoGUIText()
         self.startTimeSpinBox.setMaximum(self.videoLength)
         self.endTimeSpinBox.setMaximum(self.videoLength)
         self.timeInVideoScrollBar.setMaximum(self.videoLength)
         
-    def getCurrentRenderOptions(self):
+    def getCurrentRenderOptions(self, input_file=None, output_path=None):
         interpolate = self.interpolateModelComboBox.currentText()
         upscale = self.upscaleModelComboBox.currentText()
-        output_path = self.outputFileText.text()
+        input_file = self.inputFileText.text() if input_file is None else input_file
+        output_path = output_path if output_path else self.outputFileText.text()
         if not self.interpolateCheckBox.isChecked():
             interpolate = None
         if not self.upscaleCheckBox.isChecked():
@@ -468,7 +471,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     return 1
 
         return RenderOptions(
-            inputFile=self.inputFileText.text(),
+            inputFile=input_file,
             outputPath=output_path,
             videoWidth=self.videoWidth,
             videoHeight=self.videoHeight,
@@ -499,7 +502,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def addToRenderQueue(self):
         self.settings.readSettings()
+        input_file = self.inputFileText.text()
         output_path = self.outputFileText.text()
+
+        if "{MULTIPLE_FILES}" in input_file.strip().replace(" ", ""):
+            for video in self.batchVideos:
+                videoHandler = VideoLoader(video)
+                videoHandler.loadVideo()
+                videoHandler.getData()
+                self.videoWidth = videoHandler.width
+                self.videoHeight = videoHandler.height
+                self.videoFps = videoHandler.fps
+                self.videoLength = videoHandler.duration
+                self.videoFrameCount = videoHandler.total_frames
+                self.videoEncoder = videoHandler.codec_str
+                self.videoBitrate = videoHandler.bitrate
+                self.videoContainer = videoHandler.videoContainer
+
+                renderOptions = self.getCurrentRenderOptions(
+                    input_file=video,
+                    output_path=self.setDefaultOutputFile(video, self.settings.settings["output_folder_location"]),
+                )
+                if renderOptions == 1:
+                    return
+                # alert user that item has been added to queue
+                self.renderQueue.add(renderOptions)
+            return
 
 
         for renderOptions in self.renderQueue.getQueue():
@@ -547,25 +575,47 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             child.setEnabled(True)
         self.RenderedPreviewControlsContainer.setEnabled(True)
 
-    def loadVideo(self, inputFile):
-        videoHandler = VideoLoader(inputFile)
-        videoHandler.loadVideo()
-        if (
-            not videoHandler.isValidVideo()
-        ):  # this handles case for invalid youtube link and invalid video file
-            NotificationOverlay("Not a valid input!", self, timeout=1500)
-            return
-        videoHandler.getData()
-        self.videoWidth = videoHandler.width
-        self.videoHeight = videoHandler.height
-        self.videoFps = videoHandler.fps
-        self.videoLength = videoHandler.duration
-        self.videoFrameCount = videoHandler.total_frames
-        self.videoEncoder = videoHandler.codec_str
-        self.videoBitrate = videoHandler.bitrate
-        self.videoContainer = videoHandler.videoContainer
+    def loadVideo(self, inputFile, multi_file=False):
+        if multi_file:
+            for file in os.listdir(inputFile):
+                video = os.path.join(inputFile, file)
+                videoHandler = VideoLoader(video)
+                videoHandler.loadVideo()
+                if videoHandler.isValidVideo():
+                   self.batchVideos.append(video)
+            if self.batchVideos == 0:
+                NotificationOverlay("No valid videos found in the selected folder!", self, timeout=1500)
+                return
+            NotificationOverlay("Loaded " + str(len(self.batchVideos)) + " videos.", self, timeout=1500)
+            self.inputFileText.setText(" { MULTIPLE_FILES } ")
+            self.videoWidth = 0
+            self.videoHeight = 0
+            self.videoFps = 0
+            self.videoLength = 0
+            self.videoFrameCount = 0
+            self.videoEncoder = "Multi File"
+            self.videoBitrate = "Multi File"
+            self.videoContainer = "Multi File"
+        else:
+                    
+            videoHandler = VideoLoader(inputFile)
+            videoHandler.loadVideo()
+            if (
+                not videoHandler.isValidVideo()
+            ):  # this handles case for invalid youtube link and invalid video file
+                NotificationOverlay("Not a valid input!", self, timeout=1500)
+                return
+            videoHandler.getData()
+            self.videoWidth = videoHandler.width
+            self.videoHeight = videoHandler.height
+            self.videoFps = videoHandler.fps
+            self.videoLength = videoHandler.duration
+            self.videoFrameCount = videoHandler.total_frames
+            self.videoEncoder = videoHandler.codec_str
+            self.videoBitrate = videoHandler.bitrate
+            self.videoContainer = videoHandler.videoContainer
 
-        self.inputFileText.setText(inputFile)
+            self.inputFileText.setText(inputFile)
         self.outputFileText.setEnabled(True)
         self.outputFileSelectButton.setEnabled(True)
         self.isVideoLoaded = True
@@ -594,6 +644,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             filter=fileFilter,
         )
         self.loadVideo(inputFile)
+    
+    def openBatchFiles(self):
+        inputFolder = QFileDialog.getExistingDirectory(
+            self,
+            caption="Select Input Directory",
+            dir=self.homeDir,
+        )
+        self.loadVideo(inputFolder, multi_file=True)
 
     def importCustomModel(self, format: str):
         """
@@ -704,7 +762,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             dir=self.homeDir,
         )
         self.outputFileText.setText(
-            os.path.join(outputFolder, self.setDefaultOutputFile(outputFolder))
+            os.path.join(outputFolder, self.setDefaultOutputFile(self.inputFileText.text(), outputFolder))
         )
 
     def closeEvent(self, event):

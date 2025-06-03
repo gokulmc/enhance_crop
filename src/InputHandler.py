@@ -1,11 +1,12 @@
 import cv2
-
+from .Util import log
 
 class VideoLoader:
     def __init__(self, inputFile):
         self.inputFile = inputFile
 
     def loadVideo(self):
+        log(f"Loading video file: {self.inputFile}")
         self.capture = cv2.VideoCapture(self.inputFile, cv2.CAP_FFMPEG)
 
     def isValidVideo(self):
