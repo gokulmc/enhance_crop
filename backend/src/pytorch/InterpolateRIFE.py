@@ -41,6 +41,10 @@ class InterpolateRifeTorch(BaseInterpolate):
         # trt options
         trt_optimization_level: int = 5,
         hdr_mode: bool = False,
+        trt_static_shape: bool = True,
+        trt_min_shape: list[int] = [128, 128],
+        trt_opt_shape: list[int] = [1920, 1080],
+        trt_max_shape: list[int] = [1920, 1080],
         *args,
         **kwargs,
     ):
@@ -53,6 +57,10 @@ class InterpolateRifeTorch(BaseInterpolate):
         self.backend = backend
         self.ceilInterpolateFactor = ceilInterpolateFactor
         self.dynamicScaledOpticalFlow = dynamicScaledOpticalFlow
+        self.trt_static_shape = trt_static_shape
+        self.trt_min_shape = trt_min_shape
+        self.trt_opt_shape = trt_opt_shape
+        self.trt_max_shape = trt_max_shape
         self.CompareNet = None
         self.frame0 = None
         self.encode0 = None
@@ -146,6 +154,7 @@ class InterpolateRifeTorch(BaseInterpolate):
             )  # set pad to higher for better dynamic optical scale support
         else:
             tmp = max(_pad, int(_pad / self.scale))
+
         self.pw = math.ceil(self.width / tmp) * tmp
         self.ph = math.ceil(self.height / tmp) * tmp
         self.padding = (0, self.pw - self.width, 0, self.ph - self.height)
@@ -279,27 +288,28 @@ class InterpolateRifeTorch(BaseInterpolate):
             # lay out inputs
             # load flow engine
             if not os.path.isfile(trt_engine_path):
-                if self.encode:
-                    flownet_inputs = (
-                        torch.zeros([1, 3, self.ph, self.pw], dtype=self.dtype, device=self.device),
-                        torch.zeros([1, 3, self.ph, self.pw], dtype=self.dtype, device=self.device),
-                        torch.zeros([1, 1, self.ph, self.pw], dtype=self.dtype, device=self.device),
-                        torch.zeros([2], dtype=torch.float, device=self.device),
-                        torch.zeros([1, 2, self.ph, self.pw], dtype=torch.float, device=self.device),
-                        torch.zeros([1, num_ch_for_encode, self.ph, self.pw], dtype=self.dtype, device=self.device),
-                        torch.zeros([1, num_ch_for_encode, self.ph, self.pw], dtype=self.dtype, device=self.device),
-                    )
+                if self.trt_static_shape:
+                    if self.encode:
+                        flownet_inputs = (
+                            torch.zeros([1, 3, self.ph, self.pw], dtype=self.dtype, device=self.device),
+                            torch.zeros([1, 3, self.ph, self.pw], dtype=self.dtype, device=self.device),
+                            torch.zeros([1, 1, self.ph, self.pw], dtype=self.dtype, device=self.device),
+                            torch.zeros([2], dtype=torch.float, device=self.device),
+                            torch.zeros([1, 2, self.ph, self.pw], dtype=torch.float, device=self.device),
+                            torch.zeros([1, num_ch_for_encode, self.ph, self.pw], dtype=self.dtype, device=self.device),
+                            torch.zeros([1, num_ch_for_encode, self.ph, self.pw], dtype=self.dtype, device=self.device),
+                        )
 
-                    encode_inputs = (torch.zeros([1, 3, self.ph, self.pw], dtype=self.dtype, device=self.device),)
+                        encode_inputs = (torch.zeros([1, 3, self.ph, self.pw], dtype=self.dtype, device=self.device),)
 
-                else:
-                    flownet_inputs = (
-                        torch.zeros([1, 3, self.ph, self.pw], dtype=self.dtype, device=self.device),
-                        torch.zeros([1, 3, self.ph, self.pw], dtype=self.dtype, device=self.device),
-                        torch.zeros([1, 1, self.ph, self.pw], dtype=self.dtype, device=self.device),
-                        torch.zeros([2], dtype=torch.float, device=self.device),
-                        torch.zeros([1, 2, self.ph, self.pw], dtype=torch.float, device=self.device),
-                    )
+                    else:
+                        flownet_inputs = (
+                            torch.zeros([1, 3, self.ph, self.pw], dtype=self.dtype, device=self.device),
+                            torch.zeros([1, 3, self.ph, self.pw], dtype=self.dtype, device=self.device),
+                            torch.zeros([1, 1, self.ph, self.pw], dtype=self.dtype, device=self.device),
+                            torch.zeros([2], dtype=torch.float, device=self.device),
+                            torch.zeros([1, 2, self.ph, self.pw], dtype=torch.float, device=self.device),
+                        )
 
                 trtHandler.build_engine(self.flownet,  self.dtype, self.device, flownet_inputs, trt_engine_path, trt_multi_precision_engine=True)
 

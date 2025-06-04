@@ -387,12 +387,12 @@ class DownloadDependencies:
                 return_codes.append(return_code)
 
                 if backend == "tensorrt":
-                    
+                    trt_ver = "10.9.0.34"
                     deps = [
-                        "tensorrt==10.10.0.31",
-                        "tensorrt_cu12==10.10.0.31",
-                        "tensorrt-cu12_libs==10.10.0.31",
-                        "tensorrt_cu12_bindings==10.10.0.31",
+                        f"tensorrt=={trt_ver}",
+                        f"tensorrt_cu12=={trt_ver}",
+                        f"tensorrt-cu12_libs=={trt_ver}",
+                        f"tensorrt_cu12_bindings=={trt_ver}",
                         
                     ]
                     if install:

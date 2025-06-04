@@ -33,23 +33,23 @@ with suppress_stdout_stderr():
     from torch.export.exported_program import ExportedProgram
 
 def torchscript_to_dynamo(
-            model: torch.nn.Module, example_inputs: list[torch.Tensor]
+            model: torch.nn.Module, example_inputs: list[torch.Tensor], dynamic_shapes=None
         ) -> ExportedProgram:
             """Converts a TorchScript module to a Dynamo program."""
             module = torch.jit.trace(model, example_inputs)
             exported_program = TS2EPConverter(
-                module, sample_args=tuple(example_inputs), sample_kwargs=None
+                module, sample_args=tuple(example_inputs), sample_kwargs=None, dynamic_shapes=dynamic_shapes
             ).convert()
             del module
             torch.cuda.empty_cache()
             return exported_program
 
 def nnmodule_to_dynamo(
-    model: torch.nn.Module, example_inputs: list[torch.Tensor]
+    model: torch.nn.Module, example_inputs: list[torch.Tensor], dynamic_shapes=None
 ) -> ExportedProgram:
     """Converts a nn.Module to a Dynamo program."""
     return torch.export.export(
-        model, tuple(example_inputs), dynamic_shapes=None
+        model, tuple(example_inputs), dynamic_shapes=dynamic_shapes
     )
 
 """onnx_support = True
@@ -101,38 +101,7 @@ class TorchTensorRTHandler:
 
    
     
-    @torch.inference_mode()
-    def dynamo_multi_precision_export(self, exported_program, example_inputs, device):
-        
-            return torch_tensorrt.dynamo.compile(
-                exported_program,
-                tuple(example_inputs),
-                device=device,
-                use_explicit_typing=True,
-                debug=self.debug,
-                num_avg_timing_iters=4,
-                workspace_size=self.trt_workspace_size,
-                min_block_size=1,
-                max_aux_streams=self.max_aux_streams,
-                optimization_level=self.optimization_level,
-                #tiling_optimization_level="full",
-            )
     
-    @torch.inference_mode()
-    def dynamo_export(self, exported_program, example_inputs, device, dtype):
-            return torch_tensorrt.dynamo.compile(
-                exported_program,
-                tuple(example_inputs),
-                device=device,
-                enabled_precisions={dtype},
-                debug=self.debug,
-                num_avg_timing_iters=4,
-                workspace_size=self.trt_workspace_size,
-                min_block_size=1,
-                max_aux_streams=self.max_aux_streams,
-                optimization_level=self.optimization_level,
-                #tiling_optimization_level="full",
-            )
 
     def grid_sample_decomp(self, exported_program):
         from torch_tensorrt.dynamo.conversion.impl.grid import GridSamplerInterpolationMode
@@ -154,22 +123,24 @@ class TorchTensorRTHandler:
         dtype: torch.dtype,
         trt_engine_path: str,
         trt_multi_precision_engine: bool = False,
+        dynamic_shapes: dict | None = None,
+        
     ):
-
+        
         """Exports a model using TensorRT Dynamo."""
         if self.dynamo_export_format == "nn2exportedprogram":
-            exported_program = nnmodule_to_dynamo(model, example_inputs)
+            exported_program = nnmodule_to_dynamo(model, example_inputs, dynamic_shapes=dynamic_shapes)
         elif self.dynamo_export_format == "torchscript2exportedprogram":
-            exported_program = torchscript_to_dynamo(model, example_inputs)
+            exported_program = torchscript_to_dynamo(model, example_inputs, dynamic_shapes=dynamic_shapes)
         elif self.dynamo_export_format == "fallback":
             try:
-                exported_program = nnmodule_to_dynamo(model, example_inputs)
+                exported_program = nnmodule_to_dynamo(model, example_inputs, dynamic_shapes=dynamic_shapes)
             except Exception as e:
                 print(
                     "Failed to export using nn2exportedprogram. Falling back to torchscript2exportedprogram...",
                     file=sys.stderr,
                 )
-                exported_program = torchscript_to_dynamo(model, example_inputs)
+                exported_program = torchscript_to_dynamo(model, example_inputs, dynamic_shapes=dynamic_shapes)
         else:
             raise ValueError(f"Unsupported export format: {self.dynamo_export_format}")
 
@@ -177,10 +148,21 @@ class TorchTensorRTHandler:
 
         exported_program = self.grid_sample_decomp(exported_program)
         
-        if trt_multi_precision_engine:
-            model_trt = self.dynamo_multi_precision_export(exported_program, example_inputs, device)
-        else:
-            model_trt = self.dynamo_export(exported_program, example_inputs, device, dtype)
+        model_trt = torch_tensorrt.dynamo.compile(
+            exported_program,
+            tuple(example_inputs),
+            device=device,
+            enabled_precisions={dtype} if not trt_multi_precision_engine else {torch.float},
+            use_explicit_typing=trt_multi_precision_engine,
+            debug=self.debug,
+            num_avg_timing_iters=4,
+            workspace_size=self.trt_workspace_size,
+            min_block_size=1,
+            max_aux_streams=self.max_aux_streams,
+            optimization_level=self.optimization_level,
+            #tiling_optimization_level="full",
+        )
+      
 
         torch_tensorrt.save(
             model_trt,
@@ -197,9 +179,7 @@ class TorchTensorRTHandler:
         device: torch.device,
         dtype: torch.dtype,
         trt_engine_path: str,
-        trt_min_shape: int = [1,3,224,224],
-        trt_opt_shape: int = [1,3,720,1280],
-        trt_max_shape: int = [1,3,1080,1920],
+        dynamic_shapes: dict | None = None,
     ):
         """Exports a model using TorchScript."""
 
@@ -228,6 +208,8 @@ class TorchTensorRTHandler:
         example_inputs: list[torch.Tensor],
         trt_engine_path: str,
         trt_multi_precision_engine: bool = False,
+        dynamic_shapes: dict | None = None,
+        
     ):
         torch.cuda.empty_cache()
         """Builds a TensorRT engine from the provided model."""
@@ -236,24 +218,19 @@ class TorchTensorRTHandler:
             file=sys.stderr,
         )
         if self.export_format == "dynamo":
-            if self.debug:
+            with suppress_stdout_stderr():
                 self.export_using_dynamo(
-                    model, example_inputs, device, dtype, trt_engine_path, trt_multi_precision_engine=trt_multi_precision_engine
-                )
-            else:
-                 with suppress_stdout_stderr():
-                    self.export_using_dynamo(
-                        model, example_inputs, device, dtype, trt_engine_path, trt_multi_precision_engine=trt_multi_precision_engine
-                    )
+                model, example_inputs, device, dtype, trt_engine_path, trt_multi_precision_engine=trt_multi_precision_engine, dynamic_shapes=dynamic_shapes,
+            )
         elif self.export_format == "torchscript":
             self.export_torchscript_model(
-                model, example_inputs, device, dtype, trt_engine_path
+                model, example_inputs, device, dtype, trt_engine_path, dynamic_shapes=dynamic_shapes,
             )
         else:
             try:
                  with suppress_stdout_stderr():
                     self.export_using_dynamo(
-                        model, example_inputs, device, dtype, trt_engine_path
+                        model, example_inputs, device, dtype, trt_engine_path, trt_multi_precision_engine=trt_multi_precision_engine, dynamic_shapes=dynamic_shapes,
                     )
             except Exception as e:
                 print(
@@ -261,7 +238,7 @@ class TorchTensorRTHandler:
                     file=sys.stderr,
                 )
                 self.export_torchscript_model(
-                    model, example_inputs, device, dtype, trt_engine_path
+                    model, example_inputs, device, dtype, trt_engine_path, dynamic_shapes=dynamic_shapes,
                 )
         
         torch.cuda.empty_cache()
