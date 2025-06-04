@@ -134,10 +134,11 @@ class RRDBNet(nn.Module):
         )
 
     def forward(self, x):
+        x = x.clamp(0.0, 1.0)
         if self.shuffle_factor:
             _, _, h, w = x.size()
             x = pad_to_multiple(x, self.shuffle_factor, mode="reflect")
             x = torch.pixel_unshuffle(x, downscale_factor=self.shuffle_factor)
             x = self.model(x)
             return x[:, :, : h * self.scale, : w * self.scale]
-        return self.model(x)
+        return self.model(x).clamp(0.0, 1.0).float()

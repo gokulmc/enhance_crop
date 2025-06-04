@@ -289,6 +289,7 @@ class SPAN(nn.Module):
         return self.no_norm is None
 
     def forward(self, x):
+        x = x.clamp(0., 1.)
         self.device = x.device
         self.dtype = x.dtype
         if self.dtype == torch.float16:
@@ -313,4 +314,4 @@ class SPAN(nn.Module):
         out = self.conv_cat(torch.cat([out_feature, out_b6, out_b1, out_b5_2], 1))
         output = self.upsampler(out)
 
-        return output
+        return output.clamp(0., 1.).float()

@@ -72,6 +72,7 @@ class SRVGGNetCompact(nn.Module):
         self.upsampler = nn.PixelShuffle(upscale)
 
     def forward(self, x):
+        x = x.clamp(0.,1.)
         out = x
         for i in range(0, len(self.body)):
             out = self.body[i](out)
@@ -80,4 +81,4 @@ class SRVGGNetCompact(nn.Module):
         # add the nearest upsampled image, so that the network learns the residual
         base = F.interpolate(x, scale_factor=self.upscale, mode="nearest")
         out += base
-        return out
+        return out.clamp(0.,1.).float()

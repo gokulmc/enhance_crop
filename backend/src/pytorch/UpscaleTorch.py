@@ -170,7 +170,7 @@ class UpscalePytorch:
 
 
                 trtHandler = TorchTensorRTHandler(
-                    export_format="torchscript", # torchscript due to wonky resolution issues with dynamo
+                    export_format="fallback", # torchscript due to wonky resolution issues with dynamo
                     dynamo_export_format="fallback",
                     trt_optimization_level=self.trt_optimization_level,
 
@@ -191,7 +191,7 @@ class UpscalePytorch:
                             if self.trt_workspace_size > 0
                             else ""
                         )
-                        + ".ts"
+                        + ".dyn"
                     ),
                 )
 
