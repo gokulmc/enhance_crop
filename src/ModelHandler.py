@@ -23,7 +23,7 @@ ncnnInterpolateModels = {
         1,
         "rife413",
     ),
-    "RIFE 4.22 (Slowest RIFE Model, Animation)": (
+    "RIFE 4.22 (Slow, Animation)": (
         "rife-v4.22",
         "rife-v4.22.tar.gz",
         1,
@@ -35,9 +35,21 @@ ncnnInterpolateModels = {
         1,
         "rife422-lite",
     ),
-    "RIFE 4.25 (Latest General Model, Recommended)": (
+    "RIFE 4.25": (
         "rife-v4.25",
         "rife-v4.25.tar.gz",
+        1,
+        "rife425",
+    ),
+    "RIFE 4.26 Heavy (Slowest RIFE Model, Animation)": (
+        "rife-v4.26-heavy",
+        "rife-v4.26-heavy.tar.gz",
+        1,
+        "rife425-heavy",
+    ),
+    "RIFE 4.26 (Latest General Model, Recommended)": (
+        "rife-v4.26",
+        "rife-v4.26.tar.gz",
         1,
         "rife425",
     ),
@@ -65,7 +77,7 @@ pytorchInterpolateModels = {
         1,
         "rife413",
     ),
-    "RIFE 4.22 (Slowest RIFE Model, Animation)": (
+    "RIFE 4.22 (Slow, Animation)": (
         "rife4.22.pkl",
         "rife4.22.pkl",
         1,
@@ -77,9 +89,21 @@ pytorchInterpolateModels = {
         1,
         "rife422-lite",
     ),
-    "RIFE 4.25 (Latest General Model, Recommended)": (
+    "RIFE 4.25": (
         "rife4.25.pkl",
         "rife4.25.pkl",
+        1,
+        "rife425",
+    ),
+    "RIFE 4.26 Heavy (Slowest RIFE Model, Animation)": (
+        "rife4.26.heavy.pkl",
+        "rife4.26.heavy.pkl",
+        1,
+        "rife425-heavy",
+    ),
+    "RIFE 4.26 (Latest General Model, Recommended)": (
+        "rife4.26.pkl",
+        "rife4.26.pkl",
         1,
         "rife425",
     ),
@@ -101,7 +125,7 @@ tensorrtInterpolateModels = {
         1,
         "rife413",
     ),
-    "RIFE 4.22 (Slowest RIFE Model, Animation)": (
+    "RIFE 4.22 (Slow, Animation)": (
         "rife4.22.pkl",
         "rife4.22.pkl",
         1,
@@ -113,9 +137,21 @@ tensorrtInterpolateModels = {
         1,
         "rife422-lite",
     ),
-    "RIFE 4.25 (Latest General Model, Recommended)": (
+    "RIFE 4.25": (
         "rife4.25.pkl",
         "rife4.25.pkl",
+        1,
+        "rife425",
+    ),
+    "RIFE 4.26 Heavy (Slowest RIFE Model, Animation)": (
+        "rife4.26.heavy.pkl",
+        "rife4.26.heavy.pkl",
+        1,
+        "rife425-heavy",
+    ),
+    "RIFE 4.26 (Latest General Model, Recommended)": (
+        "rife4.26.pkl",
+        "rife4.26.pkl",
         1,
         "rife425",
     ),

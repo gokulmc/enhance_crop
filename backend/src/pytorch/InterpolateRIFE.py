@@ -129,6 +129,11 @@ class InterpolateRifeTorch(BaseInterpolate):
                 _pad = 64
                 num_ch_for_encode = 4
                 self.encode = Head()
+            case "rife425_heavy":
+                from .InterpolateArchs.RIFE.rife425_heavyIFNET import IFNet, Head
+                _pad = 64
+                num_ch_for_encode = 16
+                self.encode = Head()
 
             case _:
                 errorAndLog("Invalid Interpolation Arch")

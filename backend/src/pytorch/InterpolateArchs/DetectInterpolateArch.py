@@ -183,7 +183,8 @@ class RIFE422lite(Arch):
 
 class RIFE425(Arch):
     base_arch: str = "rife"
-    unique_shapes: dict = {"module.block4.lastconv.0.bias": "torch.Size([52])"}
+    unique_shapes: dict = {"module.block4.lastconv.0.bias": "torch.Size([52])", 
+                           "module.block0.conv0.0.0.weight": "torch.Size([96, 15, 3, 3])"}
     excluded_keys: list = [
         "module.encode.0.weight",
         "module.encode.0.bias",
@@ -199,6 +200,24 @@ class RIFE425(Arch):
 
         return IFNet
 
+class RIFE425_heavy(Arch):
+    base_arch: str = "rife"
+    unique_shapes: dict = {"module.block0.lastconv.0.bias": "torch.Size([52])", 
+                           "module.block0.conv0.0.0.weight": "torch.Size([96, 39, 3, 3])"}
+    excluded_keys: list = [
+        "module.encode.0.weight",
+        "module.encode.0.bias",
+        "module.encode.1.weight",
+        "module.encode.1.bias",
+        "transformer.layers.4.self_attn.merge.weight",
+        "fnet.layer1.0.conv1.weight",
+    ]
+
+    @staticmethod
+    def module() -> torch.nn.Module:
+        from .RIFE.rife425_heavyIFNET import IFNet
+
+        return IFNet
 
 class GMFSS(Arch):
     base_arch: str = "gmfss"
@@ -267,7 +286,7 @@ class ArchDetect:
 
     def compare_arch(self) -> Arch:
         arch_dict = {}
-        for arch in archs:
+        for arch in Arch.__subclasses__():
             arch: Arch
             arch_dict[arch] = True
             # see if there are any excluded keys in the state_dict
