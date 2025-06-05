@@ -380,7 +380,8 @@ class Render:
             backend=self.backend,
             tilesize=self.tilesize,
             trt_optimization_level=self.trt_optimization_level,
-            hdr_mode=self.hdr_mode
+            hdr_mode=self.hdr_mode,
+            trt_static_shape= not self.trt_dynamic_shapes,
         )
     
     def upscaleNCNNObject(self, scale=None):

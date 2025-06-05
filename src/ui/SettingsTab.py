@@ -196,6 +196,12 @@ class SettingsTab:
                 "True" if self.parent.rocm_override_hack.isChecked() else "False"
             )
         )
+        self.parent.dynamic_tensorrt_engine.stateChanged.connect(
+            lambda: self.settings.writeSetting(
+                "dynamic_tensorrt_engine",
+                "True" if self.parent.dynamic_tensorrt_engine.isChecked() else "False"
+            )
+        )
 
     def writeOutputFolder(self):
         outputlocation = self.parent.output_folder_location.text()
@@ -287,6 +293,10 @@ class SettingsTab:
         self.parent.rocm_override_hack.setChecked(
             self.settings.settings["rocm_override_hack"] == "True"
         )
+        self.parent.dynamic_tensorrt_engine.setChecked(
+            self.settings.settings["dynamic_tensorrt_engine"] == "True"
+        )
+
 
 
     def selectOutputFolder(self):
@@ -318,6 +328,7 @@ class Settings:
         self.defaultSettings = {
             "precision": "auto",
             "tensorrt_optimization_level": "3",
+            "dynamic_tensorrt_engine": "True",
             "encoder": "libx264",
             "audio_encoder": "copy_audio",
             "subtitle_encoder": "copy_subtitle",
@@ -344,6 +355,7 @@ class Settings:
         self.allowedSettings = {
             "precision": ("auto", "float32", "float16"),
             "tensorrt_optimization_level": ("0", "1", "2", "3", "4", "5"),
+            "dynamic_tensorrt_engine": ("True", "False"),
             "encoder": (
                 "libx264",
                 "libx265",

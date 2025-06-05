@@ -225,7 +225,7 @@ QScrollBar:horizontal{
              <string notr="true" />
             </property>
             <property name="currentIndex">
-             <number>2</number>
+             <number>3</number>
             </property>
             <widget class="QWidget" name="homePage">
              <property name="styleSheet">
@@ -404,8 +404,8 @@ p, li { white-space: pre-wrap; }
 hr { height: 1px; border-width: 0; }
 li.unchecked::marker { content: "\2610"; }
 li.checked::marker { content: "\2612"; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'Segoe UI'; font-size:9pt; font-weight:400; font-style:normal;"&gt;
-&lt;p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Cantarell'; font-size:11pt;"&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'Cantarell'; font-size:11pt; font-weight:400; font-style:normal;"&gt;
+&lt;p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                  </widget>
                 </item>
@@ -1090,8 +1090,8 @@ background-color:#343b47
                                   <rect>
                                    <x>0</x>
                                    <y>0</y>
-                                   <width>438</width>
-                                   <height>634</height>
+                                   <width>395</width>
+                                   <height>658</height>
                                   </rect>
                                  </property>
                                  <layout class="QVBoxLayout" name="verticalLayout_32">
@@ -2015,7 +2015,7 @@ p, li { white-space: pre-wrap; }
 hr { height: 1px; border-width: 0; }
 li.unchecked::marker { content: "\2610"; }
 li.checked::marker { content: "\2612"; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'Segoe UI'; font-size:9pt; font-weight:400; font-style:normal;"&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'Cantarell'; font-size:11pt; font-weight:400; font-style:normal;"&gt;
 &lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif'; font-size:10pt;"&gt;FPS:&lt;/span&gt;&lt;/p&gt;
 &lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif'; font-size:10pt;"&gt;Resolution:&lt;/span&gt;&lt;/p&gt;
 &lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif'; font-size:10pt;"&gt;Frame Count:&lt;/span&gt;&lt;/p&gt;
@@ -2207,8 +2207,8 @@ border-radius:10px;
                                <rect>
                                 <x>0</x>
                                 <y>0</y>
-                                <width>426</width>
-                                <height>558</height>
+                                <width>373</width>
+                                <height>608</height>
                                </rect>
                               </property>
                               <property name="sizePolicy">
@@ -2316,8 +2316,8 @@ border-radius:10px;
                                             <rect>
                                              <x>0</x>
                                              <y>0</y>
-                                             <width>912</width>
-                                             <height>42</height>
+                                             <width>918</width>
+                                             <height>48</height>
                                             </rect>
                                            </property>
                                            <layout class="QHBoxLayout" name="horizontalLayout_54">
@@ -3106,7 +3106,7 @@ p, li { white-space: pre-wrap; }
 hr { height: 1px; border-width: 0; }
 li.unchecked::marker { content: "\2610"; }
 li.checked::marker { content: "\2612"; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'Segoe UI'; font-size:13pt; font-weight:400; font-style:normal;"&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'Cantarell'; font-size:13pt; font-weight:400; font-style:normal;"&gt;
 &lt;p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Noto Sans';"&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                              </property>
                             </widget>
@@ -3479,15 +3479,15 @@ QTabWidget::pane { /* The tab widget frame */
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>336</width>
-                   <height>392</height>
+                   <width>784</width>
+                   <height>641</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_18">
                   <item>
                    <widget class="QTabWidget" name="tabWidget">
                     <property name="currentIndex">
-                     <number>0</number>
+                     <number>2</number>
                     </property>
                     <widget class="QWidget" name="tab_2">
                      <attribute name="title">
@@ -3522,8 +3522,8 @@ QTabWidget::pane { /* The tab widget frame */
                              <rect>
                               <x>0</x>
                               <y>0</y>
-                              <width>349</width>
-                              <height>159</height>
+                              <width>726</width>
+                              <height>518</height>
                              </rect>
                             </property>
                             <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -4712,6 +4712,73 @@ QTabWidget::pane { /* The tab widget frame */
                           </layout>
                          </item>
                          <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_63">
+                           <property name="spacing">
+                            <number>10</number>
+                           </property>
+                           <item>
+                            <widget class="QLabel" name="label_83">
+                             <property name="font">
+                              <font>
+                               <pointsize>12</pointsize>
+                              </font>
+                             </property>
+                             <property name="text">
+                              <string>TensorRT Dynamic Engine</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <spacer name="horizontalSpacer_31">
+                             <property name="orientation">
+                              <enum>Qt::Orientation::Horizontal</enum>
+                             </property>
+                             <property name="sizeHint" stdset="0">
+                              <size>
+                               <width>40</width>
+                               <height>20</height>
+                              </size>
+                             </property>
+                            </spacer>
+                           </item>
+                           <item>
+                            <widget class="QLabel" name="label_82">
+                             <property name="maximumSize">
+                              <size>
+                               <width>25</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="toolTip">
+                              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;TensorRT Dynamic Engine:&lt;/p&gt;&lt;p&gt;- Enables TensorRT to build for many different resolutions in one engine.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                             </property>
+                             <property name="text">
+                              <string />
+                             </property>
+                             <property name="pixmap">
+                              <pixmap resource="resources.qrc">:/icons/icons/info.svg</pixmap>
+                             </property>
+                             <property name="scaledContents">
+                              <bool>true</bool>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QCheckBox" name="dynamic_tensorrt_engine">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="text">
+                              <string />
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                         <item>
                           <layout class="QHBoxLayout" name="precisionSettingsContainer_2">
                            <property name="spacing">
                             <number>10</number>
@@ -5505,8 +5572,8 @@ background-color:white;
                      <rect>
                       <x>0</x>
                       <y>0</y>
-                      <width>557</width>
-                      <height>172</height>
+                      <width>870</width>
+                      <height>178</height>
                      </rect>
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_13">

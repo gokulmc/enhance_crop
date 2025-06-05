@@ -563,6 +563,11 @@ class ProcessTab:
                 "--border_detect",
             ]
 
+        if self.settings.settings["dynamic_tensorrt_engine"] == "True":
+            command += [
+                "--tensorrt_dynamic_shapes",
+            ]
+
         if self.settings.settings["preview_enabled"] == "True":
             command += [
                 "--preview_shared_memory_id",

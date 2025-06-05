@@ -274,7 +274,6 @@ class HandleApplication:
         parser.add_argument(
             "--tensorrt_dynamic_shapes",
             help="Saves time by generating a dynamic engine so the tensorrt engine can be used with multiple resolutions.",
-            default=True,
             action="store_true",
         )
         parser.add_argument(

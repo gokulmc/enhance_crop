@@ -9,7 +9,7 @@ import sys
 from time import sleep
 from ..constants import HAS_PYTORCH_CUDA
 
-from ..utils.Util import log
+from ..utils.Util import log, printAndLog
 import numpy as np
 def process_output(output, hdr_mode):
     # Step 1: Squeeze the first dimension
@@ -86,6 +86,7 @@ class UpscalePytorch:
         trt_optimization_level: int = 3,
         trt_max_aux_streams: int | None = None,
         trt_debug: bool = False,
+        trt_static_shape: bool = False,
 
     ):
         self.torchUtils = TorchUtils(width=width, height=height,hdr_mode=hdr_mode,device_type=device)  
@@ -109,7 +110,26 @@ class UpscalePytorch:
         self.trt_optimization_level = trt_optimization_level
         self.trt_aux_streams = trt_max_aux_streams
         self.trt_debug = trt_debug
+        self.trt_static_shape = trt_static_shape
         self.hdr_mode = hdr_mode
+
+        if width <= 3840 and height <= 3840 and width > 1920 and height > 1920:
+            self.trt_min_shape = [1920, 1920]
+            self.trt_opt_shape = [3840, 2160]
+            self.trt_max_shape = [3840, 3840]
+        
+        if width <= 1920 and height <= 1920 and width >= 128 and height >= 128:
+            self.trt_min_shape = [128, 128]
+            self.trt_opt_shape = [1920, 1080]
+            self.trt_max_shape = [1920, 1920]
+        
+        if width > 3840 or height > 3840 and not trt_static_shape:
+            printAndLog("The video resolution is very large for TensorRT dynamic shape, falling back to static shape")
+            trt_static_shape = True
+
+        if width > 3840 or height > 3840 and not trt_static_shape:
+            printAndLog("The video resolution is too small for TensorRT dynamic shape, falling back to static shape")
+            trt_static_shape = True
 
         # streams
         self.stream = self.torchUtils.init_stream()
@@ -175,12 +195,24 @@ class UpscalePytorch:
                     trt_optimization_level=self.trt_optimization_level,
 
                 )
+                if self.trt_static_shape:
+                    dimensions = f"{self.pad_w}x{self.pad_h}"
+                else:
+                    for i in range(2):
+                        self.trt_min_shape[i] = math.ceil(self.trt_min_shape[i] / modulo) * modulo
+                        self.trt_opt_shape[i] = math.ceil(self.trt_opt_shape[i] / modulo) * modulo
+                        self.trt_max_shape[i] = math.ceil(self.trt_max_shape[i] / modulo) * modulo
 
+                    dimensions = (
+                        f"min-{self.trt_min_shape[0]}x{self.trt_min_shape[1]}"
+                        f"_opt-{self.trt_opt_shape[0]}x{self.trt_opt_shape[1]}"
+                        f"_max-{self.trt_max_shape[0]}x{self.trt_max_shape[1]}"
+                    )
                 self.trt_engine_path = os.path.join(
                     os.path.realpath(self.trt_cache_dir),
                     (
                         f"{os.path.basename(self.modelPath)}"
-                        + f"_{self.pad_w}x{self.pad_h}"
+                        + f"_{dimensions}"
                         + f"_{'fp16' if self.dtype == torch.float16 else 'fp32'}"
                         + f"_{torch.cuda.get_device_name(self.device)}"
                         + f"_trt-{trtHandler.tensorrt_version}"
@@ -196,13 +228,22 @@ class UpscalePytorch:
                 )
 
                 if not os.path.isfile(self.trt_engine_path):
-                    inputs = [
-                        torch.zeros(
-                            (1, 3, self.pad_h, self.pad_w),
-                            dtype=self.dtype,
-                            device=self.device,
-                        )
-                    ]
+                    inputs = (torch.zeros([1, 3, self.pad_h, self.pad_w], dtype=self.dtype, device=self.device),)
+                    if self.trt_static_shape:
+                        dynamic_shapes = None
+                        
+                    else:
+                        self.trt_min_shape.reverse()
+                        self.trt_opt_shape.reverse()
+                        self.trt_max_shape.reverse()
+
+                        _height = torch.export.Dim("height", min=self.trt_min_shape[0] // modulo, max=self.trt_max_shape[0] // modulo)
+                        _width = torch.export.Dim("width", min=self.trt_min_shape[1] // modulo, max=self.trt_max_shape[1] // modulo)
+                        dim_height = _height * modulo
+                        dim_width = _width * modulo
+                        dynamic_shapes = {"x": {2: dim_height, 3: dim_width}}
+
+                        
 
                     # inference and get re-load state dict due to issue with span.
 
@@ -220,6 +261,7 @@ class UpscalePytorch:
                         example_inputs=inputs,
                         trt_engine_path=self.trt_engine_path,
                         trt_multi_precision_engine=False,
+                        dynamic_shapes=dynamic_shapes,
                     )
 
 
