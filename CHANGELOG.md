@@ -4,6 +4,7 @@
 ### Added
  - Batch input support.
  - Dynamic TensorRT engines.
+ - More RIFE Models.
 # RVE 2.3.2
 ### Added
  - Fallback to float32 if float16 does not work with custom arch.
