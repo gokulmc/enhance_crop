@@ -259,8 +259,10 @@ class SPAN(nn.Module):
         #device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
         #self.mean_half = torch.Tensor(rgb_mean).view(1, 3, 1, 1).to(device=device).half()
         #self.mean_float = torch.Tensor(rgb_mean).view(1, 3, 1, 1).to(device=device).float()
-        self.mean_half = torch.Tensor(rgb_mean).view(1, 3, 1, 1).half()
-        self.mean_float = torch.Tensor(rgb_mean).view(1, 3, 1, 1).float()
+        mean_tensor = torch.tensor(rgb_mean, dtype=torch.float32).view(1, 3, 1, 1)
+        #self.register_buffer('mean', mean_tensor)
+        self.mean_tensor = mean_tensor
+        
         self.no_norm: torch.Tensor | None
         if not norm:
             self.register_buffer("no_norm", torch.zeros(1))
@@ -290,15 +292,8 @@ class SPAN(nn.Module):
 
     def forward(self, x):
         x = x.clamp(0., 1.)
-        self.device = x.device
-        self.dtype = x.dtype
-        if self.dtype == torch.float16:
-            self.mean = self.mean_half
-        else:
-            self.mean = self.mean_float
         if self.is_norm:
-            self.mean = self.mean.type_as(x)
-            x = (x - self.mean) * self.img_range
+            x = (x - self.mean_tensor.type_as(x)) * self.img_range
 
         out_feature = self.conv_1(x)
 
