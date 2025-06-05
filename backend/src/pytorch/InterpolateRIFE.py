@@ -263,11 +263,24 @@ class InterpolateRifeTorch(BaseInterpolate):
                 dynamo_export_format="nn2exportedprogram"
             )
 
+            if self.trt_static_shape:
+                dimensions = f"{self.width}x{self.height}"
+            else:
+                for i in range(2):
+                    self.trt_min_shape[i] = math.ceil(self.trt_min_shape[i] / tmp) * tmp
+                    self.trt_opt_shape[i] = math.ceil(self.trt_opt_shape[i] / tmp) * tmp
+                    self.trt_max_shape[i] = math.ceil(self.trt_max_shape[i] / tmp) * tmp
+
+                dimensions = (
+                    f"min-{self.trt_min_shape[0]}x{self.trt_min_shape[1]}"
+                    f"_opt-{self.trt_opt_shape[0]}x{self.trt_opt_shape[1]}"
+                    f"_max-{self.trt_max_shape[0]}x{self.trt_max_shape[1]}"
+                )
             base_trt_engine_path = os.path.join(
                 os.path.realpath(self.trt_cache_dir),
                 (
                     f"{os.path.basename(self.interpolateModel)}"
-                    + f"_{self.width}x{self.height}"
+                    + f"_{dimensions}"
                     + f"_{'fp16' if self.dtype == torch.float16 else 'fp32'}"
                     + f"_scale-{self.scale}"
                     + f"_{torch.cuda.get_device_name(self.device)}"
@@ -310,11 +323,63 @@ class InterpolateRifeTorch(BaseInterpolate):
                             torch.zeros([2], dtype=torch.float, device=self.device),
                             torch.zeros([1, 2, self.ph, self.pw], dtype=torch.float, device=self.device),
                         )
+                    flownet_dynamic_shapes = None
+                    encode_dynamic_shapes = None
 
-                trtHandler.build_engine(self.flownet,  self.dtype, self.device, flownet_inputs, trt_engine_path, trt_multi_precision_engine=True)
+                else:
+                    self.trt_min_shape.reverse()
+                    self.trt_opt_shape.reverse()
+                    self.trt_max_shape.reverse()
+                    if self.encode is not None:
+                        flownet_inputs = (
+                            torch.zeros([1, 3] + self.trt_opt_shape, dtype=self.dtype, device=self.device),
+                            torch.zeros([1, 3] + self.trt_opt_shape, dtype=self.dtype, device=self.device),
+                            torch.zeros([1, 1] + self.trt_opt_shape, dtype=self.dtype, device=self.device),
+                            torch.zeros([2], dtype=torch.float, device=self.device),
+                            torch.zeros([1, 2] + self.trt_opt_shape, dtype=torch.float, device=self.device),
+                            torch.zeros([1, num_ch_for_encode] + self.trt_opt_shape, dtype=self.dtype, device=self.device),
+                            torch.zeros([1, num_ch_for_encode] + self.trt_opt_shape, dtype=self.dtype, device=self.device),
+                        )
+
+                        encode_inputs = (torch.zeros([1, 3] + self.trt_opt_shape, dtype=self.dtype, device=self.device),)
+                    else:
+                        flownet_inputs = (
+                            torch.zeros([1, 3] + self.trt_opt_shape, dtype=self.dtype, device=self.device),
+                            torch.zeros([1, 3] + self.trt_opt_shape, dtype=self.dtype, device=self.device),
+                            torch.zeros([1, 1] + self.trt_opt_shape, dtype=self.dtype, device=self.device),
+                            torch.zeros([2], dtype=torch.float, device=self.device),
+                            torch.zeros([1, 2] + self.trt_opt_shape, dtype=torch.float, device=self.device),
+                        )
+
+                    _height = torch.export.Dim("height", min=self.trt_min_shape[0] // tmp, max=self.trt_max_shape[0] // tmp)
+                    _width = torch.export.Dim("width", min=self.trt_min_shape[1] // tmp, max=self.trt_max_shape[1] // tmp)
+                    dim_height = _height * tmp
+                    dim_width = _width * tmp
+                    if self.encode is not None:
+                        flownet_dynamic_shapes = {
+                            "img0": {2: dim_height, 3: dim_width},
+                            "img1": {2: dim_height, 3: dim_width},
+                            "timestep": {2: dim_height, 3: dim_width},
+                            "tenFlow_div": {},
+                            "backwarp_tenGrid": {2: dim_height, 3: dim_width},
+                            "f0": {2: dim_height, 3: dim_width},
+                            "f1": {2: dim_height, 3: dim_width},
+                        }
+
+                        encode_dynamic_shapes = ({2: dim_height, 3: dim_width},)
+                    else:
+                        flownet_dynamic_shapes = {
+                            "img0": {2: dim_height, 3: dim_width},
+                            "img1": {2: dim_height, 3: dim_width},
+                            "timestep": {2: dim_height, 3: dim_width},
+                            "tenFlow_div": {},
+                            "backwarp_tenGrid": {2: dim_height, 3: dim_width},
+                        }
+                
+                trtHandler.build_engine(self.flownet,  self.dtype, self.device, flownet_inputs, trt_engine_path, trt_multi_precision_engine=True, dynamic_shapes=flownet_dynamic_shapes,)
 
                 if self.encode:
-                    trtHandler.build_engine(self.encode, self.dtype, self.device, encode_inputs, encode_trt_engine_path, trt_multi_precision_engine=True)
+                    trtHandler.build_engine(self.encode, self.dtype, self.device, encode_inputs, encode_trt_engine_path, trt_multi_precision_engine=True, dynamic_shapes=encode_dynamic_shapes,)
 
             self.flownet = trtHandler.load_engine(trt_engine_path)
 
