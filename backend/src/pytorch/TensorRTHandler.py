@@ -24,7 +24,7 @@ SOFTWARE.
 
 import sys
 import os
-from ..utils.Util import suppress_stdout_stderr
+from ..utils.Util import suppress_stdout_stderr, warnAndLog
 with suppress_stdout_stderr():
     import torch
     import torch_tensorrt
@@ -197,6 +197,7 @@ class TorchTensorRTHandler:
             workspace_size=self.trt_workspace_size,
             truncate_long_and_double=True,
             min_block_size=1,
+            dynamic_shapes=dynamic_shapes,
         )
         torch.jit.save(module_trt, trt_engine_path)
 
@@ -237,6 +238,10 @@ class TorchTensorRTHandler:
                     f"{e}",
                     file=sys.stderr,
                 )
+                if dynamic_shapes is not None:
+                    warnAndLog(
+                        "Failed to export with Dynamo, trying torchscript2exportedprogram with static shapes.",
+                    )
                 self.export_torchscript_model(
                     model, example_inputs, device, dtype, trt_engine_path, dynamic_shapes=dynamic_shapes,
                 )

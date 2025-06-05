@@ -60,9 +60,10 @@
 |  | Minimum | Recommended | 
  |--|--|--|
 | CPU | Dual Core x64 bit | Quad Core x64 bit
-| GPU | Vulkan 1.3 capable device (4GB VRAM for ncnn) | Nvidia RTX GPU (20 series and up) (8GB VRAM tensorrt) 
+| GPU | Vulkan 1.3 capable device | Nvidia RTX GPU (20 series and up)
+| VRAM | 4 GB - NCNN | 8 GB - TensorRT (Nvidia, why keep making 8gb cards?)
 | RAM | 16 GB | 32 GB
-| Storage | 1 GB free (NCNN install only) | 16 GB free (TensorRT install)
+| Storage | 1 GB free - NCNN | 16 GB free - TensorRT
 | Operating System | Windows 10/11 64bit / MacOS 13+ | Any modern Linux distro (Ubuntu 20.04+)
 
 # Models:
@@ -126,7 +127,7 @@
 git clone https://github.com/TNTwise/REAL-Video-Enhancer
 
 # Stable
-git clone https://github.com/TNTwise/REAL-Video-Enhancer --branch 2.3.1
+git clone https://github.com/TNTwise/REAL-Video-Enhancer --branch 2.3.2
 ```
 # Building:
 

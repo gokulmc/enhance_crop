@@ -41,13 +41,12 @@ class InterpolateRifeTorch(BaseInterpolate):
         # trt options
         trt_optimization_level: int = 5,
         hdr_mode: bool = False,
-        trt_static_shape: bool = True,
-        trt_min_shape: list[int] = [128, 128],
-        trt_opt_shape: list[int] = [1920, 1080],
-        trt_max_shape: list[int] = [1920, 1080],
+        trt_static_shape: bool = False,
+        
         *args,
         **kwargs,
     ):
+
         self.interpolateModel = modelPath
         self.width = width
         self.height = height
@@ -57,10 +56,27 @@ class InterpolateRifeTorch(BaseInterpolate):
         self.backend = backend
         self.ceilInterpolateFactor = ceilInterpolateFactor
         self.dynamicScaledOpticalFlow = dynamicScaledOpticalFlow
+        
+        if width <= 3840 and height <= 3840 and width > 1920 and height > 1920:
+            self.trt_min_shape = [1920, 1920]
+            self.trt_opt_shape = [3840, 2160]
+            self.trt_max_shape = [3840, 3840]
+        
+        if width <= 1920 and height <= 1920 and width >= 128 and height >= 128:
+            self.trt_min_shape = [128, 128]
+            self.trt_opt_shape = [1920, 1080]
+            self.trt_max_shape = [1920, 1920]
+        
+        if width > 3840 or height > 3840 and not trt_static_shape:
+            errorAndLog("The video resolution is very large for TensorRT dynamic shape, falling back to static shape")
+            trt_static_shape = True
+
+        if width > 3840 or height > 3840 and not trt_static_shape:
+            errorAndLog("The video resolution is too small for TensorRT dynamic shape, falling back to static shape")
+            trt_static_shape = True
+
         self.trt_static_shape = trt_static_shape
-        self.trt_min_shape = trt_min_shape
-        self.trt_opt_shape = trt_opt_shape
-        self.trt_max_shape = trt_max_shape
+        
         self.CompareNet = None
         self.frame0 = None
         self.encode0 = None

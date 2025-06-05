@@ -171,6 +171,7 @@ class HandleApplication:
             sceneDetectSensitivity=self.args.scene_detect_threshold,
             sharedMemoryID=self.args.preview_shared_memory_id,
             trt_optimization_level=self.args.tensorrt_opt_profile,
+            trt_dynamic_shapes=self.args.tensorrt_dynamic_shapes,
             override_upscale_scale=self.args.override_upscale_scale,
             UHD_mode=self.args.UHD_mode,
             drba=self.args.drba,
@@ -269,6 +270,12 @@ class HandleApplication:
             help="sets tensorrt optimization profile for model, (1/2/3/4/5, default=3)",
             type=int,
             default=3,
+        )
+        parser.add_argument(
+            "--tensorrt_dynamic_shapes",
+            help="Saves time by generating a dynamic engine so the tensorrt engine can be used with multiple resolutions.",
+            default=True,
+            action="store_true",
         )
         parser.add_argument(
             "--scene_detect_method",

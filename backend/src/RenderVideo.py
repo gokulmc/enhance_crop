@@ -93,6 +93,7 @@ class Render:
         sceneDetectSensitivity: float = 3.0,
         sharedMemoryID: Optional[str] = None,
         trt_optimization_level: int = 3,
+        trt_dynamic_shapes: bool = False,
         override_upscale_scale: int | None = None,
         UHD_mode: bool = False,
         slomo_mode: bool = False,
@@ -136,6 +137,7 @@ class Render:
         self.outputFrameChunkSize = None
         self.hdr_mode = hdr_mode
         self.override_upscale_scale = override_upscale_scale
+        self.trt_dynamic_shapes = trt_dynamic_shapes
         
 
         videoInfo = OpenCVInfo(input_file=inputFile, start_time=start_time, end_time=end_time)
@@ -487,5 +489,6 @@ class Render:
                 ensemble=self.ensemble,
                 dynamicScaledOpticalFlow=self.dynamic_scaled_optical_flow,
                 max_timestep=self.maxTimestep,
-                hdr_mode=self.hdr_mode
+                hdr_mode=self.hdr_mode,
+                trt_static_shape= not self.trt_dynamic_shapes,  # if dynamic shapes are enabled, we have to set the static shape to false (default is true in the model
             )
