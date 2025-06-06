@@ -2,9 +2,15 @@ from multiprocessing import shared_memory
 import sys
 import time
 import numpy as np
+import subprocess
 
-from .utils.Util import log, padFrame
-
+if __name__ != "__main__":
+    from .utils.Util import log, padFrame, subprocess_popen_without_terminal
+    from .constants import FFMPEG_PATH
+else:
+    def log(message):
+        print(message)
+    FFMPEG_PATH = "ffmpeg"  # Default to ffmpeg in PATH if not running as a module
 
 def hdr_to_sdr(hdr_frame, width, height):
     """
@@ -70,6 +76,46 @@ class PauseManager:
         if self.paused_shared_memory_id is not None:
             return self.pausedSharedMemory.buf[0] == 1
             
+
+def colorspace_detection(input_file):
+    output = subprocess.run(
+        [
+            FFMPEG_PATH,
+            "-i",
+            input_file,
+            "-t",
+            "00:00:00",
+            "-f",
+            "null",
+            "/dev/null",
+            "-hide_banner",
+
+        ], capture_output=True, text=True, check=False
+    )
+    # select stream line
+    stream_line = None
+    log(output.stderr)
+    output.stderr = output.stderr.split("\n")
+
+    for line in output.stderr:
+        if "Stream #" in line and "Video" in line:
+            stream_line = line
+            break
+
+    if stream_line is None:
+        log("No video stream found in the input file.")
+        return None
+    
+    color_spaces = ["bt709", "bt2020", "smpte170m", "smpte240m", "smpte2084", "smpte428", "smpte431", "smpte432"]
+    for color_space in color_spaces:
+        if color_space in stream_line:
+            log(f"Color space detected: {color_space}")
+            return color_space
+    log("No known color space detected in the input file.")
+    return None
+                
+        
+
 
 class InformationWriteOut:
     def __init__(
@@ -192,3 +238,6 @@ class InformationWriteOut:
                             pass
                 self.isPaused = self.pausedManager.pause_manager()
             time.sleep(0.5) # setting this to a higher value will reduce the cpu usage, and increase fps
+
+if __name__ == "__main__":
+    colorspace_detection("/home/pax/Downloads/Chainsaw.Man.S01E01.1080p.BluRay.Opus2.0.x265-Flugel.mkv")

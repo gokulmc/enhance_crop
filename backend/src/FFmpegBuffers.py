@@ -13,7 +13,7 @@ from .utils.Util import (
     subprocess_popen_without_terminal
 )
 from .utils.Encoders import  EncoderSettings
-
+from .FFmpeg import colorspace_detection
 
 class Buffer(ABC):
     @abstractmethod
@@ -46,6 +46,8 @@ class FFmpegRead(Buffer):
 
     def command(self):
         log("Generating FFmpeg READ command...")
+        
+        
         command = [
             f"{FFMPEG_PATH}",
             "-i",
@@ -64,8 +66,17 @@ class FFmpegRead(Buffer):
             str(self.start_time),
             "-to",
             str(self.end_time),
-            "-",
+            
         ]
+
+        color_space = colorspace_detection(self.inputFile)
+        if color_space is not None:
+            command += [
+                "-colorspace",
+                color_space,
+            ]
+
+        command.append("-")
 
         log("FFMPEG READ COMMAND: " + str(command))
         return command
@@ -202,6 +213,8 @@ class FFmpegWrite(Buffer):
                 f"atrim=start={self.start_time},asetpts=PTS-STARTPTS",
 
             ]
+            
+                
             if self.hdr_mode:
 
                 # override pixel format
@@ -215,8 +228,6 @@ class FFmpegWrite(Buffer):
                     self.pixelFormat = pxfmtdict[self.pixelFormat]
 
                 command += [
-                    "-colorspace",
-                    "bt2020nc",
                     "-color_trc",
                     "smpte2084",
                     "-color_primaries",
@@ -266,6 +277,9 @@ class FFmpegWrite(Buffer):
                 f"{self.outputFPS}",
             ]
 
+            
+                
+
             if not self.slowmo_mode:
                 command += [
                     "-i",
@@ -284,7 +298,13 @@ class FFmpegWrite(Buffer):
                 command += self.subtitle_encoder.getPostInputSettings().split()
 
 
-
+            color_space = colorspace_detection(self.inputFile)
+            if color_space is not None:
+                command += [
+                    "-colorspace",
+                    color_space,
+                ]
+                
             if self.custom_encoder is not None:
                 for i in self.custom_encoder.split():
                     command.append(i)
@@ -299,14 +319,7 @@ class FFmpegWrite(Buffer):
                 command += [self.video_encoder.getQualityControlMode(), str(self.crf)]
                 
                 if self.hdr_mode:
-                    command += [
-                        "-colorspace",
-                        "bt2020nc",
-                        "-color_trc",
-                        "smpte2084",
-                        "-color_primaries",
-                        "bt2020",
-                    ]
+                    
                     encoder_tags = ["libx265", "x265_nvenc"]
                     if self.video_encoder.getPresetTag() not in encoder_tags:
                         print("\n\nHDR mode is enabled, but the encoder does not support HDR. Please use libx265 for HDR.\n",file=sys.stderr)
