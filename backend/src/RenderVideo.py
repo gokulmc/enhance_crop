@@ -160,6 +160,7 @@ class Render:
             self.totalInputFrames * self.ceilInterpolateFactor
         )
         self.fps = videoInfo.get_fps()
+        color_space = videoInfo.get_color_space()
 
         video_encoder = EncoderSettings(video_encoder_preset)
         audio_encoder = EncoderSettings(audio_encoder_preset, type="audio")
@@ -206,6 +207,7 @@ class Render:
             borderX=self.borderX,
             borderY=self.borderY,
             hdr_mode=hdr_mode,
+            color_space=color_space,
         )
 
         self.writeBuffer = FFmpegWrite(
@@ -232,6 +234,7 @@ class Render:
             mpv_output=output_to_mpv,
             hdr_mode=hdr_mode,
             merge_subtitles=merge_subtitles,
+            color_space=color_space,
         )
 
         self.informationHandler = InformationWriteOut(

@@ -13,7 +13,6 @@ from .utils.Util import (
     subprocess_popen_without_terminal
 )
 from .utils.Encoders import  EncoderSettings
-from .FFmpeg import colorspace_detection
 
 class Buffer(ABC):
     @abstractmethod
@@ -22,7 +21,7 @@ class Buffer(ABC):
 
 
 class FFmpegRead(Buffer):
-    def __init__(self, inputFile, width, height, start_time, end_time, borderX, borderY, hdr_mode):
+    def __init__(self, inputFile, width, height, start_time, end_time, borderX, borderY, hdr_mode, color_space=None):
         self.inputFile = inputFile
         self.width = width
         self.height = height
@@ -31,6 +30,7 @@ class FFmpegRead(Buffer):
         self.borderX = borderX
         self.borderY = borderY
         self.hdr_mode = hdr_mode
+        self.color_space = color_space
 
         if self.hdr_mode:
             self.inputFrameChunkSize = width * height * 6
@@ -54,11 +54,10 @@ class FFmpegRead(Buffer):
             f"{self.inputFile}",
         ]
         
-        color_space = colorspace_detection(self.inputFile)
-        if color_space is not None:
+        if self.color_space is not None:
             command += [
                 "-colorspace",
-                color_space,
+                self.color_space,
             ]
 
         command += [
@@ -131,6 +130,7 @@ class FFmpegWrite(Buffer):
         hdr_mode: bool,
         mpv_output: bool,
         merge_subtitles: bool,
+        color_space: str = None,
     ):
         self.inputFile = inputFile
         self.outputFile = outputFile
@@ -162,6 +162,7 @@ class FFmpegWrite(Buffer):
         self.previewFrame = None
         self.framesRendered: int = 1
         self.writeProcess = None
+        self.color_space = color_space
         self.merge_subtitles = merge_subtitles
         log(f"FFmpegWrite parameters: inputFile={inputFile}, outputFile={outputFile}, width={width}, height={height}, start_time={start_time}, end_time={end_time}, fps={fps}, crf={crf}, audio_bitrate={audio_bitrate}, pixelFormat={pixelFormat}, overwrite={overwrite}, custom_encoder={custom_encoder}, benchmark={benchmark}, slowmo_mode={slowmo_mode}, upscaleTimes={upscaleTimes}, interpolateFactor={interpolateFactor}, ceilInterpolateFactor={ceilInterpolateFactor}, video_encoder={video_encoder}, audio_encoder={audio_encoder}, subtitle_encoder={subtitle_encoder}, hdr_mode={hdr_mode}, mpv_output={mpv_output}, merge_subtitles={merge_subtitles}")
         self.outputFPS = (
@@ -300,11 +301,10 @@ class FFmpegWrite(Buffer):
                 command += self.subtitle_encoder.getPostInputSettings().split()
 
 
-            color_space = colorspace_detection(self.inputFile)
-            if color_space is not None:
+            if self.color_space is not None:
                 command += [
                     "-colorspace",
-                    color_space,
+                    self.color_space,
                 ]
                 
             if self.custom_encoder is not None:

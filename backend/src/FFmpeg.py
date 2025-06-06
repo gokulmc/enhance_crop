@@ -77,44 +77,7 @@ class PauseManager:
             return self.pausedSharedMemory.buf[0] == 1
             
 
-def colorspace_detection(input_file):
-    process = subprocess_popen_without_terminal(
-        [
-            FFMPEG_PATH,
-            "-i",
-            input_file,
-            "-t",
-            "00:00:00",
-            "-f",
-            "null",
-            "/dev/null",
-            "-hide_banner",
 
-        ], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
-    )
-    stdout, stderr = process.communicate()
-    # select stream line
-    stream_line = None
-    log(stderr)
-    stderr_lines = stderr.split("\n")
-
-    for line in stderr_lines:
-        if "Stream #" in line and "Video" in line:
-            stream_line = line
-            break
-
-    if stream_line is None:
-        log("No video stream found in the input file.")
-        return None
-    
-    color_spaces = ["bt709", "bt2020", "smpte170m", "smpte240m", "smpte2084", "smpte428", "smpte431", "smpte432"]
-    for color_space in color_spaces:
-        if color_space in stream_line:
-            log(f"Color space detected: {color_space}")
-            return color_space
-    log("No known color space detected in the input file.")
-    return None
-                
         
 
 
@@ -239,6 +202,3 @@ class InformationWriteOut:
                             pass
                 self.isPaused = self.pausedManager.pause_manager()
             time.sleep(0.5) # setting this to a higher value will reduce the cpu usage, and increase fps
-
-if __name__ == "__main__":
-    colorspace_detection("/home/pax/Downloads/Chainsaw.Man.S01E01.1080p.BluRay.Opus2.0.x265-Flugel.mkv")

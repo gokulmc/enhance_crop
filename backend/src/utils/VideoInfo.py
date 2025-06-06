@@ -11,6 +11,45 @@ if not __name__ == "__main__":
 else:
     FFMPEG_PATH = "./bin/ffmpeg"
 
+def colorspace_detection(input_file):
+    process = subprocess_popen_without_terminal(
+        [
+            FFMPEG_PATH,
+            "-i",
+            input_file,
+            "-t",
+            "00:00:00",
+            "-f",
+            "null",
+            "/dev/null",
+            "-hide_banner",
+
+        ], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+    )
+    stdout, stderr = process.communicate()
+    # select stream line
+    stream_line = None
+    log(stderr)
+    stderr_lines = stderr.split("\n")
+
+    for line in stderr_lines:
+        if "Stream #" in line and "Video" in line:
+            stream_line = line
+            break
+
+    if stream_line is None:
+        log("No video stream found in the input file.")
+        return None
+    
+    color_spaces = ["bt709", "bt2020", "smpte170m", "smpte240m", "smpte2084", "smpte428", "smpte431", "smpte432"]
+    for color_space in color_spaces:
+        if color_space in stream_line:
+            log(f"Color space detected: {color_space}")
+            return color_space
+    log("No known color space detected in the input file.")
+    return None
+                
+
 class VideoInfo(ABC):
     @abstractmethod
     def get_duration_seconds(self) -> float:
@@ -23,6 +62,9 @@ class VideoInfo(ABC):
         pass
     @abstractmethod
     def get_fps(self) -> float:
+        pass
+    @abstractmethod
+    def get_color_space(self) -> str:
         pass
 
 
@@ -63,6 +105,9 @@ class FFMpegInfoWrapper(VideoInfo):
     def get_fps(self) -> float:
         fps = re.search(r"(\d+\.?\d*) fps", self.ffmpeg_output).groups()[0]
         return float(fps)
+    
+    def get_color_space(self) -> str:
+        return colorspace_detection(self.input_file)
 
 
 class OpenCVInfo(VideoInfo):
@@ -107,6 +152,9 @@ class OpenCVInfo(VideoInfo):
         fps = self.cap.get(cv2.CAP_PROP_FPS)
         log(f"FPS: {fps}")
         return fps
+    
+    def get_color_space(self) -> str:
+        return colorspace_detection(self.input_file)
 
     def __del__(self):
         self.cap.release()
