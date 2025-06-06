@@ -78,7 +78,7 @@ class PauseManager:
             
 
 def colorspace_detection(input_file):
-    output = subprocess.run(
+    process = subprocess_popen_without_terminal(
         [
             FFMPEG_PATH,
             "-i",
@@ -90,14 +90,15 @@ def colorspace_detection(input_file):
             "/dev/null",
             "-hide_banner",
 
-        ], capture_output=True, text=True, check=False
+        ], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
     )
+    stdout, stderr = process.communicate()
     # select stream line
     stream_line = None
-    log(output.stderr)
-    output.stderr = output.stderr.split("\n")
+    log(stderr)
+    stderr_lines = stderr.split("\n")
 
-    for line in output.stderr:
+    for line in stderr_lines:
         if "Stream #" in line and "Video" in line:
             stream_line = line
             break

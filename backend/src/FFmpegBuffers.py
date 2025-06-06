@@ -52,6 +52,16 @@ class FFmpegRead(Buffer):
             f"{FFMPEG_PATH}",
             "-i",
             f"{self.inputFile}",
+        ]
+        
+        color_space = colorspace_detection(self.inputFile)
+        if color_space is not None:
+            command += [
+                "-colorspace",
+                color_space,
+            ]
+
+        command += [
             "-vf",
             f"crop={self.width}:{self.height}:{self.borderX}:{self.borderY},scale=w=iw*sar:h=ih", # fix when DAR does not match SAR https://github.com/TNTwise/REAL-Video-Enhancer/issues/63
             "-f",
@@ -66,17 +76,9 @@ class FFmpegRead(Buffer):
             str(self.start_time),
             "-to",
             str(self.end_time),
+            "-"
             
         ]
-
-        color_space = colorspace_detection(self.inputFile)
-        if color_space is not None:
-            command += [
-                "-colorspace",
-                color_space,
-            ]
-
-        command.append("-")
 
         log("FFMPEG READ COMMAND: " + str(command))
         return command
