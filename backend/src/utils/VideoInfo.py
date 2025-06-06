@@ -76,11 +76,14 @@ class FFMpegInfoWrapper(VideoInfo):
     def _get_ffmpeg_info(self):
         command = [
                 FFMPEG_PATH,
-                "-hide_banner",
                 "-i",
                 self.input_file,
+                "-t",
+                "00:00:00",
                 "-f",
                 "null",
+                "/dev/null",
+                "-hide_banner",
         ]
 
         self.ffmpeg_output = subprocess_popen_without_terminal(command,  stderr=subprocess.PIPE, errors="replace").stderr.read()
