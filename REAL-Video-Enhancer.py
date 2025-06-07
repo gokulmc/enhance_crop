@@ -527,6 +527,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     return
                 # alert user that item has been added to queue
                 self.renderQueue.add(renderOptions)
+            self.batchVideos = []
             return
 
 
