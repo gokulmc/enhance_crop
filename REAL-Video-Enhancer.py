@@ -416,7 +416,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         interpolate = self.interpolateModelComboBox.currentText()
         upscale = self.upscaleModelComboBox.currentText()
         input_file = self.inputFileText.text() if input_file is None else input_file
-        output_path = output_path if output_path else self.outputFileText.text()
+        output_path = self.outputFileText.text() if output_path is None else output_path
         if not self.interpolateCheckBox.isChecked():
             interpolate = None
         if not self.upscaleCheckBox.isChecked():
@@ -519,6 +519,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.videoBitrate = videoHandler.bitrate
                 self.videoContainer = videoHandler.videoContainer
 
+                # set output_path for checking
+                default_output_path = self.setDefaultOutputFile(
+                    video, self.settings.settings["output_folder_location"]
+                )
+
+                # check if file already exists in renderQueue
+                if any(item.outputPath == default_output_path for item in self.renderQueue.getQueue()):
+                    NotificationOverlay(f"Skipped (Already in queue): {default_output_path}", self, timeout=1500)
+                    continue
+
                 renderOptions = self.getCurrentRenderOptions(
                     input_file=video,
                     output_path=self.setDefaultOutputFile(video, self.settings.settings["output_folder_location"]),
@@ -527,6 +537,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     return
                 # alert user that item has been added to queue
                 self.renderQueue.add(renderOptions)
+
+            # clear batch file list
             self.batchVideos = []
             return
 
