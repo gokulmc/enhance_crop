@@ -3,13 +3,15 @@ from typing import List
 import subprocess
 import re
 import cv2
-from .Util import log, subprocess_popen_without_terminal
 from typing import Optional
 
 if not __name__ == "__main__":
     from ..constants import FFMPEG_PATH
+    from .Util import log, subprocess_popen_without_terminal
+
 else:
     FFMPEG_PATH = "./bin/ffmpeg"
+    from Util import log, subprocess_popen_without_terminal
 
 def colorspace_detection(input_file):
     process = subprocess_popen_without_terminal(
@@ -84,14 +86,18 @@ class FFMpegInfoWrapper(VideoInfo):
                 "null",
                 "/dev/null",
                 "-hide_banner",
+                "-v",
+                "debug"
+                
         ]
 
-        self.ffmpeg_output = subprocess_popen_without_terminal(command,  stderr=subprocess.PIPE, errors="replace").stderr.read()
+        self.ffmpeg_output:str = subprocess_popen_without_terminal(command,  stderr=subprocess.PIPE, errors="replace").stderr.read().lower().strip()
+        log(self.ffmpeg_output)
 
     def get_duration_seconds(self) -> float:
         total_duration:float = 0.0
 
-        duration = re.search(r"Duration: (.*?),", self.ffmpeg_output).groups()[0]
+        duration = re.search(r"duration: (.*?),", self.ffmpeg_output).groups()[0]
         hours, minutes, seconds = duration.split(":")
         total_duration += int(int(hours) * 3600)
         total_duration += int(int(minutes) * 60)
@@ -102,7 +108,7 @@ class FFMpegInfoWrapper(VideoInfo):
         return int(self.get_duration_seconds() * self.get_fps())
 
     def get_width_x_height(self) -> List[int]:
-        width, height = re.search(r"Video:.* (\d+)x(\d+)", self.ffmpeg_output).groups()[:2]
+        width, height = re.search(r"video:.* (\d+)x(\d+)", self.ffmpeg_output).groups()[:2]
         return [int(width), int(height)]
 
     def get_fps(self) -> float:
@@ -122,7 +128,13 @@ class OpenCVInfo(VideoInfo):
         self.cap = cv2.VideoCapture(input_file)
 
     def is_valid_video(self):
-        return self.cap.isOpened()
+        #frame_count = self.cap.get(cv2.CAP_PROP_FRAME_COUNT)
+        #log(f"Frame count: {frame_count}")
+        #if frame_count <= 1:
+        #    log("Invalid video: Frame count is less than or equal to 1.")
+        #    return False
+        
+        return self.cap.isOpened() and self.cap.get(cv2.CAP_PROP_FRAME_COUNT) 
 
     def get_duration_seconds(self) -> float:
         duration = self.cap.get(cv2.CAP_PROP_FRAME_COUNT) / self.get_fps()
@@ -164,3 +176,20 @@ class OpenCVInfo(VideoInfo):
 
 
 __all__ = ["FFMpegInfoWrapper", "OpenCVInfo"]
+
+if __name__ == "__main__":
+    video_path = "/home/pax/Downloads/CodeGeassR2-OP2.webm"
+    print("Using FFMpeg:")
+    video_info = FFMpegInfoWrapper(video_path)
+    print(f"Duration: {video_info.get_duration_seconds()} seconds")
+    print(f"Total Frames: {video_info.get_total_frames()}")
+    print(f"Resolution: {video_info.get_width_x_height()}")
+    print(f"FPS: {video_info.get_fps()}")
+    print(f"Color Space: {video_info.get_color_space()}")
+    print("\nUsing OpenCV:")
+    video_info = OpenCVInfo(video_path)
+    print(f"Duration: {video_info.get_duration_seconds()} seconds")
+    print(f"Total Frames: {video_info.get_total_frames()}")
+    print(f"Resolution: {video_info.get_width_x_height()}")
+    print(f"FPS: {video_info.get_fps()}")
+    print(f"Color Space: {video_info.get_color_space()}")

@@ -537,6 +537,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     return
                 # alert user that item has been added to queue
                 self.renderQueue.add(renderOptions)
+                
 
             # clear batch file list
             self.batchVideos = []
@@ -589,7 +590,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.RenderedPreviewControlsContainer.setEnabled(True)
 
     def loadVideo(self, inputFile, multi_file=False):
+        if "{MULTIPLE_FILES}" in inputFile.strip().replace(" ", ""):
+            return
         if multi_file:
+            self.outputFileText.setEnabled(False)
             for file in os.listdir(inputFile):
                 video = os.path.join(inputFile, file)
                 videoHandler = VideoLoader(video)
@@ -601,6 +605,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 return
             NotificationOverlay("Loaded " + str(len(self.batchVideos)) + " videos.", self, timeout=1500)
             self.inputFileText.setText(" { MULTIPLE_FILES } ")
+            self.inputFileText.setEnabled(False)
             self.videoWidth = 0
             self.videoHeight = 0
             self.videoFps = 0
@@ -629,7 +634,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.videoContainer = videoHandler.videoContainer
 
             self.inputFileText.setText(inputFile)
-        self.outputFileText.setEnabled(True)
+            self.outputFileText.setEnabled(True)
+
         self.outputFileSelectButton.setEnabled(True)
         self.isVideoLoaded = True
         self.updateVideoGUIDetails()

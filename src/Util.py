@@ -530,3 +530,4 @@ def print_execution_time(func):
         print(f"{func.__name__} : {end - start:.6f} seconds")
         return result
     return wrapper
+

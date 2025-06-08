@@ -27,6 +27,7 @@ from ..constants import (
     IMAGE_SHARED_MEMORY_ID,
     PAUSED_STATE_SHARED_MEMORY_ID,
     INPUT_TEXT_FILE,
+    FFMPEG_PATH,
     CWD,
     PLATFORM,
 )
@@ -359,6 +360,8 @@ class ProcessTab:
         # Have to swap the visibility of these here otherwise crash for some reason
         hide_layout_widgets(self.parent.onRenderButtonsContiainer)
         self.parent.startRenderButton.setEnabled(True)
+        self.parent.outputFileText.setEnabled(True)
+        self.parent.inputFileText.setEnabled(True)
         self.parent.previewLabel.clear()
         self.parent.startRenderButton.clicked.disconnect()
         self.parent.startRenderButton.clicked.connect(self.parent.startRender)

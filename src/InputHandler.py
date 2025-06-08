@@ -1,6 +1,5 @@
 import cv2
 from .Util import log
-
 class VideoLoader:
     def __init__(self, inputFile):
         self.inputFile = inputFile
@@ -10,7 +9,12 @@ class VideoLoader:
         self.capture = cv2.VideoCapture(self.inputFile, cv2.CAP_FFMPEG)
 
     def isValidVideo(self):
-        return self.capture.isOpened()
+        log(f"Checking if video file is valid: {self.inputFile}")
+        disabled_extensions = ["txt", "jpg", "jpeg", "png", "bmp", "webp"]
+        file_extension = self.inputFile.split(".")[-1].lower()
+        return self.capture.isOpened() and \
+               self.capture.get(cv2.CAP_PROP_FRAME_COUNT) > 1 and \
+               file_extension not in disabled_extensions
 
     def getData(self):
         self.width = int(self.capture.get(cv2.CAP_PROP_FRAME_WIDTH))
