@@ -110,7 +110,7 @@ class UpscalePytorch:
         self.trt_optimization_level = trt_optimization_level
         self.trt_aux_streams = trt_max_aux_streams
         self.trt_debug = trt_debug
-        self.trt_static_shape = trt_static_shape
+        
         self.hdr_mode = hdr_mode         
 
        
@@ -129,6 +129,8 @@ class UpscalePytorch:
             printAndLog("The video resolution is too small for TensorRT dynamic shape, falling back to static shape")
             trt_static_shape = True
 
+        self.trt_static_shape = trt_static_shape
+        
         # streams
         self.stream = self.torchUtils.init_stream()
         self.f2tstream = self.torchUtils.init_stream()  
