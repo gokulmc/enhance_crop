@@ -86,6 +86,7 @@ class Head(nn.Module):
         self.relu = nn.LeakyReLU(0.2, True)
 
     def forward(self, x, feat=False):
+        x = x.clamp(0.0, 1.0)
         x0 = self.cnn0(x)
         x = self.relu(x0)
         x1 = self.cnn1(x)

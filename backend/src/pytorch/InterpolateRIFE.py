@@ -426,6 +426,7 @@ class InterpolateRifeTorch(BaseInterpolate):
                 return
         
         frame1 = self.torchUtils.frame_to_tensor(img1, self.f2tStream, device=self.device, dtype=self.dtype)
+        
         if self.encode:
             encode1 = self.encode_Frame(frame1, self.f2tStream)
         

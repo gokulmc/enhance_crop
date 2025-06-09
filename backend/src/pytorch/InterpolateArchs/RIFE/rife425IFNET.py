@@ -69,6 +69,7 @@ class Head(nn.Module):
         self.relu = nn.LeakyReLU(0.2, True)
 
     def forward(self, x, feat=False):
+        x = x.clamp(0.0, 1.0)
         x0 = self.cnn0(x)
         x = self.relu(x0)
         x1 = self.cnn1(x)
@@ -79,6 +80,7 @@ class Head(nn.Module):
         if feat:
             return [x0, x1, x2, x3]
         return x3
+
 
 
 class ResConv(nn.Module):
@@ -164,6 +166,7 @@ class IFNet(nn.Module):
     ):
         img0 = img0.clamp(0.,1.)
         img1 = img1.clamp(0.,1.)
+        
         warped_img0 = img0
         warped_img1 = img1
         flow = None

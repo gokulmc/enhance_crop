@@ -238,17 +238,17 @@ class FFmpegWrite(Buffer):
                     
                 ]
 
-            command += [
-                "-pix_fmt",
-                self.pixelFormat,
-            ]
+                command += [
+                    "-pix_fmt",
+                    self.pixelFormat,
+                ]
 
-            color_primaries = ["bt709", "bt2020", "bt2020nc"]
-            if self.color_space is not None and self.color_space in color_primaries:
-                    command += [
-                        "-color_primaries",
-                        self.color_space,
-            ]
+                color_primaries = ["bt709", "bt2020", "bt2020nc"]
+                if self.color_space is not None and self.color_space in color_primaries:
+                        command += [
+                            "-color_primaries",
+                            self.color_space,
+                ]
 
             command += [
                 "-",
