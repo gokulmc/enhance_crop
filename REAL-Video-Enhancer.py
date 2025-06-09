@@ -592,6 +592,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def loadVideo(self, inputFile, multi_file=False):
         if "{MULTIPLE_FILES}" in inputFile.strip().replace(" ", ""):
             return
+        if inputFile == "":
+            NotificationOverlay("Please select a video file!", self, timeout=1500)
+            return
         if multi_file:
             self.outputFileText.setEnabled(False)
             for file in os.listdir(inputFile):
