@@ -56,14 +56,16 @@ class InterpolateRifeTorch(BaseInterpolate):
         self.backend = backend
         self.ceilInterpolateFactor = ceilInterpolateFactor
         self.dynamicScaledOpticalFlow = dynamicScaledOpticalFlow
+        mins = min(width, height)
         
-        if width <= 3840 and height <= 3840 and width > 1920 and height > 1920:
-            self.trt_min_shape = [1920, 1920]
+        if width <= 3840 and height <= 3840 and (width > 1920 or height > 1920):
+            self.trt_min_shape = [1920, height] if height < width else [width, 1920]
             self.trt_opt_shape = [3840, 2160]
             self.trt_max_shape = [3840, 3840]
         
-        if width <= 1920 and height <= 1920 and width >= 128 and height >= 128:
-            self.trt_min_shape = [128, 128]
+        if width <= 1920 and height <= 1920 and (width >= 128 or height >= 128):
+            
+            self.trt_min_shape = [1920, height] if height < width else [width, 1920]
             self.trt_opt_shape = [1920, 1080]
             self.trt_max_shape = [1920, 1920]
         
