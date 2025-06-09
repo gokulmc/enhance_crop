@@ -166,15 +166,16 @@ class TorchUtils:
             frame = torch.frombuffer(
                     frame,
                     dtype=torch.uint16 if self.hdr_mode else torch.uint8,
-                ).to(device=device, non_blocking=True, dtype=torch.float32 if self.hdr_mode else dtype) 
+                ).to(device=device, non_blocking=True) 
             
             frame = (
                 frame
+                .div(65535.0 if self.hdr_mode else 255.0)
+                .clamp(0.0, 1.0)
                 .reshape(self.height, self.width, 3)
                 .permute(2, 0, 1)
                 .unsqueeze(0)
-                .div(65535.0 if self.hdr_mode else 255.0)
-                .clamp_(0.0, 1.0)
+                .contiguous()
                 ).to(dtype=dtype, non_blocking=True)
 
             if self.padding:
@@ -197,7 +198,7 @@ class TorchUtils:
         return (
             frame.squeeze(0)
             .permute(1, 2, 0)
-            .clamp(0, 1)
+            .clamp(0., 1.)
             .mul(65535.0 if self.hdr_mode else 255.0)
             .to(torch.uint16 if self.hdr_mode else torch.uint8)
             .contiguous()

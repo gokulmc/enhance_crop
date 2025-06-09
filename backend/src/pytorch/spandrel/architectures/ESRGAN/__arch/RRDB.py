@@ -141,4 +141,4 @@ class RRDBNet(nn.Module):
             x = torch.pixel_unshuffle(x, downscale_factor=self.shuffle_factor)
             x = self.model(x)
             return x[:, :, : h * self.scale, : w * self.scale]
-        return self.model(x).clamp(0.0, 1.0).float()
+        return self.model(x)

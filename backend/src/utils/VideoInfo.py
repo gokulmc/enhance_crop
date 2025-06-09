@@ -38,12 +38,14 @@ def colorspace_detection(input_file):
         if "Stream #" in line and "Video" in line:
             stream_line = line
             break
-
+    
+    log(f"Stream line: {stream_line}")
     if stream_line is None:
         log("No video stream found in the input file.")
         return None
     
-    color_spaces = ["bt709", "bt2020", "smpte170m", "smpte240m", "smpte2084", "smpte428", "smpte431", "smpte432"]
+    color_spaces = ["bt709", "bt2020nc", "bt2020"]
+    color_trcs = ["smpte170m", "smpte240m", "smpte2084", "smpte428", "smpte431", "smpte432"]
     for color_space in color_spaces:
         if color_space in stream_line:
             log(f"Color space detected: {color_space}")

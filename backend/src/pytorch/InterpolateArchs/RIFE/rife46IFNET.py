@@ -194,5 +194,4 @@ class IFNet(nn.Module):
 
         temp = torch.sigmoid(latest_mask)
         frame = warped_img0 * temp + warped_img1 * (1 - temp)
-        frame = frame.float()
         return frame

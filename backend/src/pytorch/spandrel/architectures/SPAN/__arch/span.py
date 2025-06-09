@@ -309,4 +309,4 @@ class SPAN(nn.Module):
         out = self.conv_cat(torch.cat([out_feature, out_b6, out_b1, out_b5_2], 1))
         output = self.upsampler(out)
 
-        return output.clamp(0., 1.).float()
+        return output
