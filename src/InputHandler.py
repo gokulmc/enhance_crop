@@ -69,11 +69,15 @@ class VideoLoader:
         self.ffmpeg_info = FFMpegInfoWrapper(self.inputFile)
 
     def isValidVideo(self):
-        log(f"Checking if video file is valid: {self.inputFile}")
-        disabled_extensions = ["txt", "jpg", "jpeg", "png", "bmp", "webp"]
-        file_extension = self.inputFile.split(".")[-1].lower()
-        return self.ffmpeg_info.get_total_frames() > 1 and \
-                file_extension not in disabled_extensions
+        try:
+            log(f"Checking if video file is valid: {self.inputFile}")
+            disabled_extensions = ["txt", "jpg", "jpeg", "png", "bmp", "webp"]
+            file_extension = self.inputFile.split(".")[-1].lower()
+            return self.ffmpeg_info.get_total_frames() > 1 and \
+                    file_extension not in disabled_extensions
+        except Exception as e:
+            log(f"Error checking video validity: {e}")
+            return False
 
     def getData(self):
         self.width, self.height = self.ffmpeg_info.get_width_x_height()
