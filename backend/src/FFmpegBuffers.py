@@ -232,24 +232,14 @@ class FFmpegWrite(Buffer):
                 
                 
                 
-                command += [
-                    "-color_trc",
-                    "smpte2084",
-                    
-                ]
-
+                
                 command += [
                     "-pix_fmt",
                     self.pixelFormat,
                 ]
 
                 color_primaries = ["bt709", "bt2020", "bt2020nc"]
-                if self.color_space is not None and self.color_space in color_primaries:
-                        command += [
-                            "-color_primaries",
-                            self.color_space,
-                ]
-
+                
             command += [
                 "-",
             ]
@@ -315,13 +305,7 @@ class FFmpegWrite(Buffer):
                 ]
 
             color_primaries = ["bt709", "bt2020", "bt2020nc"]
-            if self.color_space is not None and self.color_space in color_primaries:
-                    command += [
-                        "-color_primaries",
-                        "bt2020",
-                        "-color_trc",
-                        "smpte2084" if self.hdr_mode else "bt709",
-            ]
+            
                 
             if self.custom_encoder is not None:
                 for i in self.custom_encoder.split():
