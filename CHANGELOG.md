@@ -7,6 +7,7 @@
  - More RIFE Models.
  ### Fixed
  - Incorrect colors with some videos.
+ - Incorrect RIFE 4K output
 # RVE 2.3.2
 ### Added
  - Fallback to float32 if float16 does not work with custom arch.
