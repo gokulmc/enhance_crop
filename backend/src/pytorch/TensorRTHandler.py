@@ -197,7 +197,6 @@ class TorchTensorRTHandler:
             workspace_size=self.trt_workspace_size,
             truncate_long_and_double=True,
             min_block_size=1,
-            dynamic_shapes=dynamic_shapes,
         )
         torch.jit.save(module_trt, trt_engine_path)
 

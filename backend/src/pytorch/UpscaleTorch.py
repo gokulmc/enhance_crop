@@ -113,10 +113,7 @@ class UpscalePytorch:
         self.trt_static_shape = trt_static_shape
         self.hdr_mode = hdr_mode         
 
-        if width <= 3840 and height <= 3840 and (width > 1920 or height > 1920):
-            self.trt_min_shape = [1920, height] if height < width else [width, 1920]
-            self.trt_opt_shape = [3840, 2160]
-            self.trt_max_shape = [3840, 3840]
+       
 
         if width <= 1920 and height <= 1920 and (width >= 128 or height >= 128):
 
@@ -124,8 +121,8 @@ class UpscalePytorch:
             self.trt_opt_shape = [1920, 1080]
             self.trt_max_shape = [1920, 1920]
         
-        if width > 3840 or height > 3840 and not trt_static_shape:
-            printAndLog("The video resolution is very large for TensorRT dynamic shape, falling back to static shape")
+        if width > 1920 or height > 1920 and not trt_static_shape:
+            printAndLog("The video resolution is very large for TensorRT dynamic shape and will use a lot of VRAM, falling back to static shape")
             trt_static_shape = True
 
         if width > 3840 or height > 3840 and not trt_static_shape:
