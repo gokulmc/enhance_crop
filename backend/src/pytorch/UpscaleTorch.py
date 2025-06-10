@@ -117,7 +117,7 @@ class UpscalePytorch:
 
         if width <= 1920 and height <= 1920 and (width >= 128 or height >= 128):
 
-            self.trt_min_shape = [1920, height] if height < width else [width, 1920]
+            self.trt_min_shape = [128, height] if height < width else [width, 128]
             self.trt_opt_shape = [1920, 1080]
             self.trt_max_shape = [1920, 1920]
         

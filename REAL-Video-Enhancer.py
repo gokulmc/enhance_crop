@@ -392,18 +392,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def updateVideoGUIDetails(self):
         isInterpolate = self.interpolateCheckBox.isChecked()
         isUpscale = self.upscaleCheckBox.isChecked()
-        isDecompress = self.decompressCheckBox.isChecked()
+        isDeblur = self.deblurCheckBox.isChecked()
         
         self.interpolationContainer.setVisible(isInterpolate)
         self.interpolateContainer_2.setVisible(isInterpolate)
-        self.decompressContainer.setVisible(isDecompress)
+        self.deblurContainer.setVisible(isDeblur)
         
         # disable decompress for now
-        self.decompressCheckBoxContainer.setVisible(False)
-        self.decompressContainer.setVisible(False)
+        #self.decompressCheckBoxContainer.setVisible(False)
+        #self.decompressContainer.setVisible(False)
         
         # set interpolation container visible if interpolate model is not none
-        self.upscaleContainer.setVisible(isUpscale)
+        self.upscaleContainer.setVisible(isUpscale or isDeblur)
         self.generalUpscaleContainer.setVisible(isUpscale)
         self.settings.readSettings()
         self.setDefaultOutputFile(self.inputFileText.text(), self.settings.settings["output_folder_location"])
@@ -415,24 +415,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def getCurrentRenderOptions(self, input_file=None, output_path=None):
         interpolate = self.interpolateModelComboBox.currentText()
         upscale = self.upscaleModelComboBox.currentText()
+        deblur = self.deblurModelComboBox.currentText()
         input_file = self.inputFileText.text() if input_file is None else input_file
         output_path = self.outputFileText.text() if output_path is None else output_path
         if not self.interpolateCheckBox.isChecked():
             interpolate = None
         if not self.upscaleCheckBox.isChecked():
             upscale = None
-
+        if not self.deblurCheckBox.isChecked():
+            deblur = None
         if not self.isVideoLoaded:
             NotificationOverlay("Video is not loaded!", self, timeout=1500)
             return 1
 
-        if not interpolate and not upscale:
+        if not interpolate and not upscale and not deblur:
             NotificationOverlay("Please select at least one model!", self, timeout=1500)
             return 1
 
         backend = self.backendComboBox.currentText()
         upscaleModelArch = "custom"
-        interpolateModels, upscaleModels = getModels(backend)
+        interpolateModels, upscaleModels, deblurModels = getModels(backend)
 
         if interpolate:
             interpolateDownloadFile = interpolateModels[interpolate][1]
@@ -469,6 +471,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         timeout=2500,
                     )
                     return 1
+        if deblur:
+            deblurModelFile = deblurModels[deblur][0]
+            deblurDownloadFile = deblurModels[deblur][1]
+            modelScale = 1
+            upscaleTimes = 1
+            upscaleModelArch = "deblur"
+            dm = DownloadModel(
+                modelFile=deblurModelFile,
+                downloadModelFile=deblurDownloadFile,
+            )
+            if not dm.downloadModel():
+                NotificationOverlay(
+                    "Unable to add to render queue.\nModel can't be downloaded.\nPlease check your network and try again.",
+                    self,
+                    timeout=2500,
+                )
+                return 1
 
         return RenderOptions(
             inputFile=input_file,
@@ -480,8 +499,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             tilesize=self.tileSizeComboBox.currentText(),
             videoFrameCount=self.videoFrameCount,
             backend=self.backendComboBox.currentText(),
-            interpolateModel=interpolate,
-            upscaleModel=upscale,
             interpolateTimes=self.getInterpolationMultiplier(
                 self.interpolateModelComboBox.currentText()
             ),
@@ -489,10 +506,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             sloMoMode=self.sloMoModeCheckBox.isChecked(),
             dyanmicScaleOpticalFlow=self.dynamicScaledOpticalFlowCheckBox.isChecked(),
             ensemble=self.ensembleCheckBox.isChecked(),
-            upscaleModelArch=upscaleModelArch,
             upscaleTimes=upscaleTimes,
             modelScale=modelScale,
             upscaleModelFile=upscaleModelFile if upscale else None,
+            deblurModelFile=deblurModelFile if deblur else None,
             interpolateModelFile=interpolateModelFile if interpolate else None,
             hdrMode=self.hdrModeCheckBox.isChecked(),
             mergeSubtitles=self.mergeSubtitlesCheckBox.isChecked(),

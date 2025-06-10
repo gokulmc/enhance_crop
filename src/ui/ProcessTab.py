@@ -80,14 +80,17 @@ class ProcessTab:
         returns
         the current models available given a method (interpolate, upscale) and a backend (ncnn, tensorrt, pytorch)
         """
-        interpolateModels, upscaleModels = getModels(backend)
+        interpolateModels, upscaleModels, deblurModels = getModels(backend)
         self.parent.interpolateModelComboBox.clear()
         self.parent.upscaleModelComboBox.clear()
+        self.parent.deblurModelComboBox.clear()
+        self.parent.denoiseModelComboBox.clear()
         self.parent.interpolateModelComboBox.addItems(
             list(interpolateModels.keys())
         )
         self.parent.interpolateModelComboBox.setCurrentIndex(len(list(interpolateModels.keys()))-1)
         self.parent.upscaleModelComboBox.addItems(list(upscaleModels.keys()))
+        self.parent.deblurModelComboBox.addItems(list(deblurModels.keys()))
 
     def onTilingSwitch(self):
         if self.parent.tilingCheckBox.isChecked():
@@ -122,7 +125,6 @@ class ProcessTab:
         # set slo mo container visable to false by default
         
         self.parent.interpolateContainer_2.setVisible(False)
-        self.parent.decompressContainer.setVisible(False)
         # connect up tilesize container visiable
         self.parent.tilingCheckBox.stateChanged.connect(self.onTilingSwitch)
 
@@ -141,7 +143,7 @@ class ProcessTab:
         )
         self.parent.interpolateCheckBox.clicked.connect(self.parent.updateVideoGUIDetails)
         self.parent.upscaleCheckBox.clicked.connect(self.parent.updateVideoGUIDetails)
-        self.parent.decompressCheckBox.clicked.connect(self.parent.updateVideoGUIDetails)
+        self.parent.deblurCheckBox.clicked.connect(self.parent.updateVideoGUIDetails)
 
         self.parent.backendComboBox.currentIndexChanged.connect(
             lambda: self.populateModels(self.parent.backendComboBox.currentText())
@@ -520,7 +522,7 @@ class ProcessTab:
                 f"{renderOptions.endTime}",
             ]
 
-        if renderOptions.upscaleModel:
+        if renderOptions.upscaleModelFile:
             modelPath = os.path.join(MODELS_PATH, renderOptions.upscaleModelFile)
             if renderOptions.upscaleModelArch == "custom":
                 modelPath = os.path.join(
@@ -539,7 +541,7 @@ class ProcessTab:
                 ]
             
 
-        if renderOptions.interpolateModel:
+        if renderOptions.interpolateModelFile:
             command += [
                 "--interpolate_model",
                 os.path.join(
@@ -561,6 +563,16 @@ class ProcessTab:
                 command += [
                     "--ensemble",
                 ]
+        
+        if renderOptions.deblurModelFile:
+            command += [
+                "--denoise_model",
+                os.path.join(
+                    MODELS_PATH,
+                    renderOptions.deblurModelFile,
+                ),
+            ]
+
         if self.settings.settings["auto_border_cropping"] == "True":
             command += [
                 "--border_detect",

@@ -432,6 +432,43 @@ tensorrtUpscaleModels = {
     ),
 
 }
+
+ncnnDeblurModels = {
+    "NAFNet GoPro (Deblur) (Slow)": (
+        "nafnet_gopro1x.ncnn",
+        "nafnet_gopro1x.ncnn.tar.gz",
+        1,
+        "nafnet",
+    ),
+}
+
+pytorchDeblurModels = {
+    "NAFNet GoPro (Deblur) (Slow)": (
+        "nafnet_gopro1x.pth",
+        "nafnet_gopro1x.pth",
+        1,
+        "nafnet",
+    ),
+}
+
+tensorrtDeblurModels = {
+    "NAFNet GoPro (Deblur) (Slow)": (
+        "nafnet_gopro1x.pth",
+        "nafnet_gopro1x.pth",
+        1,
+        "nafnet",
+    ),
+}
+
+tensorrtDenoiseModels = {
+    "NAFNet  (1x) (Slow)": (
+        "scunet_color_real_psnr.pth",
+        "scunet_color_real_psnr.pth",
+        1,
+        "scunet",
+    )
+}
+
 onnxInterpolateModels = {
     "RIFE 4.22 (Recommended Model)": (
         "rife422_v2_ensembleFalse_op20_clamp.onnx",
@@ -448,6 +485,7 @@ onnxUpscaleModels = {
         "SPAN",
     ),
 }
+
 
 
 def getCustomModelScale(model):
@@ -486,10 +524,13 @@ totalModels = (
     | pytorchInterpolateModels
     | pytorchUpscaleModels
     | pytorchDenoiseModels
+    | pytorchDeblurModels
+    | ncnnDeblurModels
     | ncnnInterpolateModels
     | ncnnUpscaleModels
     | tensorrtInterpolateModels
     | tensorrtUpscaleModels
+    | tensorrtDeblurModels
 )  # this doesnt include all models due to overwriting, but includes every case of every unique model name
 
 
@@ -501,19 +542,23 @@ def getModels(backend:str):
         case "ncnn":
             interpolateModels = ncnnInterpolateModels
             upscaleModels = ncnnUpscaleModels
+            deblurModels = ncnnDeblurModels
         case "pytorch":
             interpolateModels = pytorchInterpolateModels
             upscaleModels = pytorchUpscaleModels
+            deblurModels = pytorchDeblurModels
         case "tensorrt":
             interpolateModels = tensorrtInterpolateModels
             upscaleModels = tensorrtUpscaleModels
+            deblurModels = tensorrtDeblurModels
         case "directml":
             interpolateModels = onnxInterpolateModels
             upscaleModels = onnxUpscaleModels
+            deblurModels = {}
         case _:
             RegularQTPopup(
                 "Failed to import any backends!, please try to reinstall the app!"
             )
             errorAndLog("Failed to import any backends!")
             return {}
-    return interpolateModels, upscaleModels
+    return interpolateModels, upscaleModels, deblurModels

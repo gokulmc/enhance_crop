@@ -15,11 +15,8 @@ class RenderOptions:
         tilesize: str,
         videoFrameCount: int,
         backend: str,
-        interpolateModel: str | None,
-        upscaleModel: str | None,
         upscaleTimes: int,
         modelScale: int,
-        upscaleModelArch: str,
         interpolateTimes: int,
         benchmarkMode: bool,
         sloMoMode: bool,
@@ -27,6 +24,7 @@ class RenderOptions:
         ensemble: bool,
         interpolateModelFile: str | None = None,
         upscaleModelFile: str | None = None,
+        deblurModelFile: str | None = None,
         hdrMode: bool = False,
         mergeSubtitles: bool = True,
         startTime: float | None = None,
@@ -44,13 +42,11 @@ class RenderOptions:
         self._tilesize = tilesize
         self._videoFrameCount = videoFrameCount
         self._backend = backend
-        self._interpolateModel = interpolateModel
         self._interpolateModelFile = interpolateModelFile
-        self._upscaleModel = upscaleModel
+        self._deblurModelFile = deblurModelFile
         self._upscaleModelFile = upscaleModelFile
         self._upscaleTimes = upscaleTimes
         self._modelScale = modelScale
-        self._upscaleModelArch = upscaleModelArch
         self._interpolateTimes = interpolateTimes
         self._benchmarkMode = benchmarkMode
         self._sloMoMode = sloMoMode
@@ -158,6 +154,14 @@ class RenderOptions:
     @interpolateModelFile.setter
     def interpolateModelFile(self, value: str):
         self._interpolateModelFile = value
+    
+    @property
+    def deblurModelFile(self):
+        return self._deblurModelFile
+    
+    @deblurModelFile.setter
+    def deblurModelFile(self, value: str):
+        self._deblurModelFile = value
 
     @property
     def upscaleModel(self):
@@ -175,14 +179,7 @@ class RenderOptions:
     def upscaleTimes(self, value: int):
         self._upscaleTimes = value
 
-    @property
-    def upscaleModelArch(self):
-        return self._upscaleModelArch
-
-    @upscaleModelArch.setter
-    def upscaleModelArch(self, value: str):
-        self._upscaleModelArch = value
-
+   
     @property
     def interpolateTimes(self):
         return self._interpolateTimes

@@ -186,12 +186,25 @@ class Render:
             self.upscaleTimes = 1  # if no upscaling, it will default to 1
             self.modelScale = 1
 
+        if denoiseModel:
+            self.setupDenoise()
+            printAndLog("Using Denoise Model: " + self.denoiseModel)
+            self.denoiseOption.hotUnload()  # unload model to free up memory for trt enging building
+        if compressionFixModel:
+            self.setupCompressionFix()
+            printAndLog("Using Compression Fix Model: " + self.compressionFixModel)
+            self.compressionFixOption.hotUnload()
+
         if interpolateModel:
             self.setupInterpolate()
             printAndLog("Using Interpolation Model: " + self.interpolateModel)
 
         if upscaleModel: # load model after interpolation model is loaded, this saves on vram if the user builds 2 separate engines
             self.upscaleOption.hotReload()
+        if denoiseModel:
+            self.denoiseOption.hotReload()
+        if compressionFixModel:
+            self.compressionFixOption.hotReload()
         
         log(f"Upscale Times: {self.override_upscale_scale if self.override_upscale_scale else self.upscaleTimes}")
         log(f"Interpolate Factor: {self.interpolateFactor}")
@@ -372,10 +385,10 @@ class Render:
         print(profiler.output_text(unicode=True, color=True))
         """
     
-    def upscalePytorchObject(self):
+    def upscalePytorchObject(self, modelPath=None):
         from .pytorch.UpscaleTorch import UpscalePytorch
         return UpscalePytorch(
-            self.upscaleModel,
+            modelPath,
             device=self.device,
             precision=self.precision,
             width=self.width,
@@ -387,12 +400,12 @@ class Render:
             trt_static_shape= not self.trt_dynamic_shapes,
         )
     
-    def upscaleNCNNObject(self, scale=None):
+    def upscaleNCNNObject(self, scale=None, modelPath=None):
         from .ncnn.UpscaleNCNN import UpscaleNCNN
-        path, last_folder = os.path.split(self.upscaleModel)
-        self.upscaleModel = os.path.join(path, last_folder, last_folder)
+        path, last_folder = os.path.split(modelPath)
+        modelPath = os.path.join(path, last_folder, last_folder)
         return UpscaleNCNN(
-            modelPath=self.upscaleModel,
+            modelPath=modelPath,
             num_threads=1,
             scale=self.upscaleTimes if scale is None else scale,
             gpuid=self.ncnn_gpu_id,  # might have this be a setting
@@ -404,25 +417,25 @@ class Render:
     def setupDenoise(self):
         printAndLog("Setting up Denoise")
         if self.backend == "pytorch" or self.backend == "tensorrt":
-            self.denoiseOption = self.upscalePytorchObject()
+            self.denoiseOption = self.upscalePytorchObject(self.denoiseModel)
         
         if self.backend == "ncnn":
-            self.denoiseOption = self.upscaleNCNNObject(scale=1)
+            self.denoiseOption = self.upscaleNCNNObject(scale=1, modelPath=self.denoiseModel)
 
     def setupCompressionFix(self):
         printAndLog("Setting up Compression Fix")
         if self.backend == "pytorch" or self.backend == "tensorrt":
-            self.compressionFixOption = self.upscalePytorchObject()
+            self.compressionFixOption = self.upscalePytorchObject(self.compressionFixModel)
         
         if self.backend == "ncnn":
-            self.compressionFixOption = self.upscaleNCNNObject(scale=1)
+            self.compressionFixOption = self.upscaleNCNNObject(scale=1, modelPath=self.compressionFixModel)
 
     def setupUpscale(self):
         printAndLog("Setting up Upscale")
         if self.backend == "pytorch" or self.backend == "tensorrt":
             from .pytorch.UpscaleTorch import UpscalePytorch
 
-            self.upscaleOption = self.upscalePytorchObject()
+            self.upscaleOption = self.upscalePytorchObject(self.upscaleModel)
             self.modelScale = self.upscaleOption.getScale() 
             self.upscaleTimes = self.modelScale if not self.override_upscale_scale else self.override_upscale_scale
 
@@ -433,7 +446,7 @@ class Render:
             self.upscaleModel = os.path.join(path, last_folder)
             self.modelScale = getNCNNScale(modelPath=self.upscaleModel) 
             self.upscaleTimes = self.modelScale if not self.override_upscale_scale else self.override_upscale_scale
-            self.upscaleOption = self.upscaleNCNNObject(scale=self.modelScale)
+            self.upscaleOption = self.upscaleNCNNObject(scale=self.modelScale, modelPath=self.upscaleModel)
 
         if self.backend == "directml":  # i dont want to work with this shit
             from .onnx.UpscaleONNX import UpscaleONNX
