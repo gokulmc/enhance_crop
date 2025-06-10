@@ -60,7 +60,7 @@ jobs:
           path: backend-v${{ env.APP_VERSION }}.tar.gz 
           
   build-Windows:
-    runs-on: windows-2019
+    runs-on: windows-2022
     permissions: write-all  
     steps:
       - uses: actions/checkout@v3
