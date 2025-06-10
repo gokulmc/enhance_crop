@@ -25,6 +25,7 @@ class RenderOptions:
         interpolateModelFile: str | None = None,
         upscaleModelFile: str | None = None,
         deblurModelFile: str | None = None,
+        denoiseModelFile: str | None = None,
         hdrMode: bool = False,
         mergeSubtitles: bool = True,
         startTime: float | None = None,
@@ -45,6 +46,7 @@ class RenderOptions:
         self._interpolateModelFile = interpolateModelFile
         self._deblurModelFile = deblurModelFile
         self._upscaleModelFile = upscaleModelFile
+        self._denoiseModelFile = denoiseModelFile
         self._upscaleTimes = upscaleTimes
         self._modelScale = modelScale
         self._interpolateTimes = interpolateTimes
@@ -140,12 +142,11 @@ class RenderOptions:
         self._modelScale = value
 
     @property
-    def interpolateModel(self):
-        return self._interpolateModel
-
-    @interpolateModel.setter
-    def interpolateModel(self, value: str):
-        self._interpolateModel = value
+    def denoiseModelFile(self):
+        return self._denoiseModelFile
+    @denoiseModelFile.setter
+    def denoiseModelFile(self, value: str):
+        self._denoiseModelFile = value
 
     @property
     def interpolateModelFile(self):

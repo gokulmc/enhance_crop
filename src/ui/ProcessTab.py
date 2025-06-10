@@ -80,7 +80,7 @@ class ProcessTab:
         returns
         the current models available given a method (interpolate, upscale) and a backend (ncnn, tensorrt, pytorch)
         """
-        interpolateModels, upscaleModels, deblurModels = getModels(backend)
+        interpolateModels, upscaleModels, deblurModels, denoiseModels = getModels(backend)
         self.parent.interpolateModelComboBox.clear()
         self.parent.upscaleModelComboBox.clear()
         self.parent.deblurModelComboBox.clear()
@@ -91,6 +91,7 @@ class ProcessTab:
         self.parent.interpolateModelComboBox.setCurrentIndex(len(list(interpolateModels.keys()))-1)
         self.parent.upscaleModelComboBox.addItems(list(upscaleModels.keys()))
         self.parent.deblurModelComboBox.addItems(list(deblurModels.keys()))
+        self.parent.denoiseModelComboBox.addItems(list(denoiseModels.keys()))
 
     def onTilingSwitch(self):
         if self.parent.tilingCheckBox.isChecked():
@@ -144,6 +145,7 @@ class ProcessTab:
         self.parent.interpolateCheckBox.clicked.connect(self.parent.updateVideoGUIDetails)
         self.parent.upscaleCheckBox.clicked.connect(self.parent.updateVideoGUIDetails)
         self.parent.deblurCheckBox.clicked.connect(self.parent.updateVideoGUIDetails)
+        self.parent.denoiseCheckBox.clicked.connect(self.parent.updateVideoGUIDetails)
 
         self.parent.backendComboBox.currentIndexChanged.connect(
             lambda: self.populateModels(self.parent.backendComboBox.currentText())
@@ -566,10 +568,18 @@ class ProcessTab:
         
         if renderOptions.deblurModelFile:
             command += [
-                "--denoise_model",
+                "--compression_fix_model",
                 os.path.join(
                     MODELS_PATH,
                     renderOptions.deblurModelFile,
+                ),
+            ]
+        if renderOptions.denoiseModelFile:
+            command += [
+                "--denoise_model",
+                os.path.join(
+                    MODELS_PATH,
+                    renderOptions.denoiseModelFile,
                 ),
             ]
 

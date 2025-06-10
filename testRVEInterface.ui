@@ -1833,7 +1833,7 @@ background-color:#343b47
                                    </widget>
                                   </item>
                                   <item>
-                                   <widget class="QWidget" name="widget_41" native="true">
+                                   <widget class="QWidget" name="denoiseContainer" native="true">
                                     <layout class="QHBoxLayout" name="horizontalLayout_64">
                                      <item>
                                       <widget class="QWidget" name="widget_44" native="true">
@@ -2778,7 +2778,7 @@ border-radius:10px;
                                      </font>
                                     </property>
                                     <property name="text">
-                                     <string>Tile Settings</string>
+                                     <string>Upscale/Restoration Tile Settings</string>
                                     </property>
                                    </widget>
                                   </item>

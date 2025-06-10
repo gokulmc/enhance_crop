@@ -353,14 +353,6 @@ pytorchUpscaleModels = {
         "SPAN",
     ),
 }
-pytorchDenoiseModels = {
-    "SCUNet Color (1x) (Slow)": (
-        "scunet_color_real_psnr.pth",
-        "scunet_color_real_psnr.pth",
-        1,
-        "scunet",
-    )
-}
 
 tensorrtUpscaleModels = {
     
@@ -459,9 +451,38 @@ tensorrtDeblurModels = {
         "nafnet",
     ),
 }
+ncnnDenoiseModels = {
+    "NAFNet SIDD (1x) (Slow)": (
+        "NAFNet-SIDD-width32.tar.gz",
+        "NAFNet-SIDD-width32",
+        1,
+        "scunet",
+    )
+}
+
+pytorchDenoiseModels = {
+    "NAFNet SIDD (1x) (Slow)": (
+        "1xNAFNet-SIDD-width32.pth",
+        "1xNAFNet-SIDD-width32.pth",
+        1,
+        "scunet",
+    ),
+    "SCUNet Color (1x) (Slow)": (
+        "scunet_color_real_psnr.pth",
+        "scunet_color_real_psnr.pth",
+        1,
+        "scunet",
+    )
+}
 
 tensorrtDenoiseModels = {
-    "NAFNet  (1x) (Slow)": (
+    "NAFNet SIDD (1x) (Slow)": (
+        "1xNAFNet-SIDD-width32.pth",
+        "1xNAFNet-SIDD-width32.pth",
+        1,
+        "scunet",
+    ),
+    "SCUNet Color (1x) (Slow)": (
         "scunet_color_real_psnr.pth",
         "scunet_color_real_psnr.pth",
         1,
@@ -543,14 +564,17 @@ def getModels(backend:str):
             interpolateModels = ncnnInterpolateModels
             upscaleModels = ncnnUpscaleModels
             deblurModels = ncnnDeblurModels
+            denoiseModels = ncnnDenoiseModels
         case "pytorch":
             interpolateModels = pytorchInterpolateModels
             upscaleModels = pytorchUpscaleModels
             deblurModels = pytorchDeblurModels
+            denoiseModels = pytorchDenoiseModels
         case "tensorrt":
             interpolateModels = tensorrtInterpolateModels
             upscaleModels = tensorrtUpscaleModels
             deblurModels = tensorrtDeblurModels
+            denoiseModels = tensorrtDenoiseModels
         case "directml":
             interpolateModels = onnxInterpolateModels
             upscaleModels = onnxUpscaleModels
@@ -561,4 +585,4 @@ def getModels(backend:str):
             )
             errorAndLog("Failed to import any backends!")
             return {}
-    return interpolateModels, upscaleModels, deblurModels
+    return interpolateModels, upscaleModels, deblurModels, denoiseModels

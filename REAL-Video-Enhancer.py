@@ -393,17 +393,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         isInterpolate = self.interpolateCheckBox.isChecked()
         isUpscale = self.upscaleCheckBox.isChecked()
         isDeblur = self.deblurCheckBox.isChecked()
-        
+        isDenoise = self.denoiseCheckBox.isChecked()
         self.interpolationContainer.setVisible(isInterpolate)
         self.interpolateContainer_2.setVisible(isInterpolate)
         self.deblurContainer.setVisible(isDeblur)
+        self.denoiseContainer.setVisible(isDenoise)
         
         # disable decompress for now
         #self.decompressCheckBoxContainer.setVisible(False)
         #self.decompressContainer.setVisible(False)
         
         # set interpolation container visible if interpolate model is not none
-        self.upscaleContainer.setVisible(isUpscale or isDeblur)
+        self.upscaleContainer.setVisible(isUpscale or isDeblur or isDenoise)
         self.generalUpscaleContainer.setVisible(isUpscale)
         self.settings.readSettings()
         self.setDefaultOutputFile(self.inputFileText.text(), self.settings.settings["output_folder_location"])
@@ -416,6 +417,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         interpolate = self.interpolateModelComboBox.currentText()
         upscale = self.upscaleModelComboBox.currentText()
         deblur = self.deblurModelComboBox.currentText()
+        denoise = self.denoiseModelComboBox.currentText()
         input_file = self.inputFileText.text() if input_file is None else input_file
         output_path = self.outputFileText.text() if output_path is None else output_path
         if not self.interpolateCheckBox.isChecked():
@@ -424,17 +426,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             upscale = None
         if not self.deblurCheckBox.isChecked():
             deblur = None
+        if not self.denoiseCheckBox.isChecked():
+            denoise = None
         if not self.isVideoLoaded:
             NotificationOverlay("Video is not loaded!", self, timeout=1500)
             return 1
 
-        if not interpolate and not upscale and not deblur:
+        if not interpolate and not upscale and not deblur and not denoise:
             NotificationOverlay("Please select at least one model!", self, timeout=1500)
             return 1
 
         backend = self.backendComboBox.currentText()
         upscaleModelArch = "custom"
-        interpolateModels, upscaleModels, deblurModels = getModels(backend)
+        interpolateModels, upscaleModels, deblurModels, denoiseModels = getModels(backend)
 
         if interpolate:
             interpolateDownloadFile = interpolateModels[interpolate][1]
@@ -474,12 +478,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if deblur:
             deblurModelFile = deblurModels[deblur][0]
             deblurDownloadFile = deblurModels[deblur][1]
-            modelScale = 1
-            upscaleTimes = 1
-            upscaleModelArch = "deblur"
             dm = DownloadModel(
                 modelFile=deblurModelFile,
                 downloadModelFile=deblurDownloadFile,
+            )
+            if not dm.downloadModel():
+                NotificationOverlay(
+                    "Unable to add to render queue.\nModel can't be downloaded.\nPlease check your network and try again.",
+                    self,
+                    timeout=2500,
+                )
+                return 1
+        
+        if denoise:
+            denoiseModelFile = denoiseModels[denoise][0]
+            denoiseDownloadFile = denoiseModels[denoise][1]
+            dm = DownloadModel(
+                modelFile=denoiseModelFile,
+                downloadModelFile=denoiseDownloadFile,
             )
             if not dm.downloadModel():
                 NotificationOverlay(
@@ -510,6 +526,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             modelScale=modelScale,
             upscaleModelFile=upscaleModelFile if upscale else None,
             deblurModelFile=deblurModelFile if deblur else None,
+            denoiseModelFile=denoiseModelFile if denoise else None,
             interpolateModelFile=interpolateModelFile if interpolate else None,
             hdrMode=self.hdrModeCheckBox.isChecked(),
             mergeSubtitles=self.mergeSubtitlesCheckBox.isChecked(),

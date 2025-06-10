@@ -187,10 +187,20 @@ class Render:
             self.modelScale = 1
 
         if denoiseModel:
+            if self.backend == "tensorrt":
+                print(
+                    "Denoise model is not supported with tensorrt backend, reverting to pytorch backend.", file=sys.stderr
+                )
+                self.backend = "pytorch"
             self.setupDenoise()
             printAndLog("Using Denoise Model: " + self.denoiseModel)
             self.denoiseOption.hotUnload()  # unload model to free up memory for trt enging building
         if compressionFixModel:
+            if self.backend == "tensorrt":
+                print(
+                    "Restoration model is not supported with tensorrt backend, reverting to pytorch backend.", file=sys.stderr
+                )
+                self.backend = "pytorch"
             self.setupCompressionFix()
             printAndLog("Using Compression Fix Model: " + self.compressionFixModel)
             self.compressionFixOption.hotUnload()
