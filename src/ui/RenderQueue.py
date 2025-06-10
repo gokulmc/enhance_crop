@@ -24,6 +24,7 @@ class RenderOptions:
         ensemble: bool,
         interpolateModelFile: str | None = None,
         upscaleModelFile: str | None = None,
+        upscaleModelArch: str | None = None,
         deblurModelFile: str | None = None,
         denoiseModelFile: str | None = None,
         hdrMode: bool = False,
@@ -46,6 +47,7 @@ class RenderOptions:
         self._interpolateModelFile = interpolateModelFile
         self._deblurModelFile = deblurModelFile
         self._upscaleModelFile = upscaleModelFile
+        self._upscaleModelArch = upscaleModelArch
         self._denoiseModelFile = denoiseModelFile
         self._upscaleTimes = upscaleTimes
         self._modelScale = modelScale
@@ -147,6 +149,13 @@ class RenderOptions:
     @denoiseModelFile.setter
     def denoiseModelFile(self, value: str):
         self._denoiseModelFile = value
+    
+    @property
+    def upscaleModelArch(self):
+        return self._upscaleModelArch
+    @upscaleModelArch.setter
+    def upscaleModelArch(self, value: str):
+        self._upscaleModelArch = value
 
     @property
     def interpolateModelFile(self):

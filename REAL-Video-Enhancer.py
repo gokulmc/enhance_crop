@@ -524,6 +524,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             ensemble=self.ensembleCheckBox.isChecked(),
             upscaleTimes=upscaleTimes,
             modelScale=modelScale,
+            upscaleModelArch=upscaleModelArch,
             upscaleModelFile=upscaleModelFile if upscale else None,
             deblurModelFile=deblurModelFile if deblur else None,
             denoiseModelFile=denoiseModelFile if denoise else None,
