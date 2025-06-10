@@ -5,6 +5,8 @@
  - Batch input support.
  - Dynamic TensorRT engines.
  - More RIFE Models.
+ - Denoise models.
+ - Deblur models.
  ### Fixed
  - Incorrect colors with some videos.
  - Incorrect RIFE 4K output
