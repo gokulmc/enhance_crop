@@ -453,8 +453,8 @@ tensorrtDeblurModels = {
 }
 ncnnDenoiseModels = {
     "NAFNet SIDD (1x) (Slow)": (
-        "NAFNet-SIDD-width32.tar.gz",
-        "NAFNet-SIDD-width32",
+        "1x_NAFNet-SIDD-width32",
+        "1x_NAFNet-SIDD-width32.tar.gz",
         1,
         "scunet",
     )
