@@ -185,6 +185,7 @@ class Render:
         else:
             self.upscaleTimes = 1  # if no upscaling, it will default to 1
             self.modelScale = 1
+            
 
         if denoiseModel:
             if self.backend == "tensorrt":
@@ -215,6 +216,10 @@ class Render:
             self.denoiseOption.hotReload()
         if compressionFixModel:
             self.compressionFixOption.hotReload()
+        
+        if int(self.modelScale) == int(self.override_upscale_scale):
+            log("Override upscale scale is set to the same value as the model scale, this will not change the output resolution.")
+            self.override_upscale_scale = False
         
         log(f"Upscale Times: {self.override_upscale_scale if self.override_upscale_scale else self.upscaleTimes}")
         log(f"Interpolate Factor: {self.interpolateFactor}")
@@ -260,8 +265,11 @@ class Render:
             color_space=color_space,
         )
 
+        shm_mul = self.override_upscale_scale if self.override_upscale_scale else self.upscaleTimes
+
         self.informationHandler = InformationWriteOut(
             sharedMemoryID=sharedMemoryID,
+            sharedMemoryChunkSize=self.originalHeight*self.originalWidth*3*shm_mul*shm_mul,
             paused_shared_memory_id=pause_shared_memory_id,
             outputWidth=self.originalWidth ,
             outputHeight=self.originalHeight,
@@ -270,21 +278,15 @@ class Render:
             totalOutputFrames=self.totalOutputFrames,
             border_detect=border_detect,
             hdr_mode=hdr_mode,
+            
         )
-        # has to be after to detect upscale times
-        sharedMemoryChunkSize = (
-            self.originalHeight
-            * self.originalWidth
-            * 3  # channels
-        )
+        
 
         self.renderThread = Thread(target=self.render)
         self.ffmpegReadThread = Thread(target=self.readBuffer.read_frames_into_queue)
         self.ffmpegWriteThread = Thread(target=self.writeBuffer.write_out_frames)
         self.sharedMemoryThread = Thread(
-            target=lambda: self.informationHandler.writeOutInformation(
-                sharedMemoryChunkSize
-            )
+            target=self.informationHandler.writeOutInformation
         )
 
         self.sharedMemoryThread.start()
@@ -356,7 +358,7 @@ class Render:
                         self.informationHandler.setFramesRendered(frames_rendered)
                         self.writeBuffer.writeQueue.put(interpolated_frame)
                 
-                self.informationHandler.setPreviewFrame(frame)
+                
                 
                 if self.denoiseModel:
                     frame = self.denoiseOption(
@@ -383,6 +385,8 @@ class Render:
 
                 
                 self.informationHandler.setFramesRendered(frames_rendered)
+                self.informationHandler.setPreviewFrame(frame)
+                
                 self.writeBuffer.writeQueue.put(frame)
                 frames_rendered += int(self.ceilInterpolateFactor)
             else:

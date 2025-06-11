@@ -85,6 +85,7 @@ class InformationWriteOut:
     def __init__(
         self,
         sharedMemoryID,  # image memory id
+        sharedMemoryChunkSize,  # size of the image memory
         paused_shared_memory_id,
         outputWidth,
         outputHeight,
@@ -95,7 +96,6 @@ class InformationWriteOut:
         hdr_mode: bool = False,
     ):
         self.startTime = time.time()
-        self.frameChunkSize = outputWidth * outputHeight * 3
         self.sharedMemoryID = sharedMemoryID
         self.paused_shared_memory_id = paused_shared_memory_id
         self.width = outputWidth
@@ -108,10 +108,11 @@ class InformationWriteOut:
         self.last_length = 0
         self.framesRendered = 1
         self.hdr_mode = hdr_mode
+        self.sharedMemoryChunkSize = sharedMemoryChunkSize
 
         if self.sharedMemoryID is not None:
             self.shm = shared_memory.SharedMemory(
-                name=self.sharedMemoryID, create=True, size=self.frameChunkSize
+                name=self.sharedMemoryID, create=True, size=sharedMemoryChunkSize
             )
         self.pausedManager = PauseManager(paused_shared_memory_id)
         self.isPaused = False
@@ -162,7 +163,7 @@ class InformationWriteOut:
     def stopWriting(self):
         self.stop = True
 
-    def writeOutInformation(self, fcs):
+    def writeOutInformation(self):
         """
         fcs = framechunksize
         """
@@ -192,12 +193,12 @@ class InformationWriteOut:
                             self.croppedOututHeight,
                         )
                         try:
-                            self.shm.buf[:fcs] = bytes(padded_frame)
+                            self.shm.buf[:self.sharedMemoryChunkSize] = bytes(padded_frame)
                         except Exception:
                             pass
                     else:
                         try:
-                            self.shm.buf[:fcs] = bytes(self.previewFrame)
+                            self.shm.buf[:self.sharedMemoryChunkSize] = bytes(self.previewFrame)
                         except Exception:
                             pass
                 self.isPaused = self.pausedManager.pause_manager()

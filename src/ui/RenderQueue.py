@@ -181,14 +181,7 @@ class RenderOptions:
     def upscaleModel(self, value: str):
         self._upscaleModel = value
 
-    @property
-    def upscaleTimes(self):
-        return self._upscaleTimes
-
-    @upscaleTimes.setter
-    def upscaleTimes(self, value: int):
-        self._upscaleTimes = value
-
+   
    
     @property
     def interpolateTimes(self):

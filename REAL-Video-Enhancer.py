@@ -527,7 +527,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             sloMoMode=self.sloMoModeCheckBox.isChecked(),
             dyanmicScaleOpticalFlow=self.dynamicScaledOpticalFlowCheckBox.isChecked(),
             ensemble=self.ensembleCheckBox.isChecked(),
-            upscaleTimes=upscaleTimes,
             modelScale=modelScale,
             upscaleModelArch=upscaleModelArch,
             upscaleModelFile=upscaleModelFile if upscale else None,
@@ -536,7 +535,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             interpolateModelFile=interpolateModelFile if interpolate else None,
             hdrMode=self.hdrModeCheckBox.isChecked(),
             mergeSubtitles=self.mergeSubtitlesCheckBox.isChecked(),
-            overrideUpscaleScale=int(self.upscaleScaleSpinBox.value()),
+            overrideUpscaleScale=upscaleTimes,
             encoderCommand=self.EncoderCommand.text(),
         )
 
