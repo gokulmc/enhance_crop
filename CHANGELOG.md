@@ -2,8 +2,6 @@
 - NOTE: Pre-releases are unstable, please use the stable build if you experience issues. 
         New features will be added to this release over time, the current changelog is not final.
 
-### To-Do
- - Fix FFMpeg Colors
 
 ### Added
  - Batch input support.
