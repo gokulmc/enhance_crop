@@ -558,9 +558,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.videoBitrate = videoHandler.bitrate
                 self.videoContainer = videoHandler.videoContainer
 
+                output_path = os.path.dirname(output_path)
+
                 # set output_path for checking
                 default_output_path = self.setDefaultOutputFile(
-                    video, self.settings.settings["output_folder_location"]
+                    video, output_path
                 )
 
                 # check if file already exists in renderQueue
@@ -570,7 +572,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
                 renderOptions = self.getCurrentRenderOptions(
                     input_file=video,
-                    output_path=self.setDefaultOutputFile(video, self.settings.settings["output_folder_location"]),
+                    output_path=self.setDefaultOutputFile(video, output_path),
                 )
                 if renderOptions == 1:
                     return
