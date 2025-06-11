@@ -1,6 +1,10 @@
 # RVE 2.3.4
  - NOTE: Pre-releases are unstable, please use the stable build if you experience issues. 
         New features will be added to this release over time, the current changelog is not final.
+### Added
+ - Deblur
+ - Denoise
+ 
 # RVE 2.3.3
 ### Added
  - Batch input support.
