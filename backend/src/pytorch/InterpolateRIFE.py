@@ -58,13 +58,13 @@ class InterpolateRifeTorch(BaseInterpolate):
         self.dynamicScaledOpticalFlow = dynamicScaledOpticalFlow
         
         if width <= 3840 and height <= 3840 and (width > 1920 or height > 1920):
-            self.trt_min_shape = [1920, height] if height < width else [width, 1920]
+            self.trt_min_shape = ([1920, height] if height < width else [width, 1920]) if width < 1920 or height < 1920 else [1920, 1920]
             self.trt_opt_shape = [3840, 2160]
             self.trt_max_shape = [3840, 3840]
         
         if width <= 1920 and height <= 1920 and (width >= 128 or height >= 128):
             
-            self.trt_min_shape = [128, height] if height < width else [width, 128]
+            self.trt_min_shape = [128, 128]
             self.trt_opt_shape = [1920, 1080]
             self.trt_max_shape = [1920, 1920]
         
@@ -72,7 +72,7 @@ class InterpolateRifeTorch(BaseInterpolate):
             printAndLog("The video resolution is very large for TensorRT dynamic shape, falling back to static shape")
             trt_static_shape = True
 
-        if width > 3840 or height > 3840 and not trt_static_shape:
+        if width < 128 or height < 128 and not trt_static_shape:
             printAndLog("The video resolution is too small for TensorRT dynamic shape, falling back to static shape")
             trt_static_shape = True
 
@@ -293,8 +293,7 @@ class InterpolateRifeTorch(BaseInterpolate):
                     f"_opt-{self.trt_opt_shape[0]}x{self.trt_opt_shape[1]}"
                     f"_max-{self.trt_max_shape[0]}x{self.trt_max_shape[1]}"
                 )
-            base_trt_engine_path = os.path.join(
-                os.path.realpath(self.trt_cache_dir),
+            base_trt_engine_name = os.path.join(
                 (
                     f"{os.path.basename(self.interpolateModel)}"
                     + f"_{dimensions}"
@@ -311,13 +310,11 @@ class InterpolateRifeTorch(BaseInterpolate):
                     )
                 ),
             )
-
-            trt_engine_path = base_trt_engine_path + ".dyn"
-            encode_trt_engine_path = base_trt_engine_path + "_encode.dyn"
+            encode_trt_engine_name = base_trt_engine_name + "_encode"
 
             # lay out inputs
             # load flow engine
-            if not os.path.isfile(trt_engine_path):
+            if not trtHandler.check_engine_exists(base_trt_engine_name):
                 if self.trt_static_shape:
                     if self.encode:
                         flownet_inputs = (
@@ -393,15 +390,15 @@ class InterpolateRifeTorch(BaseInterpolate):
                             "backwarp_tenGrid": {2: dim_height, 3: dim_width},
                         }
                 
-                trtHandler.build_engine(self.flownet,  self.dtype, self.device, flownet_inputs, trt_engine_path, trt_multi_precision_engine=True, dynamic_shapes=flownet_dynamic_shapes,)
+                trtHandler.build_engine(self.flownet,  self.dtype, self.device, flownet_inputs, trt_engine_name=base_trt_engine_name, trt_multi_precision_engine=True, dynamic_shapes=flownet_dynamic_shapes,)
 
                 if self.encode:
-                    trtHandler.build_engine(self.encode, self.dtype, self.device, encode_inputs, encode_trt_engine_path, trt_multi_precision_engine=True, dynamic_shapes=encode_dynamic_shapes,)
+                    trtHandler.build_engine(self.encode, self.dtype, self.device, encode_inputs, trt_engine_name=encode_trt_engine_name, trt_multi_precision_engine=True, dynamic_shapes=encode_dynamic_shapes,)
 
-            self.flownet = trtHandler.load_engine(trt_engine_path)
+            self.flownet = trtHandler.load_engine(base_trt_engine_name)
 
             if self.encode:
-                self.encode = trtHandler.load_engine(encode_trt_engine_path)
+                self.encode = trtHandler.load_engine(encode_trt_engine_name)
 
         
         self.torchUtils.sync_all_streams()

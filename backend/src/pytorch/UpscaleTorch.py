@@ -7,7 +7,7 @@ import torch as torch
 import torch.nn.functional as F
 import sys
 from time import sleep
-from ..constants import HAS_PYTORCH_CUDA
+from ..constants import HAS_PYTORCH_CUDA, MODELS_DIRECTORY
 
 from ..utils.Util import log, printAndLog
 import numpy as np
@@ -82,7 +82,6 @@ class UpscalePytorch:
         override_upscale_scale: int | None = None,
         # trt options
         trt_workspace_size: int = 0,
-        trt_cache_dir: str = None,
         trt_optimization_level: int = 3,
         trt_max_aux_streams: int | None = None,
         trt_debug: bool = False,
@@ -101,11 +100,7 @@ class UpscalePytorch:
         self.modelPath = modelPath
         self.backend = backend
         
-        if trt_cache_dir is None:
-            trt_cache_dir = os.path.dirname(
-                modelPath
-            )  # use the model directory as the cache directory
-        self.trt_cache_dir = trt_cache_dir
+      
         self.trt_workspace_size = trt_workspace_size
         self.trt_optimization_level = trt_optimization_level
         self.trt_aux_streams = trt_max_aux_streams
@@ -113,24 +108,8 @@ class UpscalePytorch:
         
         self.hdr_mode = hdr_mode         
 
-       
-
-        if width <= 1920 and height <= 1920 and (width >= 128 or height >= 128):
-
-            self.trt_min_shape = [128, height] if height < width else [width, 128]
-            self.trt_opt_shape = [1920, 1080]
-            self.trt_max_shape = [1920, 1920]
-        
-        if width > 1920 or height > 1920 and not trt_static_shape:
-            printAndLog("The video resolution is very large for TensorRT dynamic shape and will use a lot of VRAM, falling back to static shape")
-            trt_static_shape = True
-
-        if width > 3840 or height > 3840 and not trt_static_shape:
-            printAndLog("The video resolution is too small for TensorRT dynamic shape, falling back to static shape")
-            trt_static_shape = True
-
         self.trt_static_shape = trt_static_shape
-        
+
         # streams
         self.stream = self.torchUtils.init_stream()
         self.f2tstream = self.torchUtils.init_stream()  
@@ -144,7 +123,7 @@ class UpscalePytorch:
         if backend == "tensorrt":
             from .TensorRTHandler import TorchTensorRTHandler
             trtHandler = TorchTensorRTHandler()
-            self.model = trtHandler.load_engine(self.trt_engine_path)
+            self.model = trtHandler.load_engine(self.trt_engine_name)
         else:
             self.model = self.loadModel(
                 modelPath=self.modelPath, device=self.device, dtype=self.dtype
@@ -157,6 +136,22 @@ class UpscalePytorch:
 
     @torch.inference_mode()
     def _load(self):
+        if self.videoWidth <= 1920 and self.videoHeight <= 1920 and (self.videoWidth >= 128 and self.videoHeight >= 128):
+
+            self.trt_min_shape = [128, 128]
+            self.trt_opt_shape = [1920, 1080]
+            self.trt_max_shape = [1920, 1920]
+        
+
+        if self.videoWidth > 1920 or self.videoHeight > 1920 and not self.trt_static_shape:
+            printAndLog("The video resolution is very large for TensorRT dynamic shape and will use a lot of VRAM, falling back to static shape")
+            self.trt_static_shape = True
+
+        if self.videoWidth < 128 or self.videoHeight < 128 and not self.trt_static_shape:
+            printAndLog("The video resolution is too small for TensorRT dynamic shape, falling back to static shape")
+            self.trt_static_shape = True
+
+        
         with self.torchUtils.run_stream(self.prepareStream):
             self.set_self_model(backend="pytorch")
 
@@ -208,8 +203,7 @@ class UpscalePytorch:
                         f"_opt-{self.trt_opt_shape[0]}x{self.trt_opt_shape[1]}"
                         f"_max-{self.trt_max_shape[0]}x{self.trt_max_shape[1]}"
                     )
-                self.trt_engine_path = os.path.join(
-                    os.path.realpath(self.trt_cache_dir),
+                self.trt_engine_name = os.path.join(
                     (
                         f"{os.path.basename(self.modelPath)}"
                         + f"_{dimensions}"
@@ -223,11 +217,10 @@ class UpscalePytorch:
                             if self.trt_workspace_size > 0
                             else ""
                         )
-                        + ".dyn"
                     ),
                 )
 
-                if not os.path.isfile(self.trt_engine_path):
+                if not trtHandler.check_engine_exists(self.trt_engine_name):
                     inputs = (torch.zeros([1, 3, self.pad_h, self.pad_w], dtype=self.dtype, device=self.device),)
                     if self.trt_static_shape:
                         dynamic_shapes = None
@@ -259,7 +252,7 @@ class UpscalePytorch:
                         self.dtype,
                         self.device,
                         example_inputs=inputs,
-                        trt_engine_path=self.trt_engine_path,
+                        trt_engine_name=self.trt_engine_name,
                         trt_multi_precision_engine=False,
                         dynamic_shapes=dynamic_shapes,
                     )

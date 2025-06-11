@@ -1,6 +1,12 @@
 # RVE 2.3.3 pre-release
 - NOTE: Pre-releases are unstable, please use the stable build if you experience issues. 
         New features will be added to this release over time, the current changelog is not final.
+
+### To-Do
+ - Delete old tensorrt models
+ - Fix FFMpeg Colors
+ - Fix Upscaling Preview
+
 ### Added
  - Batch input support.
  - Dynamic TensorRT engines. (Enabled by default, if the engine has issues please go to Settings -> Render Settings -> Uncheck TensorRT Dynamic Engine)

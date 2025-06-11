@@ -24,7 +24,9 @@ SOFTWARE.
 
 import sys
 import os
-from ..utils.Util import suppress_stdout_stderr, warnAndLog
+from ..utils.Util import suppress_stdout_stderr, warnAndLog, log
+from ..version import __version__
+from ..constants import MODELS_DIRECTORY
 with suppress_stdout_stderr():
     import torch
     import torch_tensorrt
@@ -76,6 +78,8 @@ class TorchTensorRTHandler:
         either way, forcing one precision helps with speed in some cases.
     """
 
+    trt_path_appendix = "_RVE-VERSION: " + __version__ + ".engine" # this is used to identify the models that were exported with this version of RVE
+
     def __init__(
         self,
         export_format: str = "dynamo",
@@ -99,7 +103,19 @@ class TorchTensorRTHandler:
         self.debug = debug
         self.static_shape = static_shape  # Unused for now
 
-   
+        # clear previous tensorrt models
+        cleared_models = False
+        for model in os.listdir(MODELS_DIRECTORY):
+            if not model.endswith(self.trt_path_appendix) and "tensorrt" in model.lower():
+                model_path = os.path.join(MODELS_DIRECTORY, model)
+                try:
+                    os.remove(model_path)
+                    cleared_models = True
+                    log(f"Removed {model_path}")
+                except Exception as e:
+                    log(f"Failed to remove {model_path}: {e}")
+        if cleared_models:
+            print("Cleared old TensorRT models...", file=sys.stderr)
     
     
 
@@ -199,6 +215,12 @@ class TorchTensorRTHandler:
             min_block_size=1,
         )
         torch.jit.save(module_trt, trt_engine_path)
+    
+    def check_engine_exists(self, trt_engine_name: str) -> bool:
+        """Checks if a TensorRT engine exists at the specified path."""
+        trt_engine_name += self.trt_path_appendix
+        trt_engine_path = os.path.join(MODELS_DIRECTORY, trt_engine_name)
+        return os.path.exists(trt_engine_path)
 
     def build_engine(
         self,
@@ -206,17 +228,21 @@ class TorchTensorRTHandler:
         dtype: torch.dtype,
         device: torch.device,
         example_inputs: list[torch.Tensor],
-        trt_engine_path: str,
+        trt_engine_name: str,
         trt_multi_precision_engine: bool = False,
         dynamic_shapes: dict | None = None,
         
     ):
+        
+        trt_engine_name += self.trt_path_appendix
+        trt_engine_path = os.path.join(MODELS_DIRECTORY, trt_engine_name)
         torch.cuda.empty_cache()
         """Builds a TensorRT engine from the provided model."""
         print(
             f"Building TensorRT engine {os.path.basename(trt_engine_path)}. This may take a while...",
             file=sys.stderr,
         )
+        
         if self.export_format == "dynamo":
             with suppress_stdout_stderr():
                 self.export_using_dynamo(
@@ -247,8 +273,10 @@ class TorchTensorRTHandler:
         
         torch.cuda.empty_cache()
 
-    def load_engine(self, trt_engine_path: str) -> torch.jit.ScriptModule:
+    def load_engine(self, trt_engine_name: str) -> torch.jit.ScriptModule:
         """Loads a TensorRT engine from the specified path."""
-        print(f"Loading TensorRT engine from {trt_engine_path}.", file=sys.stderr)
+        print(f"Loading TensorRT engine from {trt_engine_name}.", file=sys.stderr)
+        trt_engine_name += self.trt_path_appendix
+        trt_engine_path = os.path.join(MODELS_DIRECTORY, trt_engine_name)
         return torch.jit.load(trt_engine_path).eval()
 
