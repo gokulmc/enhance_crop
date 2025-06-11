@@ -15,7 +15,6 @@ class RenderOptions:
         tilesize: str,
         videoFrameCount: int,
         backend: str,
-        upscaleTimes: int,
         modelScale: int,
         interpolateTimes: int,
         benchmarkMode: bool,
@@ -49,7 +48,6 @@ class RenderOptions:
         self._upscaleModelFile = upscaleModelFile
         self._upscaleModelArch = upscaleModelArch
         self._denoiseModelFile = denoiseModelFile
-        self._upscaleTimes = upscaleTimes
         self._modelScale = modelScale
         self._interpolateTimes = interpolateTimes
         self._benchmarkMode = benchmarkMode
