@@ -3,13 +3,12 @@
         New features will be added to this release over time, the current changelog is not final.
 ### Added
  - Batch input support.
- - Dynamic TensorRT engines.
+ - Dynamic TensorRT engines. (Enabled by default, if the engine has issues please go to Settings -> Render Settings -> Uncheck TensorRT Dynamic Engine)
  - More RIFE Models.
- - Denoise models.
- - Deblur models.
  ### Fixed
  - Incorrect colors with some videos.
  - Incorrect RIFE 4K output
+ - Upscaling TensorRT on Windows.
 # RVE 2.3.2
 ### Added
  - Fallback to float32 if float16 does not work with custom arch.
