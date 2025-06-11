@@ -217,9 +217,10 @@ class Render:
         if compressionFixModel:
             self.compressionFixOption.hotReload()
         
-        if int(self.modelScale) == int(self.override_upscale_scale):
-            log("Override upscale scale is set to the same value as the model scale, this will not change the output resolution.")
-            self.override_upscale_scale = False
+        if self.modelScale and self.override_upscale_scale:
+            if int(self.modelScale) == int(self.override_upscale_scale):
+                log("Override upscale scale is set to the same value as the model scale, this will not change the output resolution.")
+                self.override_upscale_scale = False
         
         log(f"Upscale Times: {self.override_upscale_scale if self.override_upscale_scale else self.upscaleTimes}")
         log(f"Interpolate Factor: {self.interpolateFactor}")

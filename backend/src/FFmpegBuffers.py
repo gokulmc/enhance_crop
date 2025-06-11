@@ -59,6 +59,14 @@ class FFmpegRead(Buffer):
                 "-colorspace",
                 self.color_space,
             ]
+            command += [
+                "-color_primaries",
+                "bt2020" if self.hdr_mode else "bt709",
+                "-color_trc",
+                "smpte2084" if self.hdr_mode else "bt709",
+                "-color_range",
+                "full" if self.hdr_mode else "limited",
+            ]
 
         command += [
             "-vf",
@@ -277,9 +285,6 @@ class FFmpegWrite(Buffer):
                 f"{self.outputFPS}",
             ]
 
-            
-                
-
             if not self.slowmo_mode:
                 command += [
                     "-i",
@@ -302,6 +307,14 @@ class FFmpegWrite(Buffer):
                 command += [
                     "-colorspace",
                     self.color_space,
+                ]
+                command += [
+                    "-color_primaries",
+                    "bt2020" if self.hdr_mode else "bt709",
+                    "-color_trc",
+                    "smpte2084" if self.hdr_mode else "bt709",
+                    "-color_range",
+                    "full" if self.hdr_mode else "limited",
                 ]
 
             color_primaries = ["bt709", "bt2020", "bt2020nc"]
