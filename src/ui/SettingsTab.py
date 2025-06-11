@@ -328,7 +328,7 @@ class Settings:
         self.defaultSettings = {
             "precision": "auto",
             "tensorrt_optimization_level": "3",
-            "dynamic_tensorrt_engine": "True",
+            "dynamic_tensorrt_engine": "False",
             "encoder": "libx264",
             "audio_encoder": "copy_audio",
             "subtitle_encoder": "copy_subtitle",

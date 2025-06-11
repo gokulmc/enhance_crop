@@ -1783,7 +1783,7 @@ background-color:#343b47
                                    </widget>
                                   </item>
                                   <item>
-                                   <widget class="QWidget" name="widget_40" native="true">
+                                   <widget class="QWidget" name="denoiseCheckBoxContainer" native="true">
                                     <layout class="QHBoxLayout" name="horizontalLayout_62">
                                      <property name="leftMargin">
                                       <number>0</number>
@@ -1891,7 +1891,7 @@ background-color:#343b47
                                    </widget>
                                   </item>
                                   <item>
-                                   <widget class="QWidget" name="decompressCheckBoxContainer" native="true">
+                                   <widget class="QWidget" name="deblurCheckBoxContainer" native="true">
                                     <layout class="QHBoxLayout" name="horizontalLayout_59">
                                      <property name="leftMargin">
                                       <number>0</number>
@@ -4466,6 +4466,11 @@ QTabWidget::pane { /* The tab widget frame */
                               </property>
                               <item>
                                <property name="text">
+                                <string>copy_audio</string>
+                               </property>
+                              </item>
+                              <item>
+                               <property name="text">
                                 <string>aac</string>
                                </property>
                               </item>
@@ -4477,11 +4482,6 @@ QTabWidget::pane { /* The tab widget frame */
                               <item>
                                <property name="text">
                                 <string>opus</string>
-                               </property>
-                              </item>
-                              <item>
-                               <property name="text">
-                                <string>copy_audio</string>
                                </property>
                               </item>
                              </widget>
@@ -4650,6 +4650,11 @@ QTabWidget::pane { /* The tab widget frame */
                               </property>
                               <item>
                                <property name="text">
+                                <string>copy_subtitle</string>
+                               </property>
+                              </item>
+                              <item>
+                               <property name="text">
                                 <string>srt</string>
                                </property>
                               </item>
@@ -4661,11 +4666,6 @@ QTabWidget::pane { /* The tab widget frame */
                               <item>
                                <property name="text">
                                 <string>webvtt</string>
-                               </property>
-                              </item>
-                              <item>
-                               <property name="text">
-                                <string>copy_subtitle</string>
                                </property>
                               </item>
                              </widget>
