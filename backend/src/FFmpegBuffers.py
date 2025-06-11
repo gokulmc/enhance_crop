@@ -59,14 +59,7 @@ class FFmpegRead(Buffer):
                 "-colorspace",
                 self.color_space,
             ]
-            command += [
-                "-color_primaries",
-                "bt2020" if self.hdr_mode else "bt709",
-                "-color_trc",
-                "smpte2084" if self.hdr_mode else "bt709",
-                "-color_range",
-                "full" if self.hdr_mode else "limited",
-            ]
+            
 
         command += [
             "-vf",
@@ -308,16 +301,8 @@ class FFmpegWrite(Buffer):
                     "-colorspace",
                     self.color_space,
                 ]
-                command += [
-                    "-color_primaries",
-                    "bt2020" if self.hdr_mode else "bt709",
-                    "-color_trc",
-                    "smpte2084" if self.hdr_mode else "bt709",
-                    "-color_range",
-                    "full" if self.hdr_mode else "limited",
-                ]
 
-            color_primaries = ["bt709", "bt2020", "bt2020nc"]
+            # color_primaries = ["bt709", "bt2020", "bt2020nc"]
             
                 
             if self.custom_encoder is not None:

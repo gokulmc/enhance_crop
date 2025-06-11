@@ -45,7 +45,7 @@ def colorspace_detection(input_file):
         return None
     
     color_spaces = ["bt709", "bt2020nc", "bt2020"]
-    color_trcs = ["smpte170m", "smpte240m", "smpte2084", "smpte428", "smpte431", "smpte432"]
+    # color_trcs = ["smpte170m", "smpte240m", "smpte2084", "smpte428", "smpte431", "smpte432"]
     for color_space in color_spaces:
         if color_space in stream_line:
             log(f"Color space detected: {color_space}")
