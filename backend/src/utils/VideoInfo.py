@@ -13,47 +13,6 @@ else:
     FFMPEG_PATH = "./bin/ffmpeg"
     from Util import log, subprocess_popen_without_terminal
 
-def colorspace_detection(input_file):
-    process = subprocess_popen_without_terminal(
-        [
-            FFMPEG_PATH,
-            "-i",
-            input_file,
-            "-t",
-            "00:00:00",
-            "-f",
-            "null",
-            "/dev/null",
-            "-hide_banner",
-
-        ], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
-    )
-    stdout, stderr = process.communicate()
-    # select stream line
-    stream_line = None
-    log(stderr)
-    stderr_lines = stderr.split("\n")
-
-    for line in stderr_lines:
-        if "Stream #" in line and "Video" in line:
-            stream_line = line
-            break
-    
-    log(f"Stream line: {stream_line}")
-    if stream_line is None:
-        log("No video stream found in the input file.")
-        return None
-    
-    color_spaces = ["bt709", "bt2020nc", "bt2020"]
-    # color_trcs = ["smpte170m", "smpte240m", "smpte2084", "smpte428", "smpte431", "smpte432"]
-    for color_space in color_spaces:
-        if color_space in stream_line:
-            log(f"Color space detected: {color_space}")
-            return color_space
-    log("No known color space detected in the input file.")
-    return None
-                
-
 class VideoInfo(ABC):
     @abstractmethod
     def get_duration_seconds(self) -> float:
@@ -93,13 +52,22 @@ class FFMpegInfoWrapper(VideoInfo):
                 
         ]
 
-        self.ffmpeg_output:str = subprocess_popen_without_terminal(command,  stderr=subprocess.PIPE, errors="replace").stderr.read().lower().strip()
-        log(self.ffmpeg_output)
+        self.ffmpeg_output_raw:str = subprocess_popen_without_terminal(command,  stderr=subprocess.PIPE, errors="replace").stderr.read()
+        self.ffmpeg_output_stripped = self.ffmpeg_output_raw.lower().strip()
+        for line in self.ffmpeg_output_raw.split("\n"):
+            if "Stream #" in line and "Video" in line:
+                self.stream_line = line
+                break
+        
+        log(f"Stream line: {self.stream_line}")
+        if self.stream_line is None:
+            log("No video stream found in the input file.")
+            
 
     def get_duration_seconds(self) -> float:
         total_duration:float = 0.0
 
-        duration = re.search(r"duration: (.*?),", self.ffmpeg_output).groups()[0]
+        duration = re.search(r"duration: (.*?),", self.ffmpeg_output_stripped).groups()[0]
         hours, minutes, seconds = duration.split(":")
         total_duration += int(int(hours) * 3600)
         total_duration += int(int(minutes) * 60)
@@ -110,15 +78,35 @@ class FFMpegInfoWrapper(VideoInfo):
         return int(self.get_duration_seconds() * self.get_fps())
 
     def get_width_x_height(self) -> List[int]:
-        width, height = re.search(r"video:.* (\d+)x(\d+)", self.ffmpeg_output).groups()[:2]
+        width, height = re.search(r"video:.* (\d+)x(\d+)",self.ffmpeg_output_stripped).groups()[:2]
         return [int(width), int(height)]
 
     def get_fps(self) -> float:
-        fps = re.search(r"(\d+\.?\d*) fps", self.ffmpeg_output).groups()[0]
+        fps = re.search(r"(\d+\.?\d*) fps", self.ffmpeg_output_stripped).groups()[0]
         return float(fps)
     
     def get_color_space(self) -> str:
-        return colorspace_detection(self.input_file)
+        if self.stream_line:
+        
+            color_spaces = ["bt709", "bt2020nc", "bt2020"]
+            # color_trcs = ["smpte170m", "smpte240m", "smpte2084", "smpte428", "smpte431", "smpte432"]
+            for color_space in color_spaces:
+                if color_space in self.stream_line:
+                    log(f"Color space detected: {color_space}")
+                    return color_space
+            log("No known color space detected in the input file.")
+            return None
+        return None
+    
+    def get_pixel_format(self) -> str:
+        try:
+            pixel_format = self.stream_line.split(",")[4].split("(")[0].strip()
+            log(f"Pixel Format: {pixel_format}")
+        except Exception:
+            log("ERROR: Cant detect pixel format.")
+            pixel_format = None 
+        return pixel_format
+
 
 
 class OpenCVInfo(VideoInfo):
@@ -128,6 +116,7 @@ class OpenCVInfo(VideoInfo):
         self.start_time = start_time
         self.end_time = end_time
         self.cap = cv2.VideoCapture(input_file)
+        self.ffmpeg_info = FFMpegInfoWrapper(input_file)
 
     def is_valid_video(self):
         #frame_count = self.cap.get(cv2.CAP_PROP_FRAME_COUNT)
@@ -171,7 +160,11 @@ class OpenCVInfo(VideoInfo):
         return fps
     
     def get_color_space(self) -> str:
-        return colorspace_detection(self.input_file)
+        return self.ffmpeg_info.get_color_space()
+    
+    def get_pixel_format(self) -> str:
+        return self.ffmpeg_info.get_pixel_format()
+    
 
     def __del__(self):
         self.cap.release()

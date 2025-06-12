@@ -25,12 +25,22 @@ class FFMpegInfoWrapper:
                 
         ]
 
-        self.ffmpeg_output:str = subprocess_popen_without_terminal(command,  stderr=subprocess.PIPE, errors="replace").stderr.read().lower().strip()
+        self.ffmpeg_output_raw:str = subprocess_popen_without_terminal(command,  stderr=subprocess.PIPE, errors="replace").stderr.read()
+        self.ffmpeg_output_stripped = self.ffmpeg_output_raw.lower().strip()
+        for line in self.ffmpeg_output_raw.split("\n"):
+            if "Stream #" in line and "Video" in line:
+                self.stream_line = line
+                break
+        
+        log(f"Stream line: {self.stream_line}")
+        if self.stream_line is None:
+            log("No video stream found in the input file.")
+            
 
     def get_duration_seconds(self) -> float:
         total_duration:float = 0.0
 
-        duration = re.search(r"duration: (.*?),", self.ffmpeg_output).groups()[0]
+        duration = re.search(r"duration: (.*?),", self.ffmpeg_output_stripped).groups()[0]
         hours, minutes, seconds = duration.split(":")
         total_duration += int(int(hours) * 3600)
         total_duration += int(int(minutes) * 60)
@@ -41,21 +51,43 @@ class FFMpegInfoWrapper:
         return int(self.get_duration_seconds() * self.get_fps())
 
     def get_width_x_height(self) -> List[int]:
-        width, height = re.search(r"video:.* (\d+)x(\d+)", self.ffmpeg_output).groups()[:2]
+        width, height = re.search(r"video:.* (\d+)x(\d+)",self.ffmpeg_output_stripped).groups()[:2]
         return [int(width), int(height)]
 
     def get_fps(self) -> float:
-        fps = re.search(r"(\d+\.?\d*) fps", self.ffmpeg_output).groups()[0]
+        fps = re.search(r"(\d+\.?\d*) fps", self.ffmpeg_output_stripped).groups()[0]
         return float(fps)
-
+    
+    def get_color_space(self) -> str:
+        if self.stream_line:
+        
+            color_spaces = ["bt709", "bt2020nc", "bt2020"]
+            # color_trcs = ["smpte170m", "smpte240m", "smpte2084", "smpte428", "smpte431", "smpte432"]
+            for color_space in color_spaces:
+                if color_space in self.stream_line:
+                    log(f"Color space detected: {color_space}")
+                    return color_space
+            log("No known color space detected in the input file.")
+            return None
+        return None
+    
+    def get_pixel_format(self) -> str:
+        try:
+            pixel_format = self.stream_line.split(",")[4].split("(")[0].strip()
+            log(f"Pixel Format: {pixel_format}")
+        except Exception:
+            log("ERROR: Cant detect pixel format.")
+            pixel_format = None 
+        return pixel_format
+    
     def get_bitrate(self) -> int:
-        bitrate = re.search(r"bitrate: (\d+)", self.ffmpeg_output)
+        bitrate = re.search(r"bitrate: (\d+)", self.ffmpeg_output_stripped)
         if bitrate:
             return int(bitrate.groups()[0])
         return 0
-
+    
     def get_codec(self) -> str:
-        codec = re.search(r"video: (\w+)", self.ffmpeg_output)
+        codec = re.search(r"video: (\w+)", self.ffmpeg_output_stripped)
         if codec:
             return codec.groups()[0]
         return "unknown"
@@ -89,3 +121,7 @@ class VideoLoader:
         self.fps = self.ffmpeg_info.get_fps()
         self.total_frames = int(self.ffmpeg_info.get_total_frames())
         self.duration = self.total_frames / self.fps
+        self.color_space = self.ffmpeg_info.get_color_space()
+        self.pixel_format = self.ffmpeg_info.get_pixel_format()
+        log(f"Video Data: {self.width}x{self.height}, {self.fps} FPS, {self.total_frames} frames, {self.duration} seconds, "
+            f"Bitrate: {self.bitrate}, Codec: {self.codec_str}, Color Space: {self.color_space}, Pixel Format: {self.pixel_format}")

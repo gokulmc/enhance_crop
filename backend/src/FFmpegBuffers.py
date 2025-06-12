@@ -21,7 +21,7 @@ class Buffer(ABC):
 
 
 class FFmpegRead(Buffer):
-    def __init__(self, inputFile, width, height, start_time, end_time, borderX, borderY, hdr_mode, color_space=None):
+    def __init__(self, inputFile, width, height, start_time, end_time, borderX, borderY, hdr_mode, color_space=None, input_pixel_format: str | None = None):
         self.inputFile = inputFile
         self.width = width
         self.height = height
@@ -31,6 +31,7 @@ class FFmpegRead(Buffer):
         self.borderY = borderY
         self.hdr_mode = hdr_mode
         self.color_space = color_space
+        self.input_pixel_format = input_pixel_format
 
         if self.hdr_mode:
             self.inputFrameChunkSize = width * height * 6
@@ -67,7 +68,7 @@ class FFmpegRead(Buffer):
             "-f",
             "image2pipe",
             "-pix_fmt",
-            "rgb48le" if self.hdr_mode else "rgb24",
+            "rgb48le" if self.hdr_mode else (self.input_pixel_format if self.input_pixel_format else "rgb24"),
             "-vcodec",
             "rawvideo",
             "-s",

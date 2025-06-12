@@ -337,6 +337,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 + f"Bitrate: {self.videoBitrate}\n"
                 + f"Encoder: {self.videoEncoder}\n"
                 + f"Container: {self.videoContainer}\n"
+                + f"Color Space: {self.colorSpace}\n"
+                + f"Pixel Format: {self.pixelFMT}\n"
             )
             self.videoInfoTextEdit.setFontPointSize(10)
             self.videoInfoTextEdit.setText(text)
@@ -557,6 +559,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.videoEncoder = videoHandler.codec_str
                 self.videoBitrate = videoHandler.bitrate
                 self.videoContainer = videoHandler.videoContainer
+                self.colorSpace = videoHandler.color_space
+                self.pixelFMT = videoHandler.pixel_format
 
                 output_path = os.path.dirname(output_path)
 
@@ -658,6 +662,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.videoEncoder = "Multi File"
             self.videoBitrate = "Multi File"
             self.videoContainer = "Multi File"
+            self.colorSpace = "Multi File"
+            self.pixelFMT = "Multi File"
         else:
                     
             videoHandler = VideoLoader(inputFile)
@@ -676,6 +682,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.videoEncoder = videoHandler.codec_str
             self.videoBitrate = videoHandler.bitrate
             self.videoContainer = videoHandler.videoContainer
+            self.colorSpace = videoHandler.color_space
+            self.pixelFMT = videoHandler.pixel_format
 
             self.inputFileText.setText(inputFile)
             self.outputFileText.setEnabled(True)

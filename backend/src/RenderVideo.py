@@ -153,6 +153,7 @@ class Render:
         self.width, self.height = videoInfo.get_width_x_height()
         self.originalWidth = self.width
         self.originalHeight = self.height
+        input_pix_fmt = videoInfo.get_pixel_format()
         self.borderX = 0
         self.borderY = 0  # set borders for cropping automatically to 0, will be overwritten if borders are detected
         self.totalInputFrames = videoInfo.get_total_frames()
@@ -237,6 +238,7 @@ class Render:
             borderY=self.borderY,
             hdr_mode=hdr_mode,
             color_space=color_space,
+            input_pixel_format=input_pix_fmt,
         )
 
         self.writeBuffer = FFmpegWrite(
