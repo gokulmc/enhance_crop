@@ -5,6 +5,8 @@ import subprocess
 import queue
 import sys
 import time
+import cv2
+import numpy as np
 
 from .constants import FFMPEG_PATH, FFMPEG_LOG_FILE
 from .utils.Util import (
@@ -36,7 +38,12 @@ class FFmpegRead(Buffer):
         if self.hdr_mode:
             self.inputFrameChunkSize = width * height * 6
         else:
+            """if self.input_pixel_format == "yuv420p":
+                self.inputFrameChunkSize = width * height * 3 // 2
+            else:"""
             self.inputFrameChunkSize = width * height * 3
+
+
 
         self.readProcess = subprocess_popen_without_terminal(
             self.command(),
@@ -68,7 +75,8 @@ class FFmpegRead(Buffer):
             "-f",
             "image2pipe",
             "-pix_fmt",
-            "rgb48le" if self.hdr_mode else (self.input_pixel_format if self.input_pixel_format else "rgb24"),
+            #"rgb48le" if self.hdr_mode else (self.input_pixel_format if self.input_pixel_format == "yuv420p" else "rgb24"),
+            "rgb48le" if self.hdr_mode else "rgb24",
             "-vcodec",
             "rawvideo",
             "-s",
@@ -88,6 +96,19 @@ class FFmpegRead(Buffer):
         chunk = self.readProcess.stdout.read(self.inputFrameChunkSize)
         if len(chunk) < self.inputFrameChunkSize:
             return None
+        
+        """if self.input_pixel_format == "yuv420p":
+            # Convert raw YUV420p data to RGB
+            # The data is Y plane, then U plane, then V plane, concatenated.
+            # cv2.COLOR_YUV420P2RGB expects a single channel image of shape (height * 3 // 2, width)
+            np_frame = np.frombuffer(chunk, dtype=np.uint8)
+            # Ensure height is an integer for reshape, Python 3 // operator already does this.
+            yuv_image_height = self.height * 3 // 2
+            yuv_image = np_frame.reshape((yuv_image_height, self.width))
+            rgb_image = cv2.cvtColor(yuv_image, cv2.COLOR_YUV2RGB_I420)
+            cv2.imwrite("temp_rgb_image.png", rgb_image)  # Debugging line, can be removed
+            chunk = rgb_image.tobytes()"""
+        
         return chunk
 
     def read_frames_into_queue(self):
