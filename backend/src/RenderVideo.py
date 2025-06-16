@@ -68,8 +68,6 @@ class Render:
         upscaleModel=None,
         interpolateModel=None,
         interpolateFactor: int = 1,
-        denoiseModel=None,
-        compressionFixModel=None,
         extraRestorationModels=None,
         tile_size=None,
         drba=False,
@@ -106,8 +104,6 @@ class Render:
         self.backend = backend
         self.upscaleModel = upscaleModel
         self.interpolateModel = interpolateModel
-        self.compressionFixModel = compressionFixModel
-        self.denoiseModel = denoiseModel
         self.tilesize = tile_size
         self.device = device
         self.precision = precision
@@ -121,8 +117,6 @@ class Render:
         self.setupFrame0 = None
         self.interpolateOption = None
         self.upscaleOption = None
-        self.denoiseOption = None
-        self.compressionFixOption = None
         self.isPaused = False
         self.drba = drba
         self.sceneDetectMethod = sceneDetectMethod
@@ -206,10 +200,7 @@ class Render:
 
         if upscaleModel: # load model after interpolation model is loaded, this saves on vram if the user builds 2 separate engines
             self.upscaleOption.hotReload()
-        if denoiseModel:
-            self.denoiseOption.hotReload()
-        if compressionFixModel:
-            self.compressionFixOption.hotReload()
+
         
         if self.modelScale and self.override_upscale_scale:
             if int(self.modelScale) == int(self.override_upscale_scale):
@@ -332,14 +323,9 @@ class Render:
                         return
                     for interpolated_frame in interpolated_frames:
                         
-                        if self.denoiseModel:
-                            interpolated_frame = self.denoiseOption(
-                                interpolated_frame
-                            )
-                        if self.compressionFixModel:
-                            interpolated_frame = self.compressionFixOption(
-                                interpolated_frame
-                            )
+                        for extraRestoration in self.extraRestorationModels:
+                            frame = extraRestoration(frame)
+
                         if self.upscaleModel:
                             interpolated_frame = self.upscaleOption(
                                 interpolated_frame

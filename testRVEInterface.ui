@@ -1089,9 +1089,9 @@ background-color:#343b47
                                  <property name="geometry">
                                   <rect>
                                    <x>0</x>
-                                   <y>0</y>
+                                   <y>-185</y>
                                    <width>470</width>
-                                   <height>861</height>
+                                   <height>858</height>
                                   </rect>
                                  </property>
                                  <layout class="QVBoxLayout" name="verticalLayout_32">
@@ -2067,7 +2067,7 @@ background-color:#343b47
                                    </widget>
                                   </item>
                                   <item>
-                                   <widget class="QWidget" name="decompressModelContainer" native="true">
+                                   <widget class="QWidget" name="decompressContainer" native="true">
                                     <layout class="QHBoxLayout" name="horizontalLayout_66">
                                      <item>
                                       <widget class="QLabel" name="label_87">
@@ -2082,7 +2082,7 @@ background-color:#343b47
                                       </widget>
                                      </item>
                                      <item>
-                                      <widget class="QComboBox" name="decompressModelCombox">
+                                      <widget class="QComboBox" name="decompressModelComboBox">
                                        <property name="sizePolicy">
                                         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                          <horstretch>0</horstretch>

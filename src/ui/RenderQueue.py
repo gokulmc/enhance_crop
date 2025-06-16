@@ -26,6 +26,7 @@ class RenderOptions:
         upscaleModelArch: str | None = None,
         deblurModelFile: str | None = None,
         denoiseModelFile: str | None = None,
+        decompressModelFile: str | None = None,
         hdrMode: bool = False,
         mergeSubtitles: bool = True,
         startTime: float | None = None,
@@ -48,6 +49,7 @@ class RenderOptions:
         self._upscaleModelFile = upscaleModelFile
         self._upscaleModelArch = upscaleModelArch
         self._denoiseModelFile = denoiseModelFile
+        self._decompressModelFile = decompressModelFile
         self._modelScale = modelScale
         self._interpolateTimes = interpolateTimes
         self._benchmarkMode = benchmarkMode
@@ -147,6 +149,13 @@ class RenderOptions:
     @denoiseModelFile.setter
     def denoiseModelFile(self, value: str):
         self._denoiseModelFile = value
+    
+    @property
+    def decompressModelFile(self):
+        return self._decompressModelFile
+    @decompressModelFile.setter
+    def decompressModelFile(self, value: str):
+        self._decompressModelFile = value
     
     @property
     def upscaleModelArch(self):

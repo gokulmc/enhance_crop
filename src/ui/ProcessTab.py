@@ -80,11 +80,12 @@ class ProcessTab:
         returns
         the current models available given a method (interpolate, upscale) and a backend (ncnn, tensorrt, pytorch)
         """
-        interpolateModels, upscaleModels, deblurModels, denoiseModels = getModels(backend)
+        interpolateModels, upscaleModels, deblurModels, denoiseModels, decompressModels = getModels(backend)
         self.parent.interpolateModelComboBox.clear()
         self.parent.upscaleModelComboBox.clear()
         self.parent.deblurModelComboBox.clear()
         self.parent.denoiseModelComboBox.clear()
+        self.parent.decompressModelComboBox.clear()
         self.parent.interpolateModelComboBox.addItems(
             list(interpolateModels.keys())
         )
@@ -92,7 +93,7 @@ class ProcessTab:
         self.parent.upscaleModelComboBox.addItems(list(upscaleModels.keys()))
         self.parent.deblurModelComboBox.addItems(list(deblurModels.keys()))
         self.parent.denoiseModelComboBox.addItems(list(denoiseModels.keys()))
-
+        self.parent.decompressModelComboBox.addItems(list(decompressModels.keys()))
     def onTilingSwitch(self):
         if self.parent.tilingCheckBox.isChecked():
             self.parent.tileSizeContainer.setVisible(True)
@@ -146,6 +147,7 @@ class ProcessTab:
         self.parent.upscaleCheckBox.clicked.connect(self.parent.updateVideoGUIDetails)
         self.parent.deblurCheckBox.clicked.connect(self.parent.updateVideoGUIDetails)
         self.parent.denoiseCheckBox.clicked.connect(self.parent.updateVideoGUIDetails)
+        self.parent.decompressCheckBox.clicked.connect(self.parent.updateVideoGUIDetails)   
 
         self.parent.backendComboBox.currentIndexChanged.connect(
             lambda: self.populateModels(self.parent.backendComboBox.currentText())
@@ -580,6 +582,14 @@ class ProcessTab:
                 os.path.join(
                     MODELS_PATH,
                     renderOptions.denoiseModelFile,
+                ),
+            ]
+        if renderOptions.decompressModelFile:
+            command += [
+                "--extra_restoration_models",
+                os.path.join(
+                    MODELS_PATH,
+                    renderOptions.decompressModelFile,
                 ),
             ]
 

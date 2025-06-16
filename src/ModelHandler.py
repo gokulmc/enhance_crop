@@ -494,6 +494,36 @@ tensorrtDenoiseModels = {
         "scunet",
     )
 }
+ncnnDecompressModels = {
+    "DeH264 SPAN (1x) (Fast)": (
+        "1x_DeH264_SPAN",
+        "1x_DeH264_SPAN.tar.gz",
+        1,
+        "SPAN",
+    )
+}
+pytorchDecompressModels = {
+    "DeH264 SPAN (1x) (Fast)": (
+        "1x_DeH264_SPAN.pth",
+        "1x_DeH264_SPAN.pth",
+        1,
+        "SPAN",
+    ),
+    "DeH264 PLKSR (1x) (Very Slow)": (
+        "1xDeH264_realplksr.pth",
+        "1xDeH264_realplksr.pth",
+        1,
+        "PLKSR",
+    )
+}
+tensorrtDecompressModels = {
+    "DeH264 SPAN (1x) (Fast)": (
+        "1x_DeH264_SPAN.pth",
+        "1x_DeH264_SPAN.pth",
+        1,
+        "SPAN",
+    )
+}
 
 onnxInterpolateModels = {
     "RIFE 4.22 (Recommended Model)": (
@@ -560,16 +590,19 @@ def getModels(backend:str):
             upscaleModels = ncnnUpscaleModels
             deblurModels = ncnnDeblurModels
             denoiseModels = ncnnDenoiseModels
+            decompressModels = ncnnDecompressModels
         case "pytorch":
             interpolateModels = pytorchInterpolateModels
             upscaleModels = pytorchUpscaleModels
             deblurModels = pytorchDeblurModels
             denoiseModels = pytorchDenoiseModels
+            decompressModels = pytorchDecompressModels
         case "tensorrt":
             interpolateModels = tensorrtInterpolateModels
             upscaleModels = tensorrtUpscaleModels
             deblurModels = tensorrtDeblurModels
             denoiseModels = tensorrtDenoiseModels
+            decompressModels = tensorrtDecompressModels
         case "directml":
             interpolateModels = onnxInterpolateModels
             upscaleModels = onnxUpscaleModels
@@ -580,4 +613,4 @@ def getModels(backend:str):
             )
             errorAndLog("Failed to import any backends!")
             return {}
-    return interpolateModels, upscaleModels, deblurModels, denoiseModels
+    return interpolateModels, upscaleModels, deblurModels, denoiseModels, decompressModels
