@@ -141,8 +141,7 @@ class HandleApplication:
             interpolateModel=self.args.interpolate_model,
             interpolateFactor=self.args.interpolate_factor,
             upscaleModel=self.args.upscale_model,
-            denoiseModel=self.args.denoise_model,
-            compressionFixModel=self.args.compression_fix_model,
+            extraRestorationModels=self.args.extra_restoration_models,
             tile_size=self.args.tilesize,
             # backend settings
             device=self.args.device,
@@ -240,14 +239,9 @@ class HandleApplication:
             type=str,
         )
         parser.add_argument(
-            "--denoise_model",
-            help="Direct path to denoise model, will automatically denoise if model is valid. (1x only)",
-            type=str,
-        )
-        parser.add_argument(
-            "--compression_fix_model",
-            help="Direct path to a compression fixer model, will automatically inference if model is valid. (1x only)",
-            type=str,
+            "--extra_restoration_models",
+            help="Direct path to a compression fixer model, will automatically inference if model are valid. (1x only) Can be parsed multiple times.",
+            action='append',
         )
         parser.add_argument(
             "--interpolate_model",

@@ -740,13 +740,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 dir=self.homeDir,
                 filter=fileFilter,
             )
-            if not getCustomModelScale(os.path.basename(modelFile)):
-                NotificationOverlay(
-                    "Custom model does not have a valid\nupscale factor in the name.\nExample: 2x or x2. Skipping import...",
-                    self,
-                    timeout=1500,
-                )
-                return
+               
 
             outputModelPath = os.path.join(
                 CUSTOM_MODELS_PATH, os.path.basename(modelFile)
@@ -772,52 +766,45 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 dir=self.homeDir,
                 filter=binFileFilter,
             )
-            if getCustomModelScale(os.path.basename(modelBinFile)):
-                if modelBinFile == "":
-                    RegularQTPopup("Please select a bin file!")
-                    return
-                modelParamFile, _ = QFileDialog.getOpenFileName(
-                    parent=self,
-                    caption="Select NCNN Param",
-                    dir=os.path.dirname(modelBinFile),
-                    filter=os.path.basename(modelBinFile).replace(".bin", ".param"),
-                )
-                if modelParamFile == "":
-                    RegularQTPopup("Please select a param file!")
-                    return
-                outputModelFolder = os.path.join(
-                    CUSTOM_MODELS_PATH,
-                    os.path.basename(modelBinFile).replace(".bin", ""),
-                )
-                FileHandler.createDirectory(outputModelFolder)
-                outputBinPath = os.path.join(
-                    outputModelFolder, os.path.basename(modelBinFile)
-                )
-                FileHandler.copyFile(modelBinFile, outputModelFolder)
-                outputParamPath = os.path.join(
-                    outputModelFolder, os.path.basename(modelParamFile)
-                )
-                FileHandler.copyFile(modelParamFile, outputModelFolder)
+            if modelBinFile == "":
+                RegularQTPopup("Please select a bin file!")
+                return
+            modelParamFile, _ = QFileDialog.getOpenFileName(
+                parent=self,
+                caption="Select NCNN Param",
+                dir=os.path.dirname(modelBinFile),
+                filter=os.path.basename(modelBinFile).replace(".bin", ".param"),
+            )
+            if modelParamFile == "":
+                RegularQTPopup("Please select a param file!")
+                return
+            outputModelFolder = os.path.join(
+                CUSTOM_MODELS_PATH,
+                os.path.basename(modelBinFile).replace(".bin", ""),
+            )
+            FileHandler.createDirectory(outputModelFolder)
+            outputBinPath = os.path.join(
+                outputModelFolder, os.path.basename(modelBinFile)
+            )
+            FileHandler.copyFile(modelBinFile, outputModelFolder)
+            outputParamPath = os.path.join(
+                outputModelFolder, os.path.basename(modelParamFile)
+            )
+            FileHandler.copyFile(modelParamFile, outputModelFolder)
 
-                if os.path.isfile(outputBinPath) and os.path.isfile(outputParamPath):
-                    NotificationOverlay(
-                        "Model imported successfully!\nPlease restart the app for the changes to take effect.",
-                        self,
-                        timeout=1500,
-                    )
-
-                else:
-                    NotificationOverlay(
-                        "Failed to import model!\nPlease try again.", self, timeout=1500
-                    )
-
-            else:
+            if os.path.isfile(outputBinPath) and os.path.isfile(outputParamPath):
                 NotificationOverlay(
-                    "Custom model does not have a valid\nupscale factor in the name.\nExample: 2x or x2. Skipping import...",
+                    "Model imported successfully!\nPlease restart the app for the changes to take effect.",
                     self,
                     timeout=1500,
                 )
 
+            else:
+                NotificationOverlay(
+                    "Failed to import model!\nPlease try again.", self, timeout=1500
+                )
+
+       
     # output file button
     def openOutputFolder(self):
         """

@@ -70,6 +70,7 @@ class Render:
         interpolateFactor: int = 1,
         denoiseModel=None,
         compressionFixModel=None,
+        extraRestorationModels=None,
         tile_size=None,
         drba=False,
         # ffmpeg settings
@@ -138,6 +139,7 @@ class Render:
         self.hdr_mode = hdr_mode
         self.override_upscale_scale = override_upscale_scale
         self.trt_dynamic_shapes = trt_dynamic_shapes
+        self.extraRestorationModels = []
         
 
         videoInfo = OpenCVInfo(input_file=inputFile, start_time=start_time, end_time=end_time)
@@ -188,24 +190,15 @@ class Render:
             self.modelScale = 1
             
 
-        if denoiseModel:
-            if self.backend == "tensorrt":
-                print(
-                    "Denoise model is not supported with tensorrt backend, reverting to pytorch backend.", file=sys.stderr
-                )
-                self.backend = "pytorch"
-            self.setupDenoise()
-            printAndLog("Using Denoise Model: " + self.denoiseModel)
-            self.denoiseOption.hotUnload()  # unload model to free up memory for trt enging building
-        if compressionFixModel:
-            if self.backend == "tensorrt":
-                print(
-                    "Restoration model is not supported with tensorrt backend, reverting to pytorch backend.", file=sys.stderr
-                )
-                self.backend = "pytorch"
-            self.setupCompressionFix()
-            printAndLog("Using Compression Fix Model: " + self.compressionFixModel)
-            self.compressionFixOption.hotUnload()
+        
+        if extraRestorationModels:
+            for model in extraRestorationModels:
+                extraRestoration = self.setupExtraRestoration(model)
+                if extraRestoration:
+                    printAndLog("Using Extra Restoration Model: " + model)
+                    self.extraRestorationModels.append(extraRestoration)
+                    extraRestoration.hotUnload()  # unload model to free up memory for trt enging building
+                
 
         if interpolateModel:
             self.setupInterpolate()
@@ -363,14 +356,8 @@ class Render:
                 
                 
                 
-                if self.denoiseModel:
-                    frame = self.denoiseOption(
-                        frame
-                    )
-                if self.compressionFixModel:
-                    frame = self.compressionFixOption(
-                        frame
-                    )
+                for extraRestoration in self.extraRestorationModels:
+                    frame = extraRestoration(frame)
 
                 if self.upscaleModel:
                     frame = self.upscaleOption(
@@ -431,21 +418,14 @@ class Render:
             tilesize=self.tilesize,
         )
 
-    def setupDenoise(self):
-        printAndLog("Setting up Denoise")
-        if self.backend == "pytorch" or self.backend == "tensorrt":
-            self.denoiseOption = self.upscalePytorchObject(self.denoiseModel)
-        
-        if self.backend == "ncnn":
-            self.denoiseOption = self.upscaleNCNNObject(scale=1, modelPath=self.denoiseModel)
 
-    def setupCompressionFix(self):
-        printAndLog("Setting up Compression Fix")
+    def setupExtraRestoration(self, modelPath):
+        printAndLog("Setting up Extra Restoration")
         if self.backend == "pytorch" or self.backend == "tensorrt":
-            self.compressionFixOption = self.upscalePytorchObject(self.compressionFixModel)
+            return self.upscalePytorchObject(modelPath)
         
         if self.backend == "ncnn":
-            self.compressionFixOption = self.upscaleNCNNObject(scale=1, modelPath=self.compressionFixModel)
+            return self.upscaleNCNNObject(scale=1, modelPath=modelPath)
 
     def setupUpscale(self):
         printAndLog("Setting up Upscale")
@@ -459,8 +439,7 @@ class Render:
         if self.backend == "ncnn":
             from .ncnn.UpscaleNCNN import UpscaleNCNN, getNCNNScale
 
-            path, last_folder = os.path.split(self.upscaleModel)
-            self.upscaleModel = os.path.join(path, last_folder)
+
             self.modelScale = getNCNNScale(modelPath=self.upscaleModel) 
             self.upscaleTimes = self.modelScale if not self.override_upscale_scale else self.override_upscale_scale
             self.upscaleOption = self.upscaleNCNNObject(scale=self.modelScale, modelPath=self.upscaleModel)

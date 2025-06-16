@@ -171,6 +171,7 @@ python3 build.py --build BUILD_OPTION --copy_backend
 | Real-ESRGAN | Upscaling | https://github.com/xinntao/Real-ESRGAN 
 | SPAN | Upscaling | https://github.com/hongyuanyu/SPAN 
 | Spandrel | CUDA upscaling model architecture support | https://github.com/chaiNNer-org/spandrel 
+| ChaiNNer | Model Scale Detection | https://github.com/chaiNNer-org/chainner
 | cx_Freeze | Tool for creating standalone executables from Python scripts (Linux build) | https://github.com/marcelotduarte/cx_Freeze 
 | PyInstaller | Tool for creating standalone executables from Python scripts (Windows/Mac builds) | https://github.com/pyinstaller/pyinstaller
 | Feather Icons | Open source icons library | https://github.com/feathericons/feather 

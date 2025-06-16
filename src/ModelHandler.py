@@ -514,13 +514,7 @@ onnxUpscaleModels = {
 
 
 
-def getCustomModelScale(model):
-    pattern = r"\d+x|x+\d"
-    matches = re.findall(pattern, model)
-    if len(matches) > 0:
-        upscaleFactor = int(matches[0].replace("x", ""))
-        return upscaleFactor
-    return None
+
 
 
 # detect custom models
@@ -528,18 +522,14 @@ createDirectory(CUSTOM_MODELS_PATH)
 customPytorchUpscaleModels = {}
 customNCNNUpscaleModels = {}
 for model in os.listdir(CUSTOM_MODELS_PATH):
-    upscaleFactor = getCustomModelScale(model)
-    if upscaleFactor:
-        model_path = os.path.join(CUSTOM_MODELS_PATH, model)
-        if os.path.exists(model_path):
-            if not os.path.isfile(model_path):
-                customNCNNUpscaleModels[model] = (model, model, upscaleFactor, "custom")
-        if model.endswith(".pth") or model.endswith(".safetensors"):
-            customPytorchUpscaleModels[model] = (model, model, upscaleFactor, "custom")
-    else:
-        log(
-            f"Custom model {model} does not have a valid upscale factor in the name, example: 2x or x2. Skipping import..."
-        )
+    
+    model_path = os.path.join(CUSTOM_MODELS_PATH, model)
+    if os.path.exists(model_path):
+        if not os.path.isfile(model_path):
+            customNCNNUpscaleModels[model] = (model, model, 1, "custom")
+    if model.endswith(".pth") or model.endswith(".safetensors"):
+        customPytorchUpscaleModels[model] = (model, model, 1, "custom")
+
 
 pytorchUpscaleModels = pytorchUpscaleModels | customPytorchUpscaleModels
 tensorrtUpscaleModels = tensorrtUpscaleModels | customPytorchUpscaleModels

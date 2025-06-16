@@ -568,7 +568,7 @@ class ProcessTab:
         
         if renderOptions.deblurModelFile:
             command += [
-                "--compression_fix_model",
+                "--extra_restoration_models",
                 os.path.join(
                     MODELS_PATH,
                     renderOptions.deblurModelFile,
@@ -576,7 +576,7 @@ class ProcessTab:
             ]
         if renderOptions.denoiseModelFile:
             command += [
-                "--denoise_model",
+                "--extra_restoration_models",
                 os.path.join(
                     MODELS_PATH,
                     renderOptions.denoiseModelFile,
