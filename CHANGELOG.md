@@ -4,6 +4,7 @@
 ### Added
  - Deblur
  - Denoise
+ - Decompress
  
 # RVE 2.3.3
 ### Added
