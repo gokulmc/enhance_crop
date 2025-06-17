@@ -25,7 +25,7 @@ from mainwindow import Ui_MainWindow
 from PySide6 import QtSvg  # Import the QtSvg module so svg icons can be used on windows
 from src.version import version
 from src.InputHandler import VideoLoader
-from src.ModelHandler import getCustomModelScale, getModels
+from src.ModelHandler import getModels
 
 # other imports
 from src.Util import (
@@ -517,8 +517,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 )
                 return 1
         if decompress:
-            decompressModelFile = decompressModels[denoise][0]
-            decompressDownloadFile = decompressModels[denoise][1]
+            decompressModelFile = decompressModels[decompress][0]
+            decompressDownloadFile = decompressModels[decompress][1]
             dm = DownloadModel(
                 modelFile=decompressModelFile,
                 downloadModelFile=decompressDownloadFile,

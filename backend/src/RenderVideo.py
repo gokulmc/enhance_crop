@@ -192,7 +192,7 @@ class Render:
                     printAndLog("Using Extra Restoration Model: " + model)
                     self.extraRestorationModels.append(extraRestoration)
                     extraRestoration.hotUnload()  # unload model to free up memory for trt enging building
-                
+        
 
         if interpolateModel:
             self.setupInterpolate()
@@ -201,6 +201,8 @@ class Render:
         if upscaleModel: # load model after interpolation model is loaded, this saves on vram if the user builds 2 separate engines
             self.upscaleOption.hotReload()
 
+        for extraRestoration in self.extraRestorationModels:
+            extraRestoration.hotReload()
         
         if self.modelScale and self.override_upscale_scale:
             if int(self.modelScale) == int(self.override_upscale_scale):
@@ -313,7 +315,7 @@ class Render:
                 if frame is None:
                     self.informationHandler.stopWriting()
                     break
-
+                
                 if self.interpolateModel:
                     interpolated_frames = self.interpolateOption(
                         img1=frame,
@@ -321,6 +323,7 @@ class Render:
                     )
                     if not interpolated_frames:
                         return
+                    
                     for interpolated_frame in interpolated_frames:
                         
                         for extraRestoration in self.extraRestorationModels:

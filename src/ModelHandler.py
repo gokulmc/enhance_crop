@@ -449,7 +449,7 @@ pytorchDeblurModels = {
 }
 
 tensorrtDeblurModels = {
-    "NAFNet GoPro (Deblur) (Slow)": (
+    "NAFNet GoPro (Deblur) (Fast)": (
         "nafnet_gopro1x.pth",
         "nafnet_gopro1x.pth",
         1,
@@ -457,7 +457,7 @@ tensorrtDeblurModels = {
     ),
 }
 ncnnDenoiseModels = {
-    "NAFNet SIDD (1x) (Slow)": (
+    "NAFNet SIDD (1x) (Fast)": (
         "1x_NAFNet-SIDD-width32",
         "1x_NAFNet-SIDD-width32.tar.gz",
         1,
@@ -466,7 +466,7 @@ ncnnDenoiseModels = {
 }
 
 pytorchDenoiseModels = {
-    "NAFNet SIDD (1x) (Slow)": (
+    "NAFNet SIDD (1x) (Fast)": (
         "1xNAFNet-SIDD-width32.pth",
         "1xNAFNet-SIDD-width32.pth",
         1,
@@ -481,7 +481,7 @@ pytorchDenoiseModels = {
 }
 
 tensorrtDenoiseModels = {
-    "NAFNet SIDD (1x) (Slow)": (
+    "NAFNet SIDD (1x) (Fast)": (
         "1xNAFNet-SIDD-width32.pth",
         "1xNAFNet-SIDD-width32.pth",
         1,
