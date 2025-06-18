@@ -15,6 +15,7 @@ from .constants import (
     TEMP_DOWNLOAD_PATH,
     CWD,
     HAS_NETWORK_ON_STARTUP,
+    CPU_ARCH,
     USE_LOCAL_BACKEND,
 )
 from .version import version, backend_dev_version
@@ -145,14 +146,11 @@ class Python(Dependency):
        
         match PLATFORM:
             case "linux":
-                link += "x86_64-unknown-linux-gnu-install_only.tar.gz"
+                link += "x86_64-unknown-linux-gnu-install_only.tar.gz" if CPU_ARCH == "x86_64" else "aarch64-unknown-linux-gnu-install_only.tar.gz"
             case "win32":
                 link += "x86_64-pc-windows-msvc-install_only.tar.gz"
             case "darwin":
-                if machine() == "arm64":
-                    link += "aarch64-apple-darwin-install_only.tar.gz"
-                else:
-                    link += "x86_64-apple-darwin-install_only.tar.gz"
+                link += "x86_64-apple-darwin-install_only.tar.gz" if CPU_ARCH == "x86_64" else "aarch64-apple-darwin-install_only.tar.gz"
 
         return link
 
@@ -205,7 +203,7 @@ class FFMpeg(Dependency):
         link = "https://github.com/TNTwise/real-video-enhancer-models/releases/download/models/"
         match PLATFORM:
             case "linux":
-                link += "ffmpeg"
+                link += "ffmpeg" if CPU_ARCH == "x86_64" else "ffmpeg-linux-arm64"
             case "win32":
                 link += "ffmpeg.exe"
             case "darwin":
