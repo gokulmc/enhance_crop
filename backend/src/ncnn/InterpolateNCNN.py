@@ -1,7 +1,5 @@
 from rife_ncnn_vulkan_python import wrapped
 from time import sleep
-from .UpscaleNCNN import UpscaleNCNN
-from queue import Queue
 
 # built-in imports
 import pathlib

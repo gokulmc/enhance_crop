@@ -3777,8 +3777,8 @@ def get_broadcast_data(model: NcnnModel) -> tuple[int, int, int, int, str]:
 
 
 
-def returnScale(modelPath: str = "") -> int:
-    modelParamPath = modelPath + ".param"
+def getNCNNScale(modelPath: str = "") -> int:
+    modelParamPath = os.path.join(modelPath, os.path.basename(modelPath) + ".param")
     model = NcnnModel.load_from_file(modelParamPath)
     scale = get_broadcast_data(model)[0]
     return scale
