@@ -78,11 +78,11 @@ jobs:
 
       - name: Install Python Dependencies
         run: |
-          ./python/bin/python3 -m pip install -r requirements.txt
+          python3 -m pip install -r requirements.txt
       - name: install other requirements
         run : |
           sudo apt update &&  sudo apt-get install libx11-xcb-dev libglu1-mesa-dev libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev libgtk-3-0 libpulse0 libwayland-cursor0 libwayland-egl1  libxcb-cursor0 libxcb-icccm4 libxcb-image0  libxcb-keysyms1 libxcb-render-util0 libxcb-shape0 -y
-          ./python/bin/python3 -m pip install patchelf
+          python3 -m pip install patchelf
       - name: Build
         run: ./python/bin/python3 build.py --build cx_freeze --copy_backend
       
