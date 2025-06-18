@@ -90,6 +90,15 @@ def disable_combobox_item_by_text(combobox: QComboBox, text):
     if index >= 0:
         disable_combobox_item(combobox, index)
 
+def remove_combobox_item_by_text(combobox: QComboBox, text:str,):
+    
+    """
+    removes a specific item in a QComboBox by its text (not case sensitive)
+    """
+    for idx in range(combobox.count()):
+        if text.lower() in combobox.itemText(idx).lower():
+            combobox.removeItem(idx)
+
 def hide_layout_widgets(layout):
     # Iterate through all items in the layout and hide the widgets
     for i in range(layout.count()):

@@ -124,6 +124,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         #self.VideoPreview.setVisible(False)
 
+        # remove false hope
+        self.directMLBackendInstallerContainer.setVisible(False)
+
         backendHandler = BackendHandler(self, self.settings)
 
         self.renderQueue = RenderQueue(self.renderQueueListWidget)
@@ -530,7 +533,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     timeout=2500,
                 )
                 return 1
-
         return RenderOptions(
             inputFile=input_file,
             outputPath=output_path,

@@ -1,6 +1,6 @@
 import os
 from PySide6.QtWidgets import QMainWindow
-from .QTcustom import RegularQTPopup, NetworkCheckPopup, addNotificationToButton, disable_combobox_item_by_text
+from .QTcustom import RegularQTPopup, NetworkCheckPopup, addNotificationToButton, remove_combobox_item_by_text
 from ..DownloadDeps import DownloadDependencies
 from ..DownloadModels import DownloadModel
 from ..ModelHandler import (
@@ -70,7 +70,11 @@ class DownloadTab:
 
         # set this all to not visible, as scrapping the idea for now.
         if PLATFORM != "linux":
-            disable_combobox_item_by_text(self.parent.pytorch_backend, "ROCm (Linux Only)")
+            remove_combobox_item_by_text(self.parent.pytorch_backend, "ROCm")
+        else:
+            if CPU_ARCH == "arm64":
+                remove_combobox_item_by_text(self.parent.pytorch_backend, "XPU")
+                remove_combobox_item_by_text(self.parent.pytorch_backend, "ROCm")
         
         if PLATFORM == "darwin":
             if CPU_ARCH == "arm64":
