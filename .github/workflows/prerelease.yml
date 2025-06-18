@@ -101,11 +101,7 @@ jobs:
           name: REAL-Video-Enhancer-${{ env.APP_VERSION }}-Linux-portable_arm64.zip
           path: REAL-Video-Enhancer-${{ env.APP_VERSION }}-Linux-portable_arm64.zip
 
-      - name: Save Archive as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: backend-v${{ env.APP_VERSION }}.tar.gz 
-          path: backend-v${{ env.APP_VERSION }}.tar.gz 
+
           
   build-Windows:
     runs-on: windows-2022
