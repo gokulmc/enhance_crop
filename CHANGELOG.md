@@ -5,7 +5,7 @@
  - Deblur
  - Denoise
  - Decompress
- 
+ - Linux ARM support
 # RVE 2.3.3
 ### Added
  - Batch input support.
