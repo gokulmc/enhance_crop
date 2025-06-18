@@ -646,6 +646,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for child in self.renderQueueTab.children():
             child.setEnabled(False)
         self.RenderedPreviewControlsContainer.setEnabled(False)
+        self.scrollArea_4.setEnabled(True)
+        self.scrollAreaWidgetContents_4.setEnabled(False)
+        self.widget_5.setEnabled(True)
 
     def enableProcessPage(self):
         for child in self.generalSettings.children():
@@ -655,6 +658,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for child in self.renderQueueTab.children():
             child.setEnabled(True)
         self.RenderedPreviewControlsContainer.setEnabled(True)
+        self.scrollAreaWidgetContents_4.setEnabled(True)
 
     def loadVideo(self, inputFile, multi_file=False):
         if "{MULTIPLE_FILES}" in inputFile.strip().replace(" ", ""):
