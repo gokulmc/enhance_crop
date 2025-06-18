@@ -89,7 +89,7 @@ jobs:
       - name: compress archive
         run: |
           mv dist/ bin/
-          zip -r REAL-Video-Enhancer-${{ env.APP_VERSION }}-Linux_arm64-portable.zip bin/
+          zip -r REAL-Video-Enhancer-${{ env.APP_VERSION }}-Linux-portable_arm64.zip bin/
 
       - name: compress backend
         run: |
