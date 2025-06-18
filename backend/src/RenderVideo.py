@@ -327,7 +327,7 @@ class Render:
                     for interpolated_frame in interpolated_frames:
                         
                         for extraRestoration in self.extraRestorationModels:
-                            frame = extraRestoration(frame)
+                            interpolated_frame = extraRestoration(interpolated_frame)
 
                         if self.upscaleModel:
                             interpolated_frame = self.upscaleOption(
