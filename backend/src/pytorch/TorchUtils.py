@@ -9,6 +9,7 @@ from ..constants import HAS_PYTORCH_CUDA
 from ..utils.Util import (
     warnAndLog,
 )
+import numpy as np
 
 def dummy_function(*args, **kwargs):
     """
@@ -51,6 +52,13 @@ class TorchUtils:
             self.device_type = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "xpu" if torch.xpu.is_available() else "cpu"    
         else:
             self.device_type = device_type
+        try:
+            test_tensor = torch.tensor([1.0]).cpu().numpy()
+            del test_tensor
+            self.use_numpy = True
+        except Exception as e:
+            warnAndLog(f"Failed to create a Numpy tensor, This will heavily reduce performance.")
+            self.use_numpy = False
         self.__init_stream_func = self.__init_stream_function()
         self.__run_stream_func = self.__run_stream_function()
         self.__sync_all_streams_func = self.__sync_all_streams_function()
@@ -111,8 +119,7 @@ class TorchUtils:
         Synchronizes all streams based on the device type.
         """
         self.__sync_all_streams_func()
-        
-        
+             
     @staticmethod
     def handle_device(device, gpu_id: int = 0) -> torch.device:
         """
@@ -135,7 +142,6 @@ class TorchUtils:
         print("Using Device: " + str(device), file=sys.stderr)
         return torchdevice
 
-    
     @staticmethod
     def handle_precision(precision) -> torch.dtype:
         if precision == "auto":
@@ -147,10 +153,6 @@ class TorchUtils:
         if precision == "bfloat16":
             return torch.bfloat16
         return torch.float32
-    
-    
-        
-        
 
     @torch.inference_mode()
     def copy_tensor(self, tensorToCopy: torch.Tensor, tensorCopiedTo: torch.Tensor, stream: torch.Stream): # stream might be None
@@ -193,9 +195,8 @@ class TorchUtils:
     
     @torch.inference_mode()
     def tensor_to_frame(self, frame: torch.Tensor):
-        # Choose conversion parameters based on hdr_mode flag
-
-        return (
+        # Prepare the tensor
+        tensor = (
             frame.squeeze(0)
             .permute(1, 2, 0)
             .clamp(0., 1.)
@@ -204,5 +205,11 @@ class TorchUtils:
             .contiguous()
             .detach()
             .cpu()
-            .numpy()
-    )
+        )
+        if self.use_numpy:
+            # Convert to numpy array if possible
+            return tensor.numpy()
+        else:
+            np_dtype = np.uint16 if self.hdr_mode else np.uint8
+            return np.array(tensor.tolist(), dtype=np_dtype)
+                

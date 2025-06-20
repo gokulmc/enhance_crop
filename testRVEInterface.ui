@@ -5049,7 +5049,7 @@ QTabWidget::pane { /* The tab widget frame */
                               </font>
                              </property>
                              <property name="text">
-                              <string>ROCm Override Hack</string>
+                              <string>ROCm Override Hack (Linux Only) </string>
                              </property>
                             </widget>
                            </item>

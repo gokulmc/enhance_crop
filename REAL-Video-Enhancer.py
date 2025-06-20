@@ -1,4 +1,4 @@
-from src.constants import CUSTOM_MODELS_PATH, MODELS_PATH, CWD, LOCKFILE, IS_INSTALLED, TEMP_DOWNLOAD_PATH, USE_LOCAL_BACKEND
+from src.constants import CUSTOM_MODELS_PATH, MODELS_PATH, CWD, LOCKFILE, IS_INSTALLED, TEMP_DOWNLOAD_PATH, USE_LOCAL_BACKEND, PLATFORM
 import os
 try: 
     os.makedirs(CWD) if not os.path.exists(CWD) else None
@@ -113,8 +113,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.settings = settings
 
         if self.settings.settings['rocm_override_hack']:
-            os.environ["HSA_OVERRIDE_GFX_VERSION"] = "11.0.0"
-            # os.environ["HCC_AMDGPU_TARGET"] = "gfx1100"
+            if PLATFORM == "linux":
+                os.environ["HSA_OVERRIDE_GFX_VERSION"] = "11.0.0"
+                # os.environ["HCC_AMDGPU_TARGET"] = "gfx1100"
 
         log(str(os.environ))
         # setup application

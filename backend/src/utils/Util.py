@@ -53,7 +53,7 @@ def removeFolder(folder):
 
 
 def warnAndLog(message: str):
-    warnings.warn(message)
+    print("WARNING: " + message, file=sys.stderr)
     log("WARN: " + message)
 
 
