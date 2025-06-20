@@ -350,7 +350,7 @@ class Settings:
             "video_pixel_format": "yuv420p",
             "pytorch_version": "2.7.0",
             "pytorch_backend": "CUDA",
-            "rocm_override_hack": "False",
+            "rocm_override_hack": "True",
         }
         self.allowedSettings = {
             "precision": ("auto", "float32", "float16"),
