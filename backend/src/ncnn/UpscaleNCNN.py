@@ -3778,9 +3778,17 @@ def get_broadcast_data(model: NcnnModel) -> tuple[int, int, int, int, str]:
 
 
 def getNCNNScale(modelPath: str = "") -> int:
-    modelParamPath = os.path.join(modelPath, os.path.basename(modelPath) + ".param")
-    model = NcnnModel.load_from_file(modelParamPath)
-    scale = get_broadcast_data(model)[0]
+    basename = os.path.basename(modelPath)
+    try:
+      modelParamPath = os.path.join(modelPath, basename + ".param")
+      model = NcnnModel.load_from_file(modelParamPath)
+      scale = get_broadcast_data(model)[0]
+    except Exception:
+        print("Failed to get scale from model, getting from filename")
+        for i in range(1, 20):
+            if f"x{i}" in basename or f"{i}x" in basename.lower():
+                scale = i
+                break
     return scale
 
 

@@ -457,7 +457,7 @@ tensorrtDeblurModels = {
     ),
 }
 ncnnDenoiseModels = {
-    "NAFNet SIDD (1x) (Fast)": (
+    "NAFNet SIDD (Fast)": (
         "1x_NAFNet-SIDD-width32",
         "1x_NAFNet-SIDD-width32.tar.gz",
         1,
@@ -466,13 +466,13 @@ ncnnDenoiseModels = {
 }
 
 pytorchDenoiseModels = {
-    "NAFNet SIDD (1x) (Fast)": (
+    "NAFNet SIDD (Fast)": (
         "1xNAFNet-SIDD-width32.pth",
         "1xNAFNet-SIDD-width32.pth",
         1,
         "scunet",
     ),
-    "SCUNet Color (1x) (Slow)": (
+    "SCUNet Color (Slow)": (
         "scunet_color_real_psnr.pth",
         "scunet_color_real_psnr.pth",
         1,
@@ -481,13 +481,13 @@ pytorchDenoiseModels = {
 }
 
 tensorrtDenoiseModels = {
-    "NAFNet SIDD (1x) (Fast)": (
+    "NAFNet SIDD (Fast)": (
         "1xNAFNet-SIDD-width32.pth",
         "1xNAFNet-SIDD-width32.pth",
         1,
         "scunet",
     ),
-    "SCUNet Color (1x) (Slow)": (
+    "SCUNet Color (Slow)": (
         "scunet_color_real_psnr.pth",
         "scunet_color_real_psnr.pth",
         1,
@@ -495,7 +495,14 @@ tensorrtDenoiseModels = {
     )
 }
 ncnnDecompressModels = {
-    "DeH264 SPAN (1x) (Fast)": (
+    "DeH264 RTMoSR (Fast)": (
+        "1xDeH264_RTMoSR.ncnn",
+        "1xDeH264_RTMoSR.ncnn.tar.gz",
+        1,
+        "RTMoSR",
+    ),
+
+    "DeH264 SPAN (Fast)": (
         "1x_DeH264_SPAN",
         "1x_DeH264_SPAN.tar.gz",
         1,
@@ -503,13 +510,19 @@ ncnnDecompressModels = {
     )
 }
 pytorchDecompressModels = {
-    "DeH264 SPAN (1x) (Fast)": (
+        "DeH264 RTMoSR (Fast)": (
+        "1xDeH264_RTMoSR.pth",
+        "1xDeH264_RTMoSR.pth",
+        1,
+        "RTMoSR",
+    ),
+    "DeH264 SPAN (Fast)": (
         "1x_DeH264_SPAN.pth",
         "1x_DeH264_SPAN.pth",
         1,
         "SPAN",
     ),
-    "DeH264 PLKSR (1x) (Very Slow)": (
+    "DeH264 PLKSR (Very Slow)": (
         "1xDeH264_realplksr.pth",
         "1xDeH264_realplksr.pth",
         1,
@@ -517,7 +530,13 @@ pytorchDecompressModels = {
     )
 }
 tensorrtDecompressModels = {
-    "DeH264 SPAN (1x) (Fast)": (
+    "DeH264 RTMoSR (Fast)": (
+        "1xDeH264_RTMoSR.pth",
+        "1xDeH264_RTMoSR.pth",
+        1,
+        "RTMoSR",
+    ),
+    "DeH264 SPAN (Fast)": (
         "1x_DeH264_SPAN.pth",
         "1x_DeH264_SPAN.pth",
         1,
