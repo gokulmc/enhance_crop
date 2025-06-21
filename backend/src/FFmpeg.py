@@ -155,7 +155,7 @@ class InformationWriteOut:
         return f"{hours}:{minutes}:{seconds}"
 
     def setPreviewFrame(self, frame):
-        self.previewFrame = frame if not self.hdr_mode else hdr_to_sdr(frame, self.width, self.height)
+        self.previewFrame = frame if not self.hdr_mode else hdr_to_sdr(frame, self.croppedOutputWidth, self.croppedOututHeight)
 
     def setFramesRendered(self, framesRendered: int):
         self.framesRendered = framesRendered
