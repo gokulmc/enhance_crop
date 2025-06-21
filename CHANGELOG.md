@@ -6,6 +6,7 @@
  - Denoise
  - Decompress
  - Linux ARM support
+ - Fix Border Crop
 # RVE 2.3.3
 ### Added
  - Batch input support.
