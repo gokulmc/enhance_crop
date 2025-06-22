@@ -315,7 +315,10 @@ class Render:
                 if frame is None:
                     self.informationHandler.stopWriting()
                     break
-                
+
+                for extraRestoration in self.extraRestorationModels:
+                    frame = extraRestoration(frame)
+
                 if self.interpolateModel:
                     interpolated_frames = self.interpolateOption(
                         img1=frame,
@@ -325,9 +328,6 @@ class Render:
                         return
                     
                     for interpolated_frame in interpolated_frames:
-                        
-                        for extraRestoration in self.extraRestorationModels:
-                            interpolated_frame = extraRestoration(interpolated_frame)
 
                         if self.upscaleModel:
                             interpolated_frame = self.upscaleOption(
@@ -344,9 +344,6 @@ class Render:
                         self.writeBuffer.writeQueue.put(interpolated_frame)
                 
                 
-                
-                for extraRestoration in self.extraRestorationModels:
-                    frame = extraRestoration(frame)
 
                 if self.upscaleModel:
                     frame = self.upscaleOption(
