@@ -13,6 +13,10 @@ import urllib.request
 PLATFORM = sys.platform
 CPU_ARCH = platform.machine()
 OUTPUT_FOLDER = "dist"
+print(f"Platform: {PLATFORM}")
+print(f"CPU Arch: {CPU_ARCH}")
+print(f"OUTPUT_FOLDER: {OUTPUT_FOLDER}")
+
 
 def zero_mainwindow_size():
     import xml.etree.ElementTree as ET
@@ -41,8 +45,9 @@ def download_file(url, destination):
 
 def get_libxcb_cursor_binary():
     try:
-        input_file = '/usr/lib/x86_64-linux-gnu/libxcb-cursor.so.0'
-        if CPU_ARCH != "x86_64":
+        if CPU_ARCH == "x86_64":
+            input_file = '/usr/lib/x86_64-linux-gnu/libxcb-cursor.so.0'
+        else
             input_file = '/usr/lib/aarch64-linux-gnu/libxcb-cursor.so.0'
         if not os.path.isfile(input_file):
             raise FileNotFoundError("Unable to build as libxcbcursor is not installed!")
@@ -50,8 +55,10 @@ def get_libxcb_cursor_binary():
     except FileNotFoundError:
         try:
             print("libxcbcursor not found, downloading...")
-            
-            download_file("https://github.com/TNTwise/real-video-enhancer-models/releases/download/models/libxcb-cursor.so.0","libxcb-cursor.so.0")
+            if CPU_ARCH == "x86_64":
+                download_file("https://github.com/TNTwise/real-video-enhancer-models/releases/download/models/libxcb-cursor.so.0","libxcb-cursor.so.0")
+            else:
+                download_file("https://github.com/TNTwise/real-video-enhancer-models/releases/download/models/libxcb-cursor.so.0_arm64","libxcb-cursor.so.0")
             input_file = "libxcb-cursor.so.0"
         except Exception as e:
             print(e)
