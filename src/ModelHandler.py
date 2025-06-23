@@ -494,7 +494,15 @@ tensorrtDenoiseModels = {
         "scunet",
     )
 }
+""""DeH264 RTMoSR Unshuffle (UltraFast)": (
+        "1xDeH264_RTMoSR_Unshuffle.ncnn",
+        "1xDeH264_RTMoSR_Unshuffle.ncnn.tar.gz",
+        1,
+        "RTMoSR",
+    ),"""
 ncnnDecompressModels = {
+    
+
     "DeH264 RTMoSR (Fast)": (
         "1xDeH264_RTMoSR.ncnn",
         "1xDeH264_RTMoSR.ncnn.tar.gz",
@@ -502,25 +510,21 @@ ncnnDecompressModels = {
         "RTMoSR",
     ),
 
-    "DeH264 SPAN (Fast)": (
-        "1x_DeH264_SPAN",
-        "1x_DeH264_SPAN.tar.gz",
-        1,
-        "SPAN",
-    )
+    
 }
 pytorchDecompressModels = {
+    "DeH264 RTMoSR Unshuffle (UltraFast)": (
+        "1xDeH264_RTMoSR_Unshuffle.safetensors",
+        "1xDeH264_RTMoSR_Unshuffle.safetensors",
+        1,
+        "RTMoSR",
+    ),
+
         "DeH264 RTMoSR (Fast)": (
         "1xDeH264_RTMoSR.pth",
         "1xDeH264_RTMoSR.pth",
         1,
         "RTMoSR",
-    ),
-    "DeH264 SPAN (Fast)": (
-        "1x_DeH264_SPAN.pth",
-        "1x_DeH264_SPAN.pth",
-        1,
-        "SPAN",
     ),
     "DeH264 PLKSR (Very Slow)": (
         "1xDeH264_realplksr.pth",
@@ -530,18 +534,19 @@ pytorchDecompressModels = {
     )
 }
 tensorrtDecompressModels = {
+    "DeH264 RTMoSR Unshuffle (UltraFast)": (
+        "1xDeH264_RTMoSR_Unshuffle.safetensors",
+        "1xDeH264_RTMoSR_Unshuffle.safetensors",
+        1,
+        "RTMoSR",
+    ),
     "DeH264 RTMoSR (Fast)": (
         "1xDeH264_RTMoSR.pth",
         "1xDeH264_RTMoSR.pth",
         1,
         "RTMoSR",
     ),
-    "DeH264 SPAN (Fast)": (
-        "1x_DeH264_SPAN.pth",
-        "1x_DeH264_SPAN.pth",
-        1,
-        "SPAN",
-    )
+    
 }
 
 onnxInterpolateModels = {
