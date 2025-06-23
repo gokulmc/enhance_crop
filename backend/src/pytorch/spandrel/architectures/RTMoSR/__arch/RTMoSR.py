@@ -381,7 +381,7 @@ class RTMoSR(nn.Module):
     def __init__(
         self,
         *,
-        scale: int = 2,
+        scale: int = 1,
         dim: int = 32,
         ffn_expansion: float = 2,
         n_blocks: int = 2,

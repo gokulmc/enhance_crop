@@ -768,7 +768,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 filter=fileFilter,
             )
                
-
+            if modelFile == "":
+                RegularQTPopup("Please select a model file!")
+                return
+            
             outputModelPath = os.path.join(
                 CUSTOM_MODELS_PATH, os.path.basename(modelFile)
             )
