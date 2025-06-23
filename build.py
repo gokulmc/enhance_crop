@@ -7,9 +7,11 @@ import subprocess
 import sys
 import shutil
 import argparse
+import platform
 import urllib.request
 
 PLATFORM = sys.platform
+CPU_ARCH = platform.machine()
 OUTPUT_FOLDER = "dist"
 
 def zero_mainwindow_size():
@@ -39,7 +41,10 @@ def download_file(url, destination):
 
 def get_libxcb_cursor_binary():
     try:
-        if not os.path.isfile('/usr/lib/x86_64-linux-gnu/libxcb-cursor.so.0'):
+        file_path = '/usr/lib/x86_64-linux-gnu/libxcb-cursor.so.0'
+        if CPU_ARCH == "arm64":
+            file_path = '/usr/lib/aarch64-linux-gnu/libxcb-cursor.so.0'
+        if not os.path.isfile(file_path):
             raise FileNotFoundError("Unable to build as libxcbcursor is not installed!")
         
         input_file = "/usr/lib/x86_64-linux-gnu/libxcb-cursor.so.0"
