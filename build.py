@@ -47,7 +47,7 @@ def get_libxcb_cursor_binary():
     try:
         if CPU_ARCH == "x86_64":
             input_file = '/usr/lib/x86_64-linux-gnu/libxcb-cursor.so.0'
-        else
+        else:
             input_file = '/usr/lib/aarch64-linux-gnu/libxcb-cursor.so.0'
         if not os.path.isfile(input_file):
             raise FileNotFoundError("Unable to build as libxcbcursor is not installed!")
