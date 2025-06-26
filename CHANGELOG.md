@@ -8,6 +8,7 @@
  - Linux ARM support
 ### Fixed
  - Border Crop
+ - Fixed Upscaling TRT again on windows.
 # RVE 2.3.3
 ### Added
  - Batch input support.
