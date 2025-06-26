@@ -105,17 +105,18 @@ class TorchTensorRTHandler:
 
         # clear previous tensorrt models
         cleared_models = False
-        for model in os.listdir(MODELS_DIRECTORY):
-            if not model.endswith(self.trt_path_appendix) and "tensorrt" in model.lower():
-                model_path = os.path.join(MODELS_DIRECTORY, model)
-                try:
-                    os.remove(model_path)
-                    cleared_models = True
-                    log(f"Removed {model_path}")
-                except Exception as e:
-                    log(f"Failed to remove {model_path}: {e}")
-        if cleared_models:
-            print("Cleared old TensorRT models...", file=sys.stderr)
+        if os.path.exists(MODELS_DIRECTORY):
+            for model in os.listdir(MODELS_DIRECTORY):
+                if not model.endswith(self.trt_path_appendix) and "tensorrt" in model.lower():
+                    model_path = os.path.join(MODELS_DIRECTORY, model)
+                    try:
+                        os.remove(model_path)
+                        cleared_models = True
+                        log(f"Removed {model_path}")
+                    except Exception as e:
+                        log(f"Failed to remove {model_path}: {e}")
+            if cleared_models:
+                print("Cleared old TensorRT models...", file=sys.stderr)
     
     
 
