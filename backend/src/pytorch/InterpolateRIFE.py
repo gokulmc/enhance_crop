@@ -276,6 +276,7 @@ class InterpolateRifeTorch(BaseInterpolate):
             from .TensorRTHandler import TorchTensorRTHandler
 
             trtHandler = TorchTensorRTHandler(
+                model_parent_path=os.path.dirname(self.interpolateModel),
                 trt_optimization_level=self.trt_optimization_level,
                 dynamo_export_format="nn2exportedprogram"
             )
