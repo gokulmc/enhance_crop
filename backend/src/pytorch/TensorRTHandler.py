@@ -77,7 +77,7 @@ class TorchTensorRTHandler:
         either way, forcing one precision helps with speed in some cases.
     """
 
-    trt_path_appendix = "_RVE-VERSION:" + __version__ + ".engine" # this is used to identify the models that were exported with this version of RVE
+    trt_path_appendix = (f"_{__version__}.engine") # this is used to identify the models that were exported with this version of RVE
 
     def __init__(
         self,
@@ -105,8 +105,9 @@ class TorchTensorRTHandler:
         self.model_parent_path = model_parent_path
         # clear previous tensorrt models
         cleared_models = False
-        """if os.path.exists(self.model_parent_path):
+        if os.path.exists(self.model_parent_path):
             for model in os.listdir(self.model_parent_path):
+                
                 if not self.trt_path_appendix.lower() in model.lower() and "tensorrt" in model.lower():
                     model_path = os.path.join(self.model_parent_path, model)
                     try:
@@ -116,7 +117,7 @@ class TorchTensorRTHandler:
                     except Exception as e:
                         log(f"Failed to remove {model_path}: {e}")
             if cleared_models:
-                print("Cleared old TensorRT models...", file=sys.stderr)"""
+                print("Cleared old TensorRT models...", file=sys.stderr)
     
     
 
