@@ -501,7 +501,12 @@ tensorrtDenoiseModels = {
         "RTMoSR",
     ),"""
 ncnnDecompressModels = {
-    
+    "DeH264 SPAN (Fast)": (
+        "1x_DeH264_SPAN.ncnn",
+        "1x_DeH264_SPAN.ncnn.tar.gz",
+        1,
+        "SPAN",
+    ),
 
     "DeH264 RTMoSR (Fast)": (
         "1xDeH264_RTMoSR.ncnn",
