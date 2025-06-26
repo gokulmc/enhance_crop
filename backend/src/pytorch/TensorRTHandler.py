@@ -26,7 +26,6 @@ import sys
 import os
 from ..utils.Util import suppress_stdout_stderr, warnAndLog, log
 from ..version import __version__
-from ..constants import MODELS_DIRECTORY
 with suppress_stdout_stderr():
     import torch
     import torch_tensorrt
@@ -82,6 +81,7 @@ class TorchTensorRTHandler:
 
     def __init__(
         self,
+        model_parent_path: str,
         export_format: str = "dynamo",
         dynamo_export_format: str = "nn2exportedprogram",
         max_aux_streams: int | None = None,
@@ -102,13 +102,13 @@ class TorchTensorRTHandler:
         self.optimization_level = trt_optimization_level
         self.debug = debug
         self.static_shape = static_shape  # Unused for now
-
+        self.model_parent_path = model_parent_path
         # clear previous tensorrt models
         cleared_models = False
-        if os.path.exists(MODELS_DIRECTORY):
-            for model in os.listdir(MODELS_DIRECTORY):
+        if os.path.exists(self.model_parent_path):
+            for model in os.listdir(self.model_parent_path):
                 if not model.endswith(self.trt_path_appendix) and "tensorrt" in model.lower():
-                    model_path = os.path.join(MODELS_DIRECTORY, model)
+                    model_path = os.path.join(self.model_parent_path, model)
                     try:
                         os.remove(model_path)
                         cleared_models = True
@@ -220,7 +220,7 @@ class TorchTensorRTHandler:
     def check_engine_exists(self, trt_engine_name: str) -> bool:
         """Checks if a TensorRT engine exists at the specified path."""
         trt_engine_name += self.trt_path_appendix
-        trt_engine_path = os.path.join(MODELS_DIRECTORY, trt_engine_name)
+        trt_engine_path = os.path.join(self.model_parent_path, trt_engine_name)
         return os.path.exists(trt_engine_path)
 
     def build_engine(
@@ -236,7 +236,7 @@ class TorchTensorRTHandler:
     ):
         
         trt_engine_name += self.trt_path_appendix
-        trt_engine_path = os.path.join(MODELS_DIRECTORY, trt_engine_name)
+        trt_engine_path = os.path.join(self.model_parent_path, trt_engine_name)
         torch.cuda.empty_cache()
         """Builds a TensorRT engine from the provided model."""
         print(
@@ -278,7 +278,7 @@ class TorchTensorRTHandler:
         """Loads a TensorRT engine from the specified path."""
         
         trt_engine_name += self.trt_path_appendix
-        trt_engine_path = os.path.join(MODELS_DIRECTORY, trt_engine_name)
+        trt_engine_path = os.path.join(self.model_parent_path, trt_engine_name)
         print(f"Loading TensorRT engine from {trt_engine_path}.", file=sys.stderr)
         return torch.jit.load(trt_engine_path).eval()
 

@@ -122,7 +122,7 @@ class UpscalePytorch:
         torch.cuda.empty_cache()
         if backend == "tensorrt":
             from .TensorRTHandler import TorchTensorRTHandler
-            trtHandler = TorchTensorRTHandler()
+            trtHandler = TorchTensorRTHandler(model_parent_path=os.path.dirname(self.modelPath),)
             self.model = trtHandler.load_engine(self.trt_engine_name)
         else:
             self.model = self.loadModel(
@@ -185,6 +185,7 @@ class UpscalePytorch:
 
 
                 trtHandler = TorchTensorRTHandler(
+                    model_parent_path=os.path.dirname(self.modelPath),
                     export_format="fallback", # torchscript due to wonky resolution issues with dynamo
                     dynamo_export_format="fallback",
                     trt_optimization_level=self.trt_optimization_level,
