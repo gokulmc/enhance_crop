@@ -526,6 +526,12 @@ pytorchDecompressModels = {
         1,
         "RTMoSR",
     ),
+    "DeH264 SPAN (Fast)": (
+        "1x_DeH264_SPAN.safetensors",
+        "1x_DeH264_SPAN.safetensors",
+        1,
+        "SPAN",
+    ),
     "DeH264 PLKSR (Very Slow)": (
         "1xDeH264_realplksr.pth",
         "1xDeH264_realplksr.pth",
@@ -546,6 +552,12 @@ tensorrtDecompressModels = {
         1,
         "RTMoSR",
     ),
+    "DeH264 SPAN (Fast)": (
+        "1x_DeH264_SPAN.safetensors",
+        "1x_DeH264_SPAN.safetensors",
+        1,
+        "SPAN",
+    )
     
 }
 
