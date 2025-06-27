@@ -4,6 +4,7 @@
 ### Added
  - Denosie
  - Deblur
+ - Low storage warning when installing backends.
 
 # RVE 2.3.4
 ### Added

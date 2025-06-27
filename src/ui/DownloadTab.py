@@ -54,10 +54,16 @@ class DownloadTab:
         self.backends = backends
         self.applicationUpdater = ApplicationUpdater()
 
-        if FileHandler.getFreeSpace() < 7:
+
+        if IS_FLATPAK:
+            minimum_space_required = 7
+        else:
+            minimum_space_required = 15
+        self.parent.low_storage_label.setVisible(False)
+        if FileHandler.getFreeSpace() < minimum_space_required:
             self.parent.downloadTorchBtn.setEnabled(False)
-        if FileHandler.getFreeSpace() < 7:
             self.parent.downloadTensorRTBtn.setEnabled(False)
+            self.parent.low_storage_label.setVisible(True)
 
         # disable as it is not complete
         try:
