@@ -1,6 +1,11 @@
-# RVE 2.3.4
- - NOTE: Pre-releases are unstable, please use the stable build if you experience issues. 
+# RVE 2.3.5
+- NOTE: Pre-releases are unstable, please use the stable build if you experience issues. 
         New features will be added to this release over time, the current changelog is not final.
+### Added
+ - Denosie
+ - Deblur
+
+# RVE 2.3.4
 ### Added
  - Decompress
  - Linux ARM support
