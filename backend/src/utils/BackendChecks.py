@@ -1,5 +1,7 @@
-from .Util import log, suppress_stdout_stderr, printAndLog
-
+try:
+    from .Util import log, suppress_stdout_stderr, printAndLog
+except Exception as e:
+    pass
 def checkForPytorchCUDA() -> bool:
     """
     function that checks if the pytorch backend is available
@@ -220,21 +222,5 @@ def get_gpus_torch():
 
 
 def get_gpus_ncnn():
-    devices = []
-    try:
-        with suppress_stdout_stderr():
-            import ncnn
-
-            gpu_count = ncnn.get_gpu_count()
-            if gpu_count < 1:
-                return ["CPU"]
-            for i in range(gpu_count):
-                device = ncnn.get_gpu_device(i)
-                gpu_info = device.info()
-                devices.append(gpu_info.device_name())
-        return devices
-    except Exception:
-        return ["CPU"]
-    except Exception as e:
-        log(str(e))
-        return "Unable to get NCNN GPU"
+    devices = ["Default"]
+    return devices

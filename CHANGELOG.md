@@ -5,6 +5,8 @@
  - Denosie
  - Deblur
  - Low storage warning when installing backends.
+### Fixed
+ - NCNN causing Win10 dump files to be created, disabled NCNN gpu select as a result.
 
 # RVE 2.3.4
 ### Added
