@@ -7,7 +7,7 @@
  - Low storage warning when installing backends.
 ### Fixed
  - NCNN causing Win10 dump files to be created, disabled NCNN gpu select as a result.
-
+ - Tiling not working on restoration models.
 # RVE 2.3.4
 ### Added
  - Decompress
