@@ -127,7 +127,7 @@
 git clone https://github.com/TNTwise/REAL-Video-Enhancer
 
 # Stable
-git clone https://github.com/TNTwise/REAL-Video-Enhancer --branch 2.3.2
+git clone https://github.com/TNTwise/REAL-Video-Enhancer --branch 2.3.4
 ```
 # Building:
 
