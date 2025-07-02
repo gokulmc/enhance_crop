@@ -124,10 +124,10 @@
 # Cloning:
 ```
 # Nightly
-git clone https://github.com/TNTwise/REAL-Video-Enhancer
+git clone --recurse-submodules https://github.com/TNTwise/REAL-Video-Enhancer 
 
 # Stable
-git clone https://github.com/TNTwise/REAL-Video-Enhancer --branch 2.3.4
+git clone --recurse-submodules https://github.com/TNTwise/REAL-Video-Enhancer --branch 2.3.4
 ```
 # Building:
 
