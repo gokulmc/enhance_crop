@@ -44,7 +44,8 @@ jobs:
           zip -r REAL-Video-Enhancer-${{ env.APP_VERSION }}-Linux-portable_x86_64.zip bin/
 
       - name: compress backend
-        run: |
+        run: | # remove .github to save space
+          rm -rf backend/src/pytorch/spandrel/.github 
           tar czf backend-v${{ env.APP_VERSION }}.tar.gz backend/
 
       - name: Save Archive as artifact
