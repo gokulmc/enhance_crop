@@ -250,9 +250,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # these additions are not ready for stable rve just yet.
         #self.denoiseContainer.setVisible(False)
-        #self.deblurContainer.setVisible(False)
+        self.deblurContainer.setVisible(False)
         #self.denoiseCheckBoxContainer.setVisible(False)
-        #self.deblurCheckBoxContainer.setVisible(False)
+        self.deblurCheckBoxContainer.setVisible(False)
 
         #player = QMediaPlayer()
         #player.setSource(QUrl.fromLocalFile(r"C:\Users\tntwi\Downloads\CodeGeass-OP3.webm"))

@@ -459,7 +459,7 @@ tensorrtDeblurModels = {
 ncnnDenoiseModels = {
     "NAFNet SIDD (Fast)": (
         "1x_NAFNet-SIDD-width32",
-        "1x_NAFNet-SIDD-width32.tar.gz",
+        "1xNAFNet-SIDD-width32.pth.ncnn.tar.gz",
         1,
         "scunet",
     )
@@ -485,14 +485,8 @@ tensorrtDenoiseModels = {
         "1xNAFNet-SIDD-width32.pth",
         "1xNAFNet-SIDD-width32.pth",
         1,
-        "scunet",
+        "nafnet",
     ),
-    "SCUNet Color (Slow)": (
-        "scunet_color_real_psnr.pth",
-        "scunet_color_real_psnr.pth",
-        1,
-        "scunet",
-    )
 }
 """"DeH264 RTMoSR Unshuffle (UltraFast)": (
         "1xDeH264_RTMoSR_Unshuffle.ncnn",
