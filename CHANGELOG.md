@@ -3,7 +3,6 @@
         New features will be added to this release over time, the current changelog is not final.
 ### Added
  - Denosie
- - Deblur
  - Low storage warning when installing backends.
 ### Fixed
  - NCNN causing Win10 dump files to be created, disabled NCNN gpu select as a result.
