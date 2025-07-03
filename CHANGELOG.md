@@ -8,6 +8,7 @@
 ### Fixed
  - NCNN causing Win10 dump files to be created, disabled NCNN gpu select as a result.
  - Tiling not working on restoration models.
+ - Windows setup not installing for all users.
 # RVE 2.3.4
 ### Added
  - Decompress

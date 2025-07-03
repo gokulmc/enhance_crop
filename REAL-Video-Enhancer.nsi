@@ -58,8 +58,8 @@ Section "install"
     SetOutPath "$INSTDIR"
     File /r "dist\REAL-Video-Enhancer\*.*" 
     File /r "icons\logo-v2.ico" 
-    createDirectory "$SMPROGRAMS\${COMPANYNAME}"
-	  createShortCut "$SMPROGRAMS\${COMPANYNAME}\${NAME}.lnk" "$INSTDIR\REAL-Video-Enhancer.exe" "" "$INSTDIR\logo-v2.ico"
+    createDirectory "$COMMONSMPROGRAMS\${COMPANYNAME}"
+	  createShortCut "$COMMONSMPROGRAMS\${COMPANYNAME}\${NAME}.lnk" "$INSTDIR\REAL-Video-Enhancer.exe" "" "$INSTDIR\logo-v2.ico"
     writeUninstaller "$INSTDIR\Uninstall.exe"
     RMDir /r "$INSTDIR\backend" 
     # Registry information for add/remove programs
@@ -82,7 +82,7 @@ SectionEnd
 ; Section - Shortcut
 
   Section "Desktop Shortcut" DeskShort
-    CreateShortCut "$DESKTOP\${NAME}.lnk" "$INSTDIR\${APPFILE}"
+    CreateShortCut "$COMMONDESKTOP\${NAME}.lnk" "$INSTDIR\${APPFILE}"
   SectionEnd
 
 ;--------------------------------
@@ -117,7 +117,9 @@ SectionEnd
 Section "Uninstall"
   
   ;Delete Shortcut
-  Delete "$DESKTOP\${NAME}.lnk"
+  Delete "$COMMONDESKTOP\${NAME}.lnk"
+  Delete "$COMMONSMPROGRAMS\${COMPANYNAME}\${NAME}.lnk"
+  RMDir "$COMMONSMPROGRAMS\${COMPANYNAME}"
 
   ;Delete Uninstall
   Delete "$INSTDIR\Uninstall.exe"
