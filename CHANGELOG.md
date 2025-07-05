@@ -4,6 +4,7 @@
 ### Added
  - Denosie
  - Low storage warning when installing backends.
+ - Thanks @adriabama06 for adding model name to video output and last input folder setting. 
 ### Fixed
  - NCNN causing Win10 dump files to be created, disabled NCNN gpu select as a result.
  - Tiling not working on restoration models.
