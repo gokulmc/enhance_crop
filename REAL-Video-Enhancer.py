@@ -25,7 +25,7 @@ from mainwindow import Ui_MainWindow
 from PySide6 import QtSvg  # Import the QtSvg module so svg icons can be used on windows
 from src.version import version
 from src.InputHandler import VideoLoader
-from src.ModelHandler import getModels
+from src.ModelHandler import getModels, getModelDisplayName
 
 # other imports
 from src.Util import (
@@ -374,8 +374,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.isVideoLoaded:
             if inputFile.strip().replace(" ", "") == "{MULTIPLE_FILES}":
                 inputFile = " { FILE_NAME } "
+
             upscaleModelName = self.upscaleModelComboBox.currentText()
+            decompressModelName = self.decompressModelComboBox.currentText()
+            denoiseModelName = self.denoiseModelComboBox.currentText()
             interpolateModelName = self.interpolateModelComboBox.currentText()
+            
             interpolateTimes = self.getInterpolationMultiplier(interpolateModelName)
             scale = self.getUpscaleModelScale(upscaleModelName)
             container = self.settings.settings["video_container"]
@@ -383,6 +387,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             file_name = os.path.splitext(os.path.basename(inputFile))[0]
             base_file_name = (
                 f"{file_name}"
+                + ("" if (interpolateModelName == "None" or not self.interpolateCheckBox.isChecked()) else f"_{getModelDisplayName(interpolateModelName)}")
+                + ("" if (decompressModelName == "None" or decompressModelName == "" or not self.decompressCheckBox.isChecked()) else f"_{getModelDisplayName(decompressModelName)}")
+                + ("" if (denoiseModelName == "None" or denoiseModelName == "" or not self.denoiseCheckBox.isChecked()) else f"_{getModelDisplayName(denoiseModelName)}")
+                + ("" if (upscaleModelName == "None" or upscaleModelName == "" or not self.upscaleCheckBox.isChecked()) else f"_{getModelDisplayName(upscaleModelName)}")
                 + f"_{round(interpolateTimes * self.videoFps, 0)}fps"
                 + f"_{scale * self.videoWidth}x{scale * self.videoHeight}"
             )
