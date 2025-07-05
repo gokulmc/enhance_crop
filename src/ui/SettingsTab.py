@@ -342,6 +342,9 @@ class Settings:
             "output_folder_location": os.path.join(f"{HOME_PATH}", "Videos")
             if PLATFORM != "darwin"
             else os.path.join(f"{HOME_PATH}", "Desktop"),
+            "last_input_folder_location": os.path.join(f"{HOME_PATH}", "Videos")
+            if PLATFORM != "darwin"
+            else os.path.join(f"{HOME_PATH}", "Desktop"),
             "uhd_mode": "True",
             "ncnn_gpu_id": "0",
             "pytorch_gpu_id": "0",
@@ -387,6 +390,7 @@ class Settings:
             "discord_rich_presence": ("True", "False"),
             "video_quality": ("Low", "Medium", "High", "Very High"),
             "output_folder_location": "ANY",
+            "last_input_folder_location": "ANY",
             "uhd_mode": ("True", "False"),
             "ncnn_gpu_id": "ANY",
             "pytorch_gpu_id": "ANY",
