@@ -420,7 +420,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.upscaleContainer.setVisible(isUpscale or isDeblur or isDenoise or isDecompress)
         self.generalUpscaleContainer.setVisible(isUpscale)
         self.settings.readSettings()
-        self.setDefaultOutputFile(self.inputFileText.text(), self.settings.settings["output_folder_location"])
+        self.setDefaultOutputFile(self.inputFileText.text(), str(os.path.dirname(self.inputFileText.text())) if (self.isVideoLoaded and len(self.batchVideos) == 0 and os.path.exists(os.path.dirname(self.inputFileText.text()))) else self.settings.settings["output_folder_location"])
         self.updateVideoGUIText()
         self.startTimeSpinBox.setMaximum(self.videoLength)
         self.endTimeSpinBox.setMaximum(self.videoLength)
@@ -738,10 +738,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         inputFile, _ = QFileDialog.getOpenFileName(
             parent=self,
             caption="Select File",
-            dir=self.homeDir,
+            dir=self.settings.settings["last_input_folder_location"] if os.path.exists(self.settings.settings["last_input_folder_location"]) else self.homeDir,
             filter=fileFilter,
         )
         self.loadVideo(inputFile)
+        self.settings.writeSetting("last_input_folder_location", str(os.path.dirname(inputFile)))
     
     def openBatchFiles(self):
         inputFolder = QFileDialog.getExistingDirectory(
@@ -838,7 +839,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     # output file button
     def openOutputFolder(self):
         """
-        Opens a folder,
+        Opens home folder or the same folder as the input file only if the input file is a single file,
         sets the directory that is selected to the self.outputFolder variable
         sets the outputFileText to the output directory
 
@@ -847,7 +848,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         outputFolder = QFileDialog.getExistingDirectory(
             self,
             caption="Select Output Directory",
-            dir=self.homeDir,
+            dir=str(os.path.dirname(self.inputFileText.text())) if (self.isVideoLoaded and len(self.batchVideos) == 0 and os.path.exists(os.path.dirname(self.inputFileText.text()))) else self.homeDir,
         )
         self.outputFileText.setText(
             os.path.join(outputFolder, self.setDefaultOutputFile(self.inputFileText.text(), outputFolder))
