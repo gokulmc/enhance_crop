@@ -3,11 +3,12 @@ import os
 import argparse
 import sys
 from src.version import __version__
-
+from src.utils.Util import printAndLog
 
 
 class HandleApplication:
     def __init__(self):
+        
         self.args = self.handleArguments()
         if not self.args.list_backends:
             self.checkArguments()
@@ -525,4 +526,7 @@ class HandleApplication:
             self.args.hdr_mode = False            
 
 if __name__ == "__main__":
+    printAndLog(
+            f"RVE Backend Version: {__version__}",
+        )
     HandleApplication()
