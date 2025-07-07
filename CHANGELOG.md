@@ -1,9 +1,10 @@
-# RVE 2.3.5
+# RVE 2.3.5 Pre-Release
 - NOTE: Pre-releases are unstable, please use the stable build if you experience issues. 
         New features will be added to this release over time, the current changelog is not final.
 ### Added
  - Denosie
  - Low storage warning when installing backends.
+ - Thanks @adriabama06 for adding model name to video output and last input folder setting. 
 ### Fixed
  - NCNN causing Win10 dump files to be created, disabled NCNN gpu select as a result.
  - Tiling not working on restoration models.

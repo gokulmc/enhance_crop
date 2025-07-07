@@ -25,7 +25,7 @@ from mainwindow import Ui_MainWindow
 from PySide6 import QtSvg  # Import the QtSvg module so svg icons can be used on windows
 from src.version import version
 from src.InputHandler import VideoLoader
-from src.ModelHandler import getModels
+from src.ModelHandler import getModels, getModelDisplayName
 
 # other imports
 from src.Util import (
@@ -374,8 +374,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.isVideoLoaded:
             if inputFile.strip().replace(" ", "") == "{MULTIPLE_FILES}":
                 inputFile = " { FILE_NAME } "
+
             upscaleModelName = self.upscaleModelComboBox.currentText()
+            decompressModelName = self.decompressModelComboBox.currentText()
+            denoiseModelName = self.denoiseModelComboBox.currentText()
             interpolateModelName = self.interpolateModelComboBox.currentText()
+            
             interpolateTimes = self.getInterpolationMultiplier(interpolateModelName)
             scale = self.getUpscaleModelScale(upscaleModelName)
             container = self.settings.settings["video_container"]
@@ -383,6 +387,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             file_name = os.path.splitext(os.path.basename(inputFile))[0]
             base_file_name = (
                 f"{file_name}"
+                + ("" if (interpolateModelName == "None" or not self.interpolateCheckBox.isChecked()) else f"_{getModelDisplayName(interpolateModelName)}")
+                + ("" if (decompressModelName == "None" or decompressModelName == "" or not self.decompressCheckBox.isChecked()) else f"_{getModelDisplayName(decompressModelName)}")
+                + ("" if (denoiseModelName == "None" or denoiseModelName == "" or not self.denoiseCheckBox.isChecked()) else f"_{getModelDisplayName(denoiseModelName)}")
+                + ("" if (upscaleModelName == "None" or upscaleModelName == "" or not self.upscaleCheckBox.isChecked()) else f"_{getModelDisplayName(upscaleModelName)}")
                 + f"_{round(interpolateTimes * self.videoFps, 0)}fps"
                 + f"_{scale * self.videoWidth}x{scale * self.videoHeight}"
             )
@@ -420,7 +428,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.upscaleContainer.setVisible(isUpscale or isDeblur or isDenoise or isDecompress)
         self.generalUpscaleContainer.setVisible(isUpscale)
         self.settings.readSettings()
-        self.setDefaultOutputFile(self.inputFileText.text(), self.settings.settings["output_folder_location"])
+        self.setDefaultOutputFile(self.inputFileText.text(), str(os.path.dirname(self.inputFileText.text())) if (self.isVideoLoaded and len(self.batchVideos) == 0 and os.path.exists(os.path.dirname(self.inputFileText.text()))) else self.settings.settings["output_folder_location"])
         self.updateVideoGUIText()
         self.startTimeSpinBox.setMaximum(self.videoLength)
         self.endTimeSpinBox.setMaximum(self.videoLength)
@@ -738,10 +746,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         inputFile, _ = QFileDialog.getOpenFileName(
             parent=self,
             caption="Select File",
-            dir=self.homeDir,
+            dir=self.settings.settings["last_input_folder_location"] if os.path.exists(self.settings.settings["last_input_folder_location"]) else self.homeDir,
             filter=fileFilter,
         )
         self.loadVideo(inputFile)
+        self.settings.writeSetting("last_input_folder_location", str(os.path.dirname(inputFile)))
     
     def openBatchFiles(self):
         inputFolder = QFileDialog.getExistingDirectory(
@@ -838,7 +847,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     # output file button
     def openOutputFolder(self):
         """
-        Opens a folder,
+        Opens home folder or the same folder as the input file only if the input file is a single file,
         sets the directory that is selected to the self.outputFolder variable
         sets the outputFileText to the output directory
 
@@ -847,7 +856,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         outputFolder = QFileDialog.getExistingDirectory(
             self,
             caption="Select Output Directory",
-            dir=self.homeDir,
+            dir=str(os.path.dirname(self.inputFileText.text())) if (self.isVideoLoaded and len(self.batchVideos) == 0 and os.path.exists(os.path.dirname(self.inputFileText.text()))) else self.homeDir,
         )
         self.outputFileText.setText(
             os.path.join(outputFolder, self.setDefaultOutputFile(self.inputFileText.text(), outputFolder))

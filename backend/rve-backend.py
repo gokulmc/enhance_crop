@@ -3,11 +3,12 @@ import os
 import argparse
 import sys
 from src.version import __version__
-
+from src.utils.Util import printAndLog
 
 
 class HandleApplication:
     def __init__(self):
+        
         self.args = self.handleArguments()
         if not self.args.list_backends:
             self.checkArguments()
@@ -132,7 +133,12 @@ class HandleApplication:
 
     def renderVideo(self):
         from src.RenderVideo import Render
-        
+        try:
+            printAndLog(f"Input File: {self.args.input}")
+        except UnicodeEncodeError:
+            printAndLog(
+                f"Input File is invalid, please change the name of the file to something without special characters."
+            )
 
         Render(
             # model settings
@@ -525,4 +531,8 @@ class HandleApplication:
             self.args.hdr_mode = False            
 
 if __name__ == "__main__":
+    printAndLog(
+            f"RVE Backend Version: {__version__}",
+        )
+    
     HandleApplication()

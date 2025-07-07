@@ -4,6 +4,7 @@ import subprocess
 import re
 import cv2
 from typing import Optional
+import sys
 
 if not __name__ == "__main__":
     from ..constants import FFMPEG_PATH
@@ -54,14 +55,18 @@ class FFMpegInfoWrapper(VideoInfo):
 
         self.ffmpeg_output_raw:str = subprocess_popen_without_terminal(command,  stderr=subprocess.PIPE, errors="replace").stderr.read()
         self.ffmpeg_output_stripped = self.ffmpeg_output_raw.lower().strip()
-        for line in self.ffmpeg_output_raw.split("\n"):
-            if "Stream #" in line and "Video" in line:
-                self.stream_line = line
-                break
-        
-        log(f"Stream line: {self.stream_line}")
-        if self.stream_line is None:
-            log("No video stream found in the input file.")
+        try:
+            for line in self.ffmpeg_output_raw.split("\n"):
+                if "Stream #" in line and "Video" in line:
+                    self.stream_line = line
+                    break
+            
+            log(f"Stream line: {self.stream_line}")
+            if self.stream_line is None:
+                log("No video stream found in the input file.")
+        except Exception:
+            print(f"ERROR: Input file seems to have no video stream!", file=sys.stderr)
+            exit(1)
             
 
     def get_duration_seconds(self) -> float:

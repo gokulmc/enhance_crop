@@ -649,3 +649,11 @@ def getModels(backend:str):
             errorAndLog("Failed to import any backends!")
             return {}
     return interpolateModels, upscaleModels, deblurModels, denoiseModels, decompressModels
+
+def getModelDisplayName(model: str):
+    try:
+        cutPosition = model.index(" (")
+        onlyName = model[:cutPosition]
+        return onlyName.lower().replace(' ', '-')
+    except:
+        return (model[0] + model[1]) if len(model) >= 2 else ""
