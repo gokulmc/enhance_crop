@@ -48,13 +48,13 @@ class FFMpegCommand:
                 command +=["-c:v","libvpx-vp9"]
                 match self._video_quality:
                     case "Very High":
-                        command +=["-cq:v","15"]
+                        command +=["-crf","15"]
                     case "High":
-                        command +=["-cq:v","18"]
+                        command +=["-crf","20"]
                     case "Medium":
-                        command +=["-cq:v","23"]
+                        command +=["-crf","30"]
                     case "Low":
-                        command +=["-cq:v","28"]
+                        command +=["-crf","40"]
             case "av1":
                 command +=["-c:v","libsvtav1"]
                 match self._video_quality:

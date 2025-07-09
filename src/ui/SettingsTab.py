@@ -2,7 +2,7 @@ import os
 
 from PySide6.QtWidgets import QMainWindow, QFileDialog
 from ..constants import PLATFORM, HOME_PATH
-from ..Util import currentDirectory, checkForWritePermissions, open_folder
+from ..Util import currentDirectory, checkForWritePermissions, open_folder, log
 from .QTcustom import RegularQTPopup
 from ..GenerateFFMpegCommand import FFMpegCommand
 
@@ -25,7 +25,7 @@ class SettingsTab:
 
         }
         self.settings = Settings()
-
+        log("Settings: " + str(self.settings.settings))
         self.connectWriteSettings()
         self.connectSettingText()
 
@@ -388,7 +388,7 @@ class Settings:
                 str(num / 10) for num in range(1, 100)
             ],
             "discord_rich_presence": ("True", "False"),
-            "video_quality": ("Low", "Medium", "High", "Very High"),
+            "video_quality": ("Low", "Medium", "High", "Very_High"),
             "output_folder_location": "ANY",
             "last_input_folder_location": "ANY",
             "uhd_mode": ("True", "False"),
@@ -415,7 +415,7 @@ class Settings:
         # check if the settings file is corrupted
         if len(self.defaultSettings) != len(self.settings):
             self.writeDefaultSettings()
-
+        
     def readSettings(self):
         """
         Reads the settings from the 'settings.txt' file and stores them in the 'settings' dictionary.
