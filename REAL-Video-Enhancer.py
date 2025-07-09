@@ -387,10 +387,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             file_name = os.path.splitext(os.path.basename(inputFile))[0]
             base_file_name = (
                 f"{file_name}"
-                + ("" if (interpolateModelName == "None" or not self.interpolateCheckBox.isChecked()) else f"_{getModelDisplayName(interpolateModelName)}")
-                + ("" if (decompressModelName == "None" or decompressModelName == "" or not self.decompressCheckBox.isChecked()) else f"_{getModelDisplayName(decompressModelName)}")
-                + ("" if (denoiseModelName == "None" or denoiseModelName == "" or not self.denoiseCheckBox.isChecked()) else f"_{getModelDisplayName(denoiseModelName)}")
-                + ("" if (upscaleModelName == "None" or upscaleModelName == "" or not self.upscaleCheckBox.isChecked()) else f"_{getModelDisplayName(upscaleModelName)}")
+                + ("" if not self.interpolateCheckBox.isChecked() else f"_{getModelDisplayName(interpolateModelName)}")
+                + ("" if not self.decompressCheckBox.isChecked() else f"_{getModelDisplayName(decompressModelName)}")
+                + ("" if  not self.denoiseCheckBox.isChecked() else f"_{getModelDisplayName(denoiseModelName)}")
+                + ("" if  not self.upscaleCheckBox.isChecked() else f"_{getModelDisplayName(upscaleModelName)}")
                 + f"_{round(interpolateTimes * self.videoFps, 0)}fps"
                 + f"_{scale * self.videoWidth}x{scale * self.videoHeight}"
             )
@@ -428,7 +428,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.upscaleContainer.setVisible(isUpscale or isDeblur or isDenoise or isDecompress)
         self.generalUpscaleContainer.setVisible(isUpscale)
         self.settings.readSettings()
-        self.setDefaultOutputFile(self.inputFileText.text(), str(os.path.dirname(self.inputFileText.text())) if (self.isVideoLoaded and len(self.batchVideos) == 0 and os.path.exists(os.path.dirname(self.inputFileText.text()))) else self.settings.settings["output_folder_location"])
+        self.setDefaultOutputFile(self.inputFileText.text(), self.settings.settings["output_folder_location"])
         self.updateVideoGUIText()
         self.startTimeSpinBox.setMaximum(self.videoLength)
         self.endTimeSpinBox.setMaximum(self.videoLength)

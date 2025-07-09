@@ -53,7 +53,7 @@ class HandleApplication:
         )
         half_prec_supp = False
         availableBackends = []
-        printMSG = ""
+        printMSG = "RVE Backend Version: " + __version__ + "\n"
 
         if checkForTensorRT():
             """
@@ -127,10 +127,12 @@ class HandleApplication:
             half_prec_supp = checkForDirectMLHalfPrecisionSupport()
 
         printMSG += f"Half precision support: {half_prec_supp}\n"
-        print("Available Backends: " + str(availableBackends))
+        printMSG += ("Available Backends: " + str(availableBackends))
+        self.printMSG = printMSG
         print(printMSG)
 
     def renderVideo(self):
+        
         from src.RenderVideo import Render
         
 
@@ -387,7 +389,6 @@ class HandleApplication:
                 "xpu",
                 "cpu",
             ]
-            
         )
         parser.add_argument(
             "--pytorch_gpu_id",

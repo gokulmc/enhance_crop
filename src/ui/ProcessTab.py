@@ -143,6 +143,9 @@ class ProcessTab:
         self.parent.interpolateModelComboBox.currentIndexChanged.connect(
             self.parent.updateVideoGUIDetails
         )
+        self.parent.decompressModelComboBox.currentIndexChanged.connect(
+            self.parent.updateVideoGUIDetails
+        )
         self.parent.interpolateCheckBox.clicked.connect(self.parent.updateVideoGUIDetails)
         self.parent.upscaleCheckBox.clicked.connect(self.parent.updateVideoGUIDetails)
         self.parent.deblurCheckBox.clicked.connect(self.parent.updateVideoGUIDetails)

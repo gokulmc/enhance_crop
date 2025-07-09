@@ -652,7 +652,7 @@ def getModels(backend:str):
 
 def getModelDisplayName(model: str):
     try:
-        cutPosition = model.index(" (")
+        cutPosition = model.index(" (") if " (" in model else len(model)
         onlyName = model[:cutPosition]
         return onlyName.lower().replace(' ', '-')
     except:
