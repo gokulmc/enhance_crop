@@ -55,8 +55,8 @@ ncnnInterpolateModels = {
     ),
 }
 pytorchInterpolateModels = {
-    "GMFSS (Slow Model, Animation)": ("GMFSS.pkl", "GMFSS.pkl", 1, "gmfss"),
-    "GMFSS Pro (Slow Model, Animation) (Helps with text warping)": (
+    "GMFSS (Slow Model, Animation/Realistic)": ("GMFSS.pkl", "GMFSS.pkl", 1, "gmfss"),
+    "GMFSS Pro (Slow Model, Animation/Realistic) (Helps with text warping)": (
         "GMFSS_PRO.pkl",
         "GMFSS_PRO.pkl",
         1,
@@ -67,6 +67,12 @@ pytorchInterpolateModels = {
         "GIMMVFI_RAFT.pth",
         1,
         "gimm",
+    ),
+    "IFRNet (Fast Model, Realistic only)": (
+        "IFRNet_Vimeo90K.pth",
+        "IFRNet_Vimeo90K.pth",
+        1,
+        "ifrnet",
     ),
     "RIFE 4.6 (Fastest Model)": ("rife4.6.pkl", "rife4.6.pkl", 1, "rife46"),
     "RIFE 4.7 (Smoothest Model)": ("rife4.7.pkl", "rife4.7.pkl", 1, "rife47"),
