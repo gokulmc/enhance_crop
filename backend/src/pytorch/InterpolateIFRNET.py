@@ -99,7 +99,6 @@ class InterpolateIFRNetTorch(BaseInterpolate):
                     (n+1) / (self.ceilInterpolateFactor), dtype=self.dtype, device=self.device
                 ).view(1, 1, 1, 1).to(non_blocking=True)
                 timesteplist.append(timestep_tens)
-            print("Timestep list: ", timesteplist)
             self.timestep = torch.cat(timesteplist, dim=0)
             
             self.flownet = IFRNet(

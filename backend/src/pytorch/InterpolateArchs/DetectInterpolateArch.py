@@ -48,7 +48,8 @@ class RIFE46(Arch):
         "module.block4.lastconv.0.bias",
         "transformer.layers.4.self_attn.merge.weight",
         "fnet.layer1.0.conv1.weight",
-        "caltime.8.bias",  # thos is because for some reason, this arch is detected when loading gmfss pro's rife component.
+        "caltime.8.bias", # thos is because for some reason, this arch is detected when loading gmfss pro's rife component.
+        "encoder.pyramid1.0.0.weight", # ifrnet 
     ]
 
     @staticmethod
@@ -82,6 +83,7 @@ class RIFE47(Arch):
         "module.block4.lastconv.0.bias",
         "transformer.layers.4.self_attn.merge.weight",
         "fnet.layer1.0.conv1.weight",
+        "encoder.pyramid1.0.0.weight"
     ]
 
     @staticmethod
@@ -113,6 +115,7 @@ class RIFE413(Arch):
         "module.block4.lastconv.0.bias",
         "transformer.layers.4.self_attn.merge.weight",
         "fnet.layer1.0.conv1.weight",
+        "encoder.pyramid1.0.0.weight"
     ]
 
     @staticmethod
@@ -133,6 +136,7 @@ class RIFE420(Arch):
         "module.block4.lastconv.0.bias",
         "transformer.layers.4.self_attn.merge.weight",
         "fnet.layer1.0.conv1.weight",
+        "encoder.pyramid1.0.0.weight"
     ]
 
     @staticmethod
@@ -153,6 +157,7 @@ class RIFE421(Arch):
         "module.block4.lastconv.0.bias",
         "transformer.layers.4.self_attn.merge.weight",
         "fnet.layer1.0.conv1.weight",
+        "encoder.pyramid1.0.0.weight"
     ]
 
     def module():
@@ -172,6 +177,7 @@ class RIFE422lite(Arch):
         "module.block4.lastconv.0.bias",
         "transformer.layers.4.self_attn.merge.weight",
         "fnet.layer1.0.conv1.weight",
+        "encoder.pyramid1.0.0.weight"
     ]
 
     @staticmethod
@@ -192,6 +198,7 @@ class RIFE425(Arch):
         "module.encode.1.bias",
         "transformer.layers.4.self_attn.merge.weight",
         "fnet.layer1.0.conv1.weight",
+        "encoder.pyramid1.0.0.weight"
     ]
 
     @staticmethod
@@ -211,6 +218,7 @@ class RIFE425_heavy(Arch):
         "module.encode.1.bias",
         "transformer.layers.4.self_attn.merge.weight",
         "fnet.layer1.0.conv1.weight",
+        "encoder.pyramid1.0.0.weight"
     ]
 
     @staticmethod
@@ -230,6 +238,7 @@ class GMFSS(Arch):
         "module.encode.1.weight",
         "module.encode.1.bias",
         "fnet.layer1.0.conv1.weight",
+        "encoder.pyramid1.0.0.weight"
     ]
 
     @staticmethod
@@ -248,6 +257,7 @@ class GIMM(Arch):
         "module.encode.1.weight",
         "module.encode.1.bias",
         "transformer.layers.4.self_attn.merge.weight",
+        "encoder.pyramid1.0.0.weight"
     ]
 
     def module() -> torch.nn.Module:
@@ -261,30 +271,6 @@ class IFRNET(Arch):
         "encoder.pyramid1.0.0.weight": "torch.Size([32, 3, 3, 3])",
     }
     excluded_keys: list = [
-        "module.encode.0.weight",
-        "module.encode.0.bias",
-        "module.encode.1.weight",
-        "module.encode.1.bias",
-        "module.encode.cnn0.bias",
-        "module.encode.cnn1.weight",
-        "module.encode.cnn1.bias",
-        "module.encode.cnn2.weight",
-        "module.encode.cnn2.bias",
-        "module.encode.cnn3.weight",
-        "module.encode.cnn3.bias",
-        "module.encode.0.weight",
-        "module.encode.0.bias",
-        "module.encode.1.weight",
-        "module.encode.1.bias",
-        "module.caltime.0.weight",
-        "module.caltime.0.bias",
-        "module.caltime.2.weight",
-        "module.caltime.2.bias",
-        "module.caltime.4.weight",
-        "module.caltime.4.bias",
-        "module.caltime.6.weight",
-        "module.caltime.6.bias",
-        "module.caltime.8.weight",
         "module.caltime.8.bias",
         "module.block4.lastconv.0.bias",
         "transformer.layers.4.self_attn.merge.weight",
@@ -349,7 +335,7 @@ class ArchDetect:
             if value:
                 return key
 
-    def getArchName(self):
+    """def getArchName(self):
         return "ifrnet"
         return self.detected_arch.__name__
 
@@ -359,13 +345,13 @@ class ArchDetect:
 
     def getArchModule(self):
         return IFRNET
-        return self.detected_arch.module()
-    """def getArchName(self):
+        return self.detected_arch.module()"""
+    def getArchName(self):
         return self.detected_arch.__name__
     def getArchBase(self):
         return self.detected_arch.base_arch
     def getArchModule(self):
-        return self.detected_arch.module()"""
+        return self.detected_arch.module()
 
 if __name__ == "__main__":
     import os
