@@ -101,9 +101,7 @@ class InterpolateIFRNetTorch(BaseInterpolate):
                 timesteplist.append(timestep_tens)
             print("Timestep list: ", timesteplist)
             self.timestep = torch.cat(timesteplist, dim=0)
-            self.timestep = torch.tensor(1/2).view(1, 1, 1, 1).to(
-                dtype=self.dtype, device=self.device, non_blocking=True
-            )
+            
             self.flownet = IFRNet(
                 scale_factor=self.scale,
             )
@@ -137,22 +135,24 @@ class InterpolateIFRNetTorch(BaseInterpolate):
         with self.torchUtils.run_stream(self.stream):  # type: ignore
             if self.frame0 is None:
                 self.frame0 = self.torchUtils.frame_to_tensor(img1, self.prepareStream, self.device, self.dtype)
+                self.frame0 = torch.cat([self.frame0 for _ in range(self.ceilInterpolateFactor-1)], dim=0)
                 return
             frame1 = self.torchUtils.frame_to_tensor(img1, self.prepareStream, self.device, self.dtype)
+            frame1 = torch.cat([frame1 for _ in range(self.ceilInterpolateFactor-1)], dim=0)
             
             if transition:
                 for n in range(self.ceilInterpolateFactor - 1):
                     yield img1
-            else:
-                frames = self.flownet(
-                    self.frame0,
-                    frame1,
-                    self.timestep,
-                )
-                for frame in frames:
-                    img = self.torchUtils.tensor_to_frame(
-                        frame[:, :self.height, :self.width]
-                    )
+            frames = self.flownet( # idk why but i gotta inference the frames every time, or else transitions will get cooked on higher interps
+                self.frame0,
+                frame1,
+                self.timestep,
+            )
+            for frame in frames: 
+                img = self.torchUtils.tensor_to_frame(
+                    frame[:, :self.height, :self.width]
+                ) 
+                if not transition:
                     yield img
 
             self.torchUtils.copy_tensor(self.frame0, frame1, self.prepareStream)

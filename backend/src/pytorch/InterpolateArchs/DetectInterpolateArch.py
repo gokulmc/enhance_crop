@@ -349,7 +349,7 @@ class ArchDetect:
             if value:
                 return key
 
-    """def getArchName(self):
+    def getArchName(self):
         return "ifrnet"
         return self.detected_arch.__name__
 
@@ -359,13 +359,13 @@ class ArchDetect:
 
     def getArchModule(self):
         return IFRNET
-        return self.detected_arch.module()"""
-    def getArchName(self):
+        return self.detected_arch.module()
+    """def getArchName(self):
         return self.detected_arch.__name__
     def getArchBase(self):
         return self.detected_arch.base_arch
     def getArchModule(self):
-        return self.detected_arch.module()
+        return self.detected_arch.module()"""
 
 if __name__ == "__main__":
     import os
