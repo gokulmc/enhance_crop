@@ -255,8 +255,49 @@ class GIMM(Arch):
 
         return GIMMVFI_R
 
+class IFRNET(Arch):
+    base_arch: str = "ifrnet"
+    unique_shapes: dict = {
+        "encoder.pyramid1.0.0.weight": "torch.Size([32, 3, 3, 3])",
+    }
+    excluded_keys: list = [
+        "module.encode.0.weight",
+        "module.encode.0.bias",
+        "module.encode.1.weight",
+        "module.encode.1.bias",
+        "module.encode.cnn0.bias",
+        "module.encode.cnn1.weight",
+        "module.encode.cnn1.bias",
+        "module.encode.cnn2.weight",
+        "module.encode.cnn2.bias",
+        "module.encode.cnn3.weight",
+        "module.encode.cnn3.bias",
+        "module.encode.0.weight",
+        "module.encode.0.bias",
+        "module.encode.1.weight",
+        "module.encode.1.bias",
+        "module.caltime.0.weight",
+        "module.caltime.0.bias",
+        "module.caltime.2.weight",
+        "module.caltime.2.bias",
+        "module.caltime.4.weight",
+        "module.caltime.4.bias",
+        "module.caltime.6.weight",
+        "module.caltime.6.bias",
+        "module.caltime.8.weight",
+        "module.caltime.8.bias",
+        "module.block4.lastconv.0.bias",
+        "transformer.layers.4.self_attn.merge.weight",
+        "fnet.layer1.0.conv1.weight",
+        "caltime.8.bias",
+    ]
+    def module() -> torch.nn.Module:
+        from .IFRNET.IFRNet import IFRNet
 
-archs = [RIFE46, RIFE47, RIFE413, RIFE420, RIFE421, RIFE422lite, RIFE425, GMFSS, GIMM]
+        return IFRNet
+
+
+archs = [RIFE46, RIFE47, RIFE413, RIFE420, RIFE421, RIFE422lite, RIFE425, GMFSS, GIMM, IFRNET]
 
 
 class ArchDetect:
@@ -308,15 +349,23 @@ class ArchDetect:
             if value:
                 return key
 
-    def getArchName(self):
+    """def getArchName(self):
+        return "ifrnet"
         return self.detected_arch.__name__
 
     def getArchBase(self):
+        return "ifrnet"
         return self.detected_arch.base_arch
 
     def getArchModule(self):
+        return IFRNET
+        return self.detected_arch.module()"""
+    def getArchName(self):
+        return self.detected_arch.__name__
+    def getArchBase(self):
+        return self.detected_arch.base_arch
+    def getArchModule(self):
         return self.detected_arch.module()
-
 
 if __name__ == "__main__":
     import os

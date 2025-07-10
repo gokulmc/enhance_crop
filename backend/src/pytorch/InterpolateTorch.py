@@ -10,6 +10,7 @@ from .InterpolateArchs.DetectInterpolateArch import ArchDetect
 from .InterpolateGIMM import InterpolateGIMMTorch
 from .InterpolateGMFSS import InterpolateGMFSSTorch
 from .InterpolateRIFE import InterpolateRifeTorch,  InterpolateRIFEDRBA
+from .InterpolateIFRNET import InterpolateIFRNetTorch
 
 
 class InterpolateFactory:
@@ -26,3 +27,5 @@ class InterpolateFactory:
                 return InterpolateGMFSSTorch
             case "gimm":
                 return InterpolateGIMMTorch
+            case "ifrnet":
+                return InterpolateIFRNetTorch  # IFRNet is a RIFE based architecture
