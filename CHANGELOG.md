@@ -7,6 +7,7 @@
  - Thanks @adriabama06 for adding model name to video output and last input folder setting. 
  - IFRNet Pytorch
 ### Fixed
+ - MacOS Arm now uses ARM version of FFMpeg
  - NCNN causing Win10 dump files to be created, disabled NCNN gpu select as a result.
  - Tiling not working on restoration models.
  - Windows setup not installing for all users.

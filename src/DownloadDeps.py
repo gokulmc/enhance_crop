@@ -207,7 +207,7 @@ class FFMpeg(Dependency):
             case "win32":
                 link += "ffmpeg.exe"
             case "darwin":
-                link += "ffmpeg-macos-bin"
+                link += "ffmpeg-macos-bin" if CPU_ARCH == "x86_64" else "ffmpeg-macos-arm"
         return link
 
     def download(self):
