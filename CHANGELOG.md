@@ -2,7 +2,7 @@
 - NOTE: Pre-releases are unstable, please use the stable build if you experience issues. 
         New features will be added to this release over time, the current changelog is not final.
 ### Added
- - Denosie
+ - Denoise
  - Low storage warning when installing backends.
  - Thanks @adriabama06 for adding model name to video output and last input folder setting. 
  - IFRNet Pytorch
