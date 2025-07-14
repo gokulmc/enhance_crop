@@ -4,7 +4,7 @@
 ### Added
  - Denoise
  - Low storage warning when installing backends.
- - Thanks @adriabama06 for adding model name to video output and last input folder setting. 
+ - Thanks @adriabama06 for adding model name to video output, last input folder setting and fixing slo-mo mode data. 
  - IFRNet Pytorch
 ### Fixed
  - MacOS Arm now uses ARM version of FFMpeg
