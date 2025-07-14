@@ -217,7 +217,7 @@ class FFmpegWrite(Buffer):
                 "-loglevel",
                 "error",
                 "-framerate",
-                f"{self.fps*self.ceilInterpolateFactor}",
+                f"{self.fps*self.ceilInterpolateFactor if not self.slowmo_mode else self.fps}",
                 "-f",
                 "rawvideo",
                 "-pix_fmt",
@@ -229,7 +229,7 @@ class FFmpegWrite(Buffer):
                 "-i",
                 "-",
                 "-to",
-                str(self.end_time-self.start_time),
+                str((self.end_time-self.start_time) if not self.slowmo_mode else ((self.end_time-self.start_time)*self.ceilInterpolateFactor)),
                 "-r",
                 f"{self.outputFPS}",
                 "-f",
@@ -285,7 +285,7 @@ class FFmpegWrite(Buffer):
 
             command += [
                 "-framerate",
-                f"{self.fps*self.interpolateFactor}",
+                f"{self.fps*self.ceilInterpolateFactor if not self.slowmo_mode else self.fps}",
                 "-f",
                 "rawvideo",
                 "-pix_fmt",
@@ -383,7 +383,7 @@ class FFmpegWrite(Buffer):
                 ]
             command +=[
                 "-to",
-                str(self.end_time-self.start_time),
+                str((self.end_time-self.start_time) if not self.slowmo_mode else ((self.end_time-self.start_time)*self.ceilInterpolateFactor)),
                 f"{self.outputFile}",
             ]
 
