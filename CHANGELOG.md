@@ -2,7 +2,6 @@
 - NOTE: Pre-releases are unstable, please use the stable build if you experience issues. 
         New features will be added to this release over time, the current changelog is not final.
 ### Added
- - Denoise
  - Low storage warning when installing backends.
  - Thanks @adriabama06 for adding model name to video output, last input folder setting and fixing slo-mo mode data. 
  - IFRNet Pytorch
