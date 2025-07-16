@@ -26,6 +26,7 @@ import sys
 import os
 from ..utils.Util import suppress_stdout_stderr, warnAndLog, log
 from ..version import __version__
+import time
 with suppress_stdout_stderr():
     import torch
     import torch_tensorrt
@@ -235,7 +236,7 @@ class TorchTensorRTHandler:
         dynamic_shapes: dict | None = None,
         
     ):
-        
+        start_time = time.time()
         trt_engine_name += self.trt_path_appendix
         trt_engine_path = os.path.join(self.model_parent_path, trt_engine_name)
         torch.cuda.empty_cache()
@@ -272,7 +273,10 @@ class TorchTensorRTHandler:
                 self.export_torchscript_model(
                     model, example_inputs, device, dtype, trt_engine_path, dynamic_shapes=dynamic_shapes,
                 )
-        
+        print(
+            f"TensorRT engine built in {time.time() - start_time:.2f} seconds.",
+            file=sys.stderr,
+        )
         torch.cuda.empty_cache()
 
     def load_engine(self, trt_engine_name: str) -> torch.jit.ScriptModule:
