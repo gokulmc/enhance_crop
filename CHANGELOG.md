@@ -5,6 +5,9 @@
  - Low storage warning when installing backends.
  - Thanks @adriabama06 for adding model name to video output, last input folder setting and fixing slo-mo mode data. 
  - IFRNet Pytorch
+### Changed
+ - Bumped TensorRT to 10.12.
+ - Limit release notes to 5 releases.
 ### Fixed
  - MacOS Arm now uses ARM version of FFMpeg
  - NCNN causing Win10 dump files to be created, disabled NCNN gpu select as a result.

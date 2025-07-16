@@ -281,7 +281,11 @@ class UpscalePytorch:
     def loadModel(
         self, modelPath: str, dtype: torch.dtype = torch.float32, device: str = "cuda"
     ) -> torch.nn.Module:
-        from .spandrel import ModelLoader, ImageModelDescriptor
+        try:
+            from .spandrel import ModelLoader, ImageModelDescriptor
+        except ImportError:
+            # spandrel will import like this if its a submodule
+            from .spandrel.libs.spandrel.spandrel import ModelLoader, ImageModelDescriptor
 
         model = ModelLoader().load_from_file(modelPath)
         assert isinstance(model, ImageModelDescriptor)
