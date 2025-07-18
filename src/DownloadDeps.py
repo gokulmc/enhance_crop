@@ -142,7 +142,7 @@ class Python(Dependency):
     is_update_available: bool
 
     def get_download_link(self) -> str:
-        link = f"https://github.com/indygreg/python-build-standalone/releases/download/20250317/cpython-{PYTHON_VERSION}+20250317-"
+        link = f"https://github.com/TNTwise/REAL-Video-Enhancer-models/releases/download/models/cpython-{PYTHON_VERSION}+20250317-"
        
         match PLATFORM:
             case "linux":
