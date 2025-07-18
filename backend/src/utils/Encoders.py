@@ -42,6 +42,12 @@ class libmp3lame(AudioEncoder):
     postInputSettings = "-c:a libmp3lame"
 
 
+class opus(AudioEncoder):
+    preset_tag = "opus"
+    preInputsettings = None
+    postInputSettings = "-c:a libopus"
+
+
 # subtitle encoder options
 class copySubtitles(SubtitleEncoder):
     preset_tag = "copy_subtitle"
@@ -166,7 +172,7 @@ class EncoderSettings:
             case "subtitle":
                 encoder_type = SubtitleEncoder
             case _:
-                raise ValueError("Not a vaid encoder type")
+                raise ValueError("Not a valid encoder type")
 
         for encoder in encoder_type.__subclasses__():
             if encoder.preset_tag == self.encoder_preset:
