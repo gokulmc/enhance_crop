@@ -10,7 +10,7 @@
  - Limit release notes to 5 releases.
 ### Fixed
  - MacOS Arm now uses ARM version of FFMpeg
- - NCNN causing Win10 dump files to be created, disabled NCNN gpu select as a result.
+ - NCNN causing Win10 dump files to be created.
  - Tiling not working on restoration models.
  - Windows setup not installing for all users.
  - Some settings not saving after restart.

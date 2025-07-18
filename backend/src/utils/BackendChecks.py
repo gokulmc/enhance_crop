@@ -1,3 +1,4 @@
+
 try:
     from .Util import log, suppress_stdout_stderr, printAndLog
 except Exception as e:
@@ -222,5 +223,32 @@ def get_gpus_torch():
 
 
 def get_gpus_ncnn():
-    devices = ["Default"]
-    return devices
+    from ..constants import PLATFORM
+    if PLATFORM == "win32":
+        # this is to prevent ncnn from creating a crashdump file on windows, despite working.
+        # Dont know the side effects of this, but if there are thats for a later me to figure out.
+        import ctypes
+        SEM_NOGPFAULTERRORBOX = 0x0002
+        SEM_FAILCRITICALERRORS = 0x0001
+
+        ctypes.windll.kernel32.SetErrorMode(
+            SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX
+        )
+    devices = []
+    try:
+        with suppress_stdout_stderr():
+            import ncnn
+
+            gpu_count = ncnn.get_gpu_count()
+            if gpu_count < 1:
+                return ["CPU"]
+            for i in range(gpu_count):
+                device = ncnn.get_gpu_device(i)
+                gpu_info = device.info()
+                devices.append(gpu_info.device_name())
+        return devices
+    except Exception:
+        return ["CPU"]
+    except Exception as e:
+        log(str(e))
+        return "Unable to get NCNN GPU"
