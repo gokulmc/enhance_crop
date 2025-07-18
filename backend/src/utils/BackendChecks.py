@@ -227,13 +227,16 @@ def get_gpus_ncnn():
     if PLATFORM == "win32":
         # this is to prevent ncnn from creating a crashdump file on windows, despite working.
         # Dont know the side effects of this, but if there are thats for a later me to figure out.
-        import ctypes
-        SEM_NOGPFAULTERRORBOX = 0x0002
-        SEM_FAILCRITICALERRORS = 0x0001
+        try:
+            import ctypes
+            SEM_NOGPFAULTERRORBOX = 0x0002
+            SEM_FAILCRITICALERRORS = 0x0001
 
-        ctypes.windll.kernel32.SetErrorMode(
-            SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX
-        )
+            ctypes.windll.kernel32.SetErrorMode(
+                SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX
+            )
+        except Exception as e:
+            log(str(e))
     devices = []
     try:
         with suppress_stdout_stderr():
