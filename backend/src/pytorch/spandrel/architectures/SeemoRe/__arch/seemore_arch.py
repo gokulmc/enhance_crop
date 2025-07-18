@@ -76,6 +76,7 @@ class SeemoRe(nn.Module):
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        x = x.clamp(0.0, 1.0)
         self.mean = self.mean.type_as(x)
         x = (x - self.mean) * self.img_range
 
@@ -94,7 +95,7 @@ class SeemoRe(nn.Module):
         x = self.upsampler(x)
 
         x = x / self.img_range + self.mean
-        return x
+        return x.clamp(0.0, 1.0).float()
 
 
 #############################

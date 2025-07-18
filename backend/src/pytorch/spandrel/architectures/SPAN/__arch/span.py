@@ -150,7 +150,8 @@ class Conv3XC(nn.Module):
         if not self.training:
             self.eval_conv.weight.requires_grad = False
             self.eval_conv.bias.requires_grad = False  # type: ignore
-            
+            self.update_params()
+
     def update_params(self):
         w1 = self.conv[0].weight.data.clone().detach()
         b1 = self.conv[0].bias.data.clone().detach()
@@ -192,6 +193,7 @@ class Conv3XC(nn.Module):
     def forward(self, x):
         if self.weight_concat is None:
             self.update_params()
+
         out = self.eval_conv(x)
 
         if self.has_relu:
@@ -254,9 +256,13 @@ class SPAN(nn.Module):
         self.in_channels = num_in_ch
         self.out_channels = num_out_ch
         self.img_range = img_range
-        self.mean_half = torch.Tensor(rgb_mean).view(1, 3, 1, 1).cuda().half()
-        self.mean_float = torch.Tensor(rgb_mean).view(1, 3, 1, 1).cuda().float()
-
+        #device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
+        #self.mean_half = torch.Tensor(rgb_mean).view(1, 3, 1, 1).to(device=device).half()
+        #self.mean_float = torch.Tensor(rgb_mean).view(1, 3, 1, 1).to(device=device).float()
+        mean_tensor = torch.tensor(rgb_mean, dtype=torch.float32).view(1, 3, 1, 1)
+        #self.register_buffer('mean', mean_tensor)
+        self.mean_tensor = mean_tensor
+        
         self.no_norm: torch.Tensor | None
         if not norm:
             self.register_buffer("no_norm", torch.zeros(1))
@@ -285,15 +291,9 @@ class SPAN(nn.Module):
         return self.no_norm is None
 
     def forward(self, x):
-        self.device = x.device
-        self.dtype = x.dtype
-        if self.dtype == torch.float16:
-            self.mean = self.mean_half
-        else:
-            self.mean = self.mean_float
+        x = x.clamp(0., 1.)
         if self.is_norm:
-            self.mean = self.mean.type_as(x)
-            x = (x - self.mean) * self.img_range
+            x = (x - self.mean_tensor.type_as(x)) * self.img_range
 
         out_feature = self.conv_1(x)
 

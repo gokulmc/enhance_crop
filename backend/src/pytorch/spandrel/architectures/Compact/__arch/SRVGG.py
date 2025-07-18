@@ -72,6 +72,7 @@ class SRVGGNetCompact(nn.Module):
         self.upsampler = nn.PixelShuffle(upscale)
 
     def forward(self, x):
+        x = x.clamp(0.,1.)
         out = x
         for i in range(0, len(self.body)):
             out = self.body[i](out)

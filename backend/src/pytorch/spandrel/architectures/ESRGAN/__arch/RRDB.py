@@ -134,6 +134,7 @@ class RRDBNet(nn.Module):
         )
 
     def forward(self, x):
+        x = x.clamp(0.0, 1.0)
         if self.shuffle_factor:
             _, _, h, w = x.size()
             x = pad_to_multiple(x, self.shuffle_factor, mode="reflect")
