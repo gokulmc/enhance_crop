@@ -64,7 +64,7 @@
 | VRAM | 4 GB - NCNN | 8 GB - TensorRT (Nvidia, why keep making 8gb cards?)
 | RAM | 16 GB | 32 GB
 | Storage | 1 GB free - NCNN | 16 GB free - TensorRT
-| Operating System | Windows 10/11 64bit / MacOS 13+ | Any modern Linux distro (Ubuntu 22.04+)
+| Operating System | Windows 10/11 64bit / MacOS 14+ | Any modern Linux distro (Ubuntu 22.04+)
 
 # Models:
 ### Interpolate Models:
