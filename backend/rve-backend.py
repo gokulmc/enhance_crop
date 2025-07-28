@@ -38,7 +38,7 @@ class HandleApplication:
             return False
 
     def listBackends(self):
-        from backend.src.utils.BackendDetect import (
+        from src.utils.BackendDetect import (
             BackendDetect
         )
         half_prec_supp = False

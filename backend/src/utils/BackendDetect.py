@@ -1,8 +1,5 @@
 
-try:
-    from .Util import log, suppress_stdout_stderr, printAndLog
-except Exception as e:
-    pass
+from .Util import log, suppress_stdout_stderr, printAndLog
 
 class BackendDetect:
     def __init__(self):
