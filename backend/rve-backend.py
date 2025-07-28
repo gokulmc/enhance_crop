@@ -38,94 +38,50 @@ class HandleApplication:
             return False
 
     def listBackends(self):
-        from src.utils.BackendChecks import (
-            checkForPytorchCUDA,
-            checkForPytorchROCM,
-            checkForPytorchXPU,
-            checkForPytorchMPS,
-            checkForNCNN,
-            checkForTensorRT,
-            check_bfloat16_support,
-            checkForDirectML,
-            checkForDirectMLHalfPrecisionSupport,
-            get_gpus_ncnn,
-            get_gpus_torch,
+        from backend.src.utils.BackendDetect import (
+            BackendDetect
         )
         half_prec_supp = False
         availableBackends = []
         printMSG = "RVE Backend Version: " + __version__ + "\n"
+        backendDetect = BackendDetect()
 
-        if checkForTensorRT():
+        tensorrt_ver = backendDetect.get_tensorrt()
+        pytorch_device, pytorch_version = backendDetect.pytorch_device, backendDetect.pytorch_version
+        ncnn_ver = backendDetect.get_ncnn()
+
+        if tensorrt_ver:
             """
             checks for tensorrt availability, and the current gpu works with it (if half precision is supported)
             Trt 10 only supports RTX 20 series and up.
             Half precision is only availaible on RTX 20 series and up
             """
-            import torch
 
-            half_prec_supp = check_bfloat16_support()
+            half_prec_supp = backendDetect.get_half_precision()
             if half_prec_supp:
-                import tensorrt
-
                 availableBackends.append("tensorrt")
-                printMSG += f"TensorRT Version: {tensorrt.__version__}\n"
+                printMSG += f"TensorRT Version: {tensorrt_ver}\n"
             else:
                 printMSG += "ERROR: Cannot use tensorrt backend, as it is not supported on your current GPU"
 
-        if checkForPytorchCUDA():
-            import torch
+        if pytorch_device:
 
-            availableBackends.append("pytorch (cuda)")
-            printMSG += f"PyTorch Version: {torch.__version__}\n"
-            half_prec_supp = check_bfloat16_support()
-            pyTorchGpus = get_gpus_torch()
-            for i, gpu in enumerate(pyTorchGpus):
-                printMSG += f"PyTorch GPU {i}: {gpu}\n"
-        if checkForPytorchROCM():
-            availableBackends.append("pytorch (rocm)")
-            import torch
-
-            printMSG += f"PyTorch Version: {torch.__version__}\n"
-            half_prec_supp = check_bfloat16_support()
-            pyTorchGpus = get_gpus_torch()
+            availableBackends.append(f"pytorch ({pytorch_device})")
+            printMSG += f"PyTorch Version: {pytorch_version}\n"
+            half_prec_supp = backendDetect.get_half_precision()
+            pyTorchGpus = backendDetect.get_gpus_torch()
             for i, gpu in enumerate(pyTorchGpus):
                 printMSG += f"PyTorch GPU {i}: {gpu}\n"
 
-        if checkForPytorchXPU():
-            availableBackends.append("pytorch (xpu)")
-            import torch
-
-            printMSG += f"PyTorch Version: {torch.__version__}\n"
-            half_prec_supp = check_bfloat16_support()
-            pyTorchGpus = get_gpus_torch()
-            for i, gpu in enumerate(pyTorchGpus):
-                printMSG += f"PyTorch GPU {i}: {gpu}\n"
-
-        if checkForPytorchMPS():
-            availableBackends.append("pytorch (mps)")
-            import torch
-
-            printMSG += f"PyTorch Version: {torch.__version__}\n"
-            half_prec_supp = check_bfloat16_support()
-            pyTorchGpus = get_gpus_torch()
-            for i, gpu in enumerate(pyTorchGpus):
-                printMSG += f"PyTorch GPU {i}: {gpu}\n"
-
-        if checkForNCNN():
+        if ncnn_ver:
             availableBackends.append("ncnn")
-            ncnnGpus = get_gpus_ncnn()
+            ncnnGpus = backendDetect.get_gpus_ncnn
             printMSG += f"NCNN Version: 20220729\n"
             from rife_ncnn_vulkan_python import Rife
 
             for i, gpu in enumerate(ncnnGpus):
                 printMSG += f"NCNN GPU {i}: {gpu}\n"
-        if checkForDirectML():
-            availableBackends.append("directml")
-            import onnxruntime as ort
-
-            printMSG += f"ONNXruntime Version: {ort.__version__}\n"
-            half_prec_supp = checkForDirectMLHalfPrecisionSupport()
-
+       
         printMSG += f"Half precision support: {half_prec_supp}\n"
         printMSG += ("Available Backends: " + str(availableBackends))
         self.printMSG = printMSG

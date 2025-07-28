@@ -1,10 +1,10 @@
 import torch
 import torch.nn.functional as F
 import sys
-from ..utils.BackendChecks import (
-    check_bfloat16_support,
-    get_gpus_torch,
+from ..utils.BackendDetect import (
+    BackendDetect
 )
+backendDetect = BackendDetect()
 from ..constants import HAS_PYTORCH_CUDA
 from ..utils.Util import (
     warnAndLog,
@@ -138,14 +138,14 @@ class TorchUtils:
         else:
             torchdevice = torch.device(device)
     
-        device = get_gpus_torch()[gpu_id]
+        device = backendDetect.get_gpus_torch()[gpu_id]
         print("Using Device: " + str(device), file=sys.stderr)
         return torchdevice
 
     @staticmethod
     def handle_precision(precision) -> torch.dtype:
         if precision == "auto":
-            return torch.float16 if check_bfloat16_support() else torch.float32
+            return torch.float16 if backendDetect.get_half_precision() else torch.float32
         if precision == "float32":
             return torch.float32
         if precision == "float16":
