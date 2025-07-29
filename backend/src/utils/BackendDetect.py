@@ -15,9 +15,10 @@ class BackendDetect:
             self.pytorch_device = self.__get_pytorch_device()
             self.pytorch_version = self.__torch.__version__
             try:
-                import tensorrt
-                import torch_tensorrt
-                self.tenosrrt = tensorrt
+                with suppress_stdout_stderr():
+                    import tensorrt
+                    import torch_tensorrt
+                self.__tensorrt = tensorrt
             except Exception as e:
                 log(str(e))
         except Exception as e:

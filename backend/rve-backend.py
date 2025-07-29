@@ -75,7 +75,7 @@ class HandleApplication:
 
         if ncnn_ver:
             availableBackends.append("ncnn")
-            ncnnGpus = backendDetect.get_gpus_ncnn
+            ncnnGpus = backendDetect.get_gpus_ncnn()
             printMSG += f"NCNN Version: 20220729\n"
             from rife_ncnn_vulkan_python import Rife
 
