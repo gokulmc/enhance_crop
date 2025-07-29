@@ -44,6 +44,7 @@ class BackendDetect:
         if "rocm" in self.__torch.__version__: return "rocm"
         if self.__torch.xpu.is_available(): return "xpu"
         if self.__torch.backends.mps.is_available(): return "mps"
+        return "CPU"
 
     def get_tensorrt(self):
         if self.__tensorrt: return self.__tensorrt.__version__
@@ -70,6 +71,7 @@ class BackendDetect:
         devices = []
         
         if self.__torch:
+            if self.pytorch_device == "CPU": return self.pytorch_device
             torch_cmd_dict = {
             "mps": self.__torch.mps,
             "cuda": self.__torch.cuda,
