@@ -128,7 +128,7 @@ jobs:
             cd dist
             tar -a -c -f REAL-Video-Enhancer-${{ env.APP_VERSION }}-Windows.zip REAL-Video-Enhancer
             cd ..
-            cp dist/REAL-Video-Enhancer-${{ env.APP_VERSION }}-Windows.zip REAL-Video-Enhancer-${{ env.APP_VERSION }}-Windows-portable.zip
+            cp dist/REAL-Video-Enhancer-${{ env.APP_VERSION }}-Windows.zip REAL-Video-Enhancer-${{ env.APP_VERSION }}-Windows-portable_x86_64.zip
 
       - name: create windows installer
         run: |
@@ -138,13 +138,13 @@ jobs:
       - name: Save Archive as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: REAL-Video-Enhancer-${{ env.APP_VERSION }}-Windows-portable.zip
-          path: REAL-Video-Enhancer-${{ env.APP_VERSION }}-Windows-portable.zip
+          name: REAL-Video-Enhancer-${{ env.APP_VERSION }}-Windows-portable_x86_64.zip
+          path: REAL-Video-Enhancer-${{ env.APP_VERSION }}-Windows-portable_x86_64.zip
           
       - name: Save Archive as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: REAL-Video-Enhancer-${{ env.APP_VERSION }}-Windows-Setup.exe
+          name: REAL-Video-Enhancer-${{ env.APP_VERSION }}-Windows-Setup_x86_64.exe
           path: REAL-Video-Enhancer-${{ env.APP_VERSION }}-Windows-Setup.exe
 
   build-MacOS:
