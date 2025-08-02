@@ -263,8 +263,8 @@ jobs:
           prerelease: true
           
           files: |
-              artifacts/REAL-Video-Enhancer-${{ env.APP_VERSION }}-Windows-portable.zip/REAL-Video-Enhancer-${{ env.APP_VERSION }}-Windows-portable.zip
-              artifacts/REAL-Video-Enhancer-${{ env.APP_VERSION }}-Windows-Setup.exe/REAL-Video-Enhancer-${{ env.APP_VERSION }}-Windows-Setup.exe
+              artifacts/REAL-Video-Enhancer-${{ env.APP_VERSION }}-Windows-portable_x86_64.zip/REAL-Video-Enhancer-${{ env.APP_VERSION }}-Windows-portable_x86_64.zip
+              artifacts/REAL-Video-Enhancer-${{ env.APP_VERSION }}-Windows-Setup_x86_6.exe/REAL-Video-Enhancer-${{ env.APP_VERSION }}-Windows-Setup_x86_64.exe
               artifacts/REAL-Video-Enhancer-${{ env.APP_VERSION }}-Linux-portable_x86_64.zip/REAL-Video-Enhancer-${{ env.APP_VERSION }}-Linux-portable_x86_64.zip
               artifacts/REAL-Video-Enhancer-${{ env.APP_VERSION }}-Linux-portable_arm64.zip/REAL-Video-Enhancer-${{ env.APP_VERSION }}-Linux-portable_arm64.zip
               artifacts/REAL-Video-Enhancer-${{ env.APP_VERSION }}-MacOS_x86_64.zip/REAL-Video-Enhancer-${{ env.APP_VERSION }}-MacOS_x86_64.zip
