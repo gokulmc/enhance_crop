@@ -35,12 +35,12 @@ with suppress_stdout_stderr():
     from torch.export.exported_program import ExportedProgram
 
 def torchscript_to_dynamo(
-            model: torch.nn.Module, example_inputs: list[torch.Tensor], dynamic_shapes=None
+            model: torch.nn.Module, example_inputs: list[torch.Tensor]
         ) -> ExportedProgram:
             """Converts a TorchScript module to a Dynamo program."""
             module = torch.jit.trace(model, example_inputs)
             exported_program = TS2EPConverter(
-                module, sample_args=tuple(example_inputs), sample_kwargs=None, dynamic_shapes=dynamic_shapes
+                module, sample_args=tuple(example_inputs), sample_kwargs=None
             ).convert()
             del module
             torch.cuda.empty_cache()
@@ -150,7 +150,7 @@ class TorchTensorRTHandler:
         if self.dynamo_export_format == "nn2exportedprogram":
             exported_program = nnmodule_to_dynamo(model, example_inputs, dynamic_shapes=dynamic_shapes)
         elif self.dynamo_export_format == "torchscript2exportedprogram":
-            exported_program = torchscript_to_dynamo(model, example_inputs, dynamic_shapes=dynamic_shapes)
+            exported_program = torchscript_to_dynamo(model, example_inputs)
         elif self.dynamo_export_format == "fallback":
             try:
                 exported_program = nnmodule_to_dynamo(model, example_inputs, dynamic_shapes=dynamic_shapes)
@@ -159,7 +159,7 @@ class TorchTensorRTHandler:
                     "Failed to export using nn2exportedprogram. Falling back to torchscript2exportedprogram...",
                     file=sys.stderr,
                 )
-                exported_program = torchscript_to_dynamo(model, example_inputs, dynamic_shapes=dynamic_shapes)
+                exported_program = torchscript_to_dynamo(model, example_inputs)
         else:
             raise ValueError(f"Unsupported export format: {self.dynamo_export_format}")
 

@@ -118,12 +118,12 @@ class UpscalePytorch:
         self._load()
 
     @torch.inference_mode()
-    def set_self_model(self, backend="pytorch"):
+    def set_self_model(self, backend="pytorch", trt_engine_name=None):
         torch.cuda.empty_cache()
         if backend == "tensorrt":
             from .TensorRTHandler import TorchTensorRTHandler
             trtHandler = TorchTensorRTHandler(model_parent_path=os.path.dirname(self.modelPath),)
-            self.model = trtHandler.load_engine(self.trt_engine_name)
+            self.model = trtHandler.load_engine(trt_engine_name=trt_engine_name)
         else:
             self.model = self.loadModel(
                 modelPath=self.modelPath, device=self.device, dtype=self.dtype
@@ -186,28 +186,26 @@ class UpscalePytorch:
 
                 trtHandler = TorchTensorRTHandler(
                     model_parent_path=os.path.dirname(self.modelPath),
-                    export_format="fallback", # torchscript due to wonky resolution issues with dynamo
-                    dynamo_export_format="fallback",
+                    export_format="dynamo", # torchscript due to wonky resolution issues with dynamo --- 08/01/2025 fixed?
+                    dynamo_export_format="nn2exportedprogram",
                     trt_optimization_level=self.trt_optimization_level,
 
                 )
-                if self.trt_static_shape:
-                    dimensions = f"{self.pad_w}x{self.pad_h}"
-                else:
-                    for i in range(2):
-                        self.trt_min_shape[i] = math.ceil(self.trt_min_shape[i] / modulo) * modulo
-                        self.trt_opt_shape[i] = math.ceil(self.trt_opt_shape[i] / modulo) * modulo
-                        self.trt_max_shape[i] = math.ceil(self.trt_max_shape[i] / modulo) * modulo
+                static_dimensions = f"{self.pad_w}x{self.pad_h}"
+                
+                for i in range(2):
+                    self.trt_min_shape[i] = math.ceil(self.trt_min_shape[i] / modulo) * modulo
+                    self.trt_opt_shape[i] = math.ceil(self.trt_opt_shape[i] / modulo) * modulo
+                    self.trt_max_shape[i] = math.ceil(self.trt_max_shape[i] / modulo) * modulo
 
-                    dimensions = (
-                        f"min-{self.trt_min_shape[0]}x{self.trt_min_shape[1]}"
-                        f"_opt-{self.trt_opt_shape[0]}x{self.trt_opt_shape[1]}"
-                        f"_max-{self.trt_max_shape[0]}x{self.trt_max_shape[1]}"
-                    )
+                dynamic_dimensions = (
+                    f"min-{self.trt_min_shape[0]}x{self.trt_min_shape[1]}"
+                    f"_opt-{self.trt_opt_shape[0]}x{self.trt_opt_shape[1]}"
+                    f"_max-{self.trt_max_shape[0]}x{self.trt_max_shape[1]}"
+                )
                 self.trt_engine_name = os.path.join(
                     (
                         f"{os.path.basename(self.modelPath)}"
-                        + f"_{dimensions}"
                         + f"_{'fp16' if self.dtype == torch.float16 else 'fp32'}"
                         + f"_{torch.cuda.get_device_name(self.device)}"
                         + f"_trt-{trtHandler.tensorrt_version}"
@@ -220,6 +218,8 @@ class UpscalePytorch:
                         )
                     ),
                 )
+                self.trt_engine_static_name = self.trt_engine_name + f"_{static_dimensions}.engine"
+                self.trt_engine_dynamic_name = self.trt_engine_name + f"_{dynamic_dimensions}.engine"
 
                 if not trtHandler.check_engine_exists(self.trt_engine_name):
                     inputs = (torch.zeros([1, 3, self.pad_h, self.pad_w], dtype=self.dtype, device=self.device),)
@@ -247,19 +247,37 @@ class UpscalePytorch:
                     del model
                     torch.cuda.empty_cache()
 
+                    try:
+                        trtHandler.build_engine(
+                            self.model,
+                            self.dtype,
+                            self.device,
+                            example_inputs=inputs,
+                            trt_engine_name=self.trt_engine_static_name if self.trt_static_shape else self.trt_engine_dynamic_name,
+                            trt_multi_precision_engine=False,
+                            dynamic_shapes=dynamic_shapes,
+                        )
+                        self.set_self_model(backend="tensorrt", trt_engine_name=self.trt_engine_dynamic_name)
 
-                    trtHandler.build_engine(
-                        self.model,
-                        self.dtype,
-                        self.device,
-                        example_inputs=inputs,
-                        trt_engine_name=self.trt_engine_name,
-                        trt_multi_precision_engine=False,
-                        dynamic_shapes=dynamic_shapes,
-                    )
+                    except Exception as e:
+                        if dynamic_shapes is not None:
+                            print(f"ERROR: building TensorRT engine with dynamic shapes, trying without.\n", file=sys.stderr)
+                            trtHandler.build_engine(
+                                self.model,
+                                self.dtype,
+                                self.device,
+                                example_inputs=inputs,
+                                trt_engine_name=self.trt_engine_static_name,
+                                trt_multi_precision_engine=False,
+                            )
+                            self.set_self_model(backend="tensorrt", trt_engine_name=self.trt_engine_static_name)
+                        else:
+                            raise RuntimeError(
+                                f"Failed to build TensorRT engine: {e}\n"
+                            )
 
 
-                self.set_self_model(backend="tensorrt")
+                
 
         self.torchUtils.clear_cache()
         self.torchUtils.sync_all_streams()
