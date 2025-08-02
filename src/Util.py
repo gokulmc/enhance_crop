@@ -15,7 +15,7 @@ import sys
 import time
 from functools import wraps
 
-from .constants import CWD, HAS_NETWORK_ON_STARTUP, IS_FLATPAK, PLATFORM, HOME_PATH
+from .constants import CWD, HAS_NETWORK_ON_STARTUP, IS_FLATPAK, PLATFORM, HOME_PATH, CPU_ARCH
 
 
 class FileHandler:
@@ -242,7 +242,7 @@ def getCPUInfo() -> str:
                 return result.stdout.split("\n")[2].strip()
             except Exception as e:
                 print(f"An error occurred while getting CPU brand: {e}")
-                return "X86_64 CPU"
+                return "X86_64 CPU" if CPU_ARCH == "x86_64" else "ARM64 CPU"
         else:
             return cpuinfo.get_cpu_info()["brand_raw"]
     except Exception as e:

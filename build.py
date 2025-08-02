@@ -11,7 +11,7 @@ import platform
 import urllib.request
 
 PLATFORM = sys.platform
-CPU_ARCH = platform.machine()
+CPU_ARCH = "x86_64" if platform.machine() == "AMD64" else platform.machine()
 OUTPUT_FOLDER = "dist"
 print(f"Platform: {PLATFORM}")
 print(f"CPU Arch: {CPU_ARCH}")
