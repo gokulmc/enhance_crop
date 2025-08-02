@@ -134,6 +134,7 @@ jobs:
         run: |
             choco install nsis
             makensis /DARCH=x64 REAL-Video-Enhancer.nsi
+            mv REAL-Video-Enhancer-${{ env.APP_VERSION }}-Windows-Setup.exe REAL-Video-Enhancer-${{ env.APP_VERSION }}-Windows-Setup_x86_64.exe
 
       - name: Save Archive as artifact
         uses: actions/upload-artifact@v4
@@ -145,7 +146,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: REAL-Video-Enhancer-${{ env.APP_VERSION }}-Windows-Setup_x86_64.exe
-          path: REAL-Video-Enhancer-${{ env.APP_VERSION }}-Windows-Setup.exe
+          path: REAL-Video-Enhancer-${{ env.APP_VERSION }}-Windows-Setup_x86_64.exe
 
   build-MacOS:
     runs-on: macos-13
