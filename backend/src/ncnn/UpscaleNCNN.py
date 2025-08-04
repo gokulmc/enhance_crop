@@ -3949,7 +3949,6 @@ class UpscaleWithNCNNMode:
       self.tile_size = tilesize if tilesize > 0 else 512
       self.tile_pad = tilePad
       self.scale = scale
-      self.gpuid = gpuid
       self.hdr_mode = hdr_mode
       
       self.net = ncnn.Net()
@@ -3960,7 +3959,12 @@ class UpscaleWithNCNNMode:
       self.net.opt.use_fp16_arithmetic = False
       self.net.opt.use_int8_storage = True
       self.net.opt.use_int8_arithmetic = False
-
+      self.net.set_vulkan_device(gpuid)
+      self.blob_vkallocator = ncnn.VkBlobAllocator(self.net.vulkan_device())
+      self.staging_vkallocator = ncnn.VkStagingAllocator(self.net.vulkan_device())
+      self.net.opt.blob_vkallocator = self.blob_vkallocator
+      self.net.opt.staging_vkallocator = self.staging_vkallocator
+      self.net.opt.workspace_vkallocator = self.blob_vkallocator
       # Load model param and bin
       self.net.load_param(modelPath + ".param")
       self.net.load_model(modelPath + ".bin")
@@ -3984,12 +3988,15 @@ class UpscaleWithNCNNMode:
     def process_bytes(self, frame:bytes, *args, **kwargs) -> bytes:
         frame = np.ascontiguousarray(np.frombuffer(frame, dtype=np.uint8))
         ex = self.net.create_extractor()
+        
         #frame = self.ClampNPArray(frame)
         frame = self.NCNNImageMatFromNP(frame)
         # norm
         self.NormalizeImage(mat=frame, norm_vals=[1 / 255.0, 1 / 255.0, 1 / 255.0])
         # render frame
+        
         ex.input("data", frame)
+        
         ret, frame = ex.extract("output")
 
         # norm
