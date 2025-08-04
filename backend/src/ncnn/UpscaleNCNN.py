@@ -6,10 +6,10 @@ import pathlib
 
 try:
     from upscale_ncnn_py import wrapped
-
     method = "upscale_ncnn_py"
 except Exception:
     method = "ncnn_vulkan"
+#method = "ncnn_vulkan"
 import numpy as np
 import cv2
 import os
@@ -3942,75 +3942,28 @@ class UPSCALE:
 
         return self.raw_out_image.get_data()
     
-   
-    
+class UpscaleWithNCNNMode:
+    def __init__(self, modelPath: os.PathLike, num_threads: int, scale: int, gpuid: int = 0, width: int = 1920, height: int = 1080, tilesize: int = 0, tilePad=10, hdr_mode=False):
+      self.tilewidth = width
+      self.tileheight = height
+      self.tile_size = tilesize if tilesize > 0 else 512
+      self.tile_pad = tilePad
+      self.scale = scale
+      self.gpuid = gpuid
+      self.hdr_mode = hdr_mode
+      
+      self.net = ncnn.Net()
+      # Use vulkan compute
+      self.net.opt.use_vulkan_compute = True
+      self.net.opt.use_fp16_packed = True
+      self.net.opt.use_fp16_storage = True 
+      self.net.opt.use_fp16_arithmetic = False
+      self.net.opt.use_int8_storage = True
+      self.net.opt.use_int8_arithmetic = False
 
-
-class UpscaleNCNN:
-    def __init__(
-        self,
-        modelPath: os.PathLike,
-        num_threads: int,
-        scale: int,
-        gpuid: int = 0,
-        width: int = 1920,
-        height: int = 1080,
-        tilesize: int = 0,
-        tilePad=10,
-        hdr_mode=False,
-    ):
-        # only import if necessary
-        self.pad_w = tilePad
-        self.pad_h = tilePad
-        self.gpuid = gpuid
-        self.modelPath = modelPath
-        self.scale = scale
-        self.tilesize = tilesize
-        self.width = width
-        self.height = height
-        self.tilewidth = width
-        self.tileheight = height
-        if tilesize != 0:
-            self.tilewidth = tilesize
-            self.tile_size = tilesize
-            self.tileheight = tilesize
-        self.scale = scale
-        self.threads = num_threads
-        self.tilePad = tilePad
-        self.tile_pad = tilePad
-        self.mean_vals = []
-        self.norm_vals = [1 / 255.0, 1 / 255.0, 1 / 255.0]
-        self._load()
-
-    def _load(self):
-        from ..utils.Util import suppress_stdout_stderr
-
-        with suppress_stdout_stderr():
-            if method == "ncnn_vulkan":
-                self.net = ncnn.Net()
-                # Use vulkan compute
-                self.net.opt.use_vulkan_compute = True
-
-                # Load model param and bin
-                self.net.load_param(self.modelPath + ".param")
-                self.net.load_model(self.modelPath + ".bin")
-            elif method == "upscale_ncnn_py":
-                self.net = UPSCALE(
-                    gpuid=self.gpuid,
-                    model_str=self.modelPath,
-                    num_threads=self.threads,
-                    scale=self.scale,
-                    tilesize=self.tilesize,
-                )
-            device = ncnn.get_gpu_device(self.gpuid).info().device_name()
-        print("Using GPU:", device)
-
-    def hotUnload(self):
-        self.model = None
-        self.net = None
-
-    def hotReload(self):
-        self._load()
+      # Load model param and bin
+      self.net.load_param(modelPath + ".param")
+      self.net.load_model(modelPath + ".bin")
 
     def NCNNImageMatFromNP(self, npArray: np.array):
         return ncnn.Mat.from_pixels(
@@ -4028,12 +3981,10 @@ class UpscaleNCNN:
         nparray = np.clip(nparray, 0, 255)
         return nparray
 
-    def set_self_model(self):
-        pass
-
-    def procNCNNVk(self, frame: np.array) -> np.ascontiguousarray:
+    def process_bytes(self, frame:bytes, *args, **kwargs) -> bytes:
+        frame = np.ascontiguousarray(np.frombuffer(frame, dtype=np.uint8))
         ex = self.net.create_extractor()
-        frame = self.ClampNPArray(frame)
+        #frame = self.ClampNPArray(frame)
         frame = self.NCNNImageMatFromNP(frame)
         # norm
         self.NormalizeImage(mat=frame, norm_vals=[1 / 255.0, 1 / 255.0, 1 / 255.0])
@@ -4044,26 +3995,9 @@ class UpscaleNCNN:
         # norm
         frame = np.array(frame)
         frame = frame.transpose(1, 2, 0) * 255
-        frame = self.ClampNPArray(frame)
-        return np.ascontiguousarray(frame, dtype=np.uint8)
-
-    def frame_to_tensor(self, frame: np.array) -> np.array:
-        return frame
-
-    def __call__(self, imageChunk):
-        while self.net is None:
-            sleep(1)
-        
-        if method == "ncnn_vulkan":
-            frame = np.ascontiguousarray(np.frombuffer(imageChunk, dtype=np.uint8))
-            if self.tilesize == 0:
-                return self.procNCNNVk(frame)
-            else:
-                return self.renderTiledImage(frame)
-        elif method == "upscale_ncnn_py":
-            img =  self.net.process_bytes(imageChunk, self.width, self.height, 3)
-            return img
-
+        #frame = self.ClampNPArray(frame)
+        return np.ascontiguousarray(frame, dtype=np.uint8).tobytes()
+    
     def renderTiledImage(self, img: np.ndarray):
         raise NotImplementedError(
             "Tile rendering not implemented for default ncnn fallback, please install vcredlist from https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170"
@@ -4137,3 +4071,87 @@ class UpscaleNCNN:
         return self.output
 
 
+
+class UpscaleNCNN:
+    def __init__(
+        self,
+        modelPath: os.PathLike,
+        num_threads: int,
+        scale: int,
+        gpuid: int = 0,
+        width: int = 1920,
+        height: int = 1080,
+        tilesize: int = 0,
+        tilePad=10,
+        hdr_mode=False,
+    ):
+        # only import if necessary
+        self.pad_w = tilePad
+        self.pad_h = tilePad
+        self.gpuid = gpuid
+        self.modelPath = modelPath
+        self.scale = scale
+        self.tilesize = tilesize
+        self.width = width
+        self.height = height
+        self.tilewidth = width
+        self.tileheight = height
+        if tilesize != 0:
+            self.tilewidth = tilesize
+            self.tile_size = tilesize
+            self.tileheight = tilesize
+        self.scale = scale
+        self.threads = num_threads
+        self.tilePad = tilePad
+        self.tile_pad = tilePad
+        self.mean_vals = []
+        self.norm_vals = [1 / 255.0, 1 / 255.0, 1 / 255.0]
+        self._load()
+
+    def _load(self):
+        from ..utils.Util import suppress_stdout_stderr
+
+        with suppress_stdout_stderr():
+            if method == "ncnn_vulkan":
+                self.net = UpscaleWithNCNNMode(
+                    modelPath=self.modelPath,
+                    num_threads=self.threads,
+                    scale=self.scale,
+                    gpuid=self.gpuid,
+                    width=self.width,
+                    height=self.height,
+                    tilesize=self.tilesize,
+                    tilePad=self.tilePad,
+                )
+            elif method == "upscale_ncnn_py":
+                self.net = UPSCALE(
+                    gpuid=self.gpuid,
+                    model_str=self.modelPath,
+                    num_threads=self.threads,
+                    scale=self.scale,
+                    tilesize=self.tilesize,
+                )
+            device = ncnn.get_gpu_device(self.gpuid).info().device_name()
+        print("Using GPU:", device)
+
+    def hotUnload(self):
+        self.model = None
+        self.net = None
+
+    def hotReload(self):
+        self._load()
+
+    def set_self_model(self):
+        pass
+
+    def frame_to_tensor(self, frame: np.array) -> np.array:
+        return frame
+
+    def __call__(self, imageChunk):
+        while self.net is None:
+            sleep(1)
+            
+        img = self.net.process_bytes(imageChunk, self.width, self.height, 3)
+        return img
+
+    
