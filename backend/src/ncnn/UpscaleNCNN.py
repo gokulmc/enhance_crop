@@ -5,7 +5,7 @@ from __future__ import annotations
 import pathlib
 
 try:
-    from upscale_ncnn_py import wrapped
+    from upscale_ncnn_py import upscale_ncnn_vulkan_wrapper as wrapped
     method = "upscale_ncnn_py"
 except Exception:
     method = "ncnn_vulkan"
