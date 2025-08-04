@@ -1,7 +1,6 @@
 import onnx
 import onnxruntime as ort
 from onnxruntime import InferenceSession
-from onnxconverter_common import float16
 import os
 import numpy as np
 import time
@@ -42,8 +41,6 @@ class UpscaleONNX:
 
         # load model
         model = onnx.load(self.modelPath)
-        if self.precision == np.float16:
-            model = float16.convert_float_to_float16(model)
         self.model = model
 
             # Optimized DirectML provider options
@@ -93,12 +90,7 @@ class UpscaleONNX:
         return onnx_output
 
     def frameToBytes(self, image: np.ndarray) -> bytes:
-        # Clip, transpose, scale and convert in optimized sequence
-        #image = image[0]
-        #image = np.clip(image, 0, 1)
-        #image = image.transpose(1, 2, 0)
         
-        # Use faster multiplication and conversion
         image *= 255.0
         image = image.astype(np.uint8)
         
@@ -106,20 +98,35 @@ class UpscaleONNX:
 
 
         
-
+def download_file(url, local_path):
+    import requests
+    response = requests.get(url, stream=True)
+    response.raise_for_status()  # Ensure we notice bad responses
+    with open(local_path, 'wb') as f:
+        for chunk in response.iter_content(chunk_size=8192):
+            f.write(chunk)
 
 if __name__ == "__main__":
     #up = UpscaleONNX("2x_ModernSpanimationV1_clamp_fp16_op19_onnxslim.onnx")
-    up = UpscaleONNX("converted_models/2x_2x_ModernSpanimationV2.pth.onnx")
-    image = cv2.imread("photo.jpg")
+    if not os.path.isfile("2x_ModernSpanimationV2_clamp_op20_fp16_onnxslim.onnx"):
+        download_file("https://github.com/TNTwise/real-video-enhancer-models/releases/download/models/2x_ModernSpanimationV2_clamp_op20_fp16_onnxslim.onnx", "2x_ModernSpanimationV2_clamp_op20_fp16_onnxslim.onnx")
+    if not os.path.isfile("models.png"):
+        download_file("https://github.com/TNTwise/REAL-Video-Enhancer/blob/v2-main/screenshots/models.png?raw=true", "models.png")
+
+    up = UpscaleONNX("2x_ModernSpanimationV2_clamp_op20_fp16_onnxslim.onnx")
+    image = cv2.imread("models.png")
     image = cv2.resize(image, (1920, 1080)).astype(np.uint8).tobytes()
     start_time = time.time()
     
     iter = 100
-    for i in range(iter):
-        image1 = up.bytesToFrame(image)
-        output = up.renderTensor(image1)
-        o = up.frameToBytes(output)
+    import viztracer
+    tracer = viztracer.VizTracer()
+    tracer.start()
+    image1 = up.bytesToFrame(image)
+    output = up.renderTensor(image1)
+    o = up.frameToBytes(output)
+    tracer.stop()
+    
     end_time = time.time()
     output = up.frameToBytes(output)
     output = np.frombuffer(output, dtype=np.uint8).reshape(1080*2, 1920*2, 3)

@@ -43,8 +43,6 @@ class FFmpegRead(Buffer):
             else:"""
             self.inputFrameChunkSize = width * height * 3
 
-
-
         self.readProcess = subprocess_popen_without_terminal(
             self.command(),
             stdout=subprocess.PIPE,
