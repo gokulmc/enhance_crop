@@ -14,6 +14,14 @@ def getONNXScale(modelPath: str = "") -> int:
 
 
 class UpscaleONNX:
+    @classmethod
+    def getModelScale(cls, modelPath: str) -> int:
+        model_name = os.path.basename(modelPath).lower()
+        for i in range(100):
+            if f"{i}x" in model_name or f"x{i}" in model_name:
+                return i
+        raise ValueError("Scale not found in model name!")
+    
     def __init__(
         self,
         modelPath: str,
@@ -22,20 +30,22 @@ class UpscaleONNX:
         precision: str = "auto",
         width: int = 1920,
         height: int = 1080,
+        scale: int = 2,
         tilesize: int = 0,
         gpu_id: int = 0,
         hdr_mode: bool = False,
     ):
         self.width = width
         self.height = height
+        self.scale = scale
         self.modelPath = modelPath
         self.device = device
         self.i0 = None
         self.precision = np.float16
         
-        self.input_buffer = np.empty((1, 3, 1080, 1920), dtype=self.precision)
-        self.output_buffer = np.empty((1, 3, 1080*2, 1920*2), dtype=self.precision)
-        
+        self.input_buffer = np.empty((1, 3, self.height, self.width), dtype=self.precision)
+        self.output_buffer = np.empty((1, 3, self.height * self.scale, self.width * self.scale), dtype=self.precision)
+
         # Pre-compute normalization factor
         self.norm_factor = np.array(1.0/255.0, dtype=self.precision)
 
@@ -66,10 +76,12 @@ class UpscaleONNX:
             self.model.SerializeToString(), session_options, providers=directml_backend
         )
 
+    
+
     def bytesToFrame(self, image: bytes) -> tuple:
         temp_view = np.frombuffer(image, dtype=np.uint8)
-        temp_view = temp_view.reshape(1080, 1920, 3)
-        
+        temp_view = temp_view.reshape(self.height, self.width, 3)
+
         # Use direct assignment to pre-allocated buffer
         self.input_buffer[0] = np.transpose(temp_view, (2, 0, 1))
         
@@ -91,23 +103,32 @@ class UpscaleONNX:
 
     def frameToBytes(self, image: np.ndarray) -> bytes:
         
-        image *= 255.0
+        image  = np.multiply(image, 255.0) # ts slows down directml quite a bit
         image = image.astype(np.uint8)
-        
         return np.ascontiguousarray(image).tobytes()
+    
+    def hotUnload(self):
+        self.paused = True
 
+    def hotReload(self):
+        self.paused = False
+    
+    def __call__(self, image: bytes) -> bytes:
+        image_as_np_array = self.bytesToFrame(image)
+        output = self.renderTensor(image_as_np_array)
+        return output
 
         
-def download_file(url, local_path):
-    import requests
-    response = requests.get(url, stream=True)
-    response.raise_for_status()  # Ensure we notice bad responses
-    with open(local_path, 'wb') as f:
-        for chunk in response.iter_content(chunk_size=8192):
-            f.write(chunk)
 
 if __name__ == "__main__":
-    #up = UpscaleONNX("2x_ModernSpanimationV1_clamp_fp16_op19_onnxslim.onnx")
+    def download_file(url, local_path):
+        import requests
+        response = requests.get(url, stream=True)
+        response.raise_for_status()  # Ensure we notice bad responses
+        with open(local_path, 'wb') as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                f.write(chunk)
+
     if not os.path.isfile("2x_ModernSpanimationV2_clamp_op20_fp16_onnxslim.onnx"):
         download_file("https://github.com/TNTwise/real-video-enhancer-models/releases/download/models/2x_ModernSpanimationV2_clamp_op20_fp16_onnxslim.onnx", "2x_ModernSpanimationV2_clamp_op20_fp16_onnxslim.onnx")
     if not os.path.isfile("models.png"):
@@ -119,21 +140,27 @@ if __name__ == "__main__":
     start_time = time.time()
     
     iter = 100
-    import viztracer
-    tracer = viztracer.VizTracer()
-    tracer.start()
-    image1 = up.bytesToFrame(image)
-    output = up.renderTensor(image1)
-    o = up.frameToBytes(output)
-    tracer.stop()
+    #import viztracer
+    #tracer = viztracer.VizTracer()
+    #tracer.start()
     
+    for _ in range(iter):
+        image1 = up.bytesToFrame(image)
+        output = up.renderTensor(image1)
+        o = up.frameToBytes(output)
     end_time = time.time()
-    output = up.frameToBytes(output)
-    output = np.frombuffer(output, dtype=np.uint8).reshape(1080*2, 1920*2, 3)
     
+    #tracer.stop()
+    #tracer.save("onnx_viztracer_result.json")
     print(f"Processing time: {end_time - start_time:.2f} seconds")
     fps= iter / (end_time - start_time)
     print(f"FPS: {fps:.2f}")
+    
+    output = up.frameToBytes(output)
+    output = np.frombuffer(output, dtype=np.uint8).reshape(1080*2, 1920*2, 3)
+    
+    
+    
 
     cv2.imwrite("output.jpg", output)
     print("Done")

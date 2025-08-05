@@ -403,6 +403,17 @@ class Render:
             height=self.height,
             tilesize=self.tilesize,
         )
+    def upscaleONNXObject(self, scale=None, modelPath=None):
+        from .onnx.UpscaleONNX import UpscaleONNX
+        return UpscaleONNX(
+            modelPath=modelPath,
+            deviceID=self.pytorch_gpu_id,
+            precision=self.precision,
+            width=self.width,
+            height=self.height,
+            scale=self.upscaleTimes if scale is None else scale,
+            hdr_mode=self.hdr_mode,
+        )
 
 
     def setupExtraRestoration(self, modelPath):
@@ -416,29 +427,32 @@ class Render:
     def setupUpscale(self):
         printAndLog("Setting up Upscale")
         if self.backend == "pytorch" or self.backend == "tensorrt":
-            from .pytorch.UpscaleTorch import UpscalePytorch
 
             self.upscaleOption = self.upscalePytorchObject(self.upscaleModel)
             self.modelScale = self.upscaleOption.getScale() 
-            self.upscaleTimes = self.modelScale if not self.override_upscale_scale else self.override_upscale_scale
+            
 
         if self.backend == "ncnn":
-            from .ncnn.UpscaleNCNN import UpscaleNCNN, getNCNNScale
+            from .ncnn.UpscaleNCNN import getNCNNScale
 
-
-            self.modelScale = getNCNNScale(modelPath=self.upscaleModel) 
-            self.upscaleTimes = self.modelScale if not self.override_upscale_scale else self.override_upscale_scale
+            self.modelScale = getNCNNScale(modelPath=self.upscaleModel)
+            
             self.upscaleOption = self.upscaleNCNNObject(scale=self.modelScale, modelPath=self.upscaleModel)
 
         if self.backend == "directml":  # i dont want to work with this shit
             from .onnx.UpscaleONNX import UpscaleONNX
-
-            upscaleONNX = UpscaleONNX(
+            self.modelScale = UpscaleONNX.getModelScale(self.upscaleModel)
+            
+            self.upscaleOption = UpscaleONNX(
                 modelPath=self.upscaleModel,
                 precision=self.precision,
                 width=self.width,
                 height=self.height,
+                scale=self.modelScale
             )
+        self.upscaleTimes = self.modelScale if not self.override_upscale_scale else self.override_upscale_scale
+        
+
 
     def setupInterpolate(self):
         log("Setting up Interpolation")
