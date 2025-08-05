@@ -90,7 +90,7 @@ class UpscaleONNX:
         self.input_buffer[0] = np.transpose(temp_view, (2, 0, 1))
         
         # In-place normalization
-        #self.input_buffer *= self.norm_factor
+        self.input_buffer *= self.norm_factor
             
         return self.input_buffer
         image = np.frombuffer(image, dtype=np.uint8).reshape(1080, 1920, 3)
@@ -108,8 +108,8 @@ class UpscaleONNX:
     def frameToBytes(self, image: np.ndarray) -> bytes:
         
         
-        self.output_buffer[0] = image.clip(0, 255).squeeze().transpose(1, 2, 0)
-        #self.output_buffer[0] /= self.norm_factor
+        self.output_buffer[0] = image.clip(0, 1).squeeze().transpose(1, 2, 0)
+        self.output_buffer[0] /= self.norm_factor
         image = self.output_buffer[0].astype(np.uint8).reshape(self.height* self.scale, self.width*self.scale, 3)
         return np.ascontiguousarray(image).tobytes()
     
