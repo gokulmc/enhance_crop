@@ -46,7 +46,7 @@ class UpscaleONNX:
         self.precision = np.float16
         
         self.input_buffer = np.empty((1, 3, self.height, self.width), dtype=self.precision)
-        self.output_buffer = np.empty((1, 3, self.height * self.scale, self.width * self.scale), dtype=self.precision)
+        self.output_buffer = np.empty((1, self.height * self.scale, self.width * self.scale, 3), dtype=self.precision)
 
         # Pre-compute normalization factor
         self.norm_factor = np.array(1.0/255.0, dtype=self.precision)
@@ -108,9 +108,9 @@ class UpscaleONNX:
     def frameToBytes(self, image: np.ndarray) -> bytes:
         
         
-        image = image.clip(0, 1).squeeze().transpose(1, 2, 0)
-        image /= self.norm_factor
-        image = image.astype(np.uint8).reshape(self.height* self.scale, self.width*self.scale, 3)
+        self.output_buffer[0] = image.clip(0, 1).squeeze().transpose(1, 2, 0)
+        self.output_buffer[0] /= self.norm_factor
+        image = self.output_buffer[0].astype(np.uint8).reshape(self.height* self.scale, self.width*self.scale, 3)
         return np.ascontiguousarray(image).tobytes()
     
     def hotUnload(self):
