@@ -5,6 +5,8 @@ import os
 import numpy as np
 import time
 import cv2
+from onnxconverter_common import float16
+
 
 def getONNXScale(modelPath: str = "") -> int:
     paramName = os.path.basename(modelPath).lower()
@@ -48,11 +50,13 @@ class UpscaleONNX:
 
         # Pre-compute normalization factor
         self.norm_factor = np.array(1.0/255.0, dtype=self.precision)
+        
 
         # load model
         model = onnx.load(self.modelPath)
         self.model = model
-
+        #if self.precision == np.float16:
+        #    model = float16.convert_float_to_float16(model, check_fp16_ready=False)
             # Optimized DirectML provider options
         directml_options = {
             "device_id": gpu_id,
@@ -89,12 +93,12 @@ class UpscaleONNX:
         self.input_buffer *= self.norm_factor
             
         return self.input_buffer
-        #image = np.frombuffer(image, dtype=np.uint8).reshape(1080, 1920, 3)
-        #image = np.transpose(image, (2, 0, 1))
-        #image = np.expand_dims(image, axis=0)
-        #image = image.astype(self.precision)
-        #image = image.__mul__(1.0 / 255.0)
-        #return np.ascontiguousarray(image)
+        image = np.frombuffer(image, dtype=np.uint8).reshape(1080, 1920, 3)
+        image = np.transpose(image, (2, 0, 1))
+        image = np.expand_dims(image, axis=0)
+        image = image.astype(self.precision)
+        image = image.__mul__(1.0 / 255.0)
+        return np.ascontiguousarray(image)
 
     def renderTensor(self, image_as_np_array: np.ndarray) -> np.ndarray:
         onnx_input = {self.inference_session.get_inputs()[0].name: image_as_np_array}
@@ -103,8 +107,10 @@ class UpscaleONNX:
 
     def frameToBytes(self, image: np.ndarray) -> bytes:
         
-        image  = np.multiply(image, 255.0) # ts slows down directml quite a bit
-        image = image.astype(np.uint8)
+        
+        image = image.clip(0, 1).squeeze().transpose(1, 2, 0)
+        image /= self.norm_factor
+        image = image.astype(np.uint8).reshape(self.height* self.scale, self.width*self.scale, 3)
         return np.ascontiguousarray(image).tobytes()
     
     def hotUnload(self):
@@ -114,9 +120,11 @@ class UpscaleONNX:
         self.paused = False
     
     def __call__(self, image: bytes) -> bytes:
+        while self.paused:
+            time.sleep(1)
         image_as_np_array = self.bytesToFrame(image)
         output = self.renderTensor(image_as_np_array)
-        return output
+        return self.frameToBytes(output)
 
         
 
@@ -144,10 +152,10 @@ if __name__ == "__main__":
     #tracer = viztracer.VizTracer()
     #tracer.start()
     
-    for _ in range(iter):
-        image1 = up.bytesToFrame(image)
-        output = up.renderTensor(image1)
-        o = up.frameToBytes(output)
+    image1 = up.bytesToFrame(image)
+    cv2.imwrite("input.jpg", np.frombuffer(image, dtype=np.uint8).reshape(1080, 1920, 3))
+    output = up.renderTensor(image1)
+    o = up.frameToBytes(output)
     end_time = time.time()
     
     #tracer.stop()
