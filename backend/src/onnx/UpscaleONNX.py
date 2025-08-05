@@ -54,10 +54,11 @@ class UpscaleONNX:
 
         # load model
         model = onnx.load(self.modelPath)
-        self.model = model
-        #if self.precision == np.float16:
-        #    model = float16.convert_float_to_float16(model, check_fp16_ready=False)
+        
+        if self.precision == np.float16:
+            model = float16.convert_float_to_float16(model, check_fp16_ready=False)
             # Optimized DirectML provider options
+        self.model = model
         directml_options = {
             "device_id": gpu_id,
         #    "enable_dynamic_graph_fusion": True,
