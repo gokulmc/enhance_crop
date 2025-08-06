@@ -220,6 +220,7 @@ class UpscalePytorch:
                 )
                 self.trt_engine_static_name = self.trt_engine_name + f"_{static_dimensions}.engine"
                 self.trt_engine_dynamic_name = self.trt_engine_name + f"_{dynamic_dimensions}.engine"
+                self.trt_engine_name = self.trt_engine_static_name if self.trt_static_shape else self.trt_engine_dynamic_name
 
                 if not trtHandler.check_engine_exists(self.trt_engine_name):
                     inputs = (torch.zeros([1, 3, self.pad_h, self.pad_w], dtype=self.dtype, device=self.device),)
@@ -253,11 +254,11 @@ class UpscalePytorch:
                             self.dtype,
                             self.device,
                             example_inputs=inputs,
-                            trt_engine_name=self.trt_engine_static_name if self.trt_static_shape else self.trt_engine_dynamic_name,
+                            trt_engine_name=self.trt_engine_name,
                             trt_multi_precision_engine=False,
                             dynamic_shapes=dynamic_shapes,
                         )
-                        self.set_self_model(backend="tensorrt", trt_engine_name=self.trt_engine_dynamic_name)
+                        self.set_self_model(backend="tensorrt", trt_engine_name=self.trt_engine_name)
 
                     except Exception as e:
                         if dynamic_shapes is not None:
