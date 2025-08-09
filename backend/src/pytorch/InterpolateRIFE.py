@@ -278,7 +278,6 @@ class InterpolateRifeTorch(BaseInterpolate):
             trtHandler = TorchTensorRTHandler(
                 model_parent_path=os.path.dirname(self.interpolateModel),
                 trt_optimization_level=self.trt_optimization_level,
-                dynamo_export_format="nn2exportedprogram"
             )
 
             if self.trt_static_shape:
@@ -391,11 +390,13 @@ class InterpolateRifeTorch(BaseInterpolate):
                             "backwarp_tenGrid": {2: dim_height, 3: dim_width},
                         }
                 
-                trtHandler.build_engine(self.flownet,  self.dtype, self.device, flownet_inputs, trt_engine_name=base_trt_engine_name, trt_multi_precision_engine=True, dynamic_shapes=flownet_dynamic_shapes,)
-
+                flownet_engine = trtHandler.build_engine(self.flownet, self.dtype, self.device, flownet_inputs, trt_engine_name=base_trt_engine_name, trt_multi_precision_engine=True, dynamic_shapes=flownet_dynamic_shapes,)
+                trtHandler.save_engine(flownet_engine, base_trt_engine_name, flownet_inputs)
+                torch.cuda.empty_cache()
                 if self.encode:
-                    trtHandler.build_engine(self.encode, self.dtype, self.device, encode_inputs, trt_engine_name=encode_trt_engine_name, trt_multi_precision_engine=True, dynamic_shapes=encode_dynamic_shapes,)
-
+                    encode_engine = trtHandler.build_engine(self.encode, self.dtype, self.device, encode_inputs, trt_engine_name=encode_trt_engine_name, trt_multi_precision_engine=True, dynamic_shapes=encode_dynamic_shapes,)
+                    trtHandler.save_engine(encode_engine, encode_trt_engine_name, encode_inputs)
+                torch.cuda.empty_cache()
             self.flownet = trtHandler.load_engine(base_trt_engine_name)
 
             if self.encode:

@@ -186,8 +186,6 @@ class UpscalePytorch:
 
                 trtHandler = TorchTensorRTHandler(
                     model_parent_path=os.path.dirname(self.modelPath),
-                    export_format="dynamo", # torchscript due to wonky resolution issues with dynamo --- 08/01/2025 fixed?
-                    dynamo_export_format="nn2exportedprogram",
                     trt_optimization_level=self.trt_optimization_level,
 
                 )
@@ -249,7 +247,7 @@ class UpscalePytorch:
                     torch.cuda.empty_cache()
 
                     try:
-                        trtHandler.build_engine(
+                        trt_engine = trtHandler.build_engine(
                             self.model,
                             self.dtype,
                             self.device,
@@ -258,19 +256,37 @@ class UpscalePytorch:
                             trt_multi_precision_engine=False,
                             dynamic_shapes=dynamic_shapes,
                         )
+                        trtHandler.save_engine(
+                            trt_engine,
+                            self.trt_engine_name,
+                            example_inputs=inputs,
+                        )
                         self.set_self_model(backend="tensorrt", trt_engine_name=self.trt_engine_name)
 
                     except Exception as e:
                         if dynamic_shapes is not None:
                             print(f"ERROR: building TensorRT engine with dynamic shapes, trying without.\n", file=sys.stderr)
-                            trtHandler.build_engine(
-                                self.model,
-                                self.dtype,
-                                self.device,
-                                example_inputs=inputs,
-                                trt_engine_name=self.trt_engine_static_name,
-                                trt_multi_precision_engine=False,
-                            )
+
+                            if trtHandler.check_engine_exists(self.trt_engine_static_name):
+                                trtHandler.load_engine(
+                                    trt_engine_name=self.trt_engine_static_name
+                                )
+
+                            else:
+
+                                trt_engine = trtHandler.build_engine(
+                                    self.model,
+                                    self.dtype,
+                                    self.device,
+                                    example_inputs=inputs,
+                                    trt_engine_name=self.trt_engine_static_name,
+                                    trt_multi_precision_engine=False,
+                                )
+                                trtHandler.save_engine(
+                                    trt_engine,
+                                    self.trt_engine_static_name,
+                                    example_inputs=inputs,
+                                )
                             self.set_self_model(backend="tensorrt", trt_engine_name=self.trt_engine_static_name)
                         else:
                             raise RuntimeError(

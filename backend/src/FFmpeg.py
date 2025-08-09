@@ -179,7 +179,7 @@ class InformationWriteOut:
                 eta = self.calculateETA(framesRendered=self.framesRendered)
                 message = f"FPS: {fps} Current Frame: {self.framesRendered} ETA: {eta}"
                 if i == 0:
-                    print("1\n", file=sys.stderr)
+                    print("\n", file=sys.stderr)
                     i = 1
                 self.realTimePrint(message)
                 if self.sharedMemoryID is not None and self.previewFrame is not None:

@@ -64,14 +64,11 @@ except ImportError:
 class TorchTensorRTHandler: 
     """
     Args:
-        dynamo_export_format (str): The export format to use when exporting models using Dynamo. Defaults to "nn2exportedprogram".
         trt_workspace_size (int): The workspace size to use when compiling models using TensorRT. Defaults to 0.
         max_aux_streams (int | None): The maximum number of auxiliary streams to use when compiling models using TensorRT. Defaults to None.
         trt_optimization_level (int): The optimization level to use when compiling models using TensorRT. Defaults to 3.
         debug (bool): Whether to enable debugging when compiling models using TensorRT. Defaults to False.
-        static_shape (bool): Whether to use static shape when compiling models using TensorRT. Defaults
 
-        dynamo_export_format (str): nn2exportedprogram, torchscript2exportedprogram or fallback, which tries nn2exportedprogram first, and then torchscrip2exportedprogram if nn2exportedprogram fails, torchscript2exportedprogram uses torchscript as an intermediatory as some issues occur when using dynamo with torch.export.export
 
         multi precision engines seem to not like torchscript2exportedprogram,
         or maybe its just the model not playing nice with explicit_typing,
@@ -83,12 +80,8 @@ class TorchTensorRTHandler:
     def __init__(
         self,
         model_parent_path: str,
-        export_format: str = "dynamo",
-        dynamo_export_format: str = "nn2exportedprogram",
         max_aux_streams: int | None = None,
         debug: bool = False,
-        static_shape: bool = True,
-        
         trt_optimization_level: int = 3,
         trt_workspace_size: int = 0,
         
@@ -96,13 +89,10 @@ class TorchTensorRTHandler:
         self.tensorrt_version = trt.__version__  # can just grab version from here instead of importing trt and torch trt in all related files
         self.torch_tensorrt_version = torch_tensorrt.__version__
 
-        self.export_format = export_format
-        self.dynamo_export_format = dynamo_export_format
         self.trt_workspace_size = trt_workspace_size
         self.max_aux_streams = max_aux_streams
         self.optimization_level = trt_optimization_level
         self.debug = debug
-        self.static_shape = static_shape  # Unused for now
         self.model_parent_path = model_parent_path
         # clear previous tensorrt models
         cleared_models = False
@@ -133,92 +123,6 @@ class TorchTensorRTHandler:
         )
         return exported_program
 
-
-    def export_using_dynamo(
-        self,
-        model: torch.nn.Module,
-        example_inputs: list[torch.Tensor],
-        device: torch.device,
-        dtype: torch.dtype,
-        trt_engine_path: str,
-        trt_multi_precision_engine: bool = False,
-        dynamic_shapes: dict | None = None,
-        
-    ):
-        
-        """Exports a model using TensorRT Dynamo."""
-        if self.dynamo_export_format == "nn2exportedprogram":
-            exported_program = nnmodule_to_dynamo(model, example_inputs, dynamic_shapes=dynamic_shapes)
-        elif self.dynamo_export_format == "torchscript2exportedprogram":
-            exported_program = torchscript_to_dynamo(model, example_inputs)
-        elif self.dynamo_export_format == "fallback":
-            try:
-                exported_program = nnmodule_to_dynamo(model, example_inputs, dynamic_shapes=dynamic_shapes)
-            except Exception as e:
-                print(
-                    "Failed to export using nn2exportedprogram. Falling back to torchscript2exportedprogram...",
-                    file=sys.stderr,
-                )
-                exported_program = torchscript_to_dynamo(model, example_inputs)
-        else:
-            raise ValueError(f"Unsupported export format: {self.dynamo_export_format}")
-
-        torch.cuda.empty_cache()
-
-        exported_program = self.grid_sample_decomp(exported_program)
-        
-        model_trt = torch_tensorrt.dynamo.compile(
-            exported_program,
-            tuple(example_inputs),
-            device=device,
-            enabled_precisions={dtype} if not trt_multi_precision_engine else {torch.float},
-            use_explicit_typing=trt_multi_precision_engine,
-            debug=self.debug,
-            num_avg_timing_iters=4,
-            workspace_size=self.trt_workspace_size,
-            min_block_size=1,
-            max_aux_streams=self.max_aux_streams,
-            optimization_level=self.optimization_level,
-            #tiling_optimization_level="full",
-        )
-      
-
-        torch_tensorrt.save(
-            model_trt,
-            trt_engine_path,
-            output_format="torchscript",
-            inputs=tuple(example_inputs),
-        )
-        torch.cuda.empty_cache()
-
-    def export_torchscript_model(
-        self,
-        model: torch.nn.Module,
-        example_inputs: list[torch.Tensor],
-        device: torch.device,
-        dtype: torch.dtype,
-        trt_engine_path: str,
-        dynamic_shapes: dict | None = None,
-    ):
-        """Exports a model using TorchScript."""
-
-        model.to(device=device, dtype=dtype)
-        module = torch.jit.trace(model, example_inputs)
-        torch.cuda.empty_cache()
-        del model
-
-        module_trt = torch_tensorrt.compile(
-            module,
-            ir="ts",
-            inputs=example_inputs,
-            enabled_precisions={dtype},
-            device=torch_tensorrt.Device(gpu_id=0),
-            workspace_size=self.trt_workspace_size,
-            truncate_long_and_double=True,
-            min_block_size=1,
-        )
-        torch.jit.save(module_trt, trt_engine_path)
-    
     def check_engine_exists(self, trt_engine_name: str) -> bool:
         """Checks if a TensorRT engine exists at the specified path."""
         trt_engine_name += self.trt_path_appendix
@@ -236,46 +140,57 @@ class TorchTensorRTHandler:
         dynamic_shapes: dict | None = None,
         
     ):
+        """
+        Returns a Torch TensorRT engine built from the provided model.
+        """
         start_time = time.time()
         trt_engine_name += self.trt_path_appendix
-        trt_engine_path = os.path.join(self.model_parent_path, trt_engine_name)
         torch.cuda.empty_cache()
         """Builds a TensorRT engine from the provided model."""
         print(
-            f"Building TensorRT engine {os.path.basename(trt_engine_path)}. This may take a while...",
+            f"Building TensorRT engine {os.path.basename(trt_engine_name)}. This may take a while...",
             file=sys.stderr,
         )
         
-        if self.export_format == "dynamo":
-            with suppress_stdout_stderr():
-                self.export_using_dynamo(
-                model, example_inputs, device, dtype, trt_engine_path, trt_multi_precision_engine=trt_multi_precision_engine, dynamic_shapes=dynamic_shapes,
+        with suppress_stdout_stderr():
+            exported_program = nnmodule_to_dynamo(model, example_inputs, dynamic_shapes=dynamic_shapes)
+
+            torch.cuda.empty_cache()
+
+            exported_program = self.grid_sample_decomp(exported_program)
+            
+            model_trt = torch_tensorrt.dynamo.compile(
+                exported_program,
+                tuple(example_inputs),
+                device=device,
+                enabled_precisions={dtype} if not trt_multi_precision_engine else {torch.float},
+                use_explicit_typing=trt_multi_precision_engine,
+                debug=self.debug,
+                num_avg_timing_iters=4,
+                workspace_size=self.trt_workspace_size,
+                min_block_size=1,
+                max_aux_streams=self.max_aux_streams,
+                optimization_level=self.optimization_level,
+                #tiling_optimization_level="full",
             )
-        elif self.export_format == "torchscript":
-            self.export_torchscript_model(
-                model, example_inputs, device, dtype, trt_engine_path, dynamic_shapes=dynamic_shapes,
-            )
-        else:
-            try:
-                 with suppress_stdout_stderr():
-                    self.export_using_dynamo(
-                        model, example_inputs, device, dtype, trt_engine_path, trt_multi_precision_engine=trt_multi_precision_engine, dynamic_shapes=dynamic_shapes,
-                    )
-            except Exception as e:
-                print(
-                    f"{e}",
-                    file=sys.stderr,
-                )
-                if dynamic_shapes is not None:
-                    warnAndLog(
-                        "Failed to export with Dynamo, trying torchscript2exportedprogram with static shapes.",
-                    )
-                self.export_torchscript_model(
-                    model, example_inputs, device, dtype, trt_engine_path, dynamic_shapes=dynamic_shapes,
-                )
+        
         print(
             f"TensorRT engine built in {time.time() - start_time:.2f} seconds.",
             file=sys.stderr,
+        )
+        torch.cuda.empty_cache()
+        return model_trt
+
+    def save_engine(self, trt_engine: torch.jit.ScriptModule, trt_engine_name: str, example_inputs: list[torch.Tensor]):
+        """Saves a TensorRT engine to the specified path."""
+        trt_engine_name += self.trt_path_appendix
+        trt_engine_path = os.path.join(self.model_parent_path, trt_engine_name)
+
+        torch_tensorrt.save(
+                trt_engine,
+                trt_engine_path,
+                output_format="torchscript",
+                inputs=tuple(example_inputs),
         )
         torch.cuda.empty_cache()
 
