@@ -3,11 +3,12 @@ import os
 import argparse
 import sys
 from src.version import __version__
-
+from src.utils.GetFFMpeg import download_ffmpeg
 
 
 class HandleApplication:
     def __init__(self):
+        download_ffmpeg()
         self.args = self.handleArguments()
         if not self.args.list_backends:
             self.checkArguments()

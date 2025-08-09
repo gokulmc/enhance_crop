@@ -1,5 +1,7 @@
 import os
 import sys
+import platform
+CPU_ARCH = "x86_64" if platform.machine() == "AMD64" else platform.machine()
 
 def checkForCUDA() -> bool:
     try:

@@ -205,7 +205,7 @@ class FFMpeg(Dependency):
             case "linux":
                 link += "ffmpeg" if CPU_ARCH == "x86_64" else "ffmpeg-linux-arm64"
             case "win32":
-                link += "ffmpeg.exe"
+                link += "ffmpeg.exe" if CPU_ARCH == "x86_64" else "ffmpeg-windows-arm64.exe"
             case "darwin":
                 link += "ffmpeg-macos-bin" if CPU_ARCH == "x86_64" else "ffmpeg-macos-arm"
         return link
