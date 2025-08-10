@@ -232,7 +232,10 @@ class FFmpegWrite(Buffer):
                 f"{self.outputFPS}",
                 "-f",
                 "matroska",
-
+                "-b:v",
+                "15000k",
+                "-crf",
+                "0",
                 "-af",
                 f"atrim=start={self.start_time},asetpts=PTS-STARTPTS",
 
@@ -370,10 +373,10 @@ class FFmpegWrite(Buffer):
                             "full",
                         ]
 
-                log(f"Video Encoder: {self.video_encoder.getEncoder()}")
+                log(f"Video Encoder: {self.video_encoder.getEncoder().__name__}")
                 log(f"Video Pixel Format: {self.pixelFormat}")
-                log(f"Audio Enocder: {self.audio_encoder.getEncoder()}")
-                log(f"Subtitle Enocder: {self.subtitle_encoder.getEncoder()}")
+                log(f"Audio Encoder: {self.audio_encoder.getEncoder().__name__}")
+                log(f"Subtitle Encoder: {self.subtitle_encoder.getEncoder().__name__}")
                 command += [
                     "-pix_fmt",
                     self.pixelFormat,
