@@ -261,7 +261,7 @@ class UpscalePytorch:
                             self.trt_engine_name,
                             example_inputs=inputs,
                         )
-                        self.set_self_model(backend="tensorrt", trt_engine_name=self.trt_engine_name)
+                        trt_engine_name = self.trt_engine_name
 
                     except Exception as e:
                         if dynamic_shapes is not None:
@@ -287,12 +287,12 @@ class UpscalePytorch:
                                     self.trt_engine_static_name,
                                     example_inputs=inputs,
                                 )
-                            self.set_self_model(backend="tensorrt", trt_engine_name=self.trt_engine_static_name)
+                            trt_engine_name = self.trt_engine_static_name
                         else:
                             raise RuntimeError(
                                 f"Failed to build TensorRT engine: {e}\n"
                             )
-
+                self.set_self_model(backend="tensorrt", trt_engine_name=trt_engine_name)
 
                 
 
