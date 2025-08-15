@@ -472,6 +472,12 @@ ncnnDenoiseModels = {
 }
 
 pytorchDenoiseModels = {
+    "DRUNET (Slow)": (
+        "drunet_color.pth",
+        "drunet_color.pth",
+        "1",
+        "drunet"
+    ),
     "DNcnn (Fast)": (
         "dncnn_color_blind.pth",
         "dncnn_color_blind.pth",
@@ -487,11 +493,12 @@ pytorchDenoiseModels = {
 }
 
 tensorrtDenoiseModels = {
-    "NAFNet SIDD (Fast)": (
-        "1xNAFNet-SIDD-width32.pth",
-        "1xNAFNet-SIDD-width32.pth",
-        1,
-        "nafnet",
+
+    "DRUNET (Slow)": (
+        "drunet_color.pth",
+        "drunet_color.pth",
+        "1",
+        "drunet"
     ),
 }
 """"DeH264 RTMoSR Unshuffle (UltraFast)": (
