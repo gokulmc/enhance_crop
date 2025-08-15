@@ -163,12 +163,7 @@ tensorrtInterpolateModels = {
     ),
 }
 ncnnUpscaleModels = {
-    "OpenProteus (Realistic) (HD Input) (2X) (Fast)": (
-        "2x_OpenProteus_Compact_i2_70K",
-        "2x_OpenProteus_Compact_i2_70K.tar.gz",
-        2,
-        "Compact",
-    ),
+    
     
     "Nomos8k (Realistic) (High Quality Source) (4X) (Fast)": (
         "4xNomos8k_span_otf_weak",
@@ -187,6 +182,12 @@ ncnnUpscaleModels = {
         "4xNomos8k_span_otf_strong.tar.gz",
         4,
         "SPAN",
+    ),
+    "OpenProteus (Realistic) (HD Input) (2X) (Fast)": (
+        "2x_OpenProteus_Compact_i2_70K",
+        "2x_OpenProteus_Compact_i2_70K.tar.gz",
+        2,
+        "Compact",
     ),
     "RealCUGAN Pro (Animation) (2X) (Slow)": (
         "up2x-conservative",
@@ -276,12 +277,7 @@ ncnnUpscaleModels = {
 }
 
 pytorchUpscaleModels = {
-    "OpenProteus (Realistic) (HD Input) (2X) (Fast)": (
-        "2x_OpenProteus_Compact_i2_70K.pth",
-        "2x_OpenProteus_Compact_i2_70K.pth",
-        2,
-        "Compact",
-    ),
+    
     "Nomos8k (Realistic) (High Quality Source) (4X) (Fast)": (
         "4xNomos8k_span_otf_weak_no_update_params.pth",
         "4xNomos8k_span_otf_weak_no_update_params.pth",
@@ -299,6 +295,12 @@ pytorchUpscaleModels = {
         "4xNomos8k_span_otf_strong_no_update_params.pth",
         4,
         "SPAN",
+    ),
+    "OpenProteus (Realistic) (HD Input) (2X) (Fast)": (
+        "2x_OpenProteus_Compact_i2_70K.pth",
+        "2x_OpenProteus_Compact_i2_70K.pth",
+        2,
+        "Compact",
     ),
     "RealisticVideo (4X) (Fast)": (
         "realesr-general-x4v3.pth",
@@ -365,12 +367,7 @@ pytorchUpscaleModels = {
 
 tensorrtUpscaleModels = {
 
-    "OpenProteus (Realistic) (HD Input) (2X) (Fast)": (
-        "2x_OpenProteus_Compact_i2_70K.pth",
-        "2x_OpenProteus_Compact_i2_70K.pth",
-        2,
-        "Compact",
-    ),
+    
 
     "Nomos8k (Realistic) (High Quality Source) (4X) (Fast)": (
         "4xNomos8k_span_otf_weak_no_update_params.pth",
@@ -389,6 +386,13 @@ tensorrtUpscaleModels = {
         "4xNomos8k_span_otf_strong_no_update_params.pth",
         4,
         "SPAN",
+    ),
+
+    "OpenProteus (Realistic) (HD Input) (2X) (Fast)": (
+        "2x_OpenProteus_Compact_i2_70K.pth",
+        "2x_OpenProteus_Compact_i2_70K.pth",
+        2,
+        "Compact",
     ),
     
     "RealisticVideo (4X) (Fast)": (
