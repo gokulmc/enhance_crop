@@ -249,9 +249,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             RegularQTPopup("Welcome to REAL Video Enhancer!\nPlease install at least one backend to get started.")
 
         # these additions are not ready for stable rve just yet.
-        self.denoiseContainer.setVisible(False)
+        #self.denoiseContainer.setVisible(False)
         self.deblurContainer.setVisible(False)
-        self.denoiseCheckBoxContainer.setVisible(False)
+        #self.denoiseCheckBoxContainer.setVisible(False)
         self.deblurCheckBoxContainer.setVisible(False)
 
         #player = QMediaPlayer()
