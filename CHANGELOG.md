@@ -17,6 +17,8 @@
  - Tiling not working on restoration models.
  - Windows setup not installing for all users.
  - Some settings not saving after restart.
+### Removed
+ - ROCm override hack.
 # RVE 2.3.4
 ### Added
  - Decompress
