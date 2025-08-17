@@ -65,6 +65,7 @@ class SettingsTab:
         pixel_fmt,
         self.settings.settings['audio_encoder'],
         self.settings.settings['audio_bitrate'],
+        hdr_mode,
         self.settings.settings['subtitle_encoder']).build_command()
         self.parent.EncoderCommand.setText(" ".join(command))
          

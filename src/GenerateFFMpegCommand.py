@@ -6,6 +6,7 @@ class FFMpegCommand:
                  video_pixel_format: str,
                  audio_encoder: str,
                  audio_bitrate: str,
+                 hdr_mode: bool,
                  subtitle_encoder: str):
         self._video_encoder = video_encoder
         self._video_quality = video_quality
@@ -13,8 +14,7 @@ class FFMpegCommand:
         self._audio_encoder = audio_encoder
         self._audio_bitrate = audio_bitrate
         self._subtitle_encoder = subtitle_encoder
-
-        
+        self._hdr_mode = hdr_mode
 
     def build_command(self):
         command = []
@@ -186,6 +186,9 @@ class FFMpegCommand:
         
         if self._audio_encoder != "copy_audio":
             command += ["-b:a",self._audio_bitrate]
+        
+        if self._hdr_mode:
+            command += ['-profile:v', 'high10']
         
         match self._subtitle_encoder:
             case "copy_subtitle":

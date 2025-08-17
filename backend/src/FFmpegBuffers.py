@@ -333,8 +333,8 @@ class FFmpegWrite(Buffer):
                 command += self.audio_encoder.getPostInputSettings().split()
                 command += self.subtitle_encoder.getPostInputSettings().split()
 
-            #command += ['-profile:v', 'high10']
-            """if self.color_space is not None:
+            
+            if self.color_space is not None:
                 command += [
                     "-colorspace",
                     self.color_space,
@@ -348,7 +348,7 @@ class FFmpegWrite(Buffer):
                 command += [
                     "-color_trc",
                     self.color_transfer,
-                ]"""
+                ]
 
 
             # color_primaries = ["bt709", "bt2020", "bt2020nc"]
