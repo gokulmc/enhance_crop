@@ -106,7 +106,7 @@ class FFMpegInfoWrapper(VideoInfo):
                 color_space = self.stream_line.split(",")[5].split("/")[1]
                 return color_space
             except Exception:
-                printAndLog("No known color space detected in the input file.")
+                log("No known color primaries detected in the input file.")
             return None
         return None
     
@@ -116,7 +116,7 @@ class FFMpegInfoWrapper(VideoInfo):
                 color_space = self.stream_line.split(",")[5].split("/")[2]
                 return color_space
             except Exception:
-                printAndLog("No known color space detected in the input file.")
+                log("No known color transfer detected in the input file.")
             return None
         return None
     
@@ -201,6 +201,7 @@ __all__ = ["FFMpegInfoWrapper", "OpenCVInfo"]
 
 if __name__ == "__main__":
     video_path = "/home/pax/Documents/test/LG New York HDR UHD 4K Demo.ts"
+    #video_path = "/home/pax/Videos/TVアニメ「WIND BREAKER Season 2」ノンクレジットオープニング映像「BOYZ」SixTONES [AWlUVr7Du04]_gmfss-pro_deh264-span_janai-v2_72.0fps_3840x2160.mkv"
     """print("Using FFMpeg:")
     video_info = FFMpegInfoWrapper(video_path)
     print(f"Duration: {video_info.get_duration_seconds()} seconds")

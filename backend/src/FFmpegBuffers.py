@@ -23,7 +23,7 @@ class Buffer(ABC):
 
 
 class FFmpegRead(Buffer):
-    def __init__(self, inputFile, width, height, start_time, end_time, borderX, borderY, hdr_mode, color_space=None, input_pixel_format: str | None = None):
+    def __init__(self, inputFile, width, height, start_time, end_time, borderX, borderY, hdr_mode, color_space=None, color_primaries=None, color_transfer=None, input_pixel_format: str | None = None):
         self.inputFile = inputFile
         self.width = width
         self.height = height
@@ -33,6 +33,8 @@ class FFmpegRead(Buffer):
         self.borderY = borderY
         self.hdr_mode = hdr_mode
         self.color_space = color_space
+        self.color_primaries = color_primaries
+        self.color_transfer = color_transfer
         self.input_pixel_format = input_pixel_format
 
         if self.hdr_mode:
@@ -65,7 +67,16 @@ class FFmpegRead(Buffer):
                 "-colorspace",
                 self.color_space,
             ]
-            
+        if self.color_primaries is not None:
+            command += [
+                "-color_primaries",
+                self.color_primaries,
+            ]
+        if self.color_transfer is not None:
+            command += [
+                "-color_trc",
+                self.color_transfer,
+            ]
 
         command += [
             "-vf",
@@ -152,6 +163,8 @@ class FFmpegWrite(Buffer):
         mpv_output: bool,
         merge_subtitles: bool,
         color_space: str = None,
+        color_primaries: str = None,
+        color_transfer: str = None,
     ):
         self.inputFile = inputFile
         self.outputFile = outputFile
@@ -184,6 +197,8 @@ class FFmpegWrite(Buffer):
         self.framesRendered: int = 1
         self.writeProcess = None
         self.color_space = color_space
+        self.color_primaries = color_primaries
+        self.color_transfer = color_transfer
         self.merge_subtitles = merge_subtitles
         log(f"FFmpegWrite parameters: inputFile={inputFile}, outputFile={outputFile}, width={width}, height={height}, start_time={start_time}, end_time={end_time}, fps={fps}, crf={crf}, audio_bitrate={audio_bitrate}, pixelFormat={pixelFormat}, overwrite={overwrite}, custom_encoder={custom_encoder}, benchmark={benchmark}, slowmo_mode={slowmo_mode}, upscaleTimes={upscaleTimes}, interpolateFactor={interpolateFactor}, ceilInterpolateFactor={ceilInterpolateFactor}, video_encoder={video_encoder}, audio_encoder={audio_encoder}, subtitle_encoder={subtitle_encoder}, hdr_mode={hdr_mode}, mpv_output={mpv_output}, merge_subtitles={merge_subtitles}")
         self.outputFPS = (
@@ -262,7 +277,7 @@ class FFmpegWrite(Buffer):
                     self.pixelFormat,
                 ]
 
-                color_primaries = ["bt709", "bt2020", "bt2020nc"]
+                
                 
             command += [
                 "-",
@@ -318,12 +333,23 @@ class FFmpegWrite(Buffer):
                 command += self.audio_encoder.getPostInputSettings().split()
                 command += self.subtitle_encoder.getPostInputSettings().split()
 
-
-            if self.color_space is not None:
+            #command += ['-profile:v', 'high10']
+            """if self.color_space is not None:
                 command += [
                     "-colorspace",
                     self.color_space,
                 ]
+            if self.color_primaries is not None:
+                command += [
+                    "-color_primaries",
+                    self.color_primaries,
+                ]
+            if self.color_transfer is not None:
+                command += [
+                    "-color_trc",
+                    self.color_transfer,
+                ]"""
+
 
             # color_primaries = ["bt709", "bt2020", "bt2020nc"]
             
@@ -343,10 +369,7 @@ class FFmpegWrite(Buffer):
                 
                 if self.hdr_mode:
                     
-                    encoder_tags = ["libx265", "x265_nvenc"]
-                    if self.video_encoder.getPresetTag() not in encoder_tags:
-                        print("\n\nHDR mode is enabled, but the encoder does not support HDR. Please use libx265 for HDR.\n",file=sys.stderr)
-                        os._exit(1)
+                    
 
                     # override pixel format
                     pxfmtdict = {

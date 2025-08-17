@@ -158,6 +158,8 @@ class Render:
         )
         self.fps = videoInfo.get_fps()
         color_space = videoInfo.get_color_space()
+        color_primaries = videoInfo.get_color_primaries()
+        color_transfer = videoInfo.get_color_transfer()
 
         video_encoder = EncoderSettings(video_encoder_preset)
         audio_encoder = EncoderSettings(audio_encoder_preset, type="audio")
@@ -224,6 +226,8 @@ class Render:
             borderY=self.borderY,
             hdr_mode=hdr_mode,
             color_space=color_space,
+            color_primaries=color_primaries,
+            color_transfer=color_transfer,
             input_pixel_format=input_pix_fmt,
         )
 
@@ -252,6 +256,8 @@ class Render:
             hdr_mode=hdr_mode,
             merge_subtitles=merge_subtitles,
             color_space=color_space,
+            color_primaries=color_primaries,
+            color_transfer=color_transfer,
         )
 
         shm_mul = self.override_upscale_scale if self.override_upscale_scale else self.upscaleTimes

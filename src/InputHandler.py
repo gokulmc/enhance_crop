@@ -60,14 +60,31 @@ class FFMpegInfoWrapper:
     
     def get_color_space(self) -> str:
         if self.stream_line:
-        
-            color_spaces = ["bt709", "bt2020nc", "bt2020"]
-            # color_trcs = ["smpte170m", "smpte240m", "smpte2084", "smpte428", "smpte431", "smpte432"]
-            for color_space in color_spaces:
-                if color_space in self.stream_line:
-                    log(f"Color space detected: {color_space}")
-                    return color_space
-            log("No known color space detected in the input file.")
+            try:
+                color_space = self.stream_line.split(",")[5].split("/")[0]
+                return color_space
+            except Exception:
+                log("No known color space detected in the input file.")
+            return None
+        return None
+    
+    def get_color_primaries(self) -> str:
+        if self.stream_line:
+            try:
+                color_space = self.stream_line.split(",")[5].split("/")[1]
+                return color_space
+            except Exception:
+                log("No known color primaries detected in the input file.")
+            return None
+        return None
+    
+    def get_color_transfer(self) -> str:
+        if self.stream_line:
+            try:
+                color_space = self.stream_line.split(",")[5].split("/")[2]
+                return color_space
+            except Exception:
+                log("No known color transfer detected in the input file.")
             return None
         return None
     
