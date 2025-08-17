@@ -8,11 +8,11 @@ import sys
 
 if not __name__ == "__main__":
     from ..constants import FFMPEG_PATH
-    from .Util import log, subprocess_popen_without_terminal
+    from .Util import log, subprocess_popen_without_terminal, printAndLog
 
 else:
     FFMPEG_PATH = "./bin/ffmpeg"
-    from Util import log, subprocess_popen_without_terminal
+    from Util import log, subprocess_popen_without_terminal, printAndLog
 
 class VideoInfo(ABC):
     @abstractmethod
@@ -92,14 +92,31 @@ class FFMpegInfoWrapper(VideoInfo):
     
     def get_color_space(self) -> str:
         if self.stream_line:
-        
-            color_spaces = ["bt709", "bt2020nc", "bt2020"]
-            # color_trcs = ["smpte170m", "smpte240m", "smpte2084", "smpte428", "smpte431", "smpte432"]
-            for color_space in color_spaces:
-                if color_space in self.stream_line:
-                    log(f"Color space detected: {color_space}")
-                    return color_space
-            log("No known color space detected in the input file.")
+            try:
+                color_space = self.stream_line.split(",")[5].split("/")[0]
+                return color_space
+            except Exception:
+                printAndLog("No known color space detected in the input file.")
+            return None
+        return None
+    
+    def get_color_primaries(self) -> str:
+        if self.stream_line:
+            try:
+                color_space = self.stream_line.split(",")[5].split("/")[1]
+                return color_space
+            except Exception:
+                printAndLog("No known color space detected in the input file.")
+            return None
+        return None
+    
+    def get_color_transfer(self) -> str:
+        if self.stream_line:
+            try:
+                color_space = self.stream_line.split(",")[5].split("/")[2]
+                return color_space
+            except Exception:
+                printAndLog("No known color space detected in the input file.")
             return None
         return None
     
@@ -170,6 +187,11 @@ class OpenCVInfo(VideoInfo):
     def get_pixel_format(self) -> str:
         return self.ffmpeg_info.get_pixel_format()
     
+    def get_color_transfer(self) -> str:
+        return self.ffmpeg_info.get_color_transfer()
+
+    def get_color_primaries(self) -> str:
+        return self.ffmpeg_info.get_color_primaries()
 
     def __del__(self):
         self.cap.release()
@@ -178,18 +200,21 @@ class OpenCVInfo(VideoInfo):
 __all__ = ["FFMpegInfoWrapper", "OpenCVInfo"]
 
 if __name__ == "__main__":
-    video_path = "/home/pax/Downloads/CodeGeassR2-OP2.webm"
-    print("Using FFMpeg:")
+    video_path = "/home/pax/Documents/test/LG New York HDR UHD 4K Demo.ts"
+    """print("Using FFMpeg:")
     video_info = FFMpegInfoWrapper(video_path)
     print(f"Duration: {video_info.get_duration_seconds()} seconds")
     print(f"Total Frames: {video_info.get_total_frames()}")
     print(f"Resolution: {video_info.get_width_x_height()}")
     print(f"FPS: {video_info.get_fps()}")
     print(f"Color Space: {video_info.get_color_space()}")
-    print("\nUsing OpenCV:")
+    print("\nUsing OpenCV:")"""
     video_info = OpenCVInfo(video_path)
     print(f"Duration: {video_info.get_duration_seconds()} seconds")
     print(f"Total Frames: {video_info.get_total_frames()}")
     print(f"Resolution: {video_info.get_width_x_height()}")
     print(f"FPS: {video_info.get_fps()}")
     print(f"Color Space: {video_info.get_color_space()}")
+    print(f"Color Transfer: {video_info.get_color_transfer()}")
+    print(f"Color Primaries: {video_info.get_color_primaries()}")
+    print(f"Pixel Format: {video_info.get_pixel_format()}")
