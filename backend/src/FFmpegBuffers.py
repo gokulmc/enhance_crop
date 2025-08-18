@@ -62,21 +62,6 @@ class FFmpegRead(Buffer):
             f"{self.inputFile}",
         ]
         
-        if self.color_space is not None:
-            command += [
-                "-colorspace",
-                self.color_space,
-            ]
-        if self.color_primaries is not None:
-            command += [
-                "-color_primaries",
-                self.color_primaries,
-            ]
-        if self.color_transfer is not None:
-            command += [
-                "-color_trc",
-                self.color_transfer,
-            ]
 
         command += [
             "-vf",
@@ -334,7 +319,7 @@ class FFmpegWrite(Buffer):
                 command += self.subtitle_encoder.getPostInputSettings().split()
 
             
-            if self.color_space is not None:
+            """if self.color_space is not None:
                 command += [
                     "-colorspace",
                     self.color_space,
@@ -348,13 +333,14 @@ class FFmpegWrite(Buffer):
                 command += [
                     "-color_trc",
                     self.color_transfer,
-                ]
+                ]"""
 
 
             # color_primaries = ["bt709", "bt2020", "bt2020nc"]
             
                 
             if self.custom_encoder is not None:
+
                 for i in self.custom_encoder.split():
                     command.append(i)
                 log(f"Custom Encoder Settings: {self.custom_encoder}")

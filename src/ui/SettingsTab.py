@@ -5,6 +5,7 @@ from ..constants import PLATFORM, HOME_PATH
 from ..Util import currentDirectory, checkForWritePermissions, open_folder, log
 from .QTcustom import RegularQTPopup
 from ..GenerateFFMpegCommand import FFMpegCommand
+from ..InputHandler import FFMpegInfoWrapper
 
 class SettingsTab:
     def __init__(
@@ -37,9 +38,9 @@ class SettingsTab:
         self.parent.pytorch_gpu_id.setMaximum(total_pytorch_gpus)
         self.parent.ncnn_gpu_id.setMaximum(total_ncnn_gpus)
         self.parent.openRVEFolderBtn.clicked.connect(lambda:open_folder(currentDirectory()))
-        
+
         self.updateFFMpegCommand()
-    
+
     def updateFFMpegCommand(self):
         """
         Updates the FFMpegCommand object with the current settings.
@@ -49,6 +50,9 @@ class SettingsTab:
         
         pixel_fmt = self.settings.settings['video_pixel_format']
         hdr_mode = self.parent.hdrModeCheckBox.isChecked() 
+        color_space = None
+        color_primaries = None
+        color_transfer = None
         if hdr_mode:
             pxfmtdict = {
                         "yuv420p": "yuv420p10le",
@@ -58,7 +62,14 @@ class SettingsTab:
 
             if pixel_fmt in pxfmtdict:
                 pixel_fmt = pxfmtdict[pixel_fmt]
-        
+
+        input_file = self.parent.inputFileText.text()
+        if input_file and len(input_file) > 1:
+            ffmpegInfoWrapper = FFMpegInfoWrapper(input_file)
+            color_space = ffmpegInfoWrapper.get_color_space()
+            color_primaries = ffmpegInfoWrapper.get_color_primaries()
+            color_transfer = ffmpegInfoWrapper.get_color_transfer()
+
         command = FFMpegCommand(
         self.settings.settings['encoder'].replace(' (experimental)', '').replace(' (40 series and up)', ''),
         self.settings.settings['video_quality'],
@@ -66,8 +77,13 @@ class SettingsTab:
         self.settings.settings['audio_encoder'],
         self.settings.settings['audio_bitrate'],
         hdr_mode,
-        self.settings.settings['subtitle_encoder']).build_command()
-        self.parent.EncoderCommand.setText(" ".join(command))
+        self.settings.settings['subtitle_encoder'],
+        color_space,
+        color_primaries,
+        color_transfer,
+    ).build_command()
+        self.parent.EncoderCommand.setText(" ".join(command),
+        )
          
 
     def connectWriteSettings(self):
@@ -83,6 +99,9 @@ class SettingsTab:
                 "tensorrt_optimization_level",
                 self.parent.tensorrt_optimization_level.currentText(),
             )
+        )
+        self.parent.inputFileText.textChanged.connect(
+            self.updateFFMpegCommand
         )
         self.parent.encoder.currentIndexChanged.connect(
             self.updateFFMpegCommand

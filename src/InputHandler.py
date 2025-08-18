@@ -3,6 +3,7 @@ import re
 from typing import List
 from .Util import log, subprocess_popen_without_terminal
 from .constants import FFMPEG_PATH
+import sys
 
 class FFMpegInfoWrapper:
     def __init__(self, input_file: str):
@@ -20,21 +21,24 @@ class FFMpegInfoWrapper:
                 "null",
                 "/dev/null",
                 "-hide_banner",
-                "-v",
-                "debug"
+                
                 
         ]
 
         self.ffmpeg_output_raw:str = subprocess_popen_without_terminal(command,  stderr=subprocess.PIPE, errors="replace").stderr.read()
         self.ffmpeg_output_stripped = self.ffmpeg_output_raw.lower().strip()
-        for line in self.ffmpeg_output_raw.split("\n"):
-            if "Stream #" in line and "Video" in line:
-                self.stream_line = line
-                break
-        
-        log(f"Stream line: {self.stream_line}")
-        if self.stream_line is None:
-            log("No video stream found in the input file.")
+        try:
+            for line in self.ffmpeg_output_raw.split("\n"):
+                if "Stream #" in line and "Video" in line:
+                    self.stream_line = line
+                    break
+            
+            log(f"Stream line: {self.stream_line}")
+            if self.stream_line is None:
+                log("No video stream found in the input file.")
+        except Exception:
+            print(f"ERROR: Input file seems to have no video stream!", file=sys.stderr)
+            exit(1)
             
 
     def get_duration_seconds(self) -> float:
@@ -61,8 +65,12 @@ class FFMpegInfoWrapper:
     def get_color_space(self) -> str:
         if self.stream_line:
             try:
-                color_space = self.stream_line.split(",")[5].split("/")[0]
-                return color_space
+                color_space = self.stream_line.split("),")[1].split(",")[1].split("/")[0].strip()
+                if "progressive" in color_space.lower():
+                    return None
+                if len(color_space.strip()) > 1:
+                    log(f"Color Space: {color_space}")
+                    return color_space
             except Exception:
                 log("No known color space detected in the input file.")
             return None
@@ -71,8 +79,10 @@ class FFMpegInfoWrapper:
     def get_color_primaries(self) -> str:
         if self.stream_line:
             try:
-                color_space = self.stream_line.split(",")[5].split("/")[1]
-                return color_space
+                color_space = self.stream_line.split("),")[1].split("/")[1].strip()
+                if len(color_space.strip()) > 1:
+                    log(f"Color Primaries: {color_space}")
+                    return color_space
             except Exception:
                 log("No known color primaries detected in the input file.")
             return None
@@ -81,8 +91,10 @@ class FFMpegInfoWrapper:
     def get_color_transfer(self) -> str:
         if self.stream_line:
             try:
-                color_space = self.stream_line.split(",")[5].split("/")[2]
-                return color_space
+                color_space = self.stream_line.split("),")[1].split("/")[2].replace(")","").split(",")[0].strip()
+                if len(color_space.strip()) > 1:
+                    log(f"Color Transfer: {color_space}")
+                    return color_space
             except Exception:
                 log("No known color transfer detected in the input file.")
             return None
@@ -90,7 +102,7 @@ class FFMpegInfoWrapper:
     
     def get_pixel_format(self) -> str:
         try:
-            pixel_format = self.stream_line.split(",")[4].split("(")[0].strip()
+            pixel_format = self.stream_line.split(",")[1].split("(")[0].strip()
             log(f"Pixel Format: {pixel_format}")
         except Exception:
             log("ERROR: Cant detect pixel format.")

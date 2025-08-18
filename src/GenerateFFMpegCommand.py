@@ -7,7 +7,10 @@ class FFMpegCommand:
                  audio_encoder: str,
                  audio_bitrate: str,
                  hdr_mode: bool,
-                 subtitle_encoder: str):
+                 subtitle_encoder: str,
+                 color_space: str,
+                 color_primaries: str,
+                 color_transfer: str):
         self._video_encoder = video_encoder
         self._video_quality = video_quality
         self._video_pixel_format = video_pixel_format
@@ -15,9 +18,36 @@ class FFMpegCommand:
         self._audio_bitrate = audio_bitrate
         self._subtitle_encoder = subtitle_encoder
         self._hdr_mode = hdr_mode
+        self._color_space = color_space
+        self._color_primaries = color_primaries
+        self._color_transfer = color_transfer
 
     def build_command(self):
         command = []
+        encoder_params = ":hdr-opt=1"
+        if self._color_primaries is not None:
+            command += [
+                "-color_primaries",
+                self._color_primaries,
+            ]
+            encoder_params += f":colorprim={self._color_primaries}:"
+        if self._color_transfer is not None:
+            command += [
+                "-color_trc",
+                self._color_transfer,
+            ]
+            encoder_params += f":transfer={self._color_transfer}:"
+        if self._color_space is not None:
+            command += [
+                "-colorspace",
+                self._color_space,
+            ]
+            encoder_params += f":colormatrix={self._color_space}:"
+        
+        
+        if len(encoder_params) > 3:
+            encoder_params = encoder_params[1:-1].replace("::", ":") # remove leading and trailing colons
+
         match self._video_encoder:
             case "libx264":
                 command +=["-c:v","libx264"]
@@ -30,6 +60,8 @@ class FFMpegCommand:
                         command +=["-crf","23"]
                     case "Low":
                         command +=["-crf","28"]
+                if self._hdr_mode:
+                    command += ["-x264-params", f'"{encoder_params}"']
                 
                 
             case "libx265":
@@ -43,6 +75,9 @@ class FFMpegCommand:
                         command +=["-crf","23"]
                     case "Low":
                         command +=["-crf","28"]
+
+                if self._hdr_mode:
+                    command += ["-x265-params", f'"{encoder_params}"']
                 
             case "vp9":
                 command +=["-c:v","libvpx-vp9"]
@@ -186,9 +221,10 @@ class FFMpegCommand:
         
         if self._audio_encoder != "copy_audio":
             command += ["-b:a",self._audio_bitrate]
+
         
-        if self._hdr_mode:
-            command += ['-profile:v', 'high10']
+        
+        
         
         match self._subtitle_encoder:
             case "copy_subtitle":
