@@ -69,7 +69,7 @@ def printAndLog(message: str, separate=False):
     """
     if separate:
         message = message + "\n" + "---------------------"
-    print(message)
+    print(message, file=sys.stderr)
     log(message=message)
 
 
