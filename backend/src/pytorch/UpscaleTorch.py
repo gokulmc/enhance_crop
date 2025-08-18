@@ -136,11 +136,10 @@ class UpscalePytorch:
 
     @torch.inference_mode()
     def _load(self):
-        if self.videoWidth <= 1920 and self.videoHeight <= 1920 and (self.videoWidth >= 128 and self.videoHeight >= 128):
 
-            self.trt_min_shape = [128, 128]
-            self.trt_opt_shape = [1920, 1080]
-            self.trt_max_shape = [1920, 1920]
+        self.trt_min_shape = [128, 128]
+        self.trt_opt_shape = [1920, 1080]
+        self.trt_max_shape = [1920, 1920]
         
 
         if self.videoWidth > 1920 or self.videoHeight > 1920 and not self.trt_static_shape:
