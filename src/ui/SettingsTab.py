@@ -93,6 +93,10 @@ class SettingsTab:
         self.parent.EncoderCommand.setText(" ".join(command),
         )
          
+    def hdr_warn(self):
+        if self.parent.hdrModeCheckBox.isChecked():
+            RegularQTPopup("HDR is only color tested on x264 and x265 encoders.")
+        self.updateFFMpegCommand()
 
     def connectWriteSettings(self):
         
@@ -127,7 +131,7 @@ class SettingsTab:
             self.updateFFMpegCommand
         )
         self.parent.hdrModeCheckBox.stateChanged.connect(
-            self.updateFFMpegCommand
+            self.hdr_warn 
         )
         self.parent.video_quality.currentIndexChanged.connect(
             self.updateFFMpegCommand
