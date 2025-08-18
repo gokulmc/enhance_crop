@@ -95,7 +95,7 @@ class SettingsTab:
          
     def hdr_warn(self):
         if self.parent.hdrModeCheckBox.isChecked():
-            RegularQTPopup("HDR is only color tested on x264 and x265 encoders.")
+            RegularQTPopup("HDR is only color tested on x264 and x265 encoders.\nThe preview colors may be distorted as the preview itself is not HDR.")
         self.updateFFMpegCommand()
 
     def connectWriteSettings(self):
