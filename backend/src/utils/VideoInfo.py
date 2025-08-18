@@ -48,8 +48,7 @@ class FFMpegInfoWrapper(VideoInfo):
                 "null",
                 "/dev/null",
                 "-hide_banner",
-                "-v",
-                "debug"
+                
                 
         ]
 
@@ -93,8 +92,12 @@ class FFMpegInfoWrapper(VideoInfo):
     def get_color_space(self) -> str:
         if self.stream_line:
             try:
-                color_space = self.stream_line.split(",")[5].split("/")[0]
-                return color_space
+                color_space = self.stream_line.split("),")[1].split(",")[1].split("/")[0].strip()
+                if "progressive" in color_space.lower():
+                    return None
+                if len(color_space.strip()) > 1:
+                    log(f"Color Space: {color_space}")
+                    return color_space
             except Exception:
                 printAndLog("No known color space detected in the input file.")
             return None
@@ -103,8 +106,10 @@ class FFMpegInfoWrapper(VideoInfo):
     def get_color_primaries(self) -> str:
         if self.stream_line:
             try:
-                color_space = self.stream_line.split(",")[5].split("/")[1]
-                return color_space
+                color_space = self.stream_line.split("),")[1].split("/")[1].strip()
+                if len(color_space.strip()) > 1:
+                    log(f"Color Primaries: {color_space}")
+                    return color_space
             except Exception:
                 log("No known color primaries detected in the input file.")
             return None
@@ -113,8 +118,10 @@ class FFMpegInfoWrapper(VideoInfo):
     def get_color_transfer(self) -> str:
         if self.stream_line:
             try:
-                color_space = self.stream_line.split(",")[5].split("/")[2]
-                return color_space
+                color_space = self.stream_line.split("),")[1].split("/")[2].replace(")","").strip()
+                if len(color_space.strip()) > 1:
+                    log(f"Color Transfer: {color_space}")
+                    return color_space
             except Exception:
                 log("No known color transfer detected in the input file.")
             return None
@@ -122,7 +129,7 @@ class FFMpegInfoWrapper(VideoInfo):
     
     def get_pixel_format(self) -> str:
         try:
-            pixel_format = self.stream_line.split(",")[4].split("(")[0].strip()
+            pixel_format = self.stream_line.split(",")[1].split("(")[0].strip()
             log(f"Pixel Format: {pixel_format}")
         except Exception:
             log("ERROR: Cant detect pixel format.")
@@ -200,6 +207,7 @@ class OpenCVInfo(VideoInfo):
 __all__ = ["FFMpegInfoWrapper", "OpenCVInfo"]
 
 if __name__ == "__main__":
+    #video_path = "/home/pax/Downloads/juggle.mp4"
     video_path = "/home/pax/Documents/test/LG New York HDR UHD 4K Demo.ts"
     #video_path = "/home/pax/Videos/TVアニメ「WIND BREAKER Season 2」ノンクレジットオープニング映像「BOYZ」SixTONES [AWlUVr7Du04]_gmfss-pro_deh264-span_janai-v2_72.0fps_3840x2160.mkv"
     """print("Using FFMpeg:")
