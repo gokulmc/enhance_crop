@@ -118,7 +118,7 @@ class FFMpegInfoWrapper(VideoInfo):
     def get_color_transfer(self) -> str:
         if self.stream_line:
             try:
-                color_space = self.stream_line.split("),")[1].split("/")[2].replace(")","").strip()
+                color_space = self.stream_line.split("),")[1].split("/")[2].replace(")","").split(",")[0].strip()
                 if len(color_space.strip()) > 1:
                     log(f"Color Transfer: {color_space}")
                     return color_space
@@ -208,7 +208,8 @@ __all__ = ["FFMpegInfoWrapper", "OpenCVInfo"]
 
 if __name__ == "__main__":
     #video_path = "/home/pax/Downloads/juggle.mp4"
-    video_path = "/home/pax/Documents/test/LG New York HDR UHD 4K Demo.ts"
+    #video_path = "/home/pax/Documents/test/LG New York HDR UHD 4K Demo.ts"
+    video_path = "/home/pax/Documents/test/out.mkv"
     #video_path = "/home/pax/Videos/TVアニメ「WIND BREAKER Season 2」ノンクレジットオープニング映像「BOYZ」SixTONES [AWlUVr7Du04]_gmfss-pro_deh264-span_janai-v2_72.0fps_3840x2160.mkv"
     """print("Using FFMpeg:")
     video_info = FFMpegInfoWrapper(video_path)
