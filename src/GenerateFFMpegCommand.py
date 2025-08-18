@@ -24,7 +24,7 @@ class FFMpegCommand:
 
     def build_command(self):
         command = []
-        encoder_params = ":hdr-opt=1"
+        encoder_params = ":hdr-opt=1:"
         if self._color_primaries is not None:
             command += [
                 "-color_primaries",

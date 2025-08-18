@@ -16,6 +16,11 @@ class SettingsTab:
         total_ncnn_gpus,
     ):
         self.parent = parent
+        self.input_file = None
+        self.ffmpegInfoWrapper = None
+        self.color_space = None
+        self.color_primaries = None
+        self.color_transfer = None
         self.ffmpeg_settings_dict = {
             "encoder": self.parent.encoder,
             "audio_encoder": self.parent.audio_encoder,
@@ -38,6 +43,7 @@ class SettingsTab:
         self.parent.pytorch_gpu_id.setMaximum(total_pytorch_gpus)
         self.parent.ncnn_gpu_id.setMaximum(total_ncnn_gpus)
         self.parent.openRVEFolderBtn.clicked.connect(lambda:open_folder(currentDirectory()))
+        
 
         self.updateFFMpegCommand()
 
@@ -50,9 +56,7 @@ class SettingsTab:
         
         pixel_fmt = self.settings.settings['video_pixel_format']
         hdr_mode = self.parent.hdrModeCheckBox.isChecked() 
-        color_space = None
-        color_primaries = None
-        color_transfer = None
+        
         if hdr_mode:
             pxfmtdict = {
                         "yuv420p": "yuv420p10le",
@@ -64,11 +68,15 @@ class SettingsTab:
                 pixel_fmt = pxfmtdict[pixel_fmt]
 
         input_file = self.parent.inputFileText.text()
-        if input_file and len(input_file) > 1:
-            ffmpegInfoWrapper = FFMpegInfoWrapper(input_file)
-            color_space = ffmpegInfoWrapper.get_color_space()
-            color_primaries = ffmpegInfoWrapper.get_color_primaries()
-            color_transfer = ffmpegInfoWrapper.get_color_transfer()
+        if input_file and len(input_file) > 1: # caching is nice
+            if self.input_file != input_file:
+                self.input_file = input_file
+                self.ffmpegInfoWrapper = FFMpegInfoWrapper(self.input_file)
+
+        if self.ffmpegInfoWrapper:
+            self.color_space = self.ffmpegInfoWrapper.get_color_space()
+            self.color_primaries = self.ffmpegInfoWrapper.get_color_primaries()
+            self.color_transfer = self.ffmpegInfoWrapper.get_color_transfer()
 
         command = FFMpegCommand(
         self.settings.settings['encoder'].replace(' (experimental)', '').replace(' (40 series and up)', ''),
@@ -78,9 +86,9 @@ class SettingsTab:
         self.settings.settings['audio_bitrate'],
         hdr_mode,
         self.settings.settings['subtitle_encoder'],
-        color_space,
-        color_primaries,
-        color_transfer,
+        self.color_space,
+        self.color_primaries,
+        self.color_transfer,
     ).build_command()
         self.parent.EncoderCommand.setText(" ".join(command),
         )
