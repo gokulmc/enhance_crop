@@ -52,7 +52,7 @@ class FFMpegCommand:
             case "libx264":
                 command +=["-c:v","libx264"]
                 match self._video_quality:
-                    case "Very High" | "Very_High":
+                    case "Very_High":
                         command +=["-crf","15"]
                     case "High":
                         command +=["-crf","18"]
@@ -67,7 +67,7 @@ class FFMpegCommand:
             case "libx265":
                 command +=["-c:v","libx265"]
                 match self._video_quality:
-                    case "Very High" | "Very_High":
+                    case "Very_High":
                         command +=["-crf","15"]
                     case "High":
                         command +=["-crf","18"]
@@ -82,7 +82,7 @@ class FFMpegCommand:
             case "vp9":
                 command +=["-c:v","libvpx-vp9"]
                 match self._video_quality:
-                    case "Very High" | "Very_High":
+                    case "Very_High":
                         command +=["-crf","15"]
                     case "High":
                         command +=["-crf","20"]
@@ -93,7 +93,7 @@ class FFMpegCommand:
             case "av1":
                 command +=["-c:v","libsvtav1"]
                 match self._video_quality:
-                    case "Very High" | "Very_High":
+                    case "Very_High":
                         command +=["-cq:v","15"]
                     case "High":
                         command +=["-cq:v","18"]
@@ -104,7 +104,7 @@ class FFMpegCommand:
             case "ffv1":
                 command +=["-c:v","ffv1"]
                 match self._video_quality:
-                    case "Very High" | "Very_High":
+                    case "Very_High":
                         command +=["-level","3"]
                     case "High":
                         command +=["-level","4"]
@@ -115,7 +115,7 @@ class FFMpegCommand:
             case "prores":
                 command +=["-c:v","prores_ks"]
                 match self._video_quality:
-                    case "Very High" | "Very_High":
+                    case "Very_High":
                         command +=["-profile:v","3"]
                     case "High":
                         command +=["-profile:v","2"]
@@ -129,7 +129,7 @@ class FFMpegCommand:
             case "x264_nvenc":
                 command +=["-c:v","h264_nvenc"]
                 match self._video_quality:
-                    case "Very High" | "Very_High":
+                    case "Very_High":
                         command +=["-cq:v","15"]
                     case "High":
                         command +=["-cq:v","18"]
@@ -140,7 +140,7 @@ class FFMpegCommand:
             case "x265_nvenc":
                 command +=["-c:v","hevc_nvenc"]
                 match self._video_quality:
-                    case "Very High" | "Very_High":
+                    case "Very_High":
                         command +=["-cq:v","15"]
                     case "High":
                         command +=["-cq:v","18"]
@@ -151,7 +151,7 @@ class FFMpegCommand:
             case "av1_nvenc":
                 command +=["-c:v","av1_nvenc"]
                 match self._video_quality:
-                    case "Very High" | "Very_High":
+                    case "Very_High":
                         command +=["-cq:v","15"]
                     case "High":
                         command +=["-cq:v","18"]
@@ -162,7 +162,7 @@ class FFMpegCommand:
             case "h264_vaapi":
                 command +=["-c:v","h264_vaapi"]
                 match self._video_quality:
-                    case "Very High" | "Very_High":
+                    case "Very_High":
                         command +=["-crf","15"]
                     case "High":
                         command +=["-crf","18"]
@@ -173,7 +173,7 @@ class FFMpegCommand:
             case "h265_vaapi":
                 command +=["-c:v","hevc_vaapi"]
                 match self._video_quality:
-                    case "Very High" | "Very_High":
+                    case "Very_High":
                         command +=["-crf","15"]
                     case "High":
                         command +=["-crf","18"]
@@ -184,7 +184,7 @@ class FFMpegCommand:
             case "av1_vaapi":
                 command +=["-c:v","av1_vaapi"]
                 match self._video_quality:
-                    case "Very High" | "Very_High":
+                    case "Very_High":
                         command +=["-crf","15"]
                     case "High":
                         command +=["-crf","18"]
@@ -196,7 +196,7 @@ class FFMpegCommand:
             case _:
                 command +=["-c:v","libx264"]
                 match self._video_quality:
-                    case "Very High" | "Very_High":
+                    case "Very_High":
                         command +=["-crf","15"]
                     case "High":
                         command +=["-crf","18"]
