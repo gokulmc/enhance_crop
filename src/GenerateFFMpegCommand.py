@@ -124,10 +124,11 @@ class FFMpegCommand:
                     case "Low":
                         command +=["-profile:v","0"]
             case "x264_vulkan":
+                command +=['-init_hw_device', 'vulkan=vkdev:0', '-filter_hw_device', 'vkdev', '-filter:v', f'format={self._video_pixel_format},hwupload']
                 command +=["-c:v","h264_vulkan"]
                 command +=["-quality","0"]
             case "x264_nvenc":
-                command +=["-c:v","h264_nvenc"]
+                command +=["-hwaccel","cuda","-hwaccel_output_format","cuda","-c:v","h264_nvenc"]
                 match self._video_quality:
                     case "Very_High":
                         command +=["-cq:v","15"]
@@ -137,8 +138,10 @@ class FFMpegCommand:
                         command +=["-cq:v","23"]
                     case "Low":
                         command +=["-cq:v","28"]
+                """if self._hdr_mode:
+                    command += ["-x264-params", f'"{encoder_params}"']"""
             case "x265_nvenc":
-                command +=["-c:v","hevc_nvenc"]
+                command +=["-hwaccel","cuda","-hwaccel_output_format","cuda","-c:v","hevc_nvenc"]
                 match self._video_quality:
                     case "Very_High":
                         command +=["-cq:v","15"]
@@ -148,6 +151,8 @@ class FFMpegCommand:
                         command +=["-cq:v","23"]
                     case "Low":
                         command +=["-cq:v","28"]
+                """if self._hdr_mode:
+                    command += ["-x265-params", f'"{encoder_params}"']"""
             case "av1_nvenc":
                 command +=["-c:v","av1_nvenc"]
                 match self._video_quality:
