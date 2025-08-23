@@ -572,6 +572,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         output_path = self.outputFileText.text()
 
         if "{MULTIPLE_FILES}" in input_file.strip().replace(" ", ""):
+            output_path = os.path.dirname(output_path)
             for video in self.batchVideos:
                 videoHandler = VideoLoader(video)
                 videoHandler.loadVideo()
@@ -587,7 +588,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.colorSpace = videoHandler.color_space
                 self.pixelFMT = videoHandler.pixel_format
 
-                output_path = os.path.dirname(output_path)
+                
 
                 # set output_path for checking
                 default_output_path = self.setDefaultOutputFile(

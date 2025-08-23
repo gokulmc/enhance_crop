@@ -38,8 +38,7 @@ class FFMpegInfoWrapper:
                 log("No video stream found in the input file.")
         except Exception:
             print(f"ERROR: Input file seems to have no video stream!", file=sys.stderr)
-            exit(1)
-            
+            self.stream_line = ""            
 
     def get_duration_seconds(self) -> float:
         total_duration:float = 0.0

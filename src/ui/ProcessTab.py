@@ -518,16 +518,6 @@ class ProcessTab:
             f"{CWD}",
 
         ]
-        if renderOptions.startTime is not None:
-            command += [
-                "--start_time",
-                f"{renderOptions.startTime}",
-            ]
-        if renderOptions.endTime is not None:
-            command += [
-                "--end_time",
-                f"{renderOptions.endTime}",
-            ]
 
         if renderOptions.upscaleModelFile:
             modelPath = os.path.join(MODELS_PATH, renderOptions.upscaleModelFile)
