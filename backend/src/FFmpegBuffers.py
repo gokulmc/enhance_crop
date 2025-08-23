@@ -215,7 +215,7 @@ class FFmpegWrite(Buffer):
                 "-loglevel",
                 "error",
                 "-framerate",
-                f"{self.fps*self.ceilInterpolateFactor if not self.slowmo_mode else self.fps}",
+                f"{self.outputFPS}",
                 "-f",
                 "rawvideo",
                 "-pix_fmt",
@@ -286,7 +286,7 @@ class FFmpegWrite(Buffer):
 
             command += [
                 "-framerate",
-                f"{self.fps*self.ceilInterpolateFactor if not self.slowmo_mode else self.fps}",
+                f"{self.outputFPS}",
                 "-f",
                 "rawvideo",
                 "-pix_fmt",
