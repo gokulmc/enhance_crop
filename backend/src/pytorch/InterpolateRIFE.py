@@ -92,7 +92,8 @@ class InterpolateRifeTorch(BaseInterpolate):
         )  # use the model directory as the cache directory
         self.UHDMode = UHDMode
         if self.UHDMode:
-            self.scale = 0.5
+            print("UHD Mode has been depricated for RIFE.", file=sys.stderr)
+            self.scale = 1
         
         if drba:
             fps = 24

@@ -20,6 +20,7 @@
  - Some settings not saving after restart.
 ### Removed
  - ROCm override hack.
+ - Interpolation UHD Mode for RIFE.
 # RVE 2.3.4
 ### Added
  - Decompress

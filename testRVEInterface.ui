@@ -2406,7 +2406,7 @@ border-radius:10px;
                                 <x>0</x>
                                 <y>0</y>
                                 <width>373</width>
-                                <height>608</height>
+                                <height>620</height>
                                </rect>
                               </property>
                               <property name="sizePolicy">
@@ -5015,7 +5015,7 @@ QTabWidget::pane { /* The tab widget frame */
                               </size>
                              </property>
                              <property name="toolTip">
-                              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Saves VRAM and speeds up inference at resolutions above 1080p by calculating flow at a lower resolution.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Saves VRAM and speeds up inference at resolutions above 1080p by calculating flow at a lower resolution. (GMFSS/GIMM)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                              </property>
                              <property name="text">
                               <string/>
@@ -5727,7 +5727,7 @@ color: red;
                       <x>0</x>
                       <y>0</y>
                       <width>797</width>
-                      <height>166</height>
+                      <height>178</height>
                      </rect>
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_13">
