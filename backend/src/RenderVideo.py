@@ -215,6 +215,7 @@ class Render:
         log(f"Interpolate Factor: {self.interpolateFactor}")
         log(f"Total Output Frames: {self.totalOutputFrames}")
         log("Model Scale: " + str(self.modelScale))
+        print("HDR Mode: " + str(hdr_mode), file=sys.stderr)
 
         self.readBuffer = FFmpegRead(  # input width
             inputFile=inputFile,

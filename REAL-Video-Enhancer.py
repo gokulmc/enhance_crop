@@ -561,7 +561,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             denoiseModelFile=denoiseModelFile if denoise else None,
             decompressModelFile=decompressModelFile if decompress else None,
             interpolateModelFile=interpolateModelFile if interpolate else None,
-            hdrMode=self.videoHDR if self.settings.settings["auto_hdr_mode"] == "True" else self.hdrModeCheckBox.isChecked(),
+            hdrMode=self.videoHDR if self.settings.settings["auto_hdr_mode"] == "True" else False,
             mergeSubtitles=self.mergeSubtitlesCheckBox.isChecked(),
             overrideUpscaleScale=upscaleTimes,
             encoderCommand=self.EncoderCommand.text(),

@@ -225,7 +225,7 @@ QScrollBar:horizontal{
              <string notr="true" />
             </property>
             <property name="currentIndex">
-             <number>3</number>
+             <number>2</number>
             </property>
             <widget class="QWidget" name="homePage">
              <property name="styleSheet">
@@ -2406,7 +2406,7 @@ border-radius:10px;
                                 <x>0</x>
                                 <y>0</y>
                                 <width>452</width>
-                                <height>620</height>
+                                <height>571</height>
                                </rect>
                               </property>
                               <property name="sizePolicy">
@@ -2599,75 +2599,6 @@ border-radius:10px;
                                     <property name="text">
                                      <string>General Settings</string>
                                     </property>
-                                   </widget>
-                                  </item>
-                                  <item>
-                                   <widget class="QWidget" name="widget_6" native="true">
-                                    <layout class="QHBoxLayout" name="horizontalLayout_37">
-                                     <item>
-                                      <widget class="QLabel" name="label_59">
-                                       <property name="font">
-                                        <font>
-                                         <pointsize>12</pointsize>
-                                        </font>
-                                       </property>
-                                       <property name="toolTip">
-                                        <string />
-                                       </property>
-                                       <property name="statusTip">
-                                        <string />
-                                       </property>
-                                       <property name="text">
-                                        <string>HDR Mode (Pytorch/TensorRT Only)</string>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item>
-                                      <spacer name="horizontalSpacer_22">
-                                       <property name="orientation">
-                                        <enum>Qt::Orientation::Horizontal</enum>
-                                       </property>
-                                       <property name="sizeHint" stdset="0">
-                                        <size>
-                                         <width>297</width>
-                                         <height>20</height>
-                                        </size>
-                                       </property>
-                                      </spacer>
-                                     </item>
-                                     <item>
-                                      <widget class="QLabel" name="label_55">
-                                       <property name="maximumSize">
-                                        <size>
-                                         <width>25</width>
-                                         <height>25</height>
-                                        </size>
-                                       </property>
-                                       <property name="toolTip">
-                                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;HDR Mode:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;- &lt;/span&gt;Enables necessary settings within ffmpeg to output a HDR video, and processces in rgb48 mode.&lt;/p&gt;&lt;p&gt; - Overrides &lt;span style=" font-weight:700; font-style:italic;"&gt;Auto HDR Mode&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                                       </property>
-                                       <property name="text">
-                                        <string />
-                                       </property>
-                                       <property name="pixmap">
-                                        <pixmap resource="resources.qrc">:/icons/icons/info.svg</pixmap>
-                                       </property>
-                                       <property name="scaledContents">
-                                        <bool>true</bool>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item>
-                                      <widget class="QCheckBox" name="hdrModeCheckBox">
-                                       <property name="styleSheet">
-                                        <string notr="true" />
-                                       </property>
-                                       <property name="text">
-                                        <string />
-                                       </property>
-                                      </widget>
-                                     </item>
-                                    </layout>
                                    </widget>
                                   </item>
                                   <item>
@@ -3677,8 +3608,8 @@ QTabWidget::pane { /* The tab widget frame */
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>770</width>
-                   <height>675</height>
+                   <width>758</width>
+                   <height>620</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_18">
@@ -3720,8 +3651,8 @@ QTabWidget::pane { /* The tab widget frame */
                              <rect>
                               <x>0</x>
                               <y>0</y>
-                              <width>712</width>
-                              <height>552</height>
+                              <width>700</width>
+                              <height>497</height>
                              </rect>
                             </property>
                             <layout class="QVBoxLayout" name="verticalLayout_25">
