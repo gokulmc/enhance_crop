@@ -337,6 +337,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 + f"Container: {self.videoContainer}\n"
                 + f"Color Space: {self.colorSpace}\n"
                 + f"Pixel Format: {self.pixelFMT}\n"
+                + f"HDR: {self.videoHDR}\n"
             )
             self.videoInfoTextEdit.setFontPointSize(10)
             self.videoInfoTextEdit.setText(text)
@@ -560,7 +561,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             denoiseModelFile=denoiseModelFile if denoise else None,
             decompressModelFile=decompressModelFile if decompress else None,
             interpolateModelFile=interpolateModelFile if interpolate else None,
-            hdrMode=self.hdrModeCheckBox.isChecked(),
+            hdrMode=self.videoHDR if self.settings.settings["auto_hdr_mode"] == "True" else self.hdrModeCheckBox.isChecked(),
             mergeSubtitles=self.mergeSubtitlesCheckBox.isChecked(),
             overrideUpscaleScale=upscaleTimes,
             encoderCommand=self.EncoderCommand.text(),
@@ -587,6 +588,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.videoContainer = videoHandler.videoContainer
                 self.colorSpace = videoHandler.color_space
                 self.pixelFMT = videoHandler.pixel_format
+                self.videoHDR = videoHandler.is_hdr
 
                 
 
@@ -694,6 +696,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.videoContainer = "Multi File"
             self.colorSpace = "Multi File"
             self.pixelFMT = "Multi File"
+            self.videoHDR = "Multi File"
         else:
                     
             videoHandler = VideoLoader(inputFile)
@@ -714,6 +717,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.videoContainer = videoHandler.videoContainer
             self.colorSpace = videoHandler.color_space
             self.pixelFMT = videoHandler.pixel_format
+            self.videoHDR = videoHandler.is_hdr
 
             self.inputFileText.setText(inputFile)
             self.outputFileText.setEnabled(True)

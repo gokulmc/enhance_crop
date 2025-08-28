@@ -55,17 +55,8 @@ class SettingsTab:
             self.settings.writeSetting(key, value.currentText())
         
         pixel_fmt = self.settings.settings['video_pixel_format']
-        hdr_mode = self.parent.hdrModeCheckBox.isChecked() 
         
-        if hdr_mode:
-            pxfmtdict = {
-                        "yuv420p": "yuv420p10le",
-                        "yuv422": "yuv422p10le",
-                        "yuv444": "yuv444p10le",
-                    }
-
-            if pixel_fmt in pxfmtdict:
-                pixel_fmt = pxfmtdict[pixel_fmt]
+        hdr_mode = False
 
         input_file = self.parent.inputFileText.text()
         if input_file and len(input_file) > 1: # caching is nice
@@ -74,6 +65,16 @@ class SettingsTab:
                 self.ffmpegInfoWrapper = FFMpegInfoWrapper(self.input_file)
 
         if self.ffmpegInfoWrapper:
+            hdr_mode = self.ffmpegInfoWrapper.is_hdr() and self.settings.settings['auto_hdr_mode'] == "True"
+            if hdr_mode:
+                pxfmtdict = {
+                            "yuv420p": "yuv420p10le",
+                            "yuv422": "yuv422p10le",
+                            "yuv444": "yuv444p10le",
+                        }
+
+                if pixel_fmt in pxfmtdict:
+                    pixel_fmt = pxfmtdict[pixel_fmt]
             self.color_space = self.ffmpegInfoWrapper.get_color_space()
             self.color_primaries = self.ffmpegInfoWrapper.get_color_primaries()
             self.color_transfer = self.ffmpegInfoWrapper.get_color_transfer()
@@ -93,10 +94,6 @@ class SettingsTab:
         self.parent.EncoderCommand.setText(" ".join(command),
         )
          
-    def hdr_warn(self):
-        if self.parent.hdrModeCheckBox.isChecked():
-            RegularQTPopup("HDR is only color tested on x264 and x265 encoders.\nThe preview colors may be distorted as the preview itself is not HDR.")
-        self.updateFFMpegCommand()
 
     def connectWriteSettings(self):
         
@@ -130,8 +127,8 @@ class SettingsTab:
         self.parent.audio_bitrate.currentIndexChanged.connect(
             self.updateFFMpegCommand
         )
-        self.parent.hdrModeCheckBox.stateChanged.connect(
-            self.hdr_warn 
+        self.parent.auto_hdr_mode.stateChanged.connect(
+            self.updateFFMpegCommand
         )
         self.parent.video_quality.currentIndexChanged.connect(
             self.updateFFMpegCommand
@@ -229,6 +226,12 @@ class SettingsTab:
                 "True" if self.parent.dynamic_tensorrt_engine.isChecked() else "False"
             )
         )
+        self.parent.auto_hdr_mode.stateChanged.connect(
+            lambda: self.settings.writeSetting(
+                "auto_hdr_mode",
+                "True" if self.parent.auto_hdr_mode.isChecked() else "False"
+            )
+        )
 
     def writeOutputFolder(self):
         outputlocation = self.parent.output_folder_location.text()
@@ -320,8 +323,9 @@ class SettingsTab:
         self.parent.dynamic_tensorrt_engine.setChecked(
             self.settings.settings["dynamic_tensorrt_engine"] == "True"
         )
-
-
+        self.parent.auto_hdr_mode.setChecked(
+            self.settings.settings["auto_hdr_mode"] == "True"
+        )
 
     def selectOutputFolder(self):
         outputFile = QFileDialog.getExistingDirectory(
@@ -375,8 +379,9 @@ class Settings:
             "auto_border_cropping": "False",
             "video_container": "mkv",
             "video_pixel_format": "yuv420p",
-            "pytorch_version": "2.7.0",
+            "pytorch_version": "2.8.0",
             "pytorch_backend": "CUDA",
+            "auto_hdr_mode": "True",
         }
         self.allowedSettings = {
             "precision": ("auto", "float32", "float16"),
@@ -427,8 +432,9 @@ class Settings:
                 "yuv422p10le",
                 "yuv444p10le",
             ),
-            "pytorch_version": ("2.7.0", "2.6.0"),
+            "pytorch_version": ("2.8.0", "2.7.0", "2.6.0"),
             "pytorch_backend": "ANY",
+            "auto_hdr_mode": ("True", "False"),
         }
         self.settings = self.defaultSettings.copy()
         if not os.path.isfile(self.settingsFile):

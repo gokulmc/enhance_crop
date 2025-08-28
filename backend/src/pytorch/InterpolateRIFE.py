@@ -92,7 +92,7 @@ class InterpolateRifeTorch(BaseInterpolate):
         )  # use the model directory as the cache directory
         self.UHDMode = UHDMode
         if self.UHDMode:
-            print("UHD Mode has been depricated for RIFE.", file=sys.stderr)
+            print("UHD Mode has been depricated for RIFE.", file=sys.stderr) # causes issues with 4k warp.
             self.scale = 1
         
         if drba:
@@ -272,7 +272,7 @@ class InterpolateRifeTorch(BaseInterpolate):
                 print("Dynamic Scaled Optical Flow Enabled")
 
         if self.backend == "tensorrt":
-            import tensorrt
+            import tensorrt # import just in case of error
             import torch_tensorrt
             from .TensorRTHandler import TorchTensorRTHandler
 

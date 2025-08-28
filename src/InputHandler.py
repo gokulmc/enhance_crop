@@ -119,6 +119,13 @@ class FFMpegInfoWrapper:
         if codec:
             return codec.groups()[0]
         return "unknown"
+    
+    def is_hdr(self) -> bool:
+        hdr_indicators = ["bt2020", "pq", "hdr10", "dolby vision", "hlg"]
+        for indicator in hdr_indicators:
+            if indicator in self.ffmpeg_output_stripped:
+                return True
+        return False
 
 class VideoLoader:
     def __init__(self, inputFile):
@@ -151,5 +158,6 @@ class VideoLoader:
         self.duration = self.total_frames / self.fps
         self.color_space = self.ffmpeg_info.get_color_space()
         self.pixel_format = self.ffmpeg_info.get_pixel_format()
+        self.is_hdr = self.ffmpeg_info.is_hdr()
         log(f"Video Data: {self.width}x{self.height}, {self.fps} FPS, {self.total_frames} frames, {self.duration} seconds, "
             f"Bitrate: {self.bitrate}, Codec: {self.codec_str}, Color Space: {self.color_space}, Pixel Format: {self.pixel_format}")
