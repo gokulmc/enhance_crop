@@ -20,6 +20,7 @@
  - Tiling not working on restoration models.
  - Windows setup not installing for all users.
  - Some settings not saving after restart.
+ - Some input files not working due to naming.
 ### Removed
  - ROCm override hack.
  - Interpolation UHD Mode for RIFE.
