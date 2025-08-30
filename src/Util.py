@@ -137,6 +137,7 @@ class FileHandler:
 
 
 def log(message: str):
+    
     try:
         with open(os.path.join(CWD, "frontend_log.txt"), "a") as f:
             f.write(message + "\n")

@@ -74,8 +74,11 @@ def printAndLog(message: str, separate=False):
 
 
 def log(message: str):
-    with open(os.path.join(CWD, "backend_log.txt"), "a") as f:
-        f.write(message + "\n")
+    try:
+        with open(os.path.join(CWD, "backend_log.txt"), "a") as f:
+            f.write(message + "\n")
+    except Exception:
+        pass
 
 
 def bytesToImg(
