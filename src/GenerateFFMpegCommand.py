@@ -130,7 +130,7 @@ class FFMpegCommand:
                 """if self._hdr_mode:
                     command += ["-x264-params", f'"{encoder_params}"']"""
             case "x264_nvenc":
-                command +=["cuda","-c:v","h264_nvenc"]
+                command +=["-c:v","h264_nvenc"]
                 match self._video_quality:
                     case "Very_High":
                         command +=["-cq:v","15"]
@@ -143,7 +143,7 @@ class FFMpegCommand:
                 """if self._hdr_mode:
                     command += ["-x264-params", f'"{encoder_params}"']"""
             case "x265_nvenc":
-                command +=["cuda","-c:v","hevc_nvenc"]
+                command +=["-c:v","hevc_nvenc"]
                 match self._video_quality:
                     case "Very_High":
                         command +=["-cq:v","15"]
