@@ -548,7 +548,7 @@ pytorchDecompressModels = {
         1,
         "SPAN",
     ),
-    "DeH264 PLKSR (Very Slow)": (
+    "DeH264 PLKSR (Very Slow) (Low Quality Source)": (
         "1xDeH264_realplksr.pth",
         "1xDeH264_realplksr.pth",
         1,
