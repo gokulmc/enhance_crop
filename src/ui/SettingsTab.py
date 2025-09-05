@@ -432,7 +432,7 @@ class Settings:
                 "yuv422p10le",
                 "yuv444p10le",
             ),
-            "pytorch_version": ("2.8.0", "2.7.0", "2.6.0"),
+            "pytorch_version": ("2.8.0", "2.6.0"),
             "pytorch_backend": "ANY",
             "auto_hdr_mode": ("True", "False"),
         }

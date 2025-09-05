@@ -9,9 +9,8 @@
  - Thanks @adriabama06 for adding model name to video output, last input folder setting and fixing slo-mo mode data. 
  - IFRNet Pytorch
  - Denoise
-
 ### Changed
- - Added torch 2.8 as option.
+ - Added torch 2.8 as default, removed torch 2.7.
  - Bumped TensorRT to 10.12.
  - Limit release notes to 5 releases.
 ### Fixed
