@@ -4,7 +4,7 @@
 ### Added
  - Auto HDR mode.
  - Full HDR support with proper color encoding.
- - Limited pytorch xpu Support.
+ - Full pytorch xpu Support.
  - Low storage warning when installing backends.
  - Thanks @adriabama06 for adding model name to video output, last input folder setting and fixing slo-mo mode data. 
  - IFRNet Pytorch
@@ -21,7 +21,7 @@
  - Some settings not saving after restart.
  - Some input files not working due to naming.
 ### Removed
- - ROCm override hack.
+ - ROCm override hack. (Manually set env vars)
  - Interpolation UHD Mode for RIFE.
 # RVE 2.3.4
 ### Added
