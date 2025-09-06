@@ -20,6 +20,7 @@
  - Windows setup not installing for all users.
  - Some settings not saving after restart.
  - Some input files not working due to naming.
+ - Insanely small amounts of color shifting when processing with rife pytorch/trt.
 ### Removed
  - ROCm override hack. (Manually set env vars)
  - Interpolation UHD Mode for RIFE.
