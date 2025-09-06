@@ -65,7 +65,7 @@ class FFmpegRead(Buffer):
 
         command += [
             "-vf",
-            f"crop={self.width}:{self.height}:{self.borderX}:{self.borderY},scale=w=iw*sar:h=ih", # fix when DAR does not match SAR https://github.com/TNTwise/REAL-Video-Enhancer/issues/63
+            f"crop={self.width}:{self.height}:{self.borderX}:{self.borderY},scale=w=iw*sar:h=ih" + ":in_range=tv:out_range=pc" if not self.hdr_mode else "", # fix dar != sar, and force full range for SDR input
             "-f",
             "image2pipe",
             "-pix_fmt",
