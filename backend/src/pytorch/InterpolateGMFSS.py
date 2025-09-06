@@ -123,7 +123,6 @@ class InterpolateGMFSSTorch(BaseInterpolate):
                 max_timestep=self.max_timestep,
             )
 
-            self.flownet.eval().to(device=self.device, dtype=self.dtype)
             log("GMFSS loaded")
             log("Scale: " + str(self.scale))
             log("Using System CUDA: " + str(HAS_SYSTEM_CUDA))
@@ -163,7 +162,7 @@ class InterpolateGMFSSTorch(BaseInterpolate):
                     while self.flownet is None:
                         sleep(1)
                     timestep = self.timestepDict[timestep]
-                    output = self.flownet(self.frame0, frame1, timestep, closest_value)
+                    output = self.flownet.forward(self.frame0, frame1, timestep, closest_value)
 
                     output = self.torchUtils.tensor_to_frame(output)
                     yield output

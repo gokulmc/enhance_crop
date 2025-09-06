@@ -16,7 +16,7 @@ else:
     from ..util.softsplat_torch import softsplat
 
 
-class GMFSS(nn.Module):
+class GMFSS:
     def __init__(
         self,
         model_path,
@@ -61,7 +61,7 @@ class GMFSS(nn.Module):
         # model unspecific setup
 
         self.ifnet = IFNet(ensemble=ensemble).to(dtype=dtype, device=device)
-        self.flownet = GMFlow().to(dtype=dtype, device=device)
+        self.flownet = GMFlow().to(dtype=torch.float, device=device)
         self.metricnet = MetricNet().to(dtype=dtype, device=device)
         self.feat_ext = FeatureNet().to(dtype=dtype, device=device)
         self.fusionnet = GridNet().to(dtype=dtype, device=device)
@@ -138,8 +138,8 @@ class GMFSS(nn.Module):
             imgf0 = img0
             imgf1 = img1
         if self.flow01 is None:
-            self.flow01 = self.flownet(imgf0, imgf1)
-            self.flow10 = self.flownet(imgf1, imgf0)
+            self.flow01 = self.flownet(imgf0.float(), imgf1.float()).to(dtype=self.dtype)
+            self.flow10 = self.flownet(imgf1.float(), imgf0.float()).to(dtype=self.dtype)
         if self.scale != 1.0:
             self.flow01 = (
                 F.interpolate(
