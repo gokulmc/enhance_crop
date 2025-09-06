@@ -537,6 +537,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     timeout=2500,
                 )
                 return 1
+        hdrmode = False
+        if "gmfss" in interpolateDownloadFile:
+            log("GMFSS model detected, enabling rgb48 proc to have correct colors.")
+            hdrmode = True
+        if self.settings.settings["auto_hdr_mode"] == "True" and self.videoHDR:
+            hdrmode = True
         return RenderOptions(
             inputFile=input_file,
             outputPath=output_path,
@@ -561,7 +567,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             denoiseModelFile=denoiseModelFile if denoise else None,
             decompressModelFile=decompressModelFile if decompress else None,
             interpolateModelFile=interpolateModelFile if interpolate else None,
-            hdrMode=self.videoHDR if self.settings.settings["auto_hdr_mode"] == "True" else False,
+            hdrMode=hdrmode,
             mergeSubtitles=self.mergeSubtitlesCheckBox.isChecked(),
             overrideUpscaleScale=upscaleTimes,
             encoderCommand=self.EncoderCommand.text(),
