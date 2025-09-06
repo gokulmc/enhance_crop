@@ -62,10 +62,12 @@ class FFmpegRead(Buffer):
             f"{self.inputFile}",
         ]
         
-
+        filter_string = f"crop={self.width}:{self.height}:{self.borderX}:{self.borderY},scale=w=iw*sar:h=ih" # fix dar != sar
+        if not self.hdr_mode:
+            filter_string += ":in_range=tv:out_range=pc"
         command += [
             "-vf",
-            f"crop={self.width}:{self.height}:{self.borderX}:{self.borderY},scale=w=iw*sar:h=ih" + ":in_range=tv:out_range=pc" if not self.hdr_mode else "", # fix dar != sar, and force full range for SDR input
+            filter_string,
             "-f",
             "image2pipe",
             "-pix_fmt",
