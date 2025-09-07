@@ -7,6 +7,7 @@ except:
     pass
 import sys
 import os
+import time
 os.environ["PYTHONNOUSERSITE"] = "1" # Prevents python from installing packages in user site
 os.environ["PYTHONIOENCODING"] = "utf-8"
 os.environ["NVIDIA_TENSORRT_DISABLE_INTERNAL_PIP"] = "0"
@@ -116,38 +117,54 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         FileHandler.createDirectory(TEMP_DOWNLOAD_PATH)
 
         # Set up the user interface from Designer.
+        start_time = time.time()
         self.setupUi(self)
+        end_time = time.time()
+        log("Setup ui time: " + str(end_time - start_time))
         #self.VideoPreview.setVisible(False)
 
         # remove false hope
         self.directMLBackendInstallerContainer.setVisible(False)
 
+        start_time = time.time()
         backendHandler = BackendHandler(self, self.settings)
+        end_time = time.time()
+        log("Backend handler time: " + str(end_time - start_time))
 
+        start_time = time.time()
         self.renderQueue = RenderQueue(self.renderQueueListWidget)
+        end_time = time.time()
+        log("Render queue time: " + str(end_time - start_time))
 
-
+        start_time = time.time()
         if not IS_INSTALLED:
             for dep in Dependency.__subclasses__():
                 d = dep()
                 d.download()
+        end_time = time.time()
+        log("Dependency download time: " + str(end_time - start_time))
         
         #popupthread = create_independent_process(IndependentQTPopup, "Checking for dependency updates...")
         #popupthread.start() 
 
+        start_time = time.time()
         for dep in Dependency.__subclasses__():
             d = dep()
             if d.get_if_update_available():
         #        popupthread.terminate()
                 d.update_if_updates_available()
-        
+        end_time = time.time()
+        log("Dependency update time: " + str(end_time - start_time))
         #try:
         #    popupthread.terminate()
         #except Exception:
         #    pass
+
+        start_time = time.time()
         self.backends, self.fullOutput = (
             backendHandler.getAvailableBackends()
         )
+        end_time = time.time()
 
         
 

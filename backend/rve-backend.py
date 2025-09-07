@@ -1,15 +1,17 @@
 import os
-
 import argparse
 import sys
 from src.version import __version__
-from src.utils.GetFFMpeg import download_ffmpeg
-
 
 class HandleApplication:
     def __init__(self):
-        download_ffmpeg()
         self.args = self.handleArguments()
+        if self.args.version:
+            print(f"{__version__}")
+            sys.exit(0)
+
+        from src.utils.GetFFMpeg import download_ffmpeg
+        download_ffmpeg()
         if not self.args.list_backends:
             self.checkArguments()
             if not self.batchProcessing():
@@ -17,6 +19,8 @@ class HandleApplication:
 
         else:
             self.listBackends()
+
+        
 
     def batchProcessing(self) -> bool:
         """
@@ -453,9 +457,6 @@ class HandleApplication:
         return os.path.join(self.args.modelPath, self.args.modelName)
 
     def checkArguments(self):
-        if self.args.version:
-            print(f"{__version__}")
-            sys.exit(0)
         if (
             self.args.output is not None
             and os.path.isfile(self.args.output)

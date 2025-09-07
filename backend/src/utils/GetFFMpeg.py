@@ -1,12 +1,13 @@
 from ..constants import FFMPEG_PATH, CPU_ARCH, PLATFORM, CWD
 import os
 import sys
-from .FileHandler import FileHandler
+
 download_path = os.path.join(CWD, "ffmpeg")
 installed_path = FFMPEG_PATH
 
 def download_ffmpeg():
     if not os.path.isfile(installed_path):
+        from .FileHandler import FileHandler
         link = "https://github.com/TNTwise/real-video-enhancer-models/releases/download/models/"
         match PLATFORM:
             case "linux":
