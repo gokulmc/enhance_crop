@@ -167,6 +167,7 @@ class InterpolateGMFSSTorch(BaseInterpolate):
                     output = self.torchUtils.tensor_to_frame(output)
                     yield output
                 else:
+                    self.flownet.reset_cache_after_transition()
                     yield img1
 
 
