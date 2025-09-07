@@ -211,6 +211,7 @@ class GMFSS:
 
     def reset_cache_after_transition(self):
         self.feat11, self.feat12, self.feat13 = None, None, None
+        self.reset_cache_after_inference()
 
     def rife_example_input(self):
         return [
