@@ -19,7 +19,7 @@ def download_ffmpeg():
         
         try:
             import requests
-            log("Downloading FFMpeg from " + link)
+            print("Downloading FFMpeg from " + link)
             
             response = requests.get(link, stream=True)
             total_size = int(response.headers.get("content-length", 0))
