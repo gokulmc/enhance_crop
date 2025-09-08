@@ -555,9 +555,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 )
                 return 1
         hdrmode = False
-        if "gmfss" in interpolateDownloadFile.lower():
+        """if "gmfss" in interpolateDownloadFile.lower():
             log("GMFSS model detected, enabling rgb48 proc to have correct colors.")
-            hdrmode = True
+            hdrmode = True"""
         if self.settings.settings["auto_hdr_mode"] == "True" and self.videoHDR:
             hdrmode = True
         return RenderOptions(
