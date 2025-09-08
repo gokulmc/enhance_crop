@@ -64,7 +64,8 @@ class FFmpegRead(Buffer):
         
         filter_string = f"crop={self.width}:{self.height}:{self.borderX}:{self.borderY},scale=w=iw*sar:h=ih" # fix dar != sar
         if not self.hdr_mode:
-            filter_string += ":in_range=tv:out_range=pc"
+            if self.input_pixel_format == "yuv420p":
+                filter_string += ":in_range=tv:out_range=pc" # color shifts a smidgen but helps with artifacts when converting yuv to raw
         command += [
             "-vf",
             filter_string,
