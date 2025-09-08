@@ -9,7 +9,6 @@ try:
     method = "upscale_ncnn_py"
 except Exception:
     method = "ncnn_vulkan"
-method = "ncnn_vulkan"
 import numpy as np
 import cv2
 import os
