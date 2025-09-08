@@ -1,5 +1,7 @@
 import torch.nn as nn
 import torch
+import torch.nn.functional as F
+import math
 from ....util import store_hyperparameters
 
 from ...__arch_helpers.dpir_basic_block import (
@@ -113,8 +115,14 @@ class DRUNet(nn.Module):
         _, _, H, W = x0.shape  # noqa: N806
 
         noise_level = 15 / 255  # default from repo
-        noise_map = torch.zeros(1, 1, H, W).to(x0) + noise_level
-
+        
+        padding = 32
+        pw = math.ceil(W / padding) * padding
+        ph = math.ceil(H / padding) * padding
+        padding = (0, pw - W, 0, ph - H)
+        x0 = F.pad(x0, padding)
+        noise_map = torch.zeros(1, 1, ph, pw).to(x0) + noise_level
+        
         x0 = (torch.cat([x0, noise_map], dim=1))
         x1 = self.m_head(x0)
         x2 = self.m_down1(x1)
@@ -126,4 +134,4 @@ class DRUNet(nn.Module):
         x = self.m_up1(x + x2)
         x = self.m_tail(x + x1)
 
-        return x
+        return x[:, :, :H, :W]

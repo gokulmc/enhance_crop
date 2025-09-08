@@ -1,4 +1,6 @@
-# RVE 2.3.6 Pre-release
+# RVE 2.3.7
+
+# RVE 2.3.6
 ### Fixed:
  - Color shifting in well... everything.
  - MacOS MPS not working.

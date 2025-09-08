@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import torch
+import torch.nn.functional as F
+import math
+
 from typing_extensions import override
 
 from ...util import KeyCondition, get_seq_len
@@ -79,11 +82,18 @@ class DRUNetArch(Architecture[DRUNet]):
 
         def call(model: DRUNet, image: torch.Tensor) -> torch.Tensor:
             _, _, H, W = image.shape  # noqa: N806
+            padding = 64
+            pw = math.ceil(W / padding) * padding
+            ph = math.ceil(H / padding) * padding
+            padding = (0, pw - W, 0, ph - H)
+            image = F.pad(image, padding)
+            H = ph
+            W = pw
 
             noise_level = 15 / 255  # default from repo
             noise_map = torch.zeros(1, 1, H, W).to(image) + noise_level
 
-            return model(torch.cat([image, noise_map], dim=1))
+            return model(torch.cat([image, noise_map], dim=1))[:, :, :H, :W]
 
         return ImageModelDescriptor(
             model,
