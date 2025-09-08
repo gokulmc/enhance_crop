@@ -54,11 +54,9 @@ def removeFolder(folder):
 
 def warnAndLog(message: str):
     print("WARNING: " + message, file=sys.stderr)
-    log("WARN: " + message)
 
 
 def errorAndLog(message: str):
-    log("ERROR: " + message)
     raise os.error("ERROR: " + message)
 
 
@@ -69,16 +67,15 @@ def printAndLog(message: str, separate=False):
     """
     if separate:
         message = message + "\n" + "---------------------"
-    print(message)
-    log(message=message)
+    print(message, file=sys.stderr)
+    
 
 
 def log(message: str):
-    try:
-        with open(os.path.join(CWD, "backend_log.txt"), "a") as f:
-            f.write(message + "\n")
-    except Exception:
-        pass
+    """
+    Log is now depricated, just using print now.
+    """
+    print(message, file=sys.stderr)
 
 
 def bytesToImg(
