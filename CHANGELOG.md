@@ -1,5 +1,6 @@
 # RVE 2.3.7
-
+### Fixed:
+ - DRUNet error at some resolutions.
 # RVE 2.3.6
 ### Fixed:
  - Color shifting in well... everything.
