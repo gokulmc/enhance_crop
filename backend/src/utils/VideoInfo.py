@@ -60,7 +60,7 @@ class FFMpegInfoWrapper(VideoInfo):
                     self.stream_line = line
                     break
             
-            log(f"Stream line: {self.stream_line}")
+            
             if self.stream_line is None:
                 log("No video stream found in the input file.")
         except Exception:
