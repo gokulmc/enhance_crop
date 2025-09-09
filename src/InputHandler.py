@@ -38,7 +38,7 @@ class FFMpegInfoWrapper:
                 log("No video stream found in the input file.")
         except Exception:
             print(f"ERROR: Input file seems to have no video stream!", file=sys.stderr)
-            self.stream_line = ""            
+            self.stream_line = None        
 
     def get_duration_seconds(self) -> float:
         total_duration:float = 0.0
@@ -95,13 +95,14 @@ class FFMpegInfoWrapper:
         return self.check_color_opt("Transfer")
     
     def get_pixel_format(self) -> str:
-        try:
-            pixel_format = self.stream_line.split(",")[1].split("(")[0].strip()
-            log(f"Pixel Format: {pixel_format}")
-        except Exception:
-            log("ERROR: Cant detect pixel format.")
-            pixel_format = None 
-        return pixel_format
+        if self.stream_line:
+            try:
+                pixel_format = self.stream_line.split(",")[1].split("(")[0].strip()
+                log(f"Pixel Format: {pixel_format}")
+                return pixel_format
+            except Exception:
+                log("ERROR: Cant detect pixel format.")
+        return None
     
     def get_bitrate(self) -> int:
         bitrate = re.search(r"bitrate: (\d+)", self.ffmpeg_output_stripped)
