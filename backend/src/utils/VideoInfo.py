@@ -35,6 +35,7 @@ class VideoInfo(ABC):
 class FFMpegInfoWrapper(VideoInfo):
     def __init__(self, input_file: str):
         self.input_file = input_file
+        self.stream_line = None
         self._get_ffmpeg_info()
 
     def _get_ffmpeg_info(self):
