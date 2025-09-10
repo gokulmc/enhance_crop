@@ -379,7 +379,7 @@ class Settings:
             "auto_border_cropping": "False",
             "video_container": "mkv",
             "video_pixel_format": "yuv420p",
-            "pytorch_version": "2.8.0",
+            "pytorch_version": "2.9.0" if PLATFORM == "darwin" else "2.8.0",
             "pytorch_backend": "CUDA",
             "auto_hdr_mode": "True",
         }
@@ -432,7 +432,7 @@ class Settings:
                 "yuv422p10le",
                 "yuv444p10le",
             ),
-            "pytorch_version": ("2.8.0", "2.6.0"),
+            "pytorch_version": ("2.9.0", "2.8.0", "2.6.0"),
             "pytorch_backend": "ANY",
             "auto_hdr_mode": ("True", "False"),
         }

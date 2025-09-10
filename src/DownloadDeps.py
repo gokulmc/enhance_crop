@@ -22,18 +22,13 @@ from .version import version, backend_dev_version
 from .Util import (
     FileHandler,
     log,
-    createDirectory,
-    makeExecutable,
-    move,
     extractTarGZ,
-    downloadFile,
     removeFolder,
     subprocess_popen_without_terminal
 )
 from .ui.QTcustom import (
     DownloadProgressPopup,
     DisplayCommandOutputPopup,
-    NetworkCheckPopup,
     RegularQTPopup,
     needs_network_else_exit,
 )
