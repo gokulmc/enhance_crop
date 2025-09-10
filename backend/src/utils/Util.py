@@ -1,7 +1,6 @@
 import os
 import sys
 import subprocess
-import warnings
 import contextlib
 # non standard python libraries
 try:
@@ -34,9 +33,6 @@ except ImportError:
     CWD = os.getcwd()
     PLATFORM = sys.platform
 
-with open(os.path.join(CWD, "backend_log.txt"), "w") as f:
-    pass
-
 
 def removeFile(file):
     try:
@@ -62,12 +58,9 @@ def errorAndLog(message: str):
 
 def printAndLog(message: str, separate=False):
     """
-    Prints and logs a message to the log file
-    separate, if True, activates the divider
+    Log is now depricated, just using print now.
     """
-    if separate:
-        message = message + "\n" + "---------------------"
-    print(message, file=sys.stderr)
+    log(message)
     
 
 
@@ -75,7 +68,9 @@ def log(message: str):
     """
     Log is now depricated, just using print now.
     """
-    print(message, file=sys.stderr)
+    print("INFO: " + message, file=sys.stderr)
+    #message = message + "\n\n\n\n" + "-" * len(message)
+    #print(message, file=sys.stderr)
 
 
 def bytesToImg(

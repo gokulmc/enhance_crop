@@ -454,6 +454,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         decompress = self.decompressModelComboBox.currentText()
         input_file = self.inputFileText.text() if input_file is None else input_file
         output_path = self.outputFileText.text() if output_path is None else output_path
+        interpolateModelFile = None
+        upscaleModelFile = None
+        deblurModelFile = None
+        denoiseModelFile = None
+        decompressModelFile = None
         if not self.interpolateCheckBox.isChecked():
             interpolate = None
         if not self.upscaleCheckBox.isChecked():
@@ -579,11 +584,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             ensemble=self.ensembleCheckBox.isChecked(),
             modelScale=modelScale,
             upscaleModelArch=upscaleModelArch,
-            upscaleModelFile=upscaleModelFile if upscale else None,
-            deblurModelFile=deblurModelFile if deblur else None,
-            denoiseModelFile=denoiseModelFile if denoise else None,
-            decompressModelFile=decompressModelFile if decompress else None,
-            interpolateModelFile=interpolateModelFile if interpolate else None,
+            upscaleModelFile=upscaleModelFile,
+            deblurModelFile=deblurModelFile,
+            denoiseModelFile=denoiseModelFile,
+            decompressModelFile=decompressModelFile,
+            interpolateModelFile=interpolateModelFile,
             hdrMode=hdrmode,
             mergeSubtitles=self.mergeSubtitlesCheckBox.isChecked(),
             overrideUpscaleScale=upscaleTimes,
