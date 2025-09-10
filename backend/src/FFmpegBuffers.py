@@ -481,7 +481,7 @@ class FFmpegWrite(Buffer):
 
             log(f"\nTime to complete render: {round(renderTime, 2)}")
         except Exception as e:
-            print(str(e), file=sys.stderr)
+            log(str(e))
             self.onErroredExit()
 
         if exit_code != 0:

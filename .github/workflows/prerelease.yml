@@ -166,32 +166,21 @@ jobs:
 
           brew install llvm@15
           brew install pyside
-          brew install create-dmg
           python3 -m pip install -r requirements.txt
 
       - name: Build
 
         run: python3 build.py --build pyinstaller --copy_backend
     
-      - name: create dmg
+      - name: compress archive
         run: |
-          mv dist/REAL-Video-Enhancer dist/REAL-Video-Enhancer.app
-          create-dmg \
-            --volname "REAL-Video-Enhancer" \
-            --window-pos 200 120 \
-            --window-size 800 400 \
-            --icon-size 100 \
-            --icon "REAL-Video-Enhancer.app" 200 190 \
-            --hide-extension "REAL-Video-Enhancer.app" \
-            --app-drop-link 600 185 \
-            "REAL-Video-Enhancer-${{ env.APP_VERSION }}-MacOS_x86_64.dmg" \
-            "dist/REAL-Video-Enhancer.app"
+          zip -r REAL-Video-Enhancer-${{ env.APP_VERSION }}-MacOS_x86_64.zip dist/REAL-Video-Enhancer/
 
       - name: Save Archive as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: REAL-Video-Enhancer-${{ env.APP_VERSION }}-MacOS_x86_64.dmg
-          path: REAL-Video-Enhancer-${{ env.APP_VERSION }}-MacOS_x86_64.dmg
+          name: REAL-Video-Enhancer-${{ env.APP_VERSION }}-MacOS_x86_64.zip
+          path: REAL-Video-Enhancer-${{ env.APP_VERSION }}-MacOS_x86_64.zip
 
   build-MacOS_arm64:
 
@@ -211,32 +200,23 @@ jobs:
       - name: Install Python Dependencies
         run: |
           brew install pyside@6
-          brew install create-dmg
           python3 -m pip install -r requirements.txt
 
       - name: Build
         run: |
           python3 build.py --build pyinstaller --copy_backend
 
-      - name: create dmg
+      - name: compress archive
         run: |
-          mv dist/REAL-Video-Enhancer dist/REAL-Video-Enhancer.app
-          create-dmg \
-            --volname "REAL-Video-Enhancer" \
-            --window-pos 200 120 \
-            --window-size 800 400 \
-            --icon-size 100 \
-            --icon "REAL-Video-Enhancer.app" 200 190 \
-            --hide-extension "REAL-Video-Enhancer.app" \
-            --app-drop-link 600 185 \
-            "REAL-Video-Enhancer-${{ env.APP_VERSION }}-MacOS_arm64.dmg" \
-            "dist/REAL-Video-Enhancer.app"
+
+
+          zip -r REAL-Video-Enhancer-${{ env.APP_VERSION }}-MacOS_arm64.zip dist/REAL-Video-Enhancer/
 
       - name: Save Archive as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: REAL-Video-Enhancer-${{ env.APP_VERSION }}-MacOS_arm64.dmg
-          path: REAL-Video-Enhancer-${{ env.APP_VERSION }}-MacOS_arm64.dmg
+          name: REAL-Video-Enhancer-${{ env.APP_VERSION }}-MacOS_arm64.zip
+          path: REAL-Video-Enhancer-${{ env.APP_VERSION }}-MacOS_arm64.zip
           
   Release:
     needs: [build-Windows, build-Linux, build-MacOS, build-MacOS_arm64, build-Linux_arm64]
@@ -288,7 +268,7 @@ jobs:
               artifacts/REAL-Video-Enhancer-${{ env.APP_VERSION }}-Windows-Setup_x86_64.exe/REAL-Video-Enhancer-${{ env.APP_VERSION }}-Windows-Setup_x86_64.exe
               artifacts/REAL-Video-Enhancer-${{ env.APP_VERSION }}-Linux-portable_x86_64.zip/REAL-Video-Enhancer-${{ env.APP_VERSION }}-Linux-portable_x86_64.zip
               artifacts/REAL-Video-Enhancer-${{ env.APP_VERSION }}-Linux-portable_arm64.zip/REAL-Video-Enhancer-${{ env.APP_VERSION }}-Linux-portable_arm64.zip
-              artifacts/REAL-Video-Enhancer-${{ env.APP_VERSION }}-MacOS_x86_64.dmg/REAL-Video-Enhancer-${{ env.APP_VERSION }}-MacOS_x86_64.dmg
-              artifacts/REAL-Video-Enhancer-${{ env.APP_VERSION }}-MacOS_arm64.dmg/REAL-Video-Enhancer-${{ env.APP_VERSION }}-MacOS_arm64.dmg
+              artifacts/REAL-Video-Enhancer-${{ env.APP_VERSION }}-MacOS_x86_64.zip/REAL-Video-Enhancer-${{ env.APP_VERSION }}-MacOS_x86_64.zip
+              artifacts/REAL-Video-Enhancer-${{ env.APP_VERSION }}-MacOS_arm64.zip/REAL-Video-Enhancer-${{ env.APP_VERSION }}-MacOS_arm64.zip
               io.github.tntwise.REAL-Video-Enhancer.flatpakref
               artifacts/backend-v${{ env.APP_VERSION }}.tar.gz/backend-v${{ env.APP_VERSION }}.tar.gz
