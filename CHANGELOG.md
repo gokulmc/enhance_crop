@@ -1,6 +1,7 @@
 # RVE 2.3.7
 ### Fixed:
  - DRUNet error at some resolutions.
+ - Adding to queue issues on MacOS.
 # RVE 2.3.6
 ### Fixed:
  - Color shifting in well... everything.

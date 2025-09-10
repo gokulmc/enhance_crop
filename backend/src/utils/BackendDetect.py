@@ -1,5 +1,5 @@
 
-from .Util import log, suppress_stdout_stderr, printAndLog
+from .Util import log, suppress_stdout_stderr
 
 class BackendDetect:
     def __init__(self):
@@ -31,7 +31,7 @@ class BackendDetect:
             try:
                 from upscale_ncnn_py import UPSCALE
             except Exception:
-                printAndLog(
+                log(
                     "Warning: Cannot import upscale_ncnn, falling back to default ncnn processing. (Please install vcredlist on your computer to fix this!)"
                 )
             self.__ncnn = ncnn

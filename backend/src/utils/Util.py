@@ -56,19 +56,14 @@ def errorAndLog(message: str):
     raise os.error("ERROR: " + message)
 
 
-def printAndLog(message: str, separate=False):
-    """
-    Log is now depricated, just using print now.
-    """
-    log(message)
-    
+
 
 
 def log(message: str):
     """
     Log is now depricated, just using print now.
     """
-    print("INFO: " + message, file=sys.stderr)
+    print("BACKEND: " + message, file=sys.stderr)
     #message = message + "\n\n\n\n" + "-" * len(message)
     #print(message, file=sys.stderr)
 

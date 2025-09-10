@@ -8,11 +8,11 @@ import sys
 
 if not __name__ == "__main__":
     from ..constants import FFMPEG_PATH
-    from .Util import log, subprocess_popen_without_terminal, printAndLog
+    from .Util import log, subprocess_popen_without_terminal
 
 else:
     FFMPEG_PATH = "./bin/ffmpeg"
-    from Util import log, subprocess_popen_without_terminal, printAndLog
+    from Util import log, subprocess_popen_without_terminal
 
 class VideoInfo(ABC):
     @abstractmethod
@@ -100,7 +100,7 @@ class FFMpegInfoWrapper(VideoInfo):
                     log(f"Color Space: {color_space}")
                     return color_space
             except Exception:
-                printAndLog("No known color space detected in the input file.")
+                log("No known color space detected in the input file.")
             return None
         return None
     

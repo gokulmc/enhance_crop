@@ -11,7 +11,6 @@ import numpy as np
 from .constants import FFMPEG_PATH, FFMPEG_LOG_FILE
 from .utils.Util import (
     log,
-    printAndLog,
     subprocess_popen_without_terminal
 )
 from .utils.Encoders import  EncoderSettings
@@ -480,7 +479,7 @@ class FFmpegWrite(Buffer):
 
             renderTime = time.time() - self.startTime
 
-            printAndLog(f"\nTime to complete render: {round(renderTime, 2)}")
+            log(f"\nTime to complete render: {round(renderTime, 2)}")
         except Exception as e:
             print(str(e), file=sys.stderr)
             self.onErroredExit()

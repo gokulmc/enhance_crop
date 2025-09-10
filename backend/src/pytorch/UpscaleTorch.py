@@ -9,7 +9,7 @@ import sys
 from time import sleep
 from ..constants import HAS_PYTORCH_CUDA, MODELS_DIRECTORY
 
-from ..utils.Util import log, printAndLog
+from ..utils.Util import log
 import numpy as np
 def process_output(output, hdr_mode):
     # Step 1: Squeeze the first dimension
@@ -143,11 +143,11 @@ class UpscalePytorch:
         
 
         if self.videoWidth > 1920 or self.videoHeight > 1920 and not self.trt_static_shape:
-            printAndLog("The video resolution is very large for TensorRT dynamic shape and will use a lot of VRAM, falling back to static shape")
+            log("The video resolution is very large for TensorRT dynamic shape and will use a lot of VRAM, falling back to static shape")
             self.trt_static_shape = True
 
         if self.videoWidth < 128 or self.videoHeight < 128 and not self.trt_static_shape:
-            printAndLog("The video resolution is too small for TensorRT dynamic shape, falling back to static shape")
+            log("The video resolution is too small for TensorRT dynamic shape, falling back to static shape")
             self.trt_static_shape = True
 
         
