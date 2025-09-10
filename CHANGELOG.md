@@ -1,4 +1,8 @@
 # RVE 2.3.7
+### Added:
+ - PyTorch 2.9
+### Changed:
+ - Force MacOS MPS to use PyTorch 2.9, as it should allow for uint16 support.
 ### Fixed:
  - DRUNet error at some resolutions.
  - Adding to queue issues on MacOS.
