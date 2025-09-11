@@ -1,5 +1,6 @@
 ### Extra Notes
  - Join the Discord: https://discord.gg/S5UxqWgEBC
  - Install MacOS version requires this guide to be followed: https://www.youtube.com/watch?v=o4J_GCuiIZc
+ - I am told the video doesn't work, you might need to disable gatekeeper for now. if I have time, I will look for a different solution.
  - MacOS version has very limited support, as my testing is confined to a virtual machine. Please make issues if something is broken.
  - Flatpak version can now install any backend, but it may still run into out of storage issues, needs at least 16gb ram (8gb tempfs) to install properly from my testing. May run into CUDA errors, no guarantee of everything working across every system.
