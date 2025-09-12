@@ -356,7 +356,7 @@ class UpscalePytorch:
                 sleep(1)
             if self.tilesize == 0:
                 
-                output = self.model(image)
+                output = self.inference(image)
                 
             else:
                 output = self.renderTiledImage(image)
@@ -426,7 +426,7 @@ class UpscalePytorch:
                 )
 
                 # process tile
-                output_tile = self.model(
+                output_tile = self.inference(
                     input_tile
                 )
 

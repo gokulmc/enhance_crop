@@ -4,6 +4,26 @@ from torch.nn import functional as F
 from torch.nn import init as init
 from torch.nn.modules.batchnorm import _BatchNorm
 import math
+
+# TODO: may write a cpp file
+def pixel_unshuffle(x, scale):
+    """ Pixel unshuffle.
+
+    Args:
+        x (Tensor): Input feature with shape (b, c, hh, hw).
+        scale (int): Downsample ratio.
+
+    Returns:
+        Tensor: the pixel unshuffled feature.
+    """
+    b, c, hh, hw = x.size()
+    out_channel = c * (scale**2)
+    assert hh % scale == 0 and hw % scale == 0
+    h = hh // scale
+    w = hw // scale
+    x_view = x.view(b, c, h, scale, w, scale)
+    return x_view.permute(0, 1, 3, 5, 2, 4).reshape(b, out_channel, h, w)
+
 @torch.no_grad()
 def default_init_weights(module_list, scale=1, bias_fill=0, **kwargs):
     """Initialize network weights.
@@ -60,26 +80,6 @@ class ResidualBlockNoBN(nn.Module):
         return identity + out * self.res_scale
 
 
-class Upsample(nn.Sequential):
-    """Upsample module.
-
-    Args:
-        scale (int): Scale factor. Supported scales: 2^n and 3.
-        num_feat (int): Channel number of intermediate features.
-    """
-
-    def __init__(self, scale, num_feat):
-        m = []
-        if (scale & (scale - 1)) == 0:  # scale = 2^n
-            for _ in range(int(math.log(scale, 2))):
-                m.append(nn.Conv2d(num_feat, 4 * num_feat, 3, 1, 1))
-                m.append(nn.PixelShuffle(2))
-        elif scale == 3:
-            m.append(nn.Conv2d(num_feat, 9 * num_feat, 3, 1, 1))
-            m.append(nn.PixelShuffle(3))
-        else:
-            raise ValueError(f'scale {scale} is not supported. Supported scales: 2^n and 3.')
-        super(Upsample, self).__init__(*m)
 
 class RightAlignMSConvResidualBlocks(nn.Module):
     """right align multi-scale ConvResidualBlocks, currently only support 3 scales (1, 2, 4)"""
@@ -170,7 +170,7 @@ class AnimeSR(nn.Module):
     def cell(self, x, fb, state):
         res = x[:, 3:6]
         # pre frame, cur frame, nxt frame, pre sr frame, pre hidden state
-        inp = torch.cat((x, F.pixel_unshuffle(fb, self.netscale), state), dim=1)
+        inp = torch.cat((x, pixel_unshuffle(fb, self.netscale), state), dim=1)
         # the out contains both state and sr frame
         out = self.recurrent_cell(inp)
         out_img = self.pixel_shuffle(out[:, :3 * self.netscale * self.netscale]) + F.interpolate(
@@ -181,18 +181,11 @@ class AnimeSR(nn.Module):
 
     def forward(self, x):
         b = 1
-        n, c, h, w = x.size()
-        # initialize previous sr frame and previous hidden state as zero tensor
+        
+        c, h, w = x.size()[-3:]
+        state = x.new_zeros(b, 64, h, w)
         out = x.new_zeros(b, c, h * self.netscale, w * self.netscale)
-        state = x.new_zeros(b, self.num_feat, h, w)
-        for i in range(n):
-            if i == 0:
-                # there is no previous frame for the 1st frame, so reuse 1st frame as previous
-                out, state = self.cell(torch.cat((x[:, i], x[:, i], x[:, i + 1]), dim=1), out, state)
-            elif i == n - 1:
-                # there is no next frame for the last frame, so reuse last frame as next
-                out, state = self.cell(torch.cat((x[:, i - 1], x[:, i], x[:, i]), dim=1), out, state)
-            else:
-                out, state = self.cell(torch.cat((x[:, i - 1], x[:, i], x[:, i + 1]), dim=1), out, state)
-            
+
+        out, state = self.cell(x, out, state)
+
         return out

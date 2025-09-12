@@ -7,6 +7,6 @@ class AnimeSRArch(BaseVSRArch):
     def __init__(self):
         self.model = animesr_arch.AnimeSR()
         self.num_cached_frames = 3
-        self.scale = 2
+        self.scale = 4
         
     
