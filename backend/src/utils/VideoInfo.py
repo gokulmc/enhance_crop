@@ -90,53 +90,41 @@ class FFMpegInfoWrapper(VideoInfo):
         fps = re.search(r"(\d+\.?\d*) fps", self.ffmpeg_output_stripped).groups()[0]
         return float(fps)
     
-    def get_color_space(self) -> str:
+    def check_color_opt(self, color_opt:str) -> str | None:
         if self.stream_line:
             try:
-                color_space = self.stream_line.split("),")[1].split(",")[1].split("/")[0].strip()
-                if "progressive" in color_space.lower():
+                match color_opt:
+                    case "Space":
+                        color_opt_detected = self.stream_line.split("),")[1].split(",")[1].split("/")[0].strip()
+                        if "x" in color_opt_detected.lower(): # "x" removes the possibility of it accidentlally detecting a resolution as primaries
+                            return None
+                    case "Primaries":
+                        color_opt_detected = self.stream_line.split("),")[1].split("/")[1].strip()
+                    case "Transfer":
+                        color_opt_detected = self.stream_line.split("),")[1].split("/")[2].replace(")","").split(",")[0].strip()
+                        
+                if "progressive" in color_opt_detected.lower():
                     return None
-                if len(color_space.strip()) > 1:
-                    log(f"Color Space: {color_space}")
-                    return color_space
+                if "unknown" in color_opt_detected.lower():
+                    return None
+                
+                if len(color_opt_detected.strip()) > 1:
+                    log(f"Color {color_opt}: {color_opt_detected}")
+                    return color_opt_detected
+                
             except Exception:
-                log("No known color space detected in the input file.")
-            return None
+                log(f"No known color {color_opt} detected in the input file.")
+                return None
         return None
     
+    def get_color_space(self) -> str:
+        return self.check_color_opt("Space")
+
     def get_color_primaries(self) -> str:
-        if self.stream_line:
-            try:
-                color_space = self.stream_line.split("),")[1].split("/")[1].strip()
-                if len(color_space.strip()) > 1 and "x" not in color_space.lower(): # "x" removes the possibility of it accidentlally detecting a resolution as primaries
-                    log(f"Color Primaries: {color_space}")
-                    return color_space
-            except Exception:
-                log("No known color primaries detected in the input file.")
-            return None
-        return None
-    
+        return self.check_color_opt("Primaries")
+
     def get_color_transfer(self) -> str:
-        if self.stream_line:
-            try:
-                color_space = self.stream_line.split("),")[1].split("/")[2].replace(")","").split(",")[0].strip()
-                if len(color_space.strip()) > 1:
-                    log(f"Color Transfer: {color_space}")
-                    return color_space
-            except Exception:
-                log("No known color transfer detected in the input file.")
-            return None
-        return None
-    
-    def get_pixel_format(self) -> str:
-        if self.stream_line:
-            try:
-                pixel_format = self.stream_line.split(",")[1].split("(")[0].strip()
-                log(f"Pixel Format: {pixel_format}")
-                return pixel_format
-            except Exception:
-                log("ERROR: Cant detect pixel format.")
-        return None
+        return self.check_color_opt("Transfer")
 
 
 class OpenCVInfo(VideoInfo):

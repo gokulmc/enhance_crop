@@ -5,6 +5,62 @@ from .Util import log, subprocess_popen_without_terminal
 from .constants import FFMPEG_PATH
 import sys
 
+FFMPEG_COLORSPACES = [
+    "rgb",
+    "bt709",
+    "unknown",
+    "reserved",
+    "fcc",
+    "bt470bg",
+    "smpte170m",
+    "smpte240m",
+    "ycgco",
+    "bt2020nc",
+    "bt2020c",
+    "smpte2085",
+    "chroma-derived-nc",
+    "chroma-derived-c",
+    "ictcp"
+]
+
+FFMPEG_COLOR_PRIMARIES = [
+    "reserved0",
+    "bt709",
+    "unknown",
+    "reserved",
+    "bt470m",
+    "bt470bg",
+    "smpte170m",
+    "smpte240m",
+    "film",
+    "bt2020",
+    "smpte428",
+    "smpte431",
+    "smpte432",
+    "jedec-p22"
+]
+FFMPEG_COLOR_TRC = [
+    "reserved0",
+    "bt709",
+    "unknown",
+    "reserved",
+    "bt470m",
+    "bt470bg",
+    "smpte170m",
+    "smpte240m",
+    "linear",
+    "log100",
+    "log316",
+    "iec61966-2-4",
+    "bt1361e",
+    "iec61966-2-1",
+    "bt2020-10",
+    "bt2020-12",
+    "smpte2084",
+    "smpte428",
+    "arib-std-b67"
+]
+
 class FFMpegInfoWrapper:
     def __init__(self, input_file: str):
         self.input_file = input_file
@@ -67,13 +123,17 @@ class FFMpegInfoWrapper:
                 match color_opt:
                     case "Space":
                         color_opt_detected = self.stream_line.split("),")[1].split(",")[1].split("/")[0].strip()
-                        if "x" in color_opt_detected.lower(): # "x" removes the possibility of it accidentlally detecting a resolution as primaries
+                        if color_opt_detected not in FFMPEG_COLORSPACES:
                             return None
                     case "Primaries":
                         color_opt_detected = self.stream_line.split("),")[1].split("/")[1].strip()
+                        if color_opt_detected not in FFMPEG_COLOR_PRIMARIES:
+                            return None
                     case "Transfer":
                         color_opt_detected = self.stream_line.split("),")[1].split("/")[2].replace(")","").split(",")[0].strip()
-                        
+                        if color_opt_detected not in FFMPEG_COLOR_TRC:
+                            return None
+
                 if "progressive" in color_opt_detected.lower():
                     return None
                 if "unknown" in color_opt_detected.lower():
