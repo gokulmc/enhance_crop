@@ -117,18 +117,6 @@ class UpscalePytorch:
         self.convertStream = self.torchUtils.init_stream()
         self._load()
 
-    @torch.inference_mode()
-    def set_self_model(self, backend="pytorch", trt_engine_name=None):
-        torch.cuda.empty_cache()
-        if backend == "tensorrt":
-            from .TensorRTHandler import TorchTensorRTHandler
-            trtHandler = TorchTensorRTHandler(model_parent_path=os.path.dirname(self.modelPath),)
-            self.model = trtHandler.load_engine(trt_engine_name=trt_engine_name)
-        else:
-            self.model = self.loadModel(
-                modelPath=self.modelPath, device=self.device, dtype=self.dtype
-            )
-
 
     # add prores
     # add janai v2
@@ -311,21 +299,41 @@ class UpscalePytorch:
         self._load()
 
     @torch.inference_mode()
+    def set_self_model(self, backend="pytorch", trt_engine_name=None):
+        torch.cuda.empty_cache()
+        if backend == "tensorrt":
+            from .TensorRTHandler import TorchTensorRTHandler
+            trtHandler = TorchTensorRTHandler(model_parent_path=os.path.dirname(self.modelPath),)
+            self.model = trtHandler.load_engine(trt_engine_name=trt_engine_name)
+        else:
+            self.model = self.loadModel(
+                modelPath=self.modelPath, device=self.device, dtype=self.dtype
+            )
+
+    @torch.inference_mode()
     def loadModel(
         self, modelPath: str, dtype: torch.dtype = torch.float32, device: str = "cuda"
     ) -> torch.nn.Module:
         try:
-            from .spandrel import ModelLoader, ImageModelDescriptor
+            from .spandrel import ModelLoader, ImageModelDescriptor, UnsupportedModelError
         except ImportError:
             # spandrel will import like this if its a submodule
-            from .spandrel.libs.spandrel.spandrel import ModelLoader, ImageModelDescriptor
+            from .spandrel.libs.spandrel.spandrel import ModelLoader, ImageModelDescriptor, UnsupportedModelError
+        try:
+            model = ModelLoader().load_from_file(modelPath)
+            assert isinstance(model, ImageModelDescriptor)
+            self.inference = model
+            # get model attributes
+            
+        except (UnsupportedModelError) as e:
+            from .VSRArchs.AnimeSR import AnimeSRArch
+            from .VSRArchs.vsr_inference_helper import VSRInferenceHelper
+            model = AnimeSRArch()
+            self.inference = VSRInferenceHelper(model)
 
-        model = ModelLoader().load_from_file(modelPath)
-        assert isinstance(model, ImageModelDescriptor)
-        # get model attributes
         self.scale = model.scale
-
         model = model.model
+        
         model.load_state_dict(model.state_dict(), assign=True)
         model.eval().to(self.device, dtype=self.dtype)
         try:
