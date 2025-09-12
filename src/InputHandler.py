@@ -67,6 +67,8 @@ class FFMpegInfoWrapper:
                 match color_opt:
                     case "Space":
                         color_opt_detected = self.stream_line.split("),")[1].split(",")[1].split("/")[0].strip()
+                        if "x" in color_opt_detected.lower(): # "x" removes the possibility of it accidentlally detecting a resolution as primaries
+                            return None
                     case "Primaries":
                         color_opt_detected = self.stream_line.split("),")[1].split("/")[1].strip()
                     case "Transfer":
@@ -76,6 +78,7 @@ class FFMpegInfoWrapper:
                     return None
                 if "unknown" in color_opt_detected.lower():
                     return None
+                
                 if len(color_opt_detected.strip()) > 1:
                     log(f"Color {color_opt}: {color_opt_detected}")
                     return color_opt_detected

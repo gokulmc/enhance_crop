@@ -226,12 +226,17 @@ class UpscalePytorch:
                         
 
                     # inference and get re-load state dict due to issue with span.
+                    try:
+                        model = self.model
+                        model(inputs[0])
+                        self.model.load_state_dict(model.state_dict())
+                        output = model(inputs[0])
+                        del model
+                        torch.cuda.empty_cache()
+                    except Exception as e:
+                       print("Test inf failed")
 
-                    model = self.model
-                    model(inputs[0])
-                    self.model.load_state_dict(model.state_dict())
-                    del model
-                    torch.cuda.empty_cache()
+                    
 
                     try:
                         trt_engine = trtHandler.build_engine(
@@ -322,7 +327,7 @@ class UpscalePytorch:
         try:
             model = ModelLoader().load_from_file(modelPath)
             assert isinstance(model, ImageModelDescriptor)
-            self.inference = model
+            self.model = model
             # get model attributes
             
         except (UnsupportedModelError) as e:
@@ -356,7 +361,7 @@ class UpscalePytorch:
                 sleep(1)
             if self.tilesize == 0:
                 
-                output = self.inference(image)
+                output = self.model(image)
                 
             else:
                 output = self.renderTiledImage(image)

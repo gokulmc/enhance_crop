@@ -108,7 +108,7 @@ class FFMpegInfoWrapper(VideoInfo):
         if self.stream_line:
             try:
                 color_space = self.stream_line.split("),")[1].split("/")[1].strip()
-                if len(color_space.strip()) > 1:
+                if len(color_space.strip()) > 1 and "x" not in color_space.lower(): # "x" removes the possibility of it accidentlally detecting a resolution as primaries
                     log(f"Color Primaries: {color_space}")
                     return color_space
             except Exception:
