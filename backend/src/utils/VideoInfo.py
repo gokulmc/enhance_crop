@@ -126,6 +126,16 @@ class FFMpegInfoWrapper(VideoInfo):
     def get_color_transfer(self) -> str:
         return self.check_color_opt("Transfer")
 
+    def get_pixel_format(self) -> str:
+        if self.stream_line:
+            try:
+                pixel_format = self.stream_line.split(",")[1].split("(")[0].strip()
+                log(f"Pixel Format: {pixel_format}")
+                return pixel_format
+            except Exception:
+                log("ERROR: Cant detect pixel format.")
+        return None
+
 
 class OpenCVInfo(VideoInfo):
     def __init__(self, input_file: str, start_time: Optional[float] = None, end_time: Optional[float] = None):
