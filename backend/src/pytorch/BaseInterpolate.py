@@ -6,16 +6,11 @@ from queue import Queue
 from ..utils.SSIM import SSIM
 
 # from backend.src.pytorch.InterpolateArchs.GIMM import GIMM
-from .InterpolateArchs.DetectInterpolateArch import ArchDetect
 from .UpscaleTorch import UpscalePytorch
-import math
-import os
 import logging
 import gc
-import sys
-from ..constants import checkForCUDAPytorch
-
-from time import sleep
+from ..utils.Util import CudaChecker
+HAS_PYTORCH_CUDA = CudaChecker().HAS_PYTORCH_CUDA
 
 torch.set_float32_matmul_precision("medium")
 torch.set_grad_enabled(False)
