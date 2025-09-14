@@ -1,16 +1,13 @@
 import torch
 from .TorchUtils import TorchUtils
 # from backend.src.pytorch.InterpolateArchs.GIMM import GIMM
-from .BaseInterpolate import BaseInterpolate, DynamicScale
+from .BaseInterpolate import BaseInterpolate
 import math
 import logging
-import sys
 from ..utils.Util import (
     warnAndLog,
     log,
 )
-from ..constants import HAS_SYSTEM_CUDA
-from time import sleep
 
 torch.set_float32_matmul_precision("medium")
 torch.set_grad_enabled(False)

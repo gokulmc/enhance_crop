@@ -5,11 +5,12 @@ from ..utils.BackendDetect import (
     BackendDetect
 )
 backendDetect = BackendDetect()
-from ..constants import checkForCUDAPytorch
-HAS_PYTORCH_CUDA = checkForCUDAPytorch()
+
 from ..utils.Util import (
     warnAndLog,
+    CudaChecker
 )
+HAS_PYTORCH_CUDA = CudaChecker().HAS_PYTORCH_CUDA
 import numpy as np
 
 def dummy_function(*args, **kwargs):

@@ -16,7 +16,6 @@ import sys
 from ..utils.Util import (
     errorAndLog, log
 )
-from ..constants import HAS_PYTORCH_CUDA
 from time import sleep
 
 torch.set_float32_matmul_precision("medium")

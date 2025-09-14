@@ -184,3 +184,28 @@ class subprocess_popen_without_terminal(subprocess.Popen):
                 kwargs["startupinfo"] = subprocess.STARTUPINFO()
                 kwargs["startupinfo"].dwFlags |= subprocess.STARTF_USESHOWWINDOW
         super().__init__(*args, **kwargs)
+
+class CudaChecker:
+    def __init__(self):
+        self.HAS_SYSTEM_CUDA = self.checkForCUDA()
+        self.HAS_PYTORCH_CUDA = self.checkForCUDAPytorch()
+    @staticmethod
+    def checkForCUDA() -> bool:
+        try:
+            import torch
+            import torchvision
+            import cupy
+
+            if cupy.cuda.get_cuda_path() == None:
+                return False
+        except Exception as e:
+            return False
+        return True
+
+    @staticmethod
+    def checkForCUDAPytorch() -> bool:
+        try:
+            import torch
+            return torch.cuda.is_available()
+        except Exception:
+            return False

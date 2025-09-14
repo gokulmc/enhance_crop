@@ -3,24 +3,6 @@ import sys
 import platform
 CPU_ARCH = "x86_64" if platform.machine() == "AMD64" else platform.machine()
 
-def checkForCUDA() -> bool:
-    try:
-        import torch
-        import torchvision
-        import cupy
-
-        if cupy.cuda.get_cuda_path() == None:
-            return False
-    except Exception as e:
-        return False
-    return True
-def checkForCUDAPytorch() -> bool:
-    try:
-        import torch
-        return torch.cuda.is_available()
-    except Exception:
-        return False
-
 __version__ = "2.1.5"
 IS_FLATPAK = "FLATPAK_ID" in os.environ
 HOME_PATH = os.path.expanduser("~")

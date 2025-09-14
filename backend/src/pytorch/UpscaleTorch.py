@@ -7,10 +7,9 @@ import torch as torch
 import torch.nn.functional as F
 import sys
 from time import sleep
-from ..constants import checkForCUDAPytorch
-HAS_PYTORCH_CUDA = checkForCUDAPytorch()
 
-from ..utils.Util import log
+from ..utils.Util import log, CudaChecker
+HAS_PYTORCH_CUDA = CudaChecker().HAS_PYTORCH_CUDA
 import numpy as np
 def process_output(output, hdr_mode):
     # Step 1: Squeeze the first dimension

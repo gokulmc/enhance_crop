@@ -1,8 +1,6 @@
-from ..constants import FFMPEG_PATH, PLATFORM
+from ..constants import FFMPEG_PATH
 from ..utils.Util import log, subprocess_popen_without_terminal
 import subprocess
-import os
-import platform
 
 
 class BorderDetect:
