@@ -311,42 +311,13 @@ class FFmpegWrite(Buffer):
                     "0:v",  # Map video stream from input 0
                     "-map",
                     "1:a?",
-
-                ]
-                if self.merge_subtitles:
-                    command += [
                     "-map",
-                    "1:s?",]  # Map all subtitle streams from input 1, this sometimes causes issues with some older videos and messes up the audio somehow
-                if not self.merge_subtitles:
-                    command += [
-                        "-c:s",
-                        "none",  # Disable subtitle encoding if not merging subtitles
-                    ]
+                    "1:s:0?",
 
-                command += self.audio_encoder.getPostInputSettings().split()
-                command += self.subtitle_encoder.getPostInputSettings().split()
-
-            
-            """if self.color_space is not None:
-                command += [
-                    "-colorspace",
-                    self.color_space,
                 ]
-            if self.color_primaries is not None:
-                command += [
-                    "-color_primaries",
-                    self.color_primaries,
-                ]
-            if self.color_transfer is not None:
-                command += [
-                    "-color_trc",
-                    self.color_transfer,
-                ]"""
 
-
-            # color_primaries = ["bt709", "bt2020", "bt2020nc"]
-            
                 
+
             if self.custom_encoder is not None:
 
                 for i in self.custom_encoder.split():
@@ -360,7 +331,9 @@ class FFmpegWrite(Buffer):
                     ]
                 command += self.video_encoder.getPostInputSettings().split()
                 command += [self.video_encoder.getQualityControlMode(), str(self.crf)]
-                
+                command += self.audio_encoder.getPostInputSettings().split()
+                command += self.subtitle_encoder.getPostInputSettings().split()
+
                 if self.hdr_mode:
                     
                     
