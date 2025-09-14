@@ -6,6 +6,7 @@
 ### Fixed:
  - DRUNet error at some resolutions.
  - Adding to queue issues on MacOS.
+ - Multiple subtitle videos causing issue with playback, this means that only 1 subtitle track is merged into the output video for now.
 # RVE 2.3.6
 ### Fixed:
  - Color shifting in well... everything.
