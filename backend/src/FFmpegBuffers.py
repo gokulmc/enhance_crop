@@ -11,7 +11,7 @@ import numpy as np
 from .constants import FFMPEG_PATH, FFMPEG_LOG_FILE
 from .utils.Util import (
     log,
-    subprocess_popen_without_terminal
+    subprocess_popen_without_terminal,
 )
 from .utils.Encoders import  EncoderSettings
 
@@ -186,7 +186,6 @@ class FFmpegWrite(Buffer):
         self.color_space = color_space
         self.color_primaries = color_primaries
         self.color_transfer = color_transfer
-        self.merge_subtitles = merge_subtitles
         log(f"FFmpegWrite parameters: inputFile={inputFile}, outputFile={outputFile}, width={width}, height={height}, start_time={start_time}, end_time={end_time}, fps={fps}, crf={crf}, audio_bitrate={audio_bitrate}, pixelFormat={pixelFormat}, overwrite={overwrite}, custom_encoder={custom_encoder}, benchmark={benchmark}, slowmo_mode={slowmo_mode}, upscaleTimes={upscaleTimes}, interpolateFactor={interpolateFactor}, ceilInterpolateFactor={ceilInterpolateFactor}, video_encoder={video_encoder}, audio_encoder={audio_encoder}, subtitle_encoder={subtitle_encoder}, hdr_mode={hdr_mode}, mpv_output={mpv_output}, merge_subtitles={merge_subtitles}")
         self.outputFPS = (
             (self.fps * self.interpolateFactor)
@@ -311,8 +310,6 @@ class FFmpegWrite(Buffer):
                     "0:v",  # Map video stream from input 0
                     "-map",
                     "1:a?",
-                    "-map",
-                    "1:s:0?",
 
                 ]
 
@@ -451,8 +448,9 @@ class FFmpegWrite(Buffer):
             exit_code = self.writeProcess.returncode
 
             renderTime = time.time() - self.startTime
-
+            self.merge_subtitles()
             log(f"\nTime to complete render: {round(renderTime, 2)}")
+            
         except Exception as e:
             log(str(e))
             self.onErroredExit()
@@ -460,8 +458,57 @@ class FFmpegWrite(Buffer):
         if exit_code != 0:
             self.onErroredExit()
             return
+        
+        
 
+    def merge_subtitles(self):
+        if self.slowmo_mode:
+            log("Slowmo mode enabled, skipping subtitle merge.")
+            return
 
+        if not self.outputFile:
+            log("No output file specified, skipping subtitle merge.")
+            return
+
+        temp_output = self.outputFile + ".temp.mkv"
+        os.rename(self.outputFile, temp_output)
+
+        command = [
+            f"{FFMPEG_PATH}",
+            "-loglevel",
+            "error",
+            "-i",
+            temp_output,
+            "-i",
+            self.inputFile,
+            "-c",
+            "copy",
+            "-c:s",
+            "copy",
+            "-map",
+            "0",
+            "-map",
+            "1:s?",
+            self.outputFile,
+        ]
+
+        if self.overwrite:
+            command.append("-y")
+
+        log("Merging subtitles with command: " + " ".join(command))
+
+        try:
+            result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            if result.returncode != 0:
+                log("Failed to merge subtitles. FFmpeg error:")
+                log(result.stderr.decode())
+                os.rename(temp_output, self.outputFile)  # Restore original file
+                return
+            os.remove(temp_output)
+            log("Subtitles merged successfully.")
+        except Exception as e:
+            log("Exception occurred while merging subtitles: " + str(e))
+            os.rename(temp_output, self.outputFile)  # Restore original file
 
 
     def onErroredExit(self):

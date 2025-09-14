@@ -184,4 +184,3 @@ class subprocess_popen_without_terminal(subprocess.Popen):
                 kwargs["startupinfo"] = subprocess.STARTUPINFO()
                 kwargs["startupinfo"].dwFlags |= subprocess.STARTF_USESHOWWINDOW
         super().__init__(*args, **kwargs)
-    
