@@ -5,7 +5,7 @@ from ..constants import PLATFORM, HOME_PATH
 from ..Util import currentDirectory, checkForWritePermissions, open_folder, log
 from .QTcustom import RegularQTPopup
 from ..GenerateFFMpegCommand import FFMpegCommand
-from ..InputHandler import FFMpegInfoWrapper
+from ..InputHandler import RVEBackendWrapper
 
 class SettingsTab:
     def __init__(
@@ -62,7 +62,7 @@ class SettingsTab:
         if input_file and len(input_file) > 1: # caching is nice
             if self.input_file != input_file:
                 self.input_file = input_file
-                self.ffmpegInfoWrapper = FFMpegInfoWrapper(self.input_file)
+                self.ffmpegInfoWrapper = RVEBackendWrapper(self.input_file)
 
         if self.ffmpegInfoWrapper:
             hdr_mode = self.ffmpegInfoWrapper.is_hdr() and self.settings.settings['auto_hdr_mode'] == "True"
