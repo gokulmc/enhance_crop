@@ -55,5 +55,3 @@ FFMPEG_PATH = (
 )
 FFMPEG_LOG_FILE = os.path.join(CWD, "ffmpeg_log.txt")
 MODELS_DIRECTORY = os.path.join(CWD, "models")
-HAS_SYSTEM_CUDA = checkForCUDA()
-HAS_PYTORCH_CUDA = checkForCUDAPytorch()

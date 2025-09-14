@@ -11,16 +11,23 @@ class HandleApplication:
             sys.exit(0)
         
         if not self.args.list_backends:
+            """from pyinstrument import Profiler
+            profiler = Profiler()
+            profiler.start()"""
             
             from src.utils.VideoInfo import OpenCVInfo, print_video_info
             
             if self.args.print_video_info:
                 video_info = OpenCVInfo(self.args.print_video_info)
                 print_video_info(video_info)
+                #profiler.stop()
+                #print(profiler.output_text(unicode=True, color=True))
                 sys.exit(0)
             else:
                 video_info = OpenCVInfo(self.args.input)
                 print_video_info(video_info)
+                
+            
 
             self.checkArguments()
 
@@ -495,4 +502,6 @@ class HandleApplication:
             self.args.hdr_mode = False            
 
 if __name__ == "__main__":
+    
     HandleApplication()
+    

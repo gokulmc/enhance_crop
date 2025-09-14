@@ -24,7 +24,6 @@ class SettingsTab:
         self.ffmpeg_settings_dict = {
             "encoder": self.parent.encoder,
             "audio_encoder": self.parent.audio_encoder,
-            "subtitle_encoder": self.parent.subtitle_encoder,
             "audio_bitrate": self.parent.audio_bitrate,
             "video_pixel_format": self.parent.video_pixel_format,
             "video_quality": self.parent.video_quality,
@@ -86,7 +85,6 @@ class SettingsTab:
         self.settings.settings['audio_encoder'],
         self.settings.settings['audio_bitrate'],
         hdr_mode,
-        self.settings.settings['subtitle_encoder'],
         self.color_space,
         self.color_primaries,
         self.color_transfer,
@@ -116,9 +114,6 @@ class SettingsTab:
             self.updateFFMpegCommand
         )
         self.parent.audio_encoder.currentIndexChanged.connect(
-            self.updateFFMpegCommand
-        )
-        self.parent.subtitle_encoder.currentIndexChanged.connect(
             self.updateFFMpegCommand
         )
         self.parent.video_pixel_format.currentIndexChanged.connect(
@@ -270,9 +265,6 @@ class SettingsTab:
         self.parent.audio_encoder.setCurrentText(
             self.settings.settings["audio_encoder"]
         )
-        self.parent.subtitle_encoder.setCurrentText(
-            self.settings.settings["subtitle_encoder"]
-        )
         self.parent.audio_bitrate.setCurrentText(
             self.settings.settings["audio_bitrate"]
         )
@@ -359,7 +351,6 @@ class Settings:
             "dynamic_tensorrt_engine": "False",
             "encoder": "libx264",
             "audio_encoder": "copy_audio",
-            "subtitle_encoder": "copy_subtitle",
             "audio_bitrate": "192k",
             "preview_enabled": "True",
             "scene_change_detection_method": "pyscenedetect",
@@ -403,7 +394,6 @@ class Settings:
                 "av1_vaapi",
             ),
             "audio_encoder": ("aac", "libmp3lame", "opus", "copy_audio"),
-            "subtitle_encoder": ("srt", "ass", "webvtt", "copy_subtitle"),
             "audio_bitrate": ("320k", "192k", "128k", "96k"),
             "preview_enabled": ("True", "False"),
             "scene_change_detection_method": (

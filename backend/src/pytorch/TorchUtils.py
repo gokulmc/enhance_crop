@@ -5,7 +5,8 @@ from ..utils.BackendDetect import (
     BackendDetect
 )
 backendDetect = BackendDetect()
-from ..constants import HAS_PYTORCH_CUDA
+from ..constants import checkForCUDAPytorch
+HAS_PYTORCH_CUDA = checkForCUDAPytorch()
 from ..utils.Util import (
     warnAndLog,
 )

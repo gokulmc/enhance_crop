@@ -7,7 +7,8 @@ import torch as torch
 import torch.nn.functional as F
 import sys
 from time import sleep
-from ..constants import HAS_PYTORCH_CUDA, MODELS_DIRECTORY
+from ..constants import checkForCUDAPytorch
+HAS_PYTORCH_CUDA = checkForCUDAPytorch()
 
 from ..utils.Util import log
 import numpy as np

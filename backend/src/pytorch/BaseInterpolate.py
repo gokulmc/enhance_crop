@@ -13,7 +13,7 @@ import os
 import logging
 import gc
 import sys
-from ..constants import HAS_PYTORCH_CUDA
+from ..constants import checkForCUDAPytorch
 
 from time import sleep
 
@@ -40,6 +40,7 @@ class BaseInterpolate(metaclass=ABCMeta):
     @abstractmethod
     def _load(self):
         """Loads in the model"""
+        self.HAS_PYTORCH_CUDA = checkForCUDAPytorch()
         self.device = torch.device("cuda")
         self.dtype = torch.float32
         self.width = 1920
@@ -65,7 +66,7 @@ class BaseInterpolate(metaclass=ABCMeta):
         self.backwarp_tenGrid = None
         self.f0encode = None
         gc.collect()
-        if HAS_PYTORCH_CUDA:
+        if self.HAS_PYTORCH_CUDA:
             torch.cuda.empty_cache()
             torch.cuda.reset_max_memory_allocated()
             torch.cuda.reset_max_memory_cached()
