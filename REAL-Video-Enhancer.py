@@ -590,7 +590,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             decompressModelFile=decompressModelFile,
             interpolateModelFile=interpolateModelFile,
             hdrMode=hdrmode,
-            mergeSubtitles=self.mergeSubtitlesCheckBox.isChecked(),
             overrideUpscaleScale=upscaleTimes,
             encoderCommand=self.EncoderCommand.text(),
         )
