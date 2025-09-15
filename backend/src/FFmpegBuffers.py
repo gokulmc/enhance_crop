@@ -78,10 +78,6 @@ class FFmpegRead(Buffer):
             "rawvideo",
             "-s",
             f"{self.width}x{self.height}",
-            "-ss",
-            str(self.start_time),
-            "-to",
-            str(self.end_time),
             "-"
             
         ]
@@ -228,8 +224,6 @@ class FFmpegWrite(Buffer):
                 f"{self.outputWidth}x{self.outputHeight}",
                 "-i",
                 "-",
-                "-to",
-                str((self.end_time-self.start_time) if not self.slowmo_mode else ((self.end_time-self.start_time)*self.ceilInterpolateFactor)),
                 "-r",
                 f"{self.outputFPS}",
                 "-f",
@@ -367,8 +361,6 @@ class FFmpegWrite(Buffer):
 
                 ]
             command +=[
-                "-to",
-                str((self.end_time-self.start_time) if not self.slowmo_mode else ((self.end_time-self.start_time)*self.ceilInterpolateFactor)),
                 f"{self.outputFile}",
             ]
 
@@ -393,8 +385,6 @@ class FFmpegWrite(Buffer):
                 "rawvideo",
                 "-vcodec",
                 "rawvideo",
-                "-to",
-                str(self.end_time-self.start_time),
                 "-video_size",
                 f"{self.width * self.upscaleTimes}x{self.upscaleTimes * self.height}",
                 "-pix_fmt",
