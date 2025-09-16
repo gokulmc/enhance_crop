@@ -5,7 +5,7 @@ from ..constants import PLATFORM, HOME_PATH
 from ..Util import currentDirectory, checkForWritePermissions, open_folder, log
 from .QTcustom import RegularQTPopup
 from ..GenerateFFMpegCommand import FFMpegCommand
-from ..InputHandler import RVEBackendWrapper
+from ..InputHandler import VideoLoader
 
 class SettingsTab:
     def __init__(
@@ -61,10 +61,10 @@ class SettingsTab:
         if input_file and len(input_file) > 1: # caching is nice
             if self.input_file != input_file:
                 self.input_file = input_file
-                self.ffmpegInfoWrapper = RVEBackendWrapper(self.input_file)
+                self.ffmpegInfoWrapper = VideoLoader(self.input_file)
 
         if self.ffmpegInfoWrapper:
-            hdr_mode = self.ffmpegInfoWrapper.is_hdr() and self.settings.settings['auto_hdr_mode'] == "True"
+            hdr_mode = self.ffmpegInfoWrapper.is_hdr and self.settings.settings['auto_hdr_mode'] == "True"
             if hdr_mode:
                 pxfmtdict = {
                             "yuv420p": "yuv420p10le",
@@ -74,9 +74,9 @@ class SettingsTab:
 
                 if pixel_fmt in pxfmtdict:
                     pixel_fmt = pxfmtdict[pixel_fmt]
-            self.color_space = self.ffmpegInfoWrapper.get_color_space()
-            self.color_primaries = self.ffmpegInfoWrapper.get_color_primaries()
-            self.color_transfer = self.ffmpegInfoWrapper.get_color_transfer()
+            self.color_space = self.ffmpegInfoWrapper.color_space
+            self.color_primaries = self.ffmpegInfoWrapper.color_primaries
+            self.color_transfer = self.ffmpegInfoWrapper.color_transfer
 
         command = FFMpegCommand(
         self.settings.settings['encoder'].replace(' (experimental)', '').replace(' (40 series and up)', ''),

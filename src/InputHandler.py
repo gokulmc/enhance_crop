@@ -2,123 +2,125 @@ import subprocess
 import re
 from typing import List
 from .Util import log, subprocess_popen_without_terminal
-from .constants import BACKEND_PATH, PYTHON_EXECUTABLE_PATH
+from .constants import FFMPEG_PATH
 import sys
-import os
 
-class RVEBackendWrapper:
+class FFMpegInfoWrapper:
     def __init__(self, input_file: str):
         self.input_file = input_file
         self._get_ffmpeg_info()
 
     def _get_ffmpeg_info(self):
         command = [
-            PYTHON_EXECUTABLE_PATH,
-            os.path.join(BACKEND_PATH, "rve-backend.py"),
-            "--print_video_info",
-            self.input_file,
+                FFMPEG_PATH,
+                "-i",
+                self.input_file,
+                "-t",
+                "00:00:00",
+                "-f",
+                "null",
+                "/dev/null",
+                "-hide_banner",
+                
+                
         ]
 
-        result = subprocess_popen_without_terminal(command, stderr=subprocess.PIPE, stdout=subprocess.PIPE, errors="replace")
-        stderr_output = result.stderr.read().strip()
-        stdout_output = result.stdout.read().strip()
-        
-        # Try both stdout and stderr
-        self.rve_backend_output = stdout_output if stdout_output else stderr_output
-        log(f"RVE Backend Output:\n{self.rve_backend_output}")
-        
-    def _extract_value(self, label: str) -> str:
-        """Extract value from backend output for a given label"""
-        # Debug: show what we're looking for
-        log(f"Looking for label: '{label}' in output")
-        
-        # Try multiple patterns to be more flexible
-        patterns = [
-            rf"{label}:\s*(.+)",
-            rf"{label.lower()}:\s*(.+)",
-            rf"{label.replace(' ', '\s+')}:\s*(.+)"
-        ]
-        
-        for i, pattern in enumerate(patterns):
-            match = re.search(pattern, self.rve_backend_output, re.IGNORECASE | re.MULTILINE)
-            if match:
-                log(f"Pattern {i+1} matched: {match.group(1).strip()}")
-                return match.group(1).strip()
-        
-        # Debug: show all lines that contain any part of the label
-        for line in self.rve_backend_output.split('\n'):
-            if any(word.lower() in line.lower() for word in label.split()):
-                log(f"Found similar line: '{line}'")
-        
-        log(f"Could not extract value for label: {label}")
-        return ""
-    
+        self.ffmpeg_output_raw:str = subprocess_popen_without_terminal(command,  stderr=subprocess.PIPE, errors="replace").stderr.read()
+        self.ffmpeg_output_stripped = self.ffmpeg_output_raw.lower().strip()
+        try:
+            for line in self.ffmpeg_output_raw.split("\n"):
+                if "Stream #" in line and "Video" in line:
+                    self.stream_line = line
+                    break
+            
+            log(f"Stream line: {self.stream_line}")
+            if self.stream_line is None:
+                log("No video stream found in the input file.")
+        except Exception:
+            print(f"ERROR: Input file seems to have no video stream!", file=sys.stderr)
+            self.stream_line = ""            
+
     def get_duration_seconds(self) -> float:
-        """Get video duration in seconds"""
-        duration_str = self._extract_value("Duration")
-        if duration_str:
-            return float(duration_str.replace(" seconds", ""))
-        return 0.0
-    
+        total_duration:float = 0.0
+
+        duration = re.search(r"duration: (.*?),", self.ffmpeg_output_stripped).groups()[0]
+        hours, minutes, seconds = duration.split(":")
+        total_duration += int(int(hours) * 3600)
+        total_duration += int(int(minutes) * 60)
+        total_duration += float(seconds)
+        return round(total_duration, 2)
+
     def get_total_frames(self) -> int:
-        """Get total number of frames"""
-        frames_str = self._extract_value("Total Frames")
-        if frames_str:
-            return int(frames_str)
-        return 0
-    
-    def get_width_x_height(self) -> tuple[int, int]:
-        """Get video resolution as (width, height)"""
-        resolution_str = self._extract_value("Resolution")
-        if resolution_str and "x" in resolution_str:
-            width, height = resolution_str.split("x")
-            return int(width.strip()), int(height.strip())
-        return 0, 0
-    
+        return int(self.get_duration_seconds() * self.get_fps())
+
+    def get_width_x_height(self) -> List[int]:
+        width, height = re.search(r"video:.* (\d+)x(\d+)",self.ffmpeg_output_stripped).groups()[:2]
+        return [int(width), int(height)]
+
     def get_fps(self) -> float:
-        """Get frames per second"""
-        fps_str = self._extract_value("FPS")
-        if fps_str:
-            return float(fps_str)
-        return 0.0
+        fps = re.search(r"(\d+\.?\d*) fps", self.ffmpeg_output_stripped).groups()[0]
+        return float(fps)
+
+    def check_color_opt(self, color_opt:str) -> str | None:
+        if self.stream_line:
+            try:
+                match color_opt:
+                    case "Space":
+                        color_opt_detected = self.stream_line.split("),")[1].split(",")[1].split("/")[0].strip()
+                    case "Primaries":
+                        color_opt_detected = self.stream_line.split("),")[1].split("/")[1].strip()
+                    case "Transfer":
+                        color_opt_detected = self.stream_line.split("),")[1].split("/")[2].replace(")","").split(",")[0].strip()
+                        
+                if "progressive" in color_opt_detected.lower():
+                    return None
+                if "unknown" in color_opt_detected.lower():
+                    return None
+                if len(color_opt_detected.strip()) > 1:
+                    log(f"Color {color_opt}: {color_opt_detected}")
+                    return color_opt_detected
+                
+            except Exception:
+                log(f"No known color {color_opt} detected in the input file.")
+                return None
+        return None
     
     def get_color_space(self) -> str:
-        """Get color space"""
-        color_space = self._extract_value("Color Space")
-        return color_space if not "None" in color_space else None
-    
-    def get_color_transfer(self) -> str:
-        """Get color transfer"""
-        color_transfer = self._extract_value("Color Transfer")
-        return color_transfer if not "None" in color_transfer else None
-    
-    def get_color_primaries(self) -> str:
-        """Get color primaries"""
-        color_primaries = self._extract_value("Color Primaries")
-        return color_primaries if not "None" in color_primaries else None
+        return self.check_color_opt("Space")
 
+    def get_color_primaries(self) -> str:
+        return self.check_color_opt("Primaries")
+
+    def get_color_transfer(self) -> str:
+        return self.check_color_opt("Transfer")
+    
     def get_pixel_format(self) -> str:
-        """Get pixel format"""
-        return self._extract_value("Pixel Format")
+        try:
+            pixel_format = self.stream_line.split(",")[1].split("(")[0].strip()
+            log(f"Pixel Format: {pixel_format}")
+        except Exception:
+            log("ERROR: Cant detect pixel format.")
+            pixel_format = None 
+        return pixel_format
     
-    def get_codec(self) -> str:
-        """Get video codec"""
-        return self._extract_value("Video Codec")
-    
-    def get_bitrate(self) -> str:
-        """Get video bitrate in kbps"""
-        bitrate_str = self._extract_value("Video Bitrate")
-        if bitrate_str:
-            return bitrate_str
+    def get_bitrate(self) -> int:
+        bitrate = re.search(r"bitrate: (\d+)", self.ffmpeg_output_stripped)
+        if bitrate:
+            return int(bitrate.groups()[0])
         return 0
     
-    def is_hdr(self) -> bool:
-        """Check if video is HDR"""
-        hdr_str = self._extract_value("Is HDR")
-        return hdr_str.lower() == "true"
-        
-        
+    def get_codec(self) -> str:
+        codec = re.search(r"video: (\w+)", self.ffmpeg_output_stripped)
+        if codec:
+            return codec.groups()[0]
+        return "unknown"
     
+    def is_hdr(self) -> bool:
+        hdr_indicators = ["bt2020", "pq", "hdr10", "dolby vision", "hlg"]
+        for indicator in hdr_indicators:
+            if indicator in self.ffmpeg_output_stripped:
+                return True
+        return False
 
 class VideoLoader:
     def __init__(self, inputFile):
@@ -126,10 +128,18 @@ class VideoLoader:
 
     def loadVideo(self):
         log(f"Loading video file: {self.inputFile}")
-        self.ffmpeg_info = RVEBackendWrapper(self.inputFile)
+        self.ffmpeg_info = FFMpegInfoWrapper(self.inputFile)
 
     def isValidVideo(self):
-        return True
+        try:
+            log(f"Checking if video file is valid: {self.inputFile}")
+            disabled_extensions = ["txt", "jpg", "jpeg", "png", "bmp", "webp"]
+            file_extension = self.inputFile.split(".")[-1].lower()
+            return self.ffmpeg_info.get_total_frames() > 1 and \
+                    file_extension not in disabled_extensions
+        except Exception as e:
+            log(f"Error checking video validity: {e}")
+            return False
 
     def getData(self):
         self.width, self.height = self.ffmpeg_info.get_width_x_height()
@@ -142,6 +152,8 @@ class VideoLoader:
         self.total_frames = int(self.ffmpeg_info.get_total_frames())
         self.duration = self.total_frames / self.fps
         self.color_space = self.ffmpeg_info.get_color_space()
+        self.color_primaries = self.ffmpeg_info.get_color_primaries()
+        self.color_transfer = self.ffmpeg_info.get_color_transfer()
         self.pixel_format = self.ffmpeg_info.get_pixel_format()
         self.is_hdr = self.ffmpeg_info.is_hdr()
         log(f"Video Data: {self.width}x{self.height}, {self.fps} FPS, {self.total_frames} frames, {self.duration} seconds, "
