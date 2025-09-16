@@ -25,7 +25,6 @@ from PySide6.QtGui import QIcon
 from mainwindow import Ui_MainWindow
 from PySide6 import QtSvg  # Import the QtSvg module so svg icons can be used on windows
 from src.version import version
-from src.ui.VideoInfo import VideoLoader
 from src.ModelHandler import getModels, getModelDisplayName
 
 # other imports
@@ -55,6 +54,7 @@ from src.ui.AnimationHandler import AnimationHandler
 from src.ui.QTstyle import Palette
 from src.ui.QTcustom import RegularQTPopup, NotificationOverlay, IndependentQTPopup
 from src.ui.RenderQueue import RenderQueue, RenderOptions
+from src.ui.VideoInfo import VideoLoader
 
 svg = (
     QtSvg.QSvgRenderer()

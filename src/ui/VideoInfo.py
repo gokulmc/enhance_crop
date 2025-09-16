@@ -1,7 +1,5 @@
 import subprocess
 import re
-from ..Util import log, subprocess_popen_without_terminal
-from ..constants import BACKEND_PATH, PYTHON_EXECUTABLE_PATH
 import os
 
 class RVEBackendWrapper:
@@ -10,6 +8,9 @@ class RVEBackendWrapper:
         self._get_ffmpeg_info()
 
     def _get_ffmpeg_info(self):
+        from ..constants import BACKEND_PATH, PYTHON_EXECUTABLE_PATH
+        from ..Util import log, subprocess_popen_without_terminal
+
         command = [
             PYTHON_EXECUTABLE_PATH,
             os.path.join(BACKEND_PATH, "rve-backend.py"),
@@ -28,7 +29,6 @@ class RVEBackendWrapper:
     def _extract_value(self, label: str) -> str:
         """Extract value from backend output for a given label"""
         # Debug: show what we're looking for
-        log(f"Looking for label: '{label}' in output")
         
         # Try multiple patterns to be more flexible
         patterns = [
@@ -40,15 +40,8 @@ class RVEBackendWrapper:
         for i, pattern in enumerate(patterns):
             match = re.search(pattern, self.rve_backend_output, re.IGNORECASE | re.MULTILINE)
             if match:
-                log(f"Pattern {i+1} matched: {match.group(1).strip()}")
                 return match.group(1).strip()
-        
-        # Debug: show all lines that contain any part of the label
-        for line in self.rve_backend_output.split('\n'):
-            if any(word.lower() in line.lower() for word in label.split()):
-                log(f"Found similar line: '{line}'")
-        
-        log(f"Could not extract value for label: {label}")
+       
         return ""
     
     def get_duration_seconds(self) -> float:
@@ -123,7 +116,6 @@ class VideoLoader:
         self.inputFile = inputFile
 
     def loadVideo(self):
-        log(f"Loading video file: {self.inputFile}")
         self.ffmpeg_info = RVEBackendWrapper(self.inputFile)
 
     def isValidVideo(self):
@@ -142,5 +134,4 @@ class VideoLoader:
         self.color_space = self.ffmpeg_info.get_color_space()
         self.pixel_format = self.ffmpeg_info.get_pixel_format()
         self.is_hdr = self.ffmpeg_info.is_hdr()
-        log(f"Video Data: {self.width}x{self.height}, {self.fps} FPS, {self.total_frames} frames, {self.duration} seconds, "
-            f"Bitrate: {self.bitrate}, Codec: {self.codec_str}, Color Space: {self.color_space}, Pixel Format: {self.pixel_format}")
+        
