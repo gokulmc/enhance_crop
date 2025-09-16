@@ -5,7 +5,7 @@ from ..constants import PLATFORM, HOME_PATH
 from ..Util import currentDirectory, checkForWritePermissions, open_folder, log
 from .QTcustom import RegularQTPopup
 from ..GenerateFFMpegCommand import FFMpegCommand
-from .VideoInfo import VideoLoader
+from ..VideoInfo import VideoLoader
 
 class SettingsTab:
     def __init__(
@@ -62,6 +62,8 @@ class SettingsTab:
             if self.input_file != input_file:
                 self.input_file = input_file
                 self.ffmpegInfoWrapper = VideoLoader(self.input_file)
+                self.ffmpegInfoWrapper.loadVideo()
+                self.ffmpegInfoWrapper.getData()
 
         if self.ffmpegInfoWrapper:
             hdr_mode = self.ffmpegInfoWrapper.is_hdr and self.settings.settings['auto_hdr_mode'] == "True"

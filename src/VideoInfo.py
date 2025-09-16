@@ -8,8 +8,8 @@ class RVEBackendWrapper:
         self._get_ffmpeg_info()
 
     def _get_ffmpeg_info(self):
-        from ..constants import BACKEND_PATH, PYTHON_EXECUTABLE_PATH
-        from ..Util import log, subprocess_popen_without_terminal
+        from .constants import BACKEND_PATH, PYTHON_EXECUTABLE_PATH
+        from .Util import log, subprocess_popen_without_terminal
 
         command = [
             PYTHON_EXECUTABLE_PATH,
@@ -119,7 +119,13 @@ class VideoLoader:
         self.ffmpeg_info = RVEBackendWrapper(self.inputFile)
 
     def isValidVideo(self):
-        return True
+        try:
+            disabled_extensions = ["txt", "jpg", "jpeg", "png", "bmp", "webp"]
+            file_extension = self.inputFile.split(".")[-1].lower()
+            return self.ffmpeg_info.get_total_frames() > 1 and \
+                    file_extension not in disabled_extensions
+        except Exception as e:
+            return False
 
     def getData(self):
         self.width, self.height = self.ffmpeg_info.get_width_x_height()
@@ -132,6 +138,8 @@ class VideoLoader:
         self.total_frames = int(self.ffmpeg_info.get_total_frames())
         self.duration = self.total_frames / self.fps
         self.color_space = self.ffmpeg_info.get_color_space()
+        self.color_transfer = self.ffmpeg_info.get_color_transfer()
+        self.color_primaries = self.ffmpeg_info.get_color_primaries()
         self.pixel_format = self.ffmpeg_info.get_pixel_format()
         self.is_hdr = self.ffmpeg_info.is_hdr()
         

@@ -54,7 +54,7 @@ from src.ui.AnimationHandler import AnimationHandler
 from src.ui.QTstyle import Palette
 from src.ui.QTcustom import RegularQTPopup, NotificationOverlay, IndependentQTPopup
 from src.ui.RenderQueue import RenderQueue, RenderOptions
-from src.ui.VideoInfo import VideoLoader
+from src.VideoInfo import VideoLoader
 
 svg = (
     QtSvg.QSvgRenderer()
