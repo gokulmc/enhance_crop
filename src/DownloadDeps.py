@@ -3,8 +3,6 @@ from dataclasses import dataclass
 from typing import Optional
 from PySide6.QtWidgets import QMessageBox
 
-from numpy import extract
-
 from .constants import (
     PLATFORM,
     PYTHON_DIRECTORY,
@@ -14,7 +12,6 @@ from .constants import (
     BACKEND_PATH,
     TEMP_DOWNLOAD_PATH,
     CWD,
-    HAS_NETWORK_ON_STARTUP,
     CPU_ARCH,
     USE_LOCAL_BACKEND,
 )
@@ -33,7 +30,6 @@ from .ui.QTcustom import (
     needs_network_else_exit,
 )
 import os
-from platform import machine
 import subprocess
 
 

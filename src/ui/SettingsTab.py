@@ -5,7 +5,7 @@ from ..constants import PLATFORM, HOME_PATH
 from ..Util import currentDirectory, checkForWritePermissions, open_folder, log
 from .QTcustom import RegularQTPopup
 from ..GenerateFFMpegCommand import FFMpegCommand
-from ..InputHandler import VideoLoader
+from .VideoInfo import VideoLoader
 
 class SettingsTab:
     def __init__(

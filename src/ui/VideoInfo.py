@@ -1,9 +1,7 @@
 import subprocess
 import re
-from typing import List
-from .Util import log, subprocess_popen_without_terminal
-from .constants import BACKEND_PATH, PYTHON_EXECUTABLE_PATH
-import sys
+from ..Util import log, subprocess_popen_without_terminal
+from ..constants import BACKEND_PATH, PYTHON_EXECUTABLE_PATH
 import os
 
 class RVEBackendWrapper:
