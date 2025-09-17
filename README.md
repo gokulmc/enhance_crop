@@ -128,7 +128,7 @@
 git clone --recurse-submodules https://github.com/TNTwise/REAL-Video-Enhancer 
 
 # Stable
-git clone --recurse-submodules https://github.com/TNTwise/REAL-Video-Enhancer --branch 2.3.4
+git clone --recurse-submodules https://github.com/TNTwise/REAL-Video-Enhancer --branch 2.3.6
 ```
 # Building:
 
