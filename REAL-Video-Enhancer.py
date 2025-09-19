@@ -355,6 +355,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 + f"Color Space: {self.colorSpace}\n"
                 + f"Pixel Format: {self.pixelFMT}\n"
                 + f"HDR: {self.videoHDR}\n"
+                + f"Bit Depth: {self.videoBitDepth} bit\n"
             )
             self.videoInfoTextEdit.setFontPointSize(10)
             self.videoInfoTextEdit.setText(text)
@@ -563,7 +564,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """if "gmfss" in interpolateDownloadFile.lower():
             log("GMFSS model detected, enabling rgb48 proc to have correct colors.")
             hdrmode = True"""
-        if self.settings.settings["auto_hdr_mode"] == "True" and self.videoHDR:
+        if self.settings.settings["auto_hdr_mode"] == "True" and (self.videoHDR or self.videoBitDepth > 8):
             hdrmode = True
         return RenderOptions(
             inputFile=input_file,
@@ -616,7 +617,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.colorSpace = videoHandler.color_space
                 self.pixelFMT = videoHandler.pixel_format
                 self.videoHDR = videoHandler.is_hdr
-
+                self.videoBitDepth = videoHandler.bit_depth
                 
 
                 # set output_path for checking
@@ -724,6 +725,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.colorSpace = "Multi File"
             self.pixelFMT = "Multi File"
             self.videoHDR = "Multi File"
+            self.videoBitDepth = "Multi File"
         else:
                     
             videoHandler = VideoLoader(inputFile)
@@ -745,6 +747,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.colorSpace = videoHandler.color_space
             self.pixelFMT = videoHandler.pixel_format
             self.videoHDR = videoHandler.is_hdr
+            self.videoBitDepth = videoHandler.bit_depth
 
             self.inputFileText.setText(inputFile)
             self.outputFileText.setEnabled(True)

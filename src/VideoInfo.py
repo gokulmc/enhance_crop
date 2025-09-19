@@ -107,8 +107,13 @@ class RVEBackendWrapper:
         """Check if video is HDR"""
         hdr_str = self._extract_value("Is HDR")
         return hdr_str.lower() == "true"
-        
-        
+    
+    def get_bit_depth(self) -> int:
+        """Get bit depth"""
+        bit_depth_str = self._extract_value("Bit Depth")
+        if bit_depth_str:
+            return int(bit_depth_str.replace(" bit", ""))
+        return 0
     
 
 class VideoLoader:
@@ -142,4 +147,5 @@ class VideoLoader:
         self.color_primaries = self.ffmpeg_info.get_color_primaries()
         self.pixel_format = self.ffmpeg_info.get_pixel_format()
         self.is_hdr = self.ffmpeg_info.is_hdr()
+        self.bit_depth = self.ffmpeg_info.get_bit_depth()
         

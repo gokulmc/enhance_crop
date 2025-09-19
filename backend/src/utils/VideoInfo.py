@@ -94,9 +94,8 @@ class VideoInfo(ABC):
     def get_codec(self) -> str: ...
     @abstractmethod
     def is_hdr(self) -> bool: ...
-
-
-
+    @abstractmethod
+    def get_bit_depth(self) -> int: ...
 
 class FFMpegInfoWrapper(VideoInfo):
     def __init__(self, input_file: str):
@@ -222,6 +221,9 @@ class FFMpegInfoWrapper(VideoInfo):
             return codec.groups()[0]
         return "unknown"
     
+    def get_bit_depth(self) -> int:
+        return 10 if "p10le" in self.ffmpeg_output_stripped else 8
+    
 
 
 class OpenCVInfo(VideoInfo):
@@ -291,6 +293,9 @@ class OpenCVInfo(VideoInfo):
     def is_hdr(self) -> bool:
         return self.ffmpeg_info.is_hdr()
     
+    def get_bit_depth(self) -> int:
+        return self.ffmpeg_info.get_bit_depth()
+    
 
     def __del__(self):
         self.cap.release()
@@ -307,13 +312,14 @@ def print_video_info(video_info: VideoInfo):
     print(f"Video Codec: {video_info.get_codec()}")
     print(f"Video Bitrate: {video_info.get_bitrate()} kbps")
     print(f"Is HDR: {video_info.is_hdr()}")
+    print(f"Bit Depth: {video_info.get_bit_depth()}")
 
 __all__ = ["FFMpegInfoWrapper", "OpenCVInfo", "print_video_info"]
 
 if __name__ == "__main__":
-    #video_path = "/home/pax/Downloads/juggle.mp4"
+    video_path = "/home/pax/Downloads/Life Untouched 4K Demo.mp4"
     #video_path = "/home/pax/Documents/test/LG New York HDR UHD 4K Demo.ts"
-    video_path = "/home/pax/Documents/test/out.mkv"
+    #video_path = "/home/pax/Documents/test/out.mkv"
     #video_path = "/home/pax/Videos/TVアニメ「WIND BREAKER Season 2」ノンクレジットオープニング映像「BOYZ」SixTONES [AWlUVr7Du04]_gmfss-pro_deh264-span_janai-v2_72.0fps_3840x2160.mkv"
     """print("Using FFMpeg:")
     video_info = FFMpegInfoWrapper(video_path)
@@ -332,3 +338,7 @@ if __name__ == "__main__":
     print(f"Color Transfer: {video_info.get_color_transfer()}")
     print(f"Color Primaries: {video_info.get_color_primaries()}")
     print(f"Pixel Format: {video_info.get_pixel_format()}")
+    print(f"Video Codec: {video_info.get_codec()}")
+    print(f"Video Bitrate: {video_info.get_bitrate()} kbps")
+    print(f"Is HDR: {video_info.is_hdr()}")
+    print(f"Bit Depth: {video_info.get_bit_depth()}")
