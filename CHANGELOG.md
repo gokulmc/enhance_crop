@@ -4,6 +4,7 @@
 ### Changed:
  - Force MacOS MPS to use PyTorch 2.9, as it should allow for uint16 support.
 ### Fixed:
+ - Color shifting introduced in 2.3.6.
  - DRUNet error at some resolutions.
  - Adding to queue issues on MacOS.
  - Multiple subtitle videos causing issue with playback.
