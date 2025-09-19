@@ -9,7 +9,7 @@ class FFMpegCommand:
                  hdr_mode: bool,
                  color_space: str,
                  color_primaries: str,
-                 color_transfer: str):
+                 color_transfer: str,):
         self._video_encoder = video_encoder
         self._video_quality = video_quality
         self._video_pixel_format = video_pixel_format

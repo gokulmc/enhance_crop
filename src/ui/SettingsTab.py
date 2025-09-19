@@ -66,7 +66,7 @@ class SettingsTab:
                 self.ffmpegInfoWrapper.getData()
 
         if self.ffmpegInfoWrapper:
-            hdr_mode = (self.ffmpegInfoWrapper.is_hdr or self.ffmpegInfoWrapper.bit_depth > 8) and self.settings.settings['auto_hdr_mode'] == "True"
+            hdr_mode = (self.ffmpegInfoWrapper.is_hdr) and self.settings.settings['auto_hdr_mode'] == "True"
             if hdr_mode:
                 pxfmtdict = {
                             "yuv420p": "yuv420p10le",
