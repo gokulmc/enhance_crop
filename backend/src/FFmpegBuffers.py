@@ -5,9 +5,7 @@ import subprocess
 import queue
 import sys
 import time
-import cv2
-import numpy as np
-
+from threading import Thread
 from .constants import FFMPEG_PATH, FFMPEG_LOG_FILE
 from .utils.Util import (
     log,
@@ -35,25 +33,67 @@ class FFmpegRead(Buffer):
         self.color_primaries = color_primaries
         self.color_transfer = color_transfer
         self.input_pixel_format = input_pixel_format
-        self.yuv420pMOD = self.input_pixel_format == "yuv420p" and not self.hdr_mode
+        try:
+            pyavailable = True
+            import av
+        except ImportError:
+            pyavailable = False
+
+        self.yuv420pMOD = self.input_pixel_format == "yuv420p" and not self.hdr_mode and pyavailable
 
         if self.hdr_mode:
             self.inputFrameChunkSize = width * height * 6
         else:
-            """if self.yuv420pMOD:
-                self.inputFrameChunkSize = width * height * 3 // 2
-            else:"""
             self.inputFrameChunkSize = width * height * 3
 
-        self.readProcess = subprocess_popen_without_terminal(
-            self.command(),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL,
-        )
+        if self.yuv420pMOD:
+            proc = Thread(target=self.av_read_frames_into_queue)
+        else:
+            self.readProcess = subprocess_popen_without_terminal(
+                self.command(),
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL,
+            )
+            proc = Thread(target=self.read_frames_into_queue)
+        proc.start()
         self.readQueue = queue.Queue(maxsize=25)
 
+    def av_read_frames_into_queue(self):
+        import av
+        
+        container = av.open(self.inputFile)
+        video_stream = container.streams.video[0]
+        
+        # Set up cropping if needed
+        if self.borderX != 0 or self.borderY != 0:
+            crop_width = self.width
+            crop_height = self.height
+            crop_x = self.borderX
+            crop_y = self.borderY
+        else:
+            crop_width = crop_height = crop_x = crop_y = None
+        
+        try:
+            for frame in container.decode(video_stream):
+                # Convert frame to numpy array
+                frame_array = frame.to_ndarray(format='rgb24')
+
+                # Apply cropping if specified
+                if crop_width is not None:
+                    frame_array = frame_array[crop_y:crop_y+crop_height, crop_x:crop_x+crop_width]
+                
+                
+                
+                self.readQueue.put(frame_array.tobytes())
+                
+        except Exception as e:
+            log(f"Error reading frames with PyAV: {e}")
+        finally:
+            container.close()
+            self.readQueue.put(None)  # Signal end of stream
+
+
     def command(self):
-        log("Generating FFmpeg READ command...")
         
         command = [
             f"{FFMPEG_PATH}",
@@ -62,16 +102,13 @@ class FFmpegRead(Buffer):
         ]
         
         filter_string = f"crop={self.width}:{self.height}:{self.borderX}:{self.borderY},scale=w=iw*sar:h=ih" # fix dar != sar
-        #if not self.hdr_mode:
-        #    if self.input_pixel_format == "yuv420p":
-        #        filter_string += ":in_range=tv:out_range=pc" # color shifts a smidgen but helps with artifacts when converting yuv to raw
+        
         command += [
             "-vf",
             filter_string,
             "-f",
             "image2pipe",
             "-pix_fmt",
-            #"rgb48le" if self.hdr_mode else (self.input_pixel_format if self.yuv420pMOD else "rgb24"),
             "rgb48le" if self.hdr_mode else "rgb24",
             "-vcodec",
             "rawvideo",
@@ -89,18 +126,6 @@ class FFmpegRead(Buffer):
         if len(chunk) < self.inputFrameChunkSize:
             return None
 
-        """if self.yuv420pMOD:
-            # Convert raw YUV420p data to RGB
-            # The data is Y plane, then U plane, then V plane, concatenated.
-            # cv2.COLOR_YUV420P2RGB expects a single channel image of shape (height * 3 // 2, width)
-            np_frame = np.frombuffer(chunk, dtype=np.uint8)
-            # Ensure height is an integer for reshape, Python 3 // operator already does this.
-            yuv_image_height = self.height * 3 // 2
-            yuv_image = np_frame.reshape((yuv_image_height, self.width))
-            rgb_image = cv2.cvtColor(yuv_image, cv2.COLOR_YUV2RGB_I420)
-            # cv2.imwrite("temp_rgb_image.png", rgb_image)  # Debugging line, can be removed
-            chunk = rgb_image.tobytes()"""
-        
         return chunk
 
     def read_frames_into_queue(self):
@@ -204,8 +229,6 @@ class FFmpegWrite(Buffer):
 
 
     def command(self):
-        log("Generating FFmpeg WRITE command...")
-
         if self.mpv_output:
             command = [
                 f"{FFMPEG_PATH}",
@@ -249,20 +272,14 @@ class FFmpegWrite(Buffer):
                 if self.pixelFormat in pxfmtdict:
                     self.pixelFormat = pxfmtdict[self.pixelFormat]
                 
-                
-                
-                
                 command += [
                     "-pix_fmt",
                     self.pixelFormat,
                 ]
-
-                
                 
             command += [
                 "-",
             ]
-            log("FFMPEG WRITE COMMAND: " + str(command))
             return command
 
 
@@ -313,7 +330,6 @@ class FFmpegWrite(Buffer):
 
                 for i in self.custom_encoder.split():
                     command.append(i)
-                log(f"Custom Encoder Settings: {self.custom_encoder}")
             else:
                 if not self.audio_encoder.getPresetTag() == "copy_audio":
                     command += [
@@ -366,9 +382,6 @@ class FFmpegWrite(Buffer):
             if self.overwrite:
                 command.append("-y")
 
-            log("Output Video Information:")
-            log(f"Resolution: {self.outputWidth}x{self.outputHeight}")
-            log(f"FPS: {self.outputFPS}")
             if self.slowmo_mode:
                 log("Slowmo mode enabled, will not merge audio or subtitles.")
 
@@ -409,12 +422,6 @@ class FFmpegWrite(Buffer):
         self.writeQueue.put(frame)
 
     def write_out_frames(self):
-        """
-        Writes out frames either to ffmpeg or to pipe
-        This is determined by the --output command, which if the PIPE parameter is set, it outputs the chunk to pipe.
-        A command like this is required,
-        ffmpeg -f rawvideo -pix_fmt rgb48 -s 1920x1080 -framerate 24 -i - -c:v libx264 -crf 18 -pix_fmt yuv420p -c:a copy out.mp4
-        """
         log("Rendering")
         self.startTime = time.time()
 
@@ -424,9 +431,7 @@ class FFmpegWrite(Buffer):
                 frame = self.writeQueue.get()
                 if frame is None:
                     break
-                """if len(frame) < self.outputWidth * self.outputHeight * 3:
-                    print("Frame is too small, skipping...", file=sys.stderr)
-                    continue"""
+                
                 self.writeProcess.stdin.buffer.write(frame)
 
             self.writeProcess.stdin.close()
@@ -498,21 +503,21 @@ class FFmpegWrite(Buffer):
 
 
     def onErroredExit(self):
-        print("FFmpeg failed to render the video.", file=sys.stderr)
+        log("FFmpeg failed to render the video.", file=sys.stderr)
         try:
             with open(FFMPEG_LOG_FILE, "r") as f:
-                print("FULL FFMPEG LOG:", file=sys.stderr)
+                log("FULL FFMPEG LOG:", file=sys.stderr)
                 for line in f.readlines():
-                    print(line, file=sys.stderr)
+                    log(line, file=sys.stderr)
 
             with open(FFMPEG_LOG_FILE, "r") as f:
                 for line in f.readlines():
                     if f"[{self.outputFileExtension}" in line:
-                        print(line, file=sys.stderr)
+                        log(line, file=sys.stderr)
 
             if self.video_encoder.getPresetTag() == "x264_vulkan":
-                print("Vulkan encode failed, try restarting the render.", file=sys.stderr)
-                print(
+                log("Vulkan encode failed, try restarting the render.", file=sys.stderr)
+                log(
                     "Make sure you have the latest drivers installed and your GPU supports vulkan encoding.",
                     file=sys.stderr,
                 )
@@ -527,7 +532,7 @@ class FFmpegWrite(Buffer):
         self.ffmpeg_log.close()
 
 class MPVOutput:
-    def __init__(self, FFMpegWrite: FFmpegWrite,width,height,fps, outputFrameChunkSize):
+    def __init__(self, FFMpegWrite: FFmpegWrite, width, height,fps, outputFrameChunkSize):
         self.proc = None
         self.startTime = time.time()
         self.FFMPegWrite = FFMpegWrite
