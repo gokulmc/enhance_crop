@@ -35,7 +35,7 @@ class FFMpegCommand:
                 self._color_transfer,
             ]
             encoder_params += f":transfer={self._color_transfer}:"
-        if self._color_space is not None:
+        if self._color_space is not None and self._video_pixel_format != "yuv420p":
             command += [
                 "-colorspace",
                 self._color_space,
