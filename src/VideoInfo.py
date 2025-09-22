@@ -31,10 +31,12 @@ class RVEBackendWrapper:
         # Debug: show what we're looking for
         
         # Try multiple patterns to be more flexible
+        # Using a variable for backslash gets around f-string error on line 39
+        backslash = '\\'
         patterns = [
             rf"{label}:\s*(.+)",
             rf"{label.lower()}:\s*(.+)",
-            rf"{label.replace(' ', '\s+')}:\s*(.+)"
+            rf"{label.replace(' ', backslash + 's+')}:\s*(.+)"
         ]
         
         for i, pattern in enumerate(patterns):
@@ -148,4 +150,3 @@ class VideoLoader:
         self.pixel_format = self.ffmpeg_info.get_pixel_format()
         self.is_hdr = self.ffmpeg_info.is_hdr()
         self.bit_depth = self.ffmpeg_info.get_bit_depth()
-        
