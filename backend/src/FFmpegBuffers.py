@@ -5,7 +5,9 @@ import subprocess
 import queue
 import sys
 import time
-from threading import Thread
+import cv2
+import numpy as np
+
 from .constants import FFMPEG_PATH, FFMPEG_LOG_FILE
 from .utils.Util import (
     log,
@@ -33,67 +35,25 @@ class FFmpegRead(Buffer):
         self.color_primaries = color_primaries
         self.color_transfer = color_transfer
         self.input_pixel_format = input_pixel_format
-        try:
-            pyavailable = True
-            import av
-        except ImportError:
-            pyavailable = False
-
-        self.yuv420pMOD = self.input_pixel_format == "yuv420p" and not self.hdr_mode and pyavailable
+        self.yuv420pMOD = self.input_pixel_format == "yuv420p" and not self.hdr_mode
 
         if self.hdr_mode:
             self.inputFrameChunkSize = width * height * 6
         else:
+            """if self.yuv420pMOD:
+                self.inputFrameChunkSize = width * height * 3 // 2
+            else:"""
             self.inputFrameChunkSize = width * height * 3
 
-        if self.yuv420pMOD:
-            proc = Thread(target=self.av_read_frames_into_queue)
-        else:
-            self.readProcess = subprocess_popen_without_terminal(
-                self.command(),
-                stdout=subprocess.PIPE,
-                stderr=subprocess.DEVNULL,
-            )
-            proc = Thread(target=self.read_frames_into_queue)
-        proc.start()
+        self.readProcess = subprocess_popen_without_terminal(
+            self.command(),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+        )
         self.readQueue = queue.Queue(maxsize=25)
 
-    def av_read_frames_into_queue(self):
-        import av
-        
-        container = av.open(self.inputFile)
-        video_stream = container.streams.video[0]
-        
-        # Set up cropping if needed
-        if self.borderX != 0 or self.borderY != 0:
-            crop_width = self.width
-            crop_height = self.height
-            crop_x = self.borderX
-            crop_y = self.borderY
-        else:
-            crop_width = crop_height = crop_x = crop_y = None
-        
-        try:
-            for frame in container.decode(video_stream):
-                # Convert frame to numpy array
-                frame_array = frame.to_ndarray(format='rgb24')
-
-                # Apply cropping if specified
-                if crop_width is not None:
-                    frame_array = frame_array[crop_y:crop_y+crop_height, crop_x:crop_x+crop_width]
-                
-                
-                
-                self.readQueue.put(frame_array.tobytes())
-                
-        except Exception as e:
-            log(f"Error reading frames with PyAV: {e}")
-        finally:
-            container.close()
-            self.readQueue.put(None)  # Signal end of stream
-
-
     def command(self):
+        log("Generating FFmpeg READ command...")
         
         command = [
             f"{FFMPEG_PATH}",
@@ -102,13 +62,16 @@ class FFmpegRead(Buffer):
         ]
         
         filter_string = f"crop={self.width}:{self.height}:{self.borderX}:{self.borderY},scale=w=iw*sar:h=ih" # fix dar != sar
-        
+        #if not self.hdr_mode:
+        #    if self.input_pixel_format == "yuv420p":
+        #        filter_string += ":in_range=tv:out_range=pc" # color shifts a smidgen but helps with artifacts when converting yuv to raw
         command += [
             "-vf",
             filter_string,
             "-f",
             "image2pipe",
             "-pix_fmt",
+            #"rgb48le" if self.hdr_mode else (self.input_pixel_format if self.yuv420pMOD else "rgb24"),
             "rgb48le" if self.hdr_mode else "rgb24",
             "-vcodec",
             "rawvideo",
@@ -126,6 +89,18 @@ class FFmpegRead(Buffer):
         if len(chunk) < self.inputFrameChunkSize:
             return None
 
+        """if self.yuv420pMOD:
+            # Convert raw YUV420p data to RGB
+            # The data is Y plane, then U plane, then V plane, concatenated.
+            # cv2.COLOR_YUV420P2RGB expects a single channel image of shape (height * 3 // 2, width)
+            np_frame = np.frombuffer(chunk, dtype=np.uint8)
+            # Ensure height is an integer for reshape, Python 3 // operator already does this.
+            yuv_image_height = self.height * 3 // 2
+            yuv_image = np_frame.reshape((yuv_image_height, self.width))
+            rgb_image = cv2.cvtColor(yuv_image, cv2.COLOR_YUV2RGB_I420)
+            # cv2.imwrite("temp_rgb_image.png", rgb_image)  # Debugging line, can be removed
+            chunk = rgb_image.tobytes()"""
+        
         return chunk
 
     def read_frames_into_queue(self):
