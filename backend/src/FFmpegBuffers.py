@@ -496,8 +496,8 @@ class FFmpegWrite(Buffer):
                     "Make sure you have the latest drivers installed and your GPU supports vulkan encoding."
                 )
         except Exception as e:
-            print("Failed to read FFmpeg log file.", file=sys.stderr)
-            print(str(e), file=sys.stderr)
+            print("Failed to read FFmpeg log file.")
+            print(str(e))
 
         time.sleep(1)
         os._exit(1)
