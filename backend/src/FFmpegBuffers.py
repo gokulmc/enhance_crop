@@ -478,23 +478,22 @@ class FFmpegWrite(Buffer):
 
 
     def onErroredExit(self):
-        log("FFmpeg failed to render the video.", file=sys.stderr)
+        log("FFmpeg failed to render the video.")
         try:
             with open(FFMPEG_LOG_FILE, "r") as f:
                 log("FULL FFMPEG LOG:", file=sys.stderr)
                 for line in f.readlines():
-                    log(line, file=sys.stderr)
+                    log(line)
 
             with open(FFMPEG_LOG_FILE, "r") as f:
                 for line in f.readlines():
                     if f"[{self.outputFileExtension}" in line:
-                        log(line, file=sys.stderr)
+                        log(line)
 
             if self.video_encoder.getPresetTag() == "x264_vulkan":
-                log("Vulkan encode failed, try restarting the render.", file=sys.stderr)
+                log("Vulkan encode failed, try restarting the render.")
                 log(
-                    "Make sure you have the latest drivers installed and your GPU supports vulkan encoding.",
-                    file=sys.stderr,
+                    "Make sure you have the latest drivers installed and your GPU supports vulkan encoding."
                 )
         except Exception as e:
             print("Failed to read FFmpeg log file.", file=sys.stderr)
