@@ -435,6 +435,10 @@ class FFmpegWrite(Buffer):
         if not self.outputFile:
             log("No output file specified, skipping subtitle merge.")
             return
+        
+        if self.benchmark:
+            log("Benchmark mode enabled, skipping subtitle merge.")
+            return
 
         temp_output = self.outputFile + ".temp.mkv"
         os.rename(self.outputFile, temp_output)
