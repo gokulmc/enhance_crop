@@ -3,6 +3,7 @@
  - PyTorch 2.9
 ### Changed:
  - Force MacOS MPS to use PyTorch 2.9, as it should allow for uint16 support.
+ - Better 10bit video support.
 ### Fixed:
  - Color shifting introduced in 2.3.6.
  - DRUNet error at some resolutions.
