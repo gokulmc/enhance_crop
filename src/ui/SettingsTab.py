@@ -31,8 +31,9 @@ class SettingsTab:
         }
         self.settings = Settings()
         log("Settings: " + str(self.settings.settings))
+        self.connectSettingText() # has to be in this order, otherwise settings wont stick because they get reset.
         self.connectWriteSettings()
-        self.connectSettingText()
+        
 
         # disable half option if its not supported
         if not halfPrecisionSupport:
@@ -108,27 +109,6 @@ class SettingsTab:
                 "tensorrt_optimization_level",
                 self.parent.tensorrt_optimization_level.currentText(),
             )
-        )
-        self.parent.inputFileText.textChanged.connect(
-            self.updateFFMpegCommand
-        )
-        self.parent.encoder.currentIndexChanged.connect(
-            self.updateFFMpegCommand
-        )
-        self.parent.audio_encoder.currentIndexChanged.connect(
-            self.updateFFMpegCommand
-        )
-        self.parent.video_pixel_format.currentIndexChanged.connect(
-            self.updateFFMpegCommand
-        )
-        self.parent.audio_bitrate.currentIndexChanged.connect(
-            self.updateFFMpegCommand
-        )
-        self.parent.auto_hdr_mode.stateChanged.connect(
-            self.updateFFMpegCommand
-        )
-        self.parent.video_quality.currentIndexChanged.connect(
-            self.updateFFMpegCommand
         )
         self.parent.preview_enabled.stateChanged.connect(
             lambda: self.settings.writeSetting(
@@ -228,6 +208,27 @@ class SettingsTab:
                 "auto_hdr_mode",
                 "True" if self.parent.auto_hdr_mode.isChecked() else "False"
             )
+        )
+        self.parent.inputFileText.textChanged.connect(
+            self.updateFFMpegCommand
+        )
+        self.parent.encoder.currentIndexChanged.connect(
+            self.updateFFMpegCommand
+        )
+        self.parent.audio_encoder.currentIndexChanged.connect(
+            self.updateFFMpegCommand
+        )
+        self.parent.video_pixel_format.currentIndexChanged.connect(
+            self.updateFFMpegCommand
+        )
+        self.parent.audio_bitrate.currentIndexChanged.connect(
+            self.updateFFMpegCommand
+        )
+        self.parent.auto_hdr_mode.stateChanged.connect(
+            self.updateFFMpegCommand
+        )
+        self.parent.video_quality.currentIndexChanged.connect(
+            self.updateFFMpegCommand
         )
 
     def writeOutputFolder(self):
@@ -396,7 +397,7 @@ class Settings:
                 "av1_vaapi",
             ),
             "audio_encoder": ("aac", "libmp3lame", "opus", "copy_audio"),
-            "audio_bitrate": ("320k", "192k", "128k", "96k"),
+            "audio_bitrate": "ANY",
             "preview_enabled": ("True", "False"),
             "scene_change_detection_method": (
                 "mean",
@@ -416,14 +417,7 @@ class Settings:
             "pytorch_gpu_id": "ANY",
             "auto_border_cropping": ("True", "False"),
             "video_container": ("mkv", "mp4", "mov", "webm", "avi"),
-            "video_pixel_format": (
-                "yuv420p",
-                "yuv422p",
-                "yuv444p",
-                "yuv420p10le",
-                "yuv422p10le",
-                "yuv444p10le",
-            ),
+            "video_pixel_format": "ANY",
             "pytorch_version": ("2.9.0", "2.8.0", "2.6.0"),
             "pytorch_backend": "ANY",
             "auto_hdr_mode": ("True", "False"),
