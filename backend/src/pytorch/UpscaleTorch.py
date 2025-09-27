@@ -2,14 +2,13 @@ import os
 import math
 
 import gc
-from .TorchUtils import TorchUtils
+from .TorchUtils import TorchUtils, HAS_PYTORCH_CUDA
 import torch as torch
 import torch.nn.functional as F
 import sys
 from time import sleep
 
-from ..utils.Util import log, CudaChecker
-HAS_PYTORCH_CUDA = CudaChecker().HAS_PYTORCH_CUDA
+from ..utils.Util import log
 import numpy as np
 def process_output(output, hdr_mode):
     # Step 1: Squeeze the first dimension
@@ -226,17 +225,12 @@ class UpscalePytorch:
                         
 
                     # inference and get re-load state dict due to issue with span.
-                    try:
-                        model = self.model
-                        model(inputs[0])
-                        self.model.load_state_dict(model.state_dict())
-                        output = model(inputs[0])
-                        del model
-                        torch.cuda.empty_cache()
-                    except Exception as e:
-                       print("Test inf failed")
 
-                    
+                    model = self.model
+                    model(inputs[0])
+                    self.model.load_state_dict(model.state_dict())
+                    del model
+                    torch.cuda.empty_cache()
 
                     try:
                         trt_engine = trtHandler.build_engine(
@@ -327,7 +321,7 @@ class UpscalePytorch:
         try:
             model = ModelLoader().load_from_file(modelPath)
             assert isinstance(model, ImageModelDescriptor)
-            self.model = model
+            self.inference = model
             # get model attributes
             
         except (UnsupportedModelError) as e:
@@ -361,7 +355,7 @@ class UpscalePytorch:
                 sleep(1)
             if self.tilesize == 0:
                 
-                output = self.model(image)
+                output = self.inference(image)
                 
             else:
                 output = self.renderTiledImage(image)

@@ -167,7 +167,7 @@ class AnimeSR(nn.Module):
         self.pixel_shuffle = nn.PixelShuffle(netscale)
         self.netscale = netscale
 
-    def cell(self, x, fb, state):
+    def forward(self, x, fb, state):
         res = x[:, 3:6]
         # pre frame, cur frame, nxt frame, pre sr frame, pre hidden state
         inp = torch.cat((x, pixel_unshuffle(fb, self.netscale), state), dim=1)
@@ -179,13 +179,4 @@ class AnimeSR(nn.Module):
 
         return out_img, out_state
 
-    def forward(self, x):
-        b = 1
-        
-        c, h, w = x.size()[-3:]
-        state = x.new_zeros(b, 64, h, w)
-        out = x.new_zeros(b, c, h * self.netscale, w * self.netscale)
-
-        out, state = self.cell(x, out, state)
-
-        return out
+    
