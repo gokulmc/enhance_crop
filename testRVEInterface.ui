@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
@@ -5,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>0</width>
-    <height>0</height>
+    <width>933</width>
+    <height>641</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -222,10 +223,10 @@ QScrollBar:horizontal{
           <item>
            <widget class="QStackedWidget" name="stackedWidget">
             <property name="styleSheet">
-             <string notr="true" />
+             <string notr="true"/>
             </property>
             <property name="currentIndex">
-             <number>2</number>
+             <number>3</number>
             </property>
             <widget class="QWidget" name="homePage">
              <property name="styleSheet">
@@ -294,10 +295,10 @@ padding:5px 10px;
                       <string>Support Me!</string>
                      </property>
                      <property name="statusTip">
-                      <string>"Support Me!"</string>
+                      <string>&quot;Support Me!&quot;</string>
                      </property>
                      <property name="text">
-                      <string />
+                      <string/>
                      </property>
                      <property name="icon">
                       <iconset resource="resources.qrc">
@@ -330,7 +331,7 @@ padding:5px 10px;
                       </size>
                      </property>
                      <property name="text">
-                      <string />
+                      <string/>
                      </property>
                      <property name="icon">
                       <iconset resource="resources.qrc">
@@ -358,7 +359,7 @@ padding:5px 10px;
                  <item row="0" column="0">
                   <widget class="QLabel" name="label_2">
                    <property name="text">
-                    <string />
+                    <string/>
                    </property>
                    <property name="pixmap">
                     <pixmap resource="resources.qrc">:/icons/icons/logo-v2.svg</pixmap>
@@ -398,14 +399,14 @@ padding:5px 10px;
                    <bool>true</bool>
                   </property>
                   <property name="html">
-                   <string>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd"&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name="qrichtext" content="1" /&gt;&lt;meta charset="utf-8" /&gt;&lt;style type="text/css"&gt;
+                   <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 hr { height: 1px; border-width: 0; }
-li.unchecked::marker { content: "\2610"; }
-li.checked::marker { content: "\2612"; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'Adwaita Sans'; font-size:11pt; font-weight:400; font-style:normal;"&gt;
-&lt;p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Cantarell';"&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+li.unchecked::marker { content: &quot;\2610&quot;; }
+li.checked::marker { content: &quot;\2612&quot;; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Adwaita Sans'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Cantarell';&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                  </widget>
                 </item>
@@ -432,7 +433,7 @@ background-color:#16191d
 
 }</string>
              </property>
-             <layout class="QGridLayout" name="gridLayout_6" />
+             <layout class="QGridLayout" name="gridLayout_6"/>
             </widget>
             <widget class="QWidget" name="procPage">
              <property name="styleSheet">
@@ -684,7 +685,7 @@ QLabel{
 </string>
                       </property>
                       <property name="text">
-                       <string />
+                       <string/>
                       </property>
                       <property name="scaledContents">
                        <bool>false</bool>
@@ -705,7 +706,7 @@ QLabel{
                         <verstretch>0</verstretch>
                        </sizepolicy>
                       </property>
-                      <layout class="QHBoxLayout" name="horizontalLayout_26" />
+                      <layout class="QHBoxLayout" name="horizontalLayout_26"/>
                      </widget>
                     </item>
                    </layout>
@@ -737,7 +738,7 @@ border-radius: 10
                         </widget>
                        </item>
                        <item>
-                        <widget class="QDoubleSpinBox" name="startTimeSpinBox" />
+                        <widget class="QDoubleSpinBox" name="startTimeSpinBox"/>
                        </item>
                        <item>
                         <widget class="QLabel" name="label_52">
@@ -795,10 +796,10 @@ border-radius: 10
                              </size>
                             </property>
                             <property name="toolTip">
-                             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;Render Preview:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;     - Renders a small portion of the video to show the results (most useful for upscaling)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Render Preview:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;     - Renders a small portion of the video to show the results (most useful for upscaling)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                             </property>
                             <property name="text">
-                             <string />
+                             <string/>
                             </property>
                             <property name="pixmap">
                              <pixmap resource="resources.qrc">:/icons/icons/info.svg</pixmap>
@@ -1089,7 +1090,7 @@ background-color:#343b47
                                  <property name="geometry">
                                   <rect>
                                    <x>0</x>
-                                   <y>-423</y>
+                                   <y>0</y>
                                    <width>470</width>
                                    <height>898</height>
                                   </rect>
@@ -1148,7 +1149,7 @@ background-color:#343b47
                                         </font>
                                        </property>
                                        <property name="styleSheet">
-                                        <string notr="true" />
+                                        <string notr="true"/>
                                        </property>
                                        <property name="text">
                                         <string>Select Input File</string>
@@ -1175,7 +1176,7 @@ background-color:#343b47
                                         </font>
                                        </property>
                                        <property name="styleSheet">
-                                        <string notr="true" />
+                                        <string notr="true"/>
                                        </property>
                                        <property name="text">
                                         <string>Batch Select</string>
@@ -1248,7 +1249,7 @@ background-color:#343b47
                                         </font>
                                        </property>
                                        <property name="styleSheet">
-                                        <string notr="true" />
+                                        <string notr="true"/>
                                        </property>
                                        <property name="text">
                                         <string>Select Output Folder</string>
@@ -1393,7 +1394,7 @@ background-color:#343b47
                                         <item>
                                          <widget class="QCheckBox" name="interpolateCheckBox">
                                           <property name="text">
-                                           <string />
+                                           <string/>
                                           </property>
                                          </widget>
                                         </item>
@@ -1592,7 +1593,7 @@ background-color:#343b47
                                      <item>
                                       <widget class="QCheckBox" name="decompressCheckBox">
                                        <property name="text">
-                                        <string />
+                                        <string/>
                                        </property>
                                       </widget>
                                      </item>
@@ -1682,7 +1683,7 @@ background-color:#343b47
                                      <item>
                                       <widget class="QCheckBox" name="denoiseCheckBox">
                                        <property name="text">
-                                        <string />
+                                        <string/>
                                        </property>
                                       </widget>
                                      </item>
@@ -1790,7 +1791,7 @@ background-color:#343b47
                                      <item>
                                       <widget class="QCheckBox" name="deblurCheckBox">
                                        <property name="text">
-                                        <string />
+                                        <string/>
                                        </property>
                                       </widget>
                                      </item>
@@ -1928,7 +1929,7 @@ background-color:#343b47
                                         <item>
                                          <widget class="QCheckBox" name="upscaleCheckBox">
                                           <property name="text">
-                                           <string />
+                                           <string/>
                                           </property>
                                          </widget>
                                         </item>
@@ -2047,10 +2048,10 @@ background-color:#343b47
                                            </size>
                                           </property>
                                           <property name="toolTip">
-                                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;Upscale Scale:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;   - &lt;/span&gt;Custom output scale no matter the model. Will run AI on video frame once, and scale the image to match the multiplier. Useful for 4x models.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Upscale Scale:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;   - &lt;/span&gt;Custom output scale no matter the model. Will run AI on video frame once, and scale the image to match the multiplier. Useful for 4x models.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                                           </property>
                                           <property name="text">
-                                           <string />
+                                           <string/>
                                           </property>
                                           <property name="pixmap">
                                            <pixmap resource="resources.qrc">:/icons/icons/info.svg</pixmap>
@@ -2182,7 +2183,7 @@ text-align: center;
                                      </size>
                                     </property>
                                     <property name="accessibleDescription">
-                                     <string notr="true" />
+                                     <string notr="true"/>
                                     </property>
                                     <property name="styleSheet">
                                      <string notr="true">
@@ -2204,23 +2205,23 @@ QTextEdit:disabled{color:white;}</string>
                                      <bool>true</bool>
                                     </property>
                                     <property name="html">
-                                     <string notr="true">&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd"&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name="qrichtext" content="1" /&gt;&lt;meta charset="utf-8" /&gt;&lt;style type="text/css"&gt;
+                                     <string notr="true">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 hr { height: 1px; border-width: 0; }
-li.unchecked::marker { content: "\2610"; }
-li.checked::marker { content: "\2612"; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'Adwaita Sans'; font-size:11pt; font-weight:400; font-style:normal;"&gt;
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif'; font-size:10pt;"&gt;FPS:&lt;/span&gt;&lt;/p&gt;
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif'; font-size:10pt;"&gt;Resolution:&lt;/span&gt;&lt;/p&gt;
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif'; font-size:10pt;"&gt;Frame Count:&lt;/span&gt;&lt;/p&gt;
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif'; font-size:10pt;"&gt;Bitrate:&lt;/span&gt;&lt;/p&gt;
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif'; font-size:10pt;"&gt;Encoder:&lt;/span&gt;&lt;/p&gt;
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif'; font-size:10pt;"&gt;Container:&lt;/span&gt;&lt;/p&gt;
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif'; font-size:10pt;"&gt;Color Space:&lt;/span&gt;&lt;/p&gt;
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif'; font-size:10pt;"&gt;Pixel Format:&lt;/span&gt;&lt;/p&gt;
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif'; font-size:10pt;"&gt;Is HDR:&lt;/span&gt;&lt;/p&gt;
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-family:'Sans Serif'; font-size:10pt;"&gt;Bit Depth:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+li.unchecked::marker { content: &quot;\2610&quot;; }
+li.checked::marker { content: &quot;\2612&quot;; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Adwaita Sans'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:10pt;&quot;&gt;FPS:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:10pt;&quot;&gt;Resolution:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:10pt;&quot;&gt;Frame Count:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:10pt;&quot;&gt;Bitrate:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:10pt;&quot;&gt;Encoder:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:10pt;&quot;&gt;Container:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:10pt;&quot;&gt;Color Space:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:10pt;&quot;&gt;Pixel Format:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:10pt;&quot;&gt;Is HDR:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:10pt;&quot;&gt;Bit Depth:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                                     </property>
                                    </widget>
                                   </item>
@@ -2406,7 +2407,7 @@ border-radius:10px;
                                <rect>
                                 <x>0</x>
                                 <y>0</y>
-                                <width>452</width>
+                                <width>380</width>
                                 <height>513</height>
                                </rect>
                               </property>
@@ -2543,10 +2544,10 @@ border-radius:10px;
                                            </size>
                                           </property>
                                           <property name="toolTip">
-                                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;Encoder command:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;     -&lt;/span&gt; Encoder settings passed to FFMpeg, can be manually tweaked.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Encoder command:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;     -&lt;/span&gt; Encoder settings passed to FFMpeg, can be manually tweaked.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                                           </property>
                                           <property name="text">
-                                           <string />
+                                           <string/>
                                           </property>
                                           <property name="pixmap">
                                            <pixmap resource="resources.qrc">:/icons/icons/info.svg</pixmap>
@@ -2628,10 +2629,10 @@ border-radius:10px;
                                         </font>
                                        </property>
                                        <property name="toolTip">
-                                        <string />
+                                        <string/>
                                        </property>
                                        <property name="statusTip">
-                                        <string />
+                                        <string/>
                                        </property>
                                        <property name="text">
                                         <string>Benchmark Mode</string>
@@ -2663,7 +2664,7 @@ border-radius:10px;
                                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Perform processing without outputing new video. This tests the raw performance of the inference.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                                        </property>
                                        <property name="text">
-                                        <string />
+                                        <string/>
                                        </property>
                                        <property name="pixmap">
                                         <pixmap resource="resources.qrc">:/icons/icons/info.svg</pixmap>
@@ -2676,10 +2677,10 @@ border-radius:10px;
                                      <item>
                                       <widget class="QCheckBox" name="benchmarkModeCheckBox">
                                        <property name="styleSheet">
-                                        <string notr="true" />
+                                        <string notr="true"/>
                                        </property>
                                        <property name="text">
-                                        <string />
+                                        <string/>
                                        </property>
                                       </widget>
                                      </item>
@@ -2787,7 +2788,7 @@ border-radius:10px;
                                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Split up processing upscaled frames into chunks.&lt;/p&gt;&lt;p&gt;Lowers VRAM usage, but also slows down render. &lt;/p&gt;&lt;p&gt;Only use when render failes due to VRAM limits.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                                        </property>
                                        <property name="text">
-                                        <string />
+                                        <string/>
                                        </property>
                                        <property name="pixmap">
                                         <pixmap resource="resources.qrc">:/icons/icons/info.svg</pixmap>
@@ -2800,7 +2801,7 @@ border-radius:10px;
                                      <item>
                                       <widget class="QCheckBox" name="tilingCheckBox">
                                        <property name="text">
-                                        <string />
+                                        <string/>
                                        </property>
                                       </widget>
                                      </item>
@@ -2962,7 +2963,7 @@ border-radius:10px;
                                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Scales optical flow based on the difference between frames.&lt;/p&gt;&lt;p&gt;Helps with anime interpolation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                                        </property>
                                        <property name="text">
-                                        <string />
+                                        <string/>
                                        </property>
                                        <property name="pixmap">
                                         <pixmap resource="resources.qrc">:/icons/icons/info.svg</pixmap>
@@ -2975,7 +2976,7 @@ border-radius:10px;
                                      <item>
                                       <widget class="QCheckBox" name="dynamicScaledOpticalFlowCheckBox">
                                        <property name="text">
-                                        <string />
+                                        <string/>
                                        </property>
                                       </widget>
                                      </item>
@@ -3022,7 +3023,7 @@ border-radius:10px;
                                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ensembles flow, can produce better results.&lt;/p&gt;&lt;p&gt;Only compadible with older RIFE models and GMFSS&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                                        </property>
                                        <property name="text">
-                                        <string />
+                                        <string/>
                                        </property>
                                        <property name="pixmap">
                                         <pixmap resource="resources.qrc">:/icons/icons/info.svg</pixmap>
@@ -3035,7 +3036,7 @@ border-radius:10px;
                                      <item>
                                       <widget class="QCheckBox" name="ensembleCheckBox">
                                        <property name="text">
-                                        <string />
+                                        <string/>
                                        </property>
                                       </widget>
                                      </item>
@@ -3082,7 +3083,7 @@ border-radius:10px;
                                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Increase video length instead of framerate when interpolating.&lt;/p&gt;&lt;p&gt;Audio and Subtitles will not be transfered to output video.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                                        </property>
                                        <property name="text">
-                                        <string />
+                                        <string/>
                                        </property>
                                        <property name="pixmap">
                                         <pixmap resource="resources.qrc">:/icons/icons/info.svg</pixmap>
@@ -3095,7 +3096,7 @@ border-radius:10px;
                                      <item>
                                       <widget class="QCheckBox" name="sloMoModeCheckBox">
                                        <property name="text">
-                                        <string />
+                                        <string/>
                                        </property>
                                       </widget>
                                      </item>
@@ -3158,14 +3159,14 @@ border-radius:10px;
                               <bool>true</bool>
                              </property>
                              <property name="html">
-                              <string>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd"&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name="qrichtext" content="1" /&gt;&lt;meta charset="utf-8" /&gt;&lt;style type="text/css"&gt;
+                              <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 hr { height: 1px; border-width: 0; }
-li.unchecked::marker { content: "\2610"; }
-li.checked::marker { content: "\2612"; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'Adwaita Sans'; font-size:13pt; font-weight:400; font-style:normal;"&gt;
-&lt;p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Noto Sans';"&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+li.unchecked::marker { content: &quot;\2610&quot;; }
+li.checked::marker { content: &quot;\2612&quot;; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Adwaita Sans'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Noto Sans';&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                              </property>
                             </widget>
                            </item>
@@ -3179,7 +3180,7 @@ li.checked::marker { content: "\2612"; }
                     <item>
                      <widget class="QWidget" name="widget_13" native="true">
                       <property name="styleSheet">
-                       <string notr="true" />
+                       <string notr="true"/>
                       </property>
                       <layout class="QHBoxLayout" name="horizontalLayout_32">
                        <property name="spacing">
@@ -3227,10 +3228,10 @@ li.checked::marker { content: "\2612"; }
                              </size>
                             </property>
                             <property name="styleSheet">
-                             <string notr="true" />
+                             <string notr="true"/>
                             </property>
                             <property name="text">
-                             <string />
+                             <string/>
                             </property>
                             <property name="icon">
                              <iconset resource="resources.qrc">
@@ -3273,10 +3274,10 @@ li.checked::marker { content: "\2612"; }
                             </size>
                            </property>
                            <property name="styleSheet">
-                            <string notr="true" />
+                            <string notr="true"/>
                            </property>
                            <property name="text">
-                            <string />
+                            <string/>
                            </property>
                            <property name="icon">
                             <iconset resource="resources.qrc">
@@ -3311,7 +3312,7 @@ li.checked::marker { content: "\2612"; }
                             </size>
                            </property>
                            <property name="text">
-                            <string />
+                            <string/>
                            </property>
                            <property name="icon">
                             <iconset resource="resources.qrc">
@@ -3545,7 +3546,7 @@ QTabWidget::pane { /* The tab widget frame */
                   <item>
                    <widget class="QTabWidget" name="tabWidget">
                     <property name="currentIndex">
-                     <number>1</number>
+                     <number>0</number>
                     </property>
                     <widget class="QWidget" name="tab_2">
                      <attribute name="title">
@@ -3703,10 +3704,10 @@ QTabWidget::pane { /* The tab widget frame */
                                    </size>
                                   </property>
                                   <property name="toolTip">
-                                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;Scene Change Detection Enabled:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- Enabled: Attempts to detect when scenes change in a video. &lt;/p&gt;&lt;p&gt;   When running an interpolation, it will avoide interpolating over these scene changes.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Scene Change Detection Enabled:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- Enabled: Attempts to detect when scenes change in a video. &lt;/p&gt;&lt;p&gt;   When running an interpolation, it will avoide interpolating over these scene changes.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                                   </property>
                                   <property name="text">
-                                   <string />
+                                   <string/>
                                   </property>
                                   <property name="pixmap">
                                    <pixmap resource="resources.qrc">:/icons/icons/info.svg</pixmap>
@@ -3719,7 +3720,7 @@ QTabWidget::pane { /* The tab widget frame */
                                 <item>
                                  <widget class="QCheckBox" name="scene_change_detection_enabled">
                                   <property name="text">
-                                   <string />
+                                   <string/>
                                   </property>
                                  </widget>
                                 </item>
@@ -3778,10 +3779,10 @@ QTabWidget::pane { /* The tab widget frame */
                                    </size>
                                   </property>
                                   <property name="toolTip">
-                                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;Scene Change Detection Method&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- mean: fastest, least accurate&lt;/p&gt;&lt;p&gt;- mean (segmented): fast, prone to overdetection&lt;/p&gt;&lt;p&gt;- pyscenedetect: slow, accuate &lt;span style=" font-weight:700;"&gt;(Recommended)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Scene Change Detection Method&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- mean: fastest, least accurate&lt;/p&gt;&lt;p&gt;- mean (segmented): fast, prone to overdetection&lt;/p&gt;&lt;p&gt;- pyscenedetect: slow, accuate &lt;span style=&quot; font-weight:700;&quot;&gt;(Recommended)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                                   </property>
                                   <property name="text">
-                                   <string />
+                                   <string/>
                                   </property>
                                   <property name="pixmap">
                                    <pixmap resource="resources.qrc">:/icons/icons/info.svg</pixmap>
@@ -3865,10 +3866,10 @@ QTabWidget::pane { /* The tab widget frame */
                                    </size>
                                   </property>
                                   <property name="toolTip">
-                                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;Scene Change Detection Threshold&lt;/span&gt;&lt;/p&gt;&lt;p&gt; - Lower number: &lt;span style=" font-weight:700;"&gt;higher&lt;/span&gt; chance of detecting scene changes, with risk of &lt;span style=" font-weight:700;"&gt;overdetection&lt;/span&gt;.&lt;/p&gt;&lt;p&gt; - Higher number: &lt;span style=" font-weight:700;"&gt;lower &lt;/span&gt;chance of detecting scene changes, with risk of &lt;span style=" font-weight:700;"&gt;underdetection.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;   - &lt;span style=" font-weight:700;"&gt;Recommended: &lt;/span&gt;2-3 for real life, 4 for animation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Scene Change Detection Threshold&lt;/span&gt;&lt;/p&gt;&lt;p&gt; - Lower number: &lt;span style=&quot; font-weight:700;&quot;&gt;higher&lt;/span&gt; chance of detecting scene changes, with risk of &lt;span style=&quot; font-weight:700;&quot;&gt;overdetection&lt;/span&gt;.&lt;/p&gt;&lt;p&gt; - Higher number: &lt;span style=&quot; font-weight:700;&quot;&gt;lower &lt;/span&gt;chance of detecting scene changes, with risk of &lt;span style=&quot; font-weight:700;&quot;&gt;underdetection.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;   - &lt;span style=&quot; font-weight:700;&quot;&gt;Recommended: &lt;/span&gt;2-3 for real life, 4 for animation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                                   </property>
                                   <property name="text">
-                                   <string />
+                                   <string/>
                                   </property>
                                   <property name="pixmap">
                                    <pixmap resource="resources.qrc">:/icons/icons/info.svg</pixmap>
@@ -3952,10 +3953,10 @@ QTabWidget::pane { /* The tab widget frame */
                                    </size>
                                   </property>
                                   <property name="toolTip">
-                                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;Audo Border Cropping:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- Will automatically remove black bars if they are present throughout a video, can increase performance.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Audo Border Cropping:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- Will automatically remove black bars if they are present throughout a video, can increase performance.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                                   </property>
                                   <property name="text">
-                                   <string />
+                                   <string/>
                                   </property>
                                   <property name="pixmap">
                                    <pixmap resource="resources.qrc">:/icons/icons/info.svg</pixmap>
@@ -3968,7 +3969,7 @@ QTabWidget::pane { /* The tab widget frame */
                                 <item>
                                  <widget class="QCheckBox" name="auto_border_cropping">
                                   <property name="text">
-                                   <string />
+                                   <string/>
                                   </property>
                                  </widget>
                                 </item>
@@ -4029,10 +4030,10 @@ QTabWidget::pane { /* The tab widget frame */
                                </size>
                               </property>
                               <property name="toolTip">
-                               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;Encoder:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- Compression algorithm for video, most common is libx264&lt;/p&gt;&lt;p&gt;- Any encoder without a device label is a CPU encoder.&lt;/p&gt;&lt;p&gt;- &lt;span style=" font-weight:700; text-decoration: underline;"&gt;Lossy Encoders:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- libx264 (&lt;span style=" font-weight:700;"&gt;mkv, mp4, mov, avi&lt;/span&gt;)&lt;/p&gt;&lt;p&gt;- libx265 (&lt;span style=" font-weight:700;"&gt;mkv, mp4, mov&lt;/span&gt;)&lt;/p&gt;&lt;p&gt;- vp9 (&lt;span style=" font-weight:700;"&gt;mkv, webm&lt;/span&gt;)&lt;/p&gt;&lt;p&gt;- av1 (&lt;span style=" font-weight:700;"&gt;mkv, mp4, webm&lt;/span&gt;)&lt;/p&gt;&lt;p&gt;- &lt;span style=" font-weight:700; text-decoration: underline;"&gt;Lossless Encoders:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- prores (&lt;span style=" font-weight:700;"&gt;mkv, mov&lt;/span&gt;)&lt;/p&gt;&lt;p&gt;- ffv1 (&lt;span style=" font-weight:700;"&gt;mkv, avi&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Encoder:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- Compression algorithm for video, most common is libx264&lt;/p&gt;&lt;p&gt;- Any encoder without a device label is a CPU encoder.&lt;/p&gt;&lt;p&gt;- &lt;span style=&quot; font-weight:700; text-decoration: underline;&quot;&gt;Lossy Encoders:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- libx264 (&lt;span style=&quot; font-weight:700;&quot;&gt;mkv, mp4, mov, avi&lt;/span&gt;)&lt;/p&gt;&lt;p&gt;- libx265 (&lt;span style=&quot; font-weight:700;&quot;&gt;mkv, mp4, mov&lt;/span&gt;)&lt;/p&gt;&lt;p&gt;- vp9 (&lt;span style=&quot; font-weight:700;&quot;&gt;mkv, webm&lt;/span&gt;)&lt;/p&gt;&lt;p&gt;- av1 (&lt;span style=&quot; font-weight:700;&quot;&gt;mkv, mp4, webm&lt;/span&gt;)&lt;/p&gt;&lt;p&gt;- &lt;span style=&quot; font-weight:700; text-decoration: underline;&quot;&gt;Lossless Encoders:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- prores (&lt;span style=&quot; font-weight:700;&quot;&gt;mkv, mov&lt;/span&gt;)&lt;/p&gt;&lt;p&gt;- ffv1 (&lt;span style=&quot; font-weight:700;&quot;&gt;mkv, avi&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                               </property>
                               <property name="text">
-                               <string />
+                               <string/>
                               </property>
                               <property name="pixmap">
                                <pixmap resource="resources.qrc">:/icons/icons/info.svg</pixmap>
@@ -4157,10 +4158,10 @@ QTabWidget::pane { /* The tab widget frame */
                                </size>
                               </property>
                               <property name="toolTip">
-                               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;Video Container&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- Changes the video container in the default output file generated container.&lt;/p&gt;&lt;p&gt;- &lt;span style=" font-weight:700;"&gt;mkv &lt;/span&gt;is &lt;span style=" font-weight:700;"&gt;recomended&lt;/span&gt; due to its extensive support for different formats.&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;WARNING: Changing this &lt;/span&gt;&lt;span style=" font-weight:700; text-decoration: underline;"&gt;MAY&lt;/span&gt;&lt;span style=" font-weight:700;"&gt; break encoder compadibility. &lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;Please look at the audio and video encoder tooltips for compadibility.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Video Container&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- Changes the video container in the default output file generated container.&lt;/p&gt;&lt;p&gt;- &lt;span style=&quot; font-weight:700;&quot;&gt;mkv &lt;/span&gt;is &lt;span style=&quot; font-weight:700;&quot;&gt;recomended&lt;/span&gt; due to its extensive support for different formats.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;WARNING: Changing this &lt;/span&gt;&lt;span style=&quot; font-weight:700; text-decoration: underline;&quot;&gt;MAY&lt;/span&gt;&lt;span style=&quot; font-weight:700;&quot;&gt; break encoder compadibility. &lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Please look at the audio and video encoder tooltips for compadibility.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                               </property>
                               <property name="text">
-                               <string />
+                               <string/>
                               </property>
                               <property name="pixmap">
                                <pixmap resource="resources.qrc">:/icons/icons/info.svg</pixmap>
@@ -4300,10 +4301,10 @@ QTabWidget::pane { /* The tab widget frame */
                                </size>
                               </property>
                               <property name="toolTip">
-                               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;Pixel Format&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- D&lt;span style=" font-family:'Droid Sans Mono','monospace','monospace'; font-size:9pt; color:#cccccc;"&gt;efines how color information is stored for each pixel in a video frame.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=" font-family:'Droid Sans Mono','monospace','monospace'; font-size:9pt; color:#cccccc;"&gt;- yuv420p: Most common, removes the most information. &lt;/span&gt;(&lt;span style=" font-weight:700;"&gt;mkv, mp4, mov, avi, webm&lt;/span&gt;)&lt;/p&gt;&lt;p&gt;&lt;span style=" font-family:'Droid Sans Mono','monospace','monospace'; font-size:9pt; color:#cccccc;"&gt;- yuv422p: In between 420p and 444p. &lt;/span&gt;(&lt;span style=" font-weight:700;"&gt;mkv, mov, mp4&lt;/span&gt;)&lt;/p&gt;&lt;p&gt;&lt;span style=" font-family:'Droid Sans Mono','monospace','monospace'; font-size:9pt; color:#cccccc;"&gt;- yuv444p: Keeps the most information. &lt;/span&gt;(&lt;span style=" font-weight:700;"&gt;mkv, mov, mp4&lt;/span&gt;)&lt;br/&gt;&lt;/p&gt;&lt;p&gt;- &lt;span style=" font-family:'Droid Sans Mono','monospace','monospace'; font-size:9pt; color:#cccccc;"&gt;yuv 420/422/444 p10le: 10 bit version of each. (MKV and MP4 containers only) &lt;/span&gt;(&lt;span style=" font-weight:700;"&gt;mkv, mov, mp4&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Pixel Format&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- D&lt;span style=&quot; font-family:'Droid Sans Mono','monospace','monospace'; font-size:9pt; color:#cccccc;&quot;&gt;efines how color information is stored for each pixel in a video frame.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Droid Sans Mono','monospace','monospace'; font-size:9pt; color:#cccccc;&quot;&gt;- yuv420p: Most common, removes the most information. &lt;/span&gt;(&lt;span style=&quot; font-weight:700;&quot;&gt;mkv, mp4, mov, avi, webm&lt;/span&gt;)&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Droid Sans Mono','monospace','monospace'; font-size:9pt; color:#cccccc;&quot;&gt;- yuv422p: In between 420p and 444p. &lt;/span&gt;(&lt;span style=&quot; font-weight:700;&quot;&gt;mkv, mov, mp4&lt;/span&gt;)&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Droid Sans Mono','monospace','monospace'; font-size:9pt; color:#cccccc;&quot;&gt;- yuv444p: Keeps the most information. &lt;/span&gt;(&lt;span style=&quot; font-weight:700;&quot;&gt;mkv, mov, mp4&lt;/span&gt;)&lt;br/&gt;&lt;/p&gt;&lt;p&gt;- &lt;span style=&quot; font-family:'Droid Sans Mono','monospace','monospace'; font-size:9pt; color:#cccccc;&quot;&gt;yuv 420/422/444 p10le: 10 bit version of each. (MKV and MP4 containers only) &lt;/span&gt;(&lt;span style=&quot; font-weight:700;&quot;&gt;mkv, mov, mp4&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                               </property>
                               <property name="text">
-                               <string />
+                               <string/>
                               </property>
                               <property name="pixmap">
                                <pixmap resource="resources.qrc">:/icons/icons/info.svg</pixmap>
@@ -4393,10 +4394,10 @@ QTabWidget::pane { /* The tab widget frame */
                                </size>
                               </property>
                               <property name="toolTip">
-                               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;Audio Encoder&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- &lt;span style=" font-weight:700;"&gt;Recommended &lt;/span&gt;to use &lt;span style=" font-weight:700;"&gt;aac&lt;/span&gt; if the video container is &lt;span style=" font-weight:700;"&gt;not mkv, &lt;/span&gt;or if the output video has audio isses.&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;- &lt;/span&gt;copy_audio: No re-encoding is done on the output&lt;/p&gt;&lt;p&gt;- aac: Most common, and high quality.&lt;/p&gt;&lt;p&gt;- libmp3lame: Used less, low quality.&lt;/p&gt;&lt;p&gt;- opus: Used for &lt;span style=" font-weight:700;"&gt;webm&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Audio Encoder&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- &lt;span style=&quot; font-weight:700;&quot;&gt;Recommended &lt;/span&gt;to use &lt;span style=&quot; font-weight:700;&quot;&gt;aac&lt;/span&gt; if the video container is &lt;span style=&quot; font-weight:700;&quot;&gt;not mkv, &lt;/span&gt;or if the output video has audio isses.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;- &lt;/span&gt;copy_audio: No re-encoding is done on the output&lt;/p&gt;&lt;p&gt;- aac: Most common, and high quality.&lt;/p&gt;&lt;p&gt;- libmp3lame: Used less, low quality.&lt;/p&gt;&lt;p&gt;- opus: Used for &lt;span style=&quot; font-weight:700;&quot;&gt;webm&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                               </property>
                               <property name="text">
-                               <string />
+                               <string/>
                               </property>
                               <property name="pixmap">
                                <pixmap resource="resources.qrc">:/icons/icons/info.svg</pixmap>
@@ -4476,10 +4477,10 @@ QTabWidget::pane { /* The tab widget frame */
                                </size>
                               </property>
                               <property name="toolTip">
-                               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;Audio Bitrate&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;- &lt;/span&gt;Higher bitrate = higher quality&lt;/p&gt;&lt;p&gt;   - Only applies to &lt;span style=" font-weight:700;"&gt;aac &lt;/span&gt;and &lt;span style=" font-weight:700;"&gt;libmp3lame&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Audio Bitrate&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;- &lt;/span&gt;Higher bitrate = higher quality&lt;/p&gt;&lt;p&gt;   - Only applies to &lt;span style=&quot; font-weight:700;&quot;&gt;aac &lt;/span&gt;and &lt;span style=&quot; font-weight:700;&quot;&gt;libmp3lame&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                               </property>
                               <property name="text">
-                               <string />
+                               <string/>
                               </property>
                               <property name="pixmap">
                                <pixmap resource="resources.qrc">:/icons/icons/info.svg</pixmap>
@@ -4564,7 +4565,7 @@ QTabWidget::pane { /* The tab widget frame */
                               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Precision:&lt;/p&gt;&lt;p&gt; - Auto: Defaults to float16 if the GPU is supported (RTX 20 series and up)&lt;/p&gt;&lt;p&gt; - Float16: Faster inference and less VRAM usage.&lt;/p&gt;&lt;p&gt; - Float32: Slower inference and more VRAM usage, supported on more GPUS.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                              </property>
                              <property name="text">
-                              <string />
+                              <string/>
                              </property>
                              <property name="pixmap">
                               <pixmap resource="resources.qrc">:/icons/icons/info.svg</pixmap>
@@ -4624,7 +4625,7 @@ QTabWidget::pane { /* The tab widget frame */
                               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;TensorRT Optimization Level:&lt;/p&gt;&lt;p&gt;- Lower means less optimization, but faster engine generation time.&lt;/p&gt;&lt;p&gt;- Higher means more optimization, but slower engine generation time.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                              </property>
                              <property name="text">
-                              <string />
+                              <string/>
                              </property>
                              <property name="pixmap">
                               <pixmap resource="resources.qrc">:/icons/icons/info.svg</pixmap>
@@ -4707,10 +4708,10 @@ QTabWidget::pane { /* The tab widget frame */
                               </size>
                              </property>
                              <property name="toolTip">
-                              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Auto HDR Mode&lt;/p&gt;&lt;p&gt;- Auto enables HDR mode if RVE detects that the video that is being rendered is HDR. &lt;span style=" font-weight:700;"&gt;This will cause slower rendering if the video is HDR.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt; - &lt;/span&gt;&lt;span style=" font-weight:700;"&gt;HDR is only color tested on x264 and x265 encoders.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=" ont-weight:700"&gt; - The preview colors may be distorted as the preview itself is not HDR.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Auto HDR Mode&lt;/p&gt;&lt;p&gt;- Auto enables HDR mode if RVE detects that the video that is being rendered is HDR. &lt;span style=&quot; font-weight:700;&quot;&gt;This will cause slower rendering if the video is HDR.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt; - &lt;/span&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;HDR is only color tested on x264 and x265 encoders.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; ont-weight:700&quot;&gt; - The preview colors may be distorted as the preview itself is not HDR.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                              </property>
                              <property name="text">
-                              <string />
+                              <string/>
                              </property>
                              <property name="pixmap">
                               <pixmap resource="resources.qrc">:/icons/icons/info.svg</pixmap>
@@ -4729,7 +4730,7 @@ QTabWidget::pane { /* The tab widget frame */
                               </sizepolicy>
                              </property>
                              <property name="text">
-                              <string />
+                              <string/>
                              </property>
                             </widget>
                            </item>
@@ -4777,7 +4778,7 @@ QTabWidget::pane { /* The tab widget frame */
                               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;TensorRT Dynamic Engine:&lt;/p&gt;&lt;p&gt;- Enables TensorRT to build for many different resolutions in one engine.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                              </property>
                              <property name="text">
-                              <string />
+                              <string/>
                              </property>
                              <property name="pixmap">
                               <pixmap resource="resources.qrc">:/icons/icons/info.svg</pixmap>
@@ -4796,7 +4797,7 @@ QTabWidget::pane { /* The tab widget frame */
                               </sizepolicy>
                              </property>
                              <property name="text">
-                              <string />
+                              <string/>
                              </property>
                             </widget>
                            </item>
@@ -4844,7 +4845,7 @@ QTabWidget::pane { /* The tab widget frame */
                               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Saves VRAM and speeds up inference at resolutions above 1080p by calculating flow at a lower resolution. (GMFSS/GIMM)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                              </property>
                              <property name="text">
-                              <string />
+                              <string/>
                              </property>
                              <property name="pixmap">
                               <pixmap resource="resources.qrc">:/icons/icons/info.svg</pixmap>
@@ -4857,7 +4858,7 @@ QTabWidget::pane { /* The tab widget frame */
                            <item>
                             <widget class="QCheckBox" name="uhd_mode">
                              <property name="text">
-                              <string />
+                              <string/>
                              </property>
                             </widget>
                            </item>
@@ -4892,7 +4893,7 @@ QTabWidget::pane { /* The tab widget frame */
                               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;NCNN GPU ID -&lt;/p&gt;&lt;p&gt;Sets what GPU is used for NCNN&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                              </property>
                              <property name="text">
-                              <string />
+                              <string/>
                              </property>
                              <property name="pixmap">
                               <pixmap resource="resources.qrc">:/icons/icons/info.svg</pixmap>
@@ -4943,7 +4944,7 @@ QTabWidget::pane { /* The tab widget frame */
                               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;PyTorch GPU ID -&lt;/p&gt;&lt;p&gt;Sets what GPU is used for PyTorch&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                              </property>
                              <property name="text">
-                              <string />
+                              <string/>
                              </property>
                              <property name="pixmap">
                               <pixmap resource="resources.qrc">:/icons/icons/info.svg</pixmap>
@@ -5027,7 +5028,7 @@ QTabWidget::pane { /* The tab widget frame */
                             <item>
                              <widget class="QCheckBox" name="preview_enabled">
                               <property name="text">
-                               <string />
+                               <string/>
                               </property>
                              </widget>
                             </item>
@@ -5089,7 +5090,7 @@ QTabWidget::pane { /* The tab widget frame */
                                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show REAL Video Enhancer in discord.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                               </property>
                               <property name="text">
-                               <string />
+                               <string/>
                               </property>
                               <property name="pixmap">
                                <pixmap resource="resources.qrc">:/icons/icons/info.svg</pixmap>
@@ -5102,7 +5103,7 @@ QTabWidget::pane { /* The tab widget frame */
                             <item>
                              <widget class="QCheckBox" name="discord_rich_presence">
                               <property name="text">
-                               <string />
+                               <string/>
                               </property>
                              </widget>
                             </item>
@@ -5274,7 +5275,7 @@ background-color:white;
                        </size>
                       </property>
                       <property name="text">
-                       <string />
+                       <string/>
                       </property>
                       <property name="icon">
                        <iconset resource="resources.qrc">
@@ -5328,7 +5329,7 @@ background-color:white;
                        </size>
                       </property>
                       <property name="text">
-                       <string />
+                       <string/>
                       </property>
                       <property name="icon">
                        <iconset resource="resources.qrc">
@@ -5358,7 +5359,7 @@ background-color:white;
               <item row="1" column="0">
                <widget class="QWidget" name="backendSelectContainer" native="true">
                 <property name="styleSheet">
-                 <string notr="true" />
+                 <string notr="true"/>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_11">
                  <item>
@@ -5379,7 +5380,7 @@ background-color:white;
                        </size>
                       </property>
                       <property name="text">
-                       <string />
+                       <string/>
                       </property>
                       <property name="icon">
                        <iconset resource="resources.qrc">
@@ -5421,7 +5422,7 @@ background-color:white;
                    <item>
                     <layout class="QGridLayout" name="gridLayout_9">
                      <item row="0" column="2">
-                      <widget class="QComboBox" name="pytorch_version" />
+                      <widget class="QComboBox" name="pytorch_version"/>
                      </item>
                      <item row="0" column="1">
                       <widget class="QLabel" name="label_64">
@@ -5432,13 +5433,13 @@ background-color:white;
                         </size>
                        </property>
                        <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;PyTorch Version&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- This is the version downloaded&lt;/p&gt;&lt;p&gt;- 2.6: Supports older CUDA enabled GPUs&lt;/p&gt;&lt;p&gt;- 2.7: Supports all RTX cards, faster and recomended.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;PyTorch Version&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- This is the version downloaded&lt;/p&gt;&lt;p&gt;- 2.6: Supports older CUDA enabled GPUs&lt;/p&gt;&lt;p&gt;- 2.7: Supports all RTX cards, faster and recomended.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                        </property>
                        <property name="toolTipDuration">
                         <number>0</number>
                        </property>
                        <property name="text">
-                        <string />
+                        <string/>
                        </property>
                        <property name="pixmap">
                         <pixmap resource="resources.qrc">:/icons/icons/info.svg</pixmap>
@@ -5483,13 +5484,13 @@ background-color:white;
                         </size>
                        </property>
                        <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;PyTorch Backend&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- CUDA: NVIDIA GPUs 10 series and up&lt;/p&gt;&lt;p&gt;- ROCm: AMD (Linux Only) 7000 series(maybe) and up&lt;/p&gt;&lt;p&gt;- xpu: Intel: idk fam, dunno if this even works lowkey&lt;/p&gt;&lt;p&gt;- MPS: Apple Mac M series SOCs only.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;PyTorch Backend&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- CUDA: NVIDIA GPUs 10 series and up&lt;/p&gt;&lt;p&gt;- ROCm: AMD (Linux Only) 7000 series(maybe) and up&lt;/p&gt;&lt;p&gt;- xpu: Intel: idk fam, dunno if this even works lowkey&lt;/p&gt;&lt;p&gt;- MPS: Apple Mac M series SOCs only.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                        </property>
                        <property name="toolTipDuration">
                         <number>0</number>
                        </property>
                        <property name="text">
-                        <string />
+                        <string/>
                        </property>
                        <property name="pixmap">
                         <pixmap resource="resources.qrc">:/icons/icons/info.svg</pixmap>
@@ -5542,7 +5543,7 @@ color: red;
                     </size>
                    </property>
                    <property name="styleSheet">
-                    <string notr="true" />
+                    <string notr="true"/>
                    </property>
                    <property name="widgetResizable">
                     <bool>true</bool>
@@ -5599,7 +5600,7 @@ color: red;
                            </size>
                           </property>
                           <property name="text">
-                           <string />
+                           <string/>
                           </property>
                           <property name="icon">
                            <iconset resource="resources.qrc">
@@ -5628,7 +5629,7 @@ color: red;
                            </size>
                           </property>
                           <property name="text">
-                           <string />
+                           <string/>
                           </property>
                           <property name="icon">
                            <iconset resource="resources.qrc">
@@ -5682,7 +5683,7 @@ color: red;
                            </size>
                           </property>
                           <property name="text">
-                           <string />
+                           <string/>
                           </property>
                           <property name="icon">
                            <iconset resource="resources.qrc">
@@ -5711,7 +5712,7 @@ color: red;
                            </size>
                           </property>
                           <property name="text">
-                           <string />
+                           <string/>
                           </property>
                           <property name="icon">
                            <iconset resource="resources.qrc">
@@ -5771,7 +5772,7 @@ color: red;
                            </size>
                           </property>
                           <property name="text">
-                           <string />
+                           <string/>
                           </property>
                           <property name="icon">
                            <iconset resource="resources.qrc">
@@ -5800,7 +5801,7 @@ color: red;
                            </size>
                           </property>
                           <property name="text">
-                           <string />
+                           <string/>
                           </property>
                           <property name="icon">
                            <iconset resource="resources.qrc">
@@ -5854,7 +5855,7 @@ color: red;
                            </size>
                           </property>
                           <property name="text">
-                           <string />
+                           <string/>
                           </property>
                           <property name="icon">
                            <iconset resource="resources.qrc">
@@ -5883,7 +5884,7 @@ color: red;
                            </size>
                           </property>
                           <property name="text">
-                           <string />
+                           <string/>
                           </property>
                           <property name="icon">
                            <iconset resource="resources.qrc">
@@ -6009,7 +6010,7 @@ color: red;
     <item row="0" column="0">
      <widget class="QWidget" name="leftMenuContainer" native="true">
       <property name="styleSheet">
-       <string notr="true" />
+       <string notr="true"/>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
        <property name="leftMargin">
@@ -6072,7 +6073,7 @@ color: red;
                 </size>
                </property>
                <property name="text">
-                <string />
+                <string/>
                </property>
                <property name="icon">
                 <iconset resource="resources.qrc">
@@ -6101,7 +6102,7 @@ color: red;
                 </size>
                </property>
                <property name="text">
-                <string />
+                <string/>
                </property>
                <property name="icon">
                 <iconset resource="resources.qrc">
@@ -6166,7 +6167,7 @@ color: red;
 </string>
                </property>
                <property name="text">
-                <string />
+                <string/>
                </property>
                <property name="icon">
                 <iconset resource="resources.qrc">
@@ -6192,7 +6193,7 @@ color: red;
                 </size>
                </property>
                <property name="text">
-                <string />
+                <string/>
                </property>
                <property name="icon">
                 <iconset resource="resources.qrc">
@@ -6222,7 +6223,7 @@ color: red;
   </widget>
  </widget>
  <resources>
-  <include location="resources.qrc" />
+  <include location="resources.qrc"/>
  </resources>
- <connections />
+ <connections/>
 </ui>
