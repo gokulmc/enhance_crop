@@ -250,10 +250,11 @@ class SettingsTab:
         )
 
     def resetSettings(self):
-        self.settings.writeDefaultSettings()
-        self.settings.readSettings()
-        self.connectSettingText()
-        self.parent.switchToSettingsPage()
+        for i in range(10): # idk why, but settings wont fully reset until like 5 button presses.
+            self.settings.writeDefaultSettings()
+            self.settings.readSettings()
+            self.connectSettingText()
+            self.parent.switchToSettingsPage()
 
     def connectSettingText(self):
         if PLATFORM == "darwin":
