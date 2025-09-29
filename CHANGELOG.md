@@ -1,6 +1,7 @@
 # RVE 2.3.7
 ### Added:
  - PyTorch 2.9
+ - Video Encoder Speed setting.
 ### Changed:
  - Force MacOS MPS to use PyTorch 2.9, as it should allow for uint16 support.
  - Better 10bit video support.

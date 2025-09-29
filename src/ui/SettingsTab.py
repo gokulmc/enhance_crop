@@ -83,6 +83,7 @@ class SettingsTab:
 
         command = FFMpegCommand(
         self.settings.settings['encoder'].replace(' (experimental)', '').replace(' (40 series and up)', ''),
+        self.settings.settings['video_encoder_speed'],
         self.settings.settings['video_quality'],
         pixel_fmt,
         self.settings.settings['audio_encoder'],
@@ -209,6 +210,11 @@ class SettingsTab:
                 "True" if self.parent.auto_hdr_mode.isChecked() else "False"
             )
         )
+        self.parent.video_encoder_speed.currentIndexChanged.connect(
+            lambda: self.settings.writeSetting(
+                "video_encoder_speed", self.parent.video_encoder_speed.currentText()
+            )
+        )
         self.parent.inputFileText.textChanged.connect(
             self.updateFFMpegCommand
         )
@@ -228,6 +234,9 @@ class SettingsTab:
             self.updateFFMpegCommand
         )
         self.parent.video_quality.currentIndexChanged.connect(
+            self.updateFFMpegCommand
+        )
+        self.parent.video_encoder_speed.currentIndexChanged.connect(
             self.updateFFMpegCommand
         )
 
@@ -322,6 +331,9 @@ class SettingsTab:
         self.parent.auto_hdr_mode.setChecked(
             self.settings.settings["auto_hdr_mode"] == "True"
         )
+        self.parent.video_encoder_speed.setCurrentText(
+            self.settings.settings["video_encoder_speed"]
+        )
 
     def selectOutputFolder(self):
         outputFile = QFileDialog.getExistingDirectory(
@@ -354,6 +366,7 @@ class Settings:
             "tensorrt_optimization_level": "3",
             "dynamic_tensorrt_engine": "False",
             "encoder": "libx264",
+            "video_encoder_speed": "medium",
             "audio_encoder": "copy_audio",
             "audio_bitrate": "192k",
             "preview_enabled": "True",
@@ -397,6 +410,7 @@ class Settings:
                 "x265_vaapi",
                 "av1_vaapi",
             ),
+            "video_encoder_speed": ("placebo","slow", "medium", "fast", "fastest"),
             "audio_encoder": ("aac", "libmp3lame", "opus", "copy_audio"),
             "audio_bitrate": "ANY",
             "preview_enabled": ("True", "False"),
