@@ -40,6 +40,7 @@ class InterpolateGIMMTorch(BaseInterpolate):
         self.interpolateModel = modelPath
         self.width = width
         self.height = height
+        self.gpu_id = gpu_id
         _pad = 64
         self.scale = 0.5  # GIMM uses fat amounts of vram, needs really low flow resolution for regular resolutions
         if UHDMode:
@@ -75,9 +76,9 @@ class InterpolateGIMMTorch(BaseInterpolate):
 
     @torch.inference_mode()
     def _load(self):
-        self.stream = self.torchUtils.init_stream()
-        self.prepareStream = self.torchUtils.init_stream()
-        self.copyStream = self.torchUtils.init_stream()
+        self.stream = self.torchUtils.init_stream(self.gpu_id)
+        self.prepareStream = self.torchUtils.init_stream(self.gpu_id)
+        self.copyStream = self.torchUtils.init_stream(self.gpu_id)
         with self.torchUtils.run_stream(self.prepareStream):  # type: ignore
             from .InterpolateArchs.GIMM.gimmvfi_r import GIMMVFI_R
 

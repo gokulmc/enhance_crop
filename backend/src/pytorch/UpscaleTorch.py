@@ -89,7 +89,7 @@ class UpscalePytorch:
 
     ):
         self.torchUtils = TorchUtils(width=width, height=height,hdr_mode=hdr_mode,device_type=device)  
-        device = self.torchUtils.handle_device(device, gpu_id)
+        device = self.torchUtils.handle_device(device, gpu_id=gpu_id)
         self.tile_pad = tile_pad
         self.dtype = self.torchUtils.handle_precision(precision)
         self.device = device
@@ -111,10 +111,10 @@ class UpscalePytorch:
         self.trt_static_shape = trt_static_shape
 
         # streams
-        self.stream = self.torchUtils.init_stream()
-        self.f2tstream = self.torchUtils.init_stream()  
-        self.prepareStream = self.torchUtils.init_stream()
-        self.convertStream = self.torchUtils.init_stream()
+        self.stream = self.torchUtils.init_stream(gpu_id=gpu_id)
+        self.f2tstream = self.torchUtils.init_stream(gpu_id=gpu_id)
+        self.prepareStream = self.torchUtils.init_stream(gpu_id=gpu_id)
+        self.convertStream = self.torchUtils.init_stream(gpu_id=gpu_id)
         self._load()
 
 
