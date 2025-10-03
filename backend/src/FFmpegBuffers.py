@@ -485,7 +485,7 @@ class FFmpegWrite(Buffer):
         log("FFmpeg failed to render the video.")
         try:
             with open(FFMPEG_LOG_FILE, "r") as f:
-                log("FULL FFMPEG LOG:", file=sys.stderr)
+                log("FULL FFMPEG LOG:")
                 for line in f.readlines():
                     log(line)
 

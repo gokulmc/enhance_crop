@@ -150,6 +150,8 @@ class FFMpegCommand:
                         command +=["-preset","12"]
                     case "fastest":
                         command +=["-preset","13"]
+                
+                    
             case "ffv1":
                 command +=["-c:v","ffv1"]
                 match self._video_quality:
@@ -215,6 +217,18 @@ class FFMpegCommand:
                         command +=["-cq:v","23"]
                     case "Low":
                         command +=["-cq:v","28"]
+                if self._hdr_mode:
+                    # HEVC-specific HDR parameters
+                    command += ["-strict_gop", "1"]
+                    command += ["-no-scenecut", "1"]
+                    command += ["-spatial-aq", "1"]
+                    command += ["-temporal-aq", "1"]
+                    # HEVC can also handle HDR10 metadata
+                    if self._color_transfer == "smpte2084":  # HDR10/PQ
+                        command += ["-hdr10", "1"]
+                        # HDR10 requires minimum 10-bit encoding
+                        if not "10" in self._video_pixel_format:
+                            print("Warning: HDR10 requires at least 10-bit color depth")
                 """if self._hdr_mode:
                     command += ["-x265-params", f'"{encoder_params}"']"""
                 match self._video_encoder_speed:

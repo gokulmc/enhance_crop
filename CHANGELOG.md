@@ -10,7 +10,8 @@
  - DRUNet error at some resolutions.
  - Adding to queue issues on MacOS.
  - Multiple subtitle videos causing issue with playback.
- - Settings not sticking after restart
+ - Settings not sticking after restart.
+ - ROCm half precision not being detected.
 # RVE 2.3.6
 ### Fixed:
  - Color shifting in well... everything.

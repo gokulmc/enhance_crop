@@ -225,7 +225,7 @@ QScrollBar:horizontal{
              <string notr="true" />
             </property>
             <property name="currentIndex">
-             <number>3</number>
+             <number>2</number>
             </property>
             <widget class="QWidget" name="homePage">
              <property name="styleSheet">
@@ -1089,9 +1089,9 @@ background-color:#343b47
                                  <property name="geometry">
                                   <rect>
                                    <x>0</x>
-                                   <y>0</y>
-                                   <width>422</width>
-                                   <height>873</height>
+                                   <y>-454</y>
+                                   <width>470</width>
+                                   <height>878</height>
                                   </rect>
                                  </property>
                                  <layout class="QVBoxLayout" name="verticalLayout_32">
@@ -2172,13 +2172,13 @@ text-align: center;
                                     <property name="minimumSize">
                                      <size>
                                       <width>0</width>
-                                      <height>185</height>
+                                      <height>190</height>
                                      </size>
                                     </property>
                                     <property name="maximumSize">
                                      <size>
                                       <width>100000</width>
-                                      <height>175</height>
+                                      <height>180</height>
                                      </size>
                                     </property>
                                     <property name="accessibleDescription">
@@ -3537,8 +3537,8 @@ QTabWidget::pane { /* The tab widget frame */
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>761</width>
-                   <height>540</height>
+                   <width>470</width>
+                   <height>488</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_18">
@@ -3580,8 +3580,8 @@ QTabWidget::pane { /* The tab widget frame */
                              <rect>
                               <x>0</x>
                               <y>0</y>
-                              <width>703</width>
-                              <height>423</height>
+                              <width>480</width>
+                              <height>173</height>
                              </rect>
                             </property>
                             <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -4157,7 +4157,7 @@ QTabWidget::pane { /* The tab widget frame */
                                </size>
                               </property>
                               <property name="toolTip">
-                               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;Encoder:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- Compression algorithm for video, most common is libx264&lt;/p&gt;&lt;p&gt;- Any encoder without a device label is a CPU encoder.&lt;/p&gt;&lt;p&gt;- &lt;span style=" font-weight:700; text-decoration: underline;"&gt;Lossy Encoders:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- libx264 (&lt;span style=" font-weight:700;"&gt;mkv, mp4, mov, avi&lt;/span&gt;)&lt;/p&gt;&lt;p&gt;- libx265 (&lt;span style=" font-weight:700;"&gt;mkv, mp4, mov&lt;/span&gt;)&lt;/p&gt;&lt;p&gt;- vp9 (&lt;span style=" font-weight:700;"&gt;mkv, webm&lt;/span&gt;)&lt;/p&gt;&lt;p&gt;- av1 (&lt;span style=" font-weight:700;"&gt;mkv, mp4, webm&lt;/span&gt;)&lt;/p&gt;&lt;p&gt;- &lt;span style=" font-weight:700; text-decoration: underline;"&gt;Lossless Encoders:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- prores (&lt;span style=" font-weight:700;"&gt;mkv, mov&lt;/span&gt;)&lt;/p&gt;&lt;p&gt;- ffv1 (&lt;span style=" font-weight:700;"&gt;mkv, avi&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700;"&gt;Encoder Speed:&lt;/span&gt;&lt;/p&gt;&lt;p&gt; - Speed at which the encoder processes the video, &lt;span style=" font-weight:700; text-decoration: underline;"&gt;Slower&lt;/span&gt; processing time means &lt;span style=" font-weight:700; text-decoration: underline;"&gt;Better results for the file size&lt;/span&gt;&lt;span style=" text-decoration: underline;"&gt;.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                               </property>
                               <property name="text">
                                <string />
@@ -5641,7 +5641,7 @@ color: red;
                       <x>0</x>
                       <y>0</y>
                       <width>791</width>
-                      <height>178</height>
+                      <height>162</height>
                      </rect>
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_13">
