@@ -11,7 +11,7 @@ from .FFmpegBuffers import FFmpegRead, FFmpegWrite, MPVOutput
 from .FFmpeg import InformationWriteOut
 from .utils.Encoders import EncoderSettings
 from .utils.SceneDetect import SceneDetect
-from .utils.Util import printAndLog, log, bytesToImg, resize_image_bytes
+from .utils.Util import log, bytesToImg, resize_image_bytes
 from .utils.BorderDetect import BorderDetect
 from .utils.VideoInfo import OpenCVInfo
 import numpy as np
@@ -139,7 +139,7 @@ class Render:
         videoInfo = OpenCVInfo(input_file=inputFile, start_time=start_time, end_time=end_time)
         
         if not videoInfo.is_valid_video:
-            printAndLog("Input video is not valid!")
+            log("Input video is not valid!")
         
         if start_time is None:
             start_time = 0
@@ -175,12 +175,12 @@ class Render:
                 f"Detected borders: Width,Height:{self.width}x{self.height}, X,Y: {self.borderX}x{self.borderY}"
             )
 
-        printAndLog("Using backend: " + self.backend)
+        log("Using backend: " + self.backend)
         # upscale has to be called first to get the scale of the upscale model
         if upscaleModel:
             self.setupUpscale()
             self.upscaleOption.hotUnload()  # unload model to free up memory for trt enging building
-            printAndLog("Using Upscaling Model: " + self.upscaleModel)
+            log("Using Upscaling Model: " + self.upscaleModel)
         else:
             self.upscaleTimes = 1  # if no upscaling, it will default to 1
             self.modelScale = 1
@@ -191,14 +191,14 @@ class Render:
             for model in extraRestorationModels:
                 extraRestoration = self.setupExtraRestoration(model)
                 if extraRestoration:
-                    printAndLog("Using Extra Restoration Model: " + model)
+                    log("Using Extra Restoration Model: " + model)
                     self.extraRestorationModels.append(extraRestoration)
                     extraRestoration.hotUnload()  # unload model to free up memory for trt enging building
         
 
         if interpolateModel:
             self.setupInterpolate()
-            printAndLog("Using Interpolation Model: " + self.interpolateModel)
+            log("Using Interpolation Model: " + self.interpolateModel)
 
         if upscaleModel: # load model after interpolation model is loaded, this saves on vram if the user builds 2 separate engines
             self.upscaleOption.hotReload()
@@ -424,7 +424,7 @@ class Render:
 
 
     def setupExtraRestoration(self, modelPath):
-        printAndLog("Setting up Extra Restoration")
+        log("Setting up Extra Restoration")
         if self.backend == "pytorch" or self.backend == "tensorrt":
             return self.upscalePytorchObject(modelPath)
         
@@ -432,7 +432,7 @@ class Render:
             return self.upscaleNCNNObject(scale=1, modelPath=modelPath)
 
     def setupUpscale(self):
-        printAndLog("Setting up Upscale")
+        log("Setting up Upscale")
         if self.backend == "pytorch" or self.backend == "tensorrt":
 
             self.upscaleOption = self.upscalePytorchObject(self.upscaleModel)
@@ -470,10 +470,10 @@ class Render:
             height=self.height,
         )
         if self.sceneDetectMethod != "none":
-            printAndLog("Scene Detection Enabled")
+            log("Scene Detection Enabled")
 
         else:
-            printAndLog("Scene Detection Disabled")
+            log("Scene Detection Disabled")
 
         if self.backend == "ncnn":
             from .ncnn.InterpolateNCNN import InterpolateRIFENCNN

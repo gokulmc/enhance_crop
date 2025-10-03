@@ -9,18 +9,36 @@ class HandleApplication:
         if self.args.version:
             print(f"{__version__}")
             sys.exit(0)
-
-        from src.utils.GetFFMpeg import download_ffmpeg
-        download_ffmpeg()
+        
         if not self.args.list_backends:
+            """from pyinstrument import Profiler
+            profiler = Profiler()
+            profiler.start()"""
+            
+            from src.utils.VideoInfo import OpenCVInfo, print_video_info
+            
+            if self.args.print_video_info:
+                video_info = OpenCVInfo(self.args.print_video_info)
+                print_video_info(video_info)
+                #profiler.stop()
+                #print(profiler.output_text(unicode=True, color=True))
+                sys.exit(0)
+            else:
+                video_info = OpenCVInfo(self.args.input)
+                print_video_info(video_info)
+                
+            
+
             self.checkArguments()
+
+            from src.utils.GetFFMpeg import download_ffmpeg
+            download_ffmpeg()
+
             if not self.batchProcessing():
                 self.renderVideo()
 
         else:
             self.listBackends()
-
-        
 
     def batchProcessing(self) -> bool:
         """
@@ -136,7 +154,7 @@ class HandleApplication:
             trt_dynamic_shapes=self.args.tensorrt_dynamic_shapes,
             override_upscale_scale=self.args.override_upscale_scale,
             UHD_mode=self.args.UHD_mode,
-            drba=self.args.drba,
+            drba=False,
             slomo_mode=self.args.slomo_mode,
             dynamic_scaled_optical_flow=self.args.dynamic_scaled_optical_flow,
             ensemble=self.args.ensemble,
@@ -393,10 +411,10 @@ class HandleApplication:
             default=False,
         )
         parser.add_argument(
-            "--drba",
-            help="Use DRBA model for interpolation",
-            action="store_true",
-            default=False,
+            "--print_video_info",
+            help="Print video information of the given video to this argument and exits.",
+            default=None,
+            type=str,
         )
         parser.add_argument(
             "--ensemble",
@@ -484,4 +502,6 @@ class HandleApplication:
             self.args.hdr_mode = False            
 
 if __name__ == "__main__":
+    
     HandleApplication()
+    

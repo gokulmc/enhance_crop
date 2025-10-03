@@ -25,7 +25,6 @@ from PySide6.QtGui import QIcon
 from mainwindow import Ui_MainWindow
 from PySide6 import QtSvg  # Import the QtSvg module so svg icons can be used on windows
 from src.version import version
-from src.InputHandler import VideoLoader
 from src.ModelHandler import getModels, getModelDisplayName
 
 # other imports
@@ -55,6 +54,7 @@ from src.ui.AnimationHandler import AnimationHandler
 from src.ui.QTstyle import Palette
 from src.ui.QTcustom import RegularQTPopup, NotificationOverlay, IndependentQTPopup
 from src.ui.RenderQueue import RenderQueue, RenderOptions
+from src.VideoInfo import VideoLoader
 
 svg = (
     QtSvg.QSvgRenderer()
@@ -355,6 +355,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 + f"Color Space: {self.colorSpace}\n"
                 + f"Pixel Format: {self.pixelFMT}\n"
                 + f"HDR: {self.videoHDR}\n"
+                + f"Bit Depth: {self.videoBitDepth} bit\n"
             )
             self.videoInfoTextEdit.setFontPointSize(10)
             self.videoInfoTextEdit.setText(text)
@@ -454,6 +455,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         decompress = self.decompressModelComboBox.currentText()
         input_file = self.inputFileText.text() if input_file is None else input_file
         output_path = self.outputFileText.text() if output_path is None else output_path
+        interpolateModelFile = None
+        upscaleModelFile = None
+        deblurModelFile = None
+        denoiseModelFile = None
+        decompressModelFile = None
         if not self.interpolateCheckBox.isChecked():
             interpolate = None
         if not self.upscaleCheckBox.isChecked():
@@ -558,7 +564,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """if "gmfss" in interpolateDownloadFile.lower():
             log("GMFSS model detected, enabling rgb48 proc to have correct colors.")
             hdrmode = True"""
-        if self.settings.settings["auto_hdr_mode"] == "True" and self.videoHDR:
+        if self.settings.settings["auto_hdr_mode"] == "True" and (self.videoHDR or self.videoBitDepth > 8):
             hdrmode = True
         return RenderOptions(
             inputFile=input_file,
@@ -579,13 +585,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             ensemble=self.ensembleCheckBox.isChecked(),
             modelScale=modelScale,
             upscaleModelArch=upscaleModelArch,
-            upscaleModelFile=upscaleModelFile if upscale else None,
-            deblurModelFile=deblurModelFile if deblur else None,
-            denoiseModelFile=denoiseModelFile if denoise else None,
-            decompressModelFile=decompressModelFile if decompress else None,
-            interpolateModelFile=interpolateModelFile if interpolate else None,
+            upscaleModelFile=upscaleModelFile,
+            deblurModelFile=deblurModelFile,
+            denoiseModelFile=denoiseModelFile,
+            decompressModelFile=decompressModelFile,
+            interpolateModelFile=interpolateModelFile,
             hdrMode=hdrmode,
-            mergeSubtitles=self.mergeSubtitlesCheckBox.isChecked(),
             overrideUpscaleScale=upscaleTimes,
             encoderCommand=self.EncoderCommand.text(),
         )
@@ -612,7 +617,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.colorSpace = videoHandler.color_space
                 self.pixelFMT = videoHandler.pixel_format
                 self.videoHDR = videoHandler.is_hdr
-
+                self.videoBitDepth = videoHandler.bit_depth
                 
 
                 # set output_path for checking
@@ -720,6 +725,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.colorSpace = "Multi File"
             self.pixelFMT = "Multi File"
             self.videoHDR = "Multi File"
+            self.videoBitDepth = "Multi File"
         else:
                     
             videoHandler = VideoLoader(inputFile)
@@ -741,6 +747,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.colorSpace = videoHandler.color_space
             self.pixelFMT = videoHandler.pixel_format
             self.videoHDR = videoHandler.is_hdr
+            self.videoBitDepth = videoHandler.bit_depth
 
             self.inputFileText.setText(inputFile)
             self.outputFileText.setEnabled(True)

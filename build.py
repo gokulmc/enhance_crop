@@ -194,7 +194,7 @@ class BuildManager:
         ...
 
 class PyInstaller(BuildManager):
-    pyinstaller_version = "pyinstaller==6.12.0"
+    pyinstaller_version = "pyinstaller==6.16.0"
 
   
     def build(self):

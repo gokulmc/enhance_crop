@@ -3,8 +3,6 @@ from dataclasses import dataclass
 from typing import Optional
 from PySide6.QtWidgets import QMessageBox
 
-from numpy import extract
-
 from .constants import (
     PLATFORM,
     PYTHON_DIRECTORY,
@@ -14,7 +12,6 @@ from .constants import (
     BACKEND_PATH,
     TEMP_DOWNLOAD_PATH,
     CWD,
-    HAS_NETWORK_ON_STARTUP,
     CPU_ARCH,
     USE_LOCAL_BACKEND,
 )
@@ -22,23 +19,17 @@ from .version import version, backend_dev_version
 from .Util import (
     FileHandler,
     log,
-    createDirectory,
-    makeExecutable,
-    move,
     extractTarGZ,
-    downloadFile,
     removeFolder,
     subprocess_popen_without_terminal
 )
 from .ui.QTcustom import (
     DownloadProgressPopup,
     DisplayCommandOutputPopup,
-    NetworkCheckPopup,
     RegularQTPopup,
     needs_network_else_exit,
 )
 import os
-from platform import machine
 import subprocess
 
 

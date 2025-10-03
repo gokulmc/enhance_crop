@@ -29,7 +29,7 @@ class FileHandler:
             available_space = free / (1024**3)
             return available_space
         except Exception as e:
-            printAndLog(f"An error occurred while getting available disk space: {e}")
+            log(f"An error occurred while getting available disk space: {e}")
             return 0
     @staticmethod
     def moveFolder(prev: str, new: str):
@@ -52,7 +52,7 @@ class FileHandler:
         origCWD = os.getcwd()
         dir_path = os.path.dirname(os.path.realpath(file))
         os.chdir(dir_path)
-        printAndLog("Extracting: " + file)
+        log("Extracting: " + file)
         with zipfile.ZipFile(file, "r") as f:
             f.extractall(outputDirectory)
         removeFile(file)
@@ -139,25 +139,16 @@ class FileHandler:
 def log(message: str):
     
     try:
-        with open(os.path.join(CWD, "frontend_log.txt"), "a") as f:
+        with open(os.path.join(CWD, "log.txt"), "a") as f:
             f.write(message + "\n")
     except Exception as e:
         print(f"An error occurred while logging: {e}", file=sys.stderr)
 
 
-with open(os.path.join(CWD, "frontend_log.txt"), "w") as f:
+with open(os.path.join(CWD, "log.txt"), "w") as f:
     pass
 
 
-def printAndLog(message: str, separate=False):
-    """
-    Prints and logs a message to the log file
-    separate, if True, activates the divider
-    """
-    if separate:
-        message = message + "\n" + "---------------------"
-    print(message)
-    log(message=message)
 
 
 def getAvailableDiskSpace() -> float:
@@ -169,7 +160,7 @@ def getAvailableDiskSpace() -> float:
         available_space = free / (1024**3)
         return available_space
     except Exception as e:
-        printAndLog(f"An error occurred while getting available disk space: {e}")
+        log(f"An error occurred while getting available disk space: {e}")
         return "Unknown"
 
 
@@ -200,7 +191,7 @@ def getOSInfo() -> str:
             return f"{distro_name} {distro_version} {architecture}"
         return f"{system} {release} {architecture}"
     except Exception as e:
-        printAndLog(f"An error occurred while getting OS information: {e}")
+        log(f"An error occurred while getting OS information: {e}")
         return "Unknown"
 
 
@@ -213,7 +204,7 @@ def getRAMAmount() -> str:
         ram_gb = ram / (1024**3)
         return f"{ram_gb:.2f} GB"
     except Exception as e:
-        printAndLog(f"An error occurred while getting RAM amount: {e}")
+        log(f"An error occurred while getting RAM amount: {e}")
         return "Unknown"
 
 
@@ -331,7 +322,7 @@ def extractTarGZ(file):
     origCWD = os.getcwd()
     dir_path = os.path.dirname(os.path.realpath(file))
     os.chdir(dir_path)
-    printAndLog("Extracting: " + file)
+    log("Extracting: " + file)
     with tarfile.open(file, "r:gz") as f:
         f.extractall()
     removeFile(file)

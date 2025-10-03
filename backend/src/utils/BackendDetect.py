@@ -1,5 +1,5 @@
 
-from .Util import log, suppress_stdout_stderr, printAndLog
+from .Util import log, suppress_stdout_stderr
 
 class BackendDetect:
     def __init__(self):
@@ -31,7 +31,7 @@ class BackendDetect:
             try:
                 from upscale_ncnn_py import UPSCALE
             except Exception:
-                printAndLog(
+                log(
                     "Warning: Cannot import upscale_ncnn, falling back to default ncnn processing. (Please install vcredlist on your computer to fix this!)"
                 )
             self.__ncnn = ncnn
@@ -42,7 +42,7 @@ class BackendDetect:
 
     def __get_pytorch_device(self):
         if "cu" in self.__torch.__version__: return "cuda" 
-        if "rocm" in self.__torch.__version__: return "rocm"
+        if "rocm" in self.__torch.__version__: return "cuda"
         if self.__torch.xpu.is_available(): return "xpu"
         if self.__torch.backends.mps.is_available(): return "mps"
         return "CPU"
@@ -61,8 +61,9 @@ class BackendDetect:
         try:
             x = self.__torch.tensor([1.0], dtype=self.__torch.float16).to(device=self.pytorch_device)
             return True
-        except Exception:
-            return False
+        except Exception as e:
+            log(str(e))
+            return False    
     
     def get_gpus_torch(self):
         """
@@ -77,7 +78,6 @@ class BackendDetect:
             torch_cmd_dict = {
             "cuda": self.__torch.cuda,
             "xpu": self.__torch.xpu,
-            "rocm": self.__torch.cuda,
             }
 
             torch_cmd = torch_cmd_dict[self.pytorch_device]

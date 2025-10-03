@@ -11,8 +11,7 @@ import numpy as np
 from .constants import FFMPEG_PATH, FFMPEG_LOG_FILE
 from .utils.Util import (
     log,
-    printAndLog,
-    subprocess_popen_without_terminal
+    subprocess_popen_without_terminal,
 )
 from .utils.Encoders import  EncoderSettings
 
@@ -36,14 +35,15 @@ class FFmpegRead(Buffer):
         self.color_primaries = color_primaries
         self.color_transfer = color_transfer
         self.input_pixel_format = input_pixel_format
+        self.yuv420pMOD = self.input_pixel_format == "yuv420p" and not self.hdr_mode
 
         if self.hdr_mode:
             self.inputFrameChunkSize = width * height * 6
         else:
-            """if self.input_pixel_format == "yuv420p":
+            if self.yuv420pMOD:
                 self.inputFrameChunkSize = width * height * 3 // 2
-            else:"""
-            self.inputFrameChunkSize = width * height * 3
+            else:
+                self.inputFrameChunkSize = width * height * 3
 
         self.readProcess = subprocess_popen_without_terminal(
             self.command(),
@@ -55,7 +55,6 @@ class FFmpegRead(Buffer):
     def command(self):
         log("Generating FFmpeg READ command...")
         
-        
         command = [
             f"{FFMPEG_PATH}",
             "-i",
@@ -63,25 +62,21 @@ class FFmpegRead(Buffer):
         ]
         
         filter_string = f"crop={self.width}:{self.height}:{self.borderX}:{self.borderY},scale=w=iw*sar:h=ih" # fix dar != sar
-        if not self.hdr_mode:
-            if self.input_pixel_format == "yuv420p":
-                filter_string += ":in_range=tv:out_range=pc" # color shifts a smidgen but helps with artifacts when converting yuv to raw
+        #if not self.hdr_mode:
+        #    if self.input_pixel_format == "yuv420p":
+        #        filter_string += ":in_range=tv:out_range=pc" # color shifts a smidgen but helps with artifacts when converting yuv to raw
         command += [
             "-vf",
             filter_string,
             "-f",
             "image2pipe",
             "-pix_fmt",
-            #"rgb48le" if self.hdr_mode else (self.input_pixel_format if self.input_pixel_format == "yuv420p" else "rgb24"),
-            "rgb48le" if self.hdr_mode else "rgb24",
+            "rgb48le" if self.hdr_mode else (self.input_pixel_format if self.yuv420pMOD else "rgb24"),
+            #"rgb48le" if self.hdr_mode else "rgb24",
             "-vcodec",
             "rawvideo",
             "-s",
             f"{self.width}x{self.height}",
-            "-ss",
-            str(self.start_time),
-            "-to",
-            str(self.end_time),
             "-"
             
         ]
@@ -93,8 +88,8 @@ class FFmpegRead(Buffer):
         chunk = self.readProcess.stdout.read(self.inputFrameChunkSize)
         if len(chunk) < self.inputFrameChunkSize:
             return None
-        
-        """if self.input_pixel_format == "yuv420p":
+
+        if self.yuv420pMOD:
             # Convert raw YUV420p data to RGB
             # The data is Y plane, then U plane, then V plane, concatenated.
             # cv2.COLOR_YUV420P2RGB expects a single channel image of shape (height * 3 // 2, width)
@@ -103,8 +98,8 @@ class FFmpegRead(Buffer):
             yuv_image_height = self.height * 3 // 2
             yuv_image = np_frame.reshape((yuv_image_height, self.width))
             rgb_image = cv2.cvtColor(yuv_image, cv2.COLOR_YUV2RGB_I420)
-            cv2.imwrite("temp_rgb_image.png", rgb_image)  # Debugging line, can be removed
-            chunk = rgb_image.tobytes()"""
+            # cv2.imwrite("temp_rgb_image.png", rgb_image)  # Debugging line, can be removed
+            chunk = rgb_image.tobytes()
         
         return chunk
 
@@ -187,7 +182,6 @@ class FFmpegWrite(Buffer):
         self.color_space = color_space
         self.color_primaries = color_primaries
         self.color_transfer = color_transfer
-        self.merge_subtitles = merge_subtitles
         log(f"FFmpegWrite parameters: inputFile={inputFile}, outputFile={outputFile}, width={width}, height={height}, start_time={start_time}, end_time={end_time}, fps={fps}, crf={crf}, audio_bitrate={audio_bitrate}, pixelFormat={pixelFormat}, overwrite={overwrite}, custom_encoder={custom_encoder}, benchmark={benchmark}, slowmo_mode={slowmo_mode}, upscaleTimes={upscaleTimes}, interpolateFactor={interpolateFactor}, ceilInterpolateFactor={ceilInterpolateFactor}, video_encoder={video_encoder}, audio_encoder={audio_encoder}, subtitle_encoder={subtitle_encoder}, hdr_mode={hdr_mode}, mpv_output={mpv_output}, merge_subtitles={merge_subtitles}")
         self.outputFPS = (
             (self.fps * self.interpolateFactor)
@@ -210,8 +204,6 @@ class FFmpegWrite(Buffer):
 
 
     def command(self):
-        log("Generating FFmpeg WRITE command...")
-
         if self.mpv_output:
             command = [
                 f"{FFMPEG_PATH}",
@@ -229,8 +221,6 @@ class FFmpegWrite(Buffer):
                 f"{self.outputWidth}x{self.outputHeight}",
                 "-i",
                 "-",
-                "-to",
-                str((self.end_time-self.start_time) if not self.slowmo_mode else ((self.end_time-self.start_time)*self.ceilInterpolateFactor)),
                 "-r",
                 f"{self.outputFPS}",
                 "-f",
@@ -257,20 +247,14 @@ class FFmpegWrite(Buffer):
                 if self.pixelFormat in pxfmtdict:
                     self.pixelFormat = pxfmtdict[self.pixelFormat]
                 
-                
-                
-                
                 command += [
                     "-pix_fmt",
                     self.pixelFormat,
                 ]
-
-                
                 
             command += [
                 "-",
             ]
-            log("FFMPEG WRITE COMMAND: " + str(command))
             return command
 
 
@@ -314,39 +298,13 @@ class FFmpegWrite(Buffer):
                     "1:a?",
 
                 ]
-                if self.merge_subtitles:
-                    command += [
-                    "-map",
-                    "1:s?",]  # Map all subtitle streams from input 1, this sometimes causes issues with some older videos and messes up the audio somehow
-                command += self.audio_encoder.getPostInputSettings().split()
-                command += self.subtitle_encoder.getPostInputSettings().split()
 
-            
-            """if self.color_space is not None:
-                command += [
-                    "-colorspace",
-                    self.color_space,
-                ]
-            if self.color_primaries is not None:
-                command += [
-                    "-color_primaries",
-                    self.color_primaries,
-                ]
-            if self.color_transfer is not None:
-                command += [
-                    "-color_trc",
-                    self.color_transfer,
-                ]"""
-
-
-            # color_primaries = ["bt709", "bt2020", "bt2020nc"]
-            
                 
+
             if self.custom_encoder is not None:
 
                 for i in self.custom_encoder.split():
                     command.append(i)
-                log(f"Custom Encoder Settings: {self.custom_encoder}")
             else:
                 if not self.audio_encoder.getPresetTag() == "copy_audio":
                     command += [
@@ -355,7 +313,9 @@ class FFmpegWrite(Buffer):
                     ]
                 command += self.video_encoder.getPostInputSettings().split()
                 command += [self.video_encoder.getQualityControlMode(), str(self.crf)]
-                
+                command += self.audio_encoder.getPostInputSettings().split()
+                command += self.subtitle_encoder.getPostInputSettings().split()
+
                 if self.hdr_mode:
                     
                     
@@ -385,27 +345,18 @@ class FFmpegWrite(Buffer):
                             "full",
                         ]
 
-                log(f"Video Encoder: {self.video_encoder.getEncoder().__name__}")
-                log(f"Video Pixel Format: {self.pixelFormat}")
-                log(f"Audio Encoder: {self.audio_encoder.getEncoder().__name__}")
-                log(f"Subtitle Encoder: {self.subtitle_encoder.getEncoder().__name__}")
                 command += [
                     "-pix_fmt",
                     self.pixelFormat,
 
                 ]
             command +=[
-                "-to",
-                str((self.end_time-self.start_time) if not self.slowmo_mode else ((self.end_time-self.start_time)*self.ceilInterpolateFactor)),
                 f"{self.outputFile}",
             ]
 
             if self.overwrite:
                 command.append("-y")
 
-            log("Output Video Information:")
-            log(f"Resolution: {self.outputWidth}x{self.outputHeight}")
-            log(f"FPS: {self.outputFPS}")
             if self.slowmo_mode:
                 log("Slowmo mode enabled, will not merge audio or subtitles.")
 
@@ -421,8 +372,6 @@ class FFmpegWrite(Buffer):
                 "rawvideo",
                 "-vcodec",
                 "rawvideo",
-                "-to",
-                str(self.end_time-self.start_time),
                 "-video_size",
                 f"{self.width * self.upscaleTimes}x{self.upscaleTimes * self.height}",
                 "-pix_fmt",
@@ -448,12 +397,6 @@ class FFmpegWrite(Buffer):
         self.writeQueue.put(frame)
 
     def write_out_frames(self):
-        """
-        Writes out frames either to ffmpeg or to pipe
-        This is determined by the --output command, which if the PIPE parameter is set, it outputs the chunk to pipe.
-        A command like this is required,
-        ffmpeg -f rawvideo -pix_fmt rgb48 -s 1920x1080 -framerate 24 -i - -c:v libx264 -crf 18 -pix_fmt yuv420p -c:a copy out.mp4
-        """
         log("Rendering")
         self.startTime = time.time()
 
@@ -463,9 +406,7 @@ class FFmpegWrite(Buffer):
                 frame = self.writeQueue.get()
                 if frame is None:
                     break
-                """if len(frame) < self.outputWidth * self.outputHeight * 3:
-                    print("Frame is too small, skipping...", file=sys.stderr)
-                    continue"""
+                
                 self.writeProcess.stdin.buffer.write(frame)
 
             self.writeProcess.stdin.close()
@@ -473,41 +414,94 @@ class FFmpegWrite(Buffer):
             exit_code = self.writeProcess.returncode
 
             renderTime = time.time() - self.startTime
-
-            printAndLog(f"\nTime to complete render: {round(renderTime, 2)}")
+            self.merge_subtitles()
+            log(f"\nTime to complete render: {round(renderTime, 2)}")
+            
         except Exception as e:
-            print(str(e), file=sys.stderr)
+            log(str(e))
             self.onErroredExit()
 
         if exit_code != 0:
             self.onErroredExit()
             return
+        
+        
 
+    def merge_subtitles(self):
+        if self.slowmo_mode:
+            log("Slowmo mode enabled, skipping subtitle merge.")
+            return
 
+        if not self.outputFile:
+            log("No output file specified, skipping subtitle merge.")
+            return
+        
+        if self.benchmark:
+            log("Benchmark mode enabled, skipping subtitle merge.")
+            return
+
+        temp_output = self.outputFile + ".temp.mkv"
+        os.rename(self.outputFile, temp_output)
+
+        command = [
+            f"{FFMPEG_PATH}",
+            "-loglevel",
+            "error",
+            "-i",
+            temp_output,
+            "-i",
+            self.inputFile,
+            "-c",
+            "copy",
+            "-c:s",
+            "copy",
+            "-map",
+            "0",
+            "-map",
+            "1:s?",
+            self.outputFile,
+        ]
+
+        if self.overwrite:
+            command.append("-y")
+
+        log("Merging subtitles with command: " + " ".join(command))
+
+        try:
+            result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            if result.returncode != 0:
+                log("Failed to merge subtitles. FFmpeg error:")
+                log(result.stderr.decode())
+                os.rename(temp_output, self.outputFile)  # Restore original file
+                return
+            os.remove(temp_output)
+            log("Subtitles merged successfully.")
+        except Exception as e:
+            log("Exception occurred while merging subtitles: " + str(e))
+            os.rename(temp_output, self.outputFile)  # Restore original file
 
 
     def onErroredExit(self):
-        print("FFmpeg failed to render the video.", file=sys.stderr)
+        log("FFmpeg failed to render the video.")
         try:
             with open(FFMPEG_LOG_FILE, "r") as f:
-                print("FULL FFMPEG LOG:", file=sys.stderr)
+                log("FULL FFMPEG LOG:")
                 for line in f.readlines():
-                    print(line, file=sys.stderr)
+                    log(line)
 
             with open(FFMPEG_LOG_FILE, "r") as f:
                 for line in f.readlines():
                     if f"[{self.outputFileExtension}" in line:
-                        print(line, file=sys.stderr)
+                        log(line)
 
             if self.video_encoder.getPresetTag() == "x264_vulkan":
-                print("Vulkan encode failed, try restarting the render.", file=sys.stderr)
-                print(
-                    "Make sure you have the latest drivers installed and your GPU supports vulkan encoding.",
-                    file=sys.stderr,
+                log("Vulkan encode failed, try restarting the render.")
+                log(
+                    "Make sure you have the latest drivers installed and your GPU supports vulkan encoding."
                 )
         except Exception as e:
-            print("Failed to read FFmpeg log file.", file=sys.stderr)
-            print(str(e), file=sys.stderr)
+            print("Failed to read FFmpeg log file.")
+            print(str(e))
 
         time.sleep(1)
         os._exit(1)
@@ -516,7 +510,7 @@ class FFmpegWrite(Buffer):
         self.ffmpeg_log.close()
 
 class MPVOutput:
-    def __init__(self, FFMpegWrite: FFmpegWrite,width,height,fps, outputFrameChunkSize):
+    def __init__(self, FFMpegWrite: FFmpegWrite, width, height,fps, outputFrameChunkSize):
         self.proc = None
         self.startTime = time.time()
         self.FFMPegWrite = FFMpegWrite

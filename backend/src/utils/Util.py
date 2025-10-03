@@ -1,7 +1,6 @@
 import os
 import sys
 import subprocess
-import warnings
 import contextlib
 # non standard python libraries
 try:
@@ -34,9 +33,6 @@ except ImportError:
     CWD = os.getcwd()
     PLATFORM = sys.platform
 
-with open(os.path.join(CWD, "backend_log.txt"), "w") as f:
-    pass
-
 
 def removeFile(file):
     try:
@@ -54,31 +50,22 @@ def removeFolder(folder):
 
 def warnAndLog(message: str):
     print("WARNING: " + message, file=sys.stderr)
-    log("WARN: " + message)
 
 
 def errorAndLog(message: str):
-    log("ERROR: " + message)
     raise os.error("ERROR: " + message)
 
 
-def printAndLog(message: str, separate=False):
-    """
-    Prints and logs a message to the log file
-    separate, if True, activates the divider
-    """
-    if separate:
-        message = message + "\n" + "---------------------"
-    print(message)
-    log(message=message)
+
 
 
 def log(message: str):
-    try:
-        with open(os.path.join(CWD, "backend_log.txt"), "a") as f:
-            f.write(message + "\n")
-    except Exception:
-        pass
+    """
+    Log is now depricated, just using print now.
+    """
+    print("BACKEND: " + message, file=sys.stderr)
+    #message = message + "\n\n\n\n" + "-" * len(message)
+    #print(message, file=sys.stderr)
 
 
 def bytesToImg(
@@ -197,4 +184,28 @@ class subprocess_popen_without_terminal(subprocess.Popen):
                 kwargs["startupinfo"] = subprocess.STARTUPINFO()
                 kwargs["startupinfo"].dwFlags |= subprocess.STARTF_USESHOWWINDOW
         super().__init__(*args, **kwargs)
-    
+
+class CudaChecker:
+    def __init__(self):
+        self.HAS_SYSTEM_CUDA = self.checkForCUDA()
+        self.HAS_PYTORCH_CUDA = self.checkForCUDAPytorch()
+    @staticmethod
+    def checkForCUDA() -> bool:
+        try:
+            import torch
+            import torchvision
+            import cupy
+
+            if cupy.cuda.get_cuda_path() == None:
+                return False
+        except Exception as e:
+            return False
+        return True
+
+    @staticmethod
+    def checkForCUDAPytorch() -> bool:
+        try:
+            import torch
+            return torch.cuda.is_available()
+        except Exception:
+            return False

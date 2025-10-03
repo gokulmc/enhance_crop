@@ -6,16 +6,11 @@ from queue import Queue
 from ..utils.SSIM import SSIM
 
 # from backend.src.pytorch.InterpolateArchs.GIMM import GIMM
-from .InterpolateArchs.DetectInterpolateArch import ArchDetect
 from .UpscaleTorch import UpscalePytorch
-import math
-import os
 import logging
 import gc
-import sys
-from ..constants import HAS_PYTORCH_CUDA
-
-from time import sleep
+from ..utils.Util import CudaChecker
+HAS_PYTORCH_CUDA = CudaChecker().HAS_PYTORCH_CUDA
 
 torch.set_float32_matmul_precision("medium")
 torch.set_grad_enabled(False)
@@ -40,6 +35,7 @@ class BaseInterpolate(metaclass=ABCMeta):
     @abstractmethod
     def _load(self):
         """Loads in the model"""
+        self.HAS_PYTORCH_CUDA = checkForCUDAPytorch()
         self.device = torch.device("cuda")
         self.dtype = torch.float32
         self.width = 1920
@@ -65,7 +61,7 @@ class BaseInterpolate(metaclass=ABCMeta):
         self.backwarp_tenGrid = None
         self.f0encode = None
         gc.collect()
-        if HAS_PYTORCH_CUDA:
+        if self.HAS_PYTORCH_CUDA:
             torch.cuda.empty_cache()
             torch.cuda.reset_max_memory_allocated()
             torch.cuda.reset_max_memory_cached()

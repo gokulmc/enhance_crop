@@ -14,9 +14,8 @@ import math
 import os
 import sys
 from ..utils.Util import (
-    errorAndLog, printAndLog
+    errorAndLog, log
 )
-from ..constants import HAS_PYTORCH_CUDA
 from time import sleep
 
 torch.set_float32_matmul_precision("medium")
@@ -69,11 +68,11 @@ class InterpolateRifeTorch(BaseInterpolate):
             self.trt_max_shape = [1920, 1920]
         
         if width > 3840 or height > 3840 and not trt_static_shape:
-            printAndLog("The video resolution is very large for TensorRT dynamic shape, falling back to static shape")
+            log("The video resolution is very large for TensorRT dynamic shape, falling back to static shape")
             trt_static_shape = True
 
         if width < 128 or height < 128 and not trt_static_shape:
-            printAndLog("The video resolution is too small for TensorRT dynamic shape, falling back to static shape")
+            log("The video resolution is too small for TensorRT dynamic shape, falling back to static shape")
             trt_static_shape = True
 
         self.trt_static_shape = trt_static_shape

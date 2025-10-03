@@ -114,7 +114,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.11.9
+          python-version: 3.12.9
           
       - name: Install Python Dependencies
         run: |
@@ -230,7 +230,7 @@ jobs:
       - name: Generate version and tag
         id: version_tag
         run: |
-          git clone https://github.com/tntwise/real-video-enhancer
+          git clone https://github.com/tntwise/real-video-enhancer --branch ${{ env.APP_VERSION }} 
           cp real-video-enhancer/CHANGELOG.md .
           version=$(python -c "from datetime import datetime; print(str(datetime.now()).split(' ')[0].replace('-',''))")
           tag=$(python -c "import random, string; print(''.join(random.choices(string.ascii_letters, k=8)))")

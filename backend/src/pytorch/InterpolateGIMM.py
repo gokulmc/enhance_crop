@@ -11,7 +11,7 @@ from ..utils.Util import (
     log,
 )
 
-from ..constants import HAS_SYSTEM_CUDA
+from ..utils.Util import CudaChecker
 from time import sleep
 
 torch.set_float32_matmul_precision("medium")
@@ -134,6 +134,7 @@ class InterpolateGIMMTorch(BaseInterpolate):
 
             log("GIMM loaded")
             log("Scale: " + str(self.scale))
+            HAS_SYSTEM_CUDA = CudaChecker().HAS_SYSTEM_CUDA
             log("Using System CUDA: " + str(HAS_SYSTEM_CUDA))
             if not HAS_SYSTEM_CUDA:
                 print(

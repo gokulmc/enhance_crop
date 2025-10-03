@@ -28,7 +28,6 @@ class RenderOptions:
         denoiseModelFile: str | None = None,
         decompressModelFile: str | None = None,
         hdrMode: bool = False,
-        mergeSubtitles: bool = True,
         startTime: float | None = None,
         endTime: float | None = None,
         isPreview: bool = False,
@@ -57,7 +56,6 @@ class RenderOptions:
         self._dyanmicScaleOpticalFlow = dyanmicScaleOpticalFlow
         self._ensemble = ensemble
         self._hdrMode = hdrMode
-        self._mergeSubtitles = mergeSubtitles
         self._startTime = startTime
         self._endTime = endTime
         self._isPreview = isPreview
@@ -244,13 +242,6 @@ class RenderOptions:
     @hdrMode.setter
     def hdrMode(self, value: bool):
         self._hdrMode = value
-    
-    @property
-    def mergeSubtitles(self):
-        return self._mergeSubtitles
-    @mergeSubtitles.setter
-    def mergeSubtitles(self, value: bool):
-        self._mergeSubtitles = value
     
     @property
     def startTime(self):

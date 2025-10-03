@@ -8,12 +8,12 @@
 ; Custom defines
   !define NAME "REAL Video Enhancer"
   !define APPFILE "REAL-Video-Enhancer.exe"
-  !define VERSION "2.3.6"
+  !define VERSION "2.3.7"
   !define SLUG "${NAME} v${VERSION}"
   !define COMPANYNAME "TNTwise"
   !define VERSIONMAJOR 2
   !define VERSIONMINOR 3
-  !define VERSIONBUILD 6 
+  !define VERSIONBUILD 7 
   !define DISPLAYVERSION "${VERSIONMAJOR}.${VERSIONMINOR}.${VERSIONBUILD}"
   !define INSTALLSIZE 297000
 

@@ -7,9 +7,9 @@ import torch as torch
 import torch.nn.functional as F
 import sys
 from time import sleep
-from ..constants import HAS_PYTORCH_CUDA, MODELS_DIRECTORY
 
-from ..utils.Util import log, printAndLog
+from ..utils.Util import log, CudaChecker
+HAS_PYTORCH_CUDA = CudaChecker().HAS_PYTORCH_CUDA
 import numpy as np
 def process_output(output, hdr_mode):
     # Step 1: Squeeze the first dimension
@@ -117,18 +117,6 @@ class UpscalePytorch:
         self.convertStream = self.torchUtils.init_stream()
         self._load()
 
-    @torch.inference_mode()
-    def set_self_model(self, backend="pytorch", trt_engine_name=None):
-        torch.cuda.empty_cache()
-        if backend == "tensorrt":
-            from .TensorRTHandler import TorchTensorRTHandler
-            trtHandler = TorchTensorRTHandler(model_parent_path=os.path.dirname(self.modelPath),)
-            self.model = trtHandler.load_engine(trt_engine_name=trt_engine_name)
-        else:
-            self.model = self.loadModel(
-                modelPath=self.modelPath, device=self.device, dtype=self.dtype
-            )
-
 
     # add prores
     # add janai v2
@@ -143,11 +131,11 @@ class UpscalePytorch:
         
 
         if self.videoWidth > 1920 or self.videoHeight > 1920 and not self.trt_static_shape:
-            printAndLog("The video resolution is very large for TensorRT dynamic shape and will use a lot of VRAM, falling back to static shape")
+            log("The video resolution is very large for TensorRT dynamic shape and will use a lot of VRAM, falling back to static shape")
             self.trt_static_shape = True
 
         if self.videoWidth < 128 or self.videoHeight < 128 and not self.trt_static_shape:
-            printAndLog("The video resolution is too small for TensorRT dynamic shape, falling back to static shape")
+            log("The video resolution is too small for TensorRT dynamic shape, falling back to static shape")
             self.trt_static_shape = True
 
         
@@ -238,12 +226,17 @@ class UpscalePytorch:
                         
 
                     # inference and get re-load state dict due to issue with span.
+                    try:
+                        model = self.model
+                        model(inputs[0])
+                        self.model.load_state_dict(model.state_dict())
+                        output = model(inputs[0])
+                        del model
+                        torch.cuda.empty_cache()
+                    except Exception as e:
+                       print("Test inf failed")
 
-                    model = self.model
-                    model(inputs[0])
-                    self.model.load_state_dict(model.state_dict())
-                    del model
-                    torch.cuda.empty_cache()
+                    
 
                     try:
                         trt_engine = trtHandler.build_engine(
@@ -311,21 +304,41 @@ class UpscalePytorch:
         self._load()
 
     @torch.inference_mode()
+    def set_self_model(self, backend="pytorch", trt_engine_name=None):
+        torch.cuda.empty_cache()
+        if backend == "tensorrt":
+            from .TensorRTHandler import TorchTensorRTHandler
+            trtHandler = TorchTensorRTHandler(model_parent_path=os.path.dirname(self.modelPath),)
+            self.model = trtHandler.load_engine(trt_engine_name=trt_engine_name)
+        else:
+            self.model = self.loadModel(
+                modelPath=self.modelPath, device=self.device, dtype=self.dtype
+            )
+
+    @torch.inference_mode()
     def loadModel(
         self, modelPath: str, dtype: torch.dtype = torch.float32, device: str = "cuda"
     ) -> torch.nn.Module:
         try:
-            from .spandrel import ModelLoader, ImageModelDescriptor
+            from .spandrel import ModelLoader, ImageModelDescriptor, UnsupportedModelError
         except ImportError:
             # spandrel will import like this if its a submodule
-            from .spandrel.libs.spandrel.spandrel import ModelLoader, ImageModelDescriptor
+            from .spandrel.libs.spandrel.spandrel import ModelLoader, ImageModelDescriptor, UnsupportedModelError
+        try:
+            model = ModelLoader().load_from_file(modelPath)
+            assert isinstance(model, ImageModelDescriptor)
+            self.model = model
+            # get model attributes
+            
+        except (UnsupportedModelError) as e:
+            from .VSRArchs.AnimeSR import AnimeSRArch
+            from .VSRArchs.vsr_inference_helper import VSRInferenceHelper
+            model = AnimeSRArch()
+            self.inference = VSRInferenceHelper(model)
 
-        model = ModelLoader().load_from_file(modelPath)
-        assert isinstance(model, ImageModelDescriptor)
-        # get model attributes
         self.scale = model.scale
-
         model = model.model
+        
         model.load_state_dict(model.state_dict(), assign=True)
         model.eval().to(self.device, dtype=self.dtype)
         try:

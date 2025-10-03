@@ -2,21 +2,21 @@
 class FFMpegCommand:
     def __init__(self,
                  video_encoder: str,
+                 video_encoder_speed: str,
                  video_quality: str,
                  video_pixel_format: str,
                  audio_encoder: str,
                  audio_bitrate: str,
                  hdr_mode: bool,
-                 subtitle_encoder: str,
                  color_space: str,
                  color_primaries: str,
-                 color_transfer: str):
+                 color_transfer: str,):
         self._video_encoder = video_encoder
+        self._video_encoder_speed = video_encoder_speed
         self._video_quality = video_quality
         self._video_pixel_format = video_pixel_format
         self._audio_encoder = audio_encoder
         self._audio_bitrate = audio_bitrate
-        self._subtitle_encoder = subtitle_encoder
         self._hdr_mode = hdr_mode
         self._color_space = color_space
         self._color_primaries = color_primaries
@@ -37,7 +37,7 @@ class FFMpegCommand:
                 self._color_transfer,
             ]
             encoder_params += f":transfer={self._color_transfer}:"
-        if self._color_space is not None:
+        if self._color_space is not None and self._video_pixel_format != "yuv420p":
             command += [
                 "-colorspace",
                 self._color_space,
@@ -60,6 +60,19 @@ class FFMpegCommand:
                         command +=["-crf","23"]
                     case "Low":
                         command +=["-crf","28"]
+                
+                match self._video_encoder_speed:
+                    case "placebo":
+                        command +=["-preset","placebo"]
+                    case "slow":
+                        command +=["-preset","slow"]
+                    case "medium":
+                        command +=["-preset","medium"]
+                    case "fast":
+                        command +=["-preset","fast"]
+                    case "fastest":
+                        command +=["-preset","veryfast"]
+
                 if self._hdr_mode:
                     command += ["-x264-params", f'"{encoder_params}"']
                 
@@ -76,6 +89,18 @@ class FFMpegCommand:
                     case "Low":
                         command +=["-crf","28"]
 
+                match self._video_encoder_speed:
+                    case "placebo":
+                        command +=["-preset","placebo"]
+                    case "slow":
+                        command +=["-preset","slow"]
+                    case "medium":
+                        command +=["-preset","medium"]
+                    case "fast":
+                        command +=["-preset","fast"]
+                    case "fastest":
+                        command +=["-preset","veryfast"]
+                        
                 if self._hdr_mode:
                     command += ["-x265-params", f'"{encoder_params}"']
                 
@@ -90,6 +115,19 @@ class FFMpegCommand:
                         command +=["-crf","30"]
                     case "Low":
                         command +=["-crf","40"]
+
+                match self._video_encoder_speed:
+                    case "placebo":
+                        command +=["-preset","placebo"]
+                    case "slow":
+                        command +=["-preset","slow"]
+                    case "medium":
+                        command +=["-preset","medium"]
+                    case "fast":
+                        command +=["-preset","fast"]
+                    case "fastest":
+                        command +=["-preset","veryfast"]
+
             case "av1":
                 command +=["-c:v","libsvtav1"]
                 match self._video_quality:
@@ -101,6 +139,19 @@ class FFMpegCommand:
                         command +=["-cq:v","23"]
                     case "Low":
                         command +=["-cq:v","28"]
+                match self._video_encoder_speed:
+                    case "placebo":
+                        command +=["-preset","0"]
+                    case "slow":
+                        command +=["-preset","4"]
+                    case "medium":
+                        command +=["-preset","8"]
+                    case "fast":
+                        command +=["-preset","12"]
+                    case "fastest":
+                        command +=["-preset","13"]
+                
+                    
             case "ffv1":
                 command +=["-c:v","ffv1"]
                 match self._video_quality:
@@ -140,8 +191,21 @@ class FFMpegCommand:
                         command +=["-cq:v","23"]
                     case "Low":
                         command +=["-cq:v","28"]
+
                 """if self._hdr_mode:
                     command += ["-x264-params", f'"{encoder_params}"']"""
+                match self._video_encoder_speed:
+                    case "placebo":
+                        command +=["-preset","p7"]
+                    case "slow":
+                        command +=["-preset","p6"]
+                    case "medium":
+                        command +=["-preset","p4"]
+                    case "fast":
+                        command +=["-preset","p2"]
+                    case "fastest":
+                        command +=["-preset","p1"]
+
             case "x265_nvenc":
                 command +=["-c:v","hevc_nvenc"]
                 match self._video_quality:
@@ -153,8 +217,31 @@ class FFMpegCommand:
                         command +=["-cq:v","23"]
                     case "Low":
                         command +=["-cq:v","28"]
+                if self._hdr_mode:
+                    # HEVC-specific HDR parameters
+                    command += ["-strict_gop", "1"]
+                    command += ["-no-scenecut", "1"]
+                    command += ["-spatial-aq", "1"]
+                    command += ["-temporal-aq", "1"]
+                    # HEVC can also handle HDR10 metadata
+                    if self._color_transfer == "smpte2084":  # HDR10/PQ
+                        command += ["-hdr10", "1"]
+                        # HDR10 requires minimum 10-bit encoding
+                        if not "10" in self._video_pixel_format:
+                            print("Warning: HDR10 requires at least 10-bit color depth")
                 """if self._hdr_mode:
                     command += ["-x265-params", f'"{encoder_params}"']"""
+                match self._video_encoder_speed:
+                    case "placebo":
+                        command +=["-preset","p7"]
+                    case "slow":
+                        command +=["-preset","p6"]
+                    case "medium":
+                        command +=["-preset","p4"]
+                    case "fast":
+                        command +=["-preset","p2"]
+                    case "fastest":
+                        command +=["-preset","p1"]
             case "av1_nvenc":
                 command +=["-c:v","av1_nvenc"]
                 match self._video_quality:
@@ -166,6 +253,18 @@ class FFMpegCommand:
                         command +=["-cq:v","23"]
                     case "Low":
                         command +=["-cq:v","28"]
+                match self._video_encoder_speed:
+                    case "placebo":
+                        command +=["-preset","p7"]
+                    case "slow":
+                        command +=["-preset","p6"]
+                    case "medium":
+                        command +=["-preset","p4"]
+                    case "fast":
+                        command +=["-preset","p2"]
+                    case "fastest":
+                        command +=["-preset","p1"]
+                
             case "h264_vaapi":
                 command +=["-c:v","h264_vaapi"]
                 match self._video_quality:
@@ -228,20 +327,6 @@ class FFMpegCommand:
         
         if self._audio_encoder != "copy_audio":
             command += ["-b:a",self._audio_bitrate]
-
-        
-        
-        
-        
-        match self._subtitle_encoder:
-            case "copy_subtitle":
-                command +=["-c:s","copy"]
-            case "srt":
-                command +=["-c:s","srt"]
-            case "ass":
-                command +=["-c:s", "ass"]
-            case "webvtt":
-                command +=["-c:s", "webvtt"]
 
         return command
 

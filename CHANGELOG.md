@@ -1,4 +1,18 @@
-# RVE 2.3.6 Pre-release
+# RVE 2.3.7
+### Added:
+ - PyTorch 2.9
+ - Video Encoder Speed setting.
+### Changed:
+ - Force MacOS MPS to use PyTorch 2.9, as it should allow for uint16 support.
+ - Better 10bit video support.
+### Fixed:
+ - Color shifting introduced in 2.3.6.
+ - DRUNet error at some resolutions.
+ - Adding to queue issues on MacOS.
+ - Multiple subtitle videos causing issue with playback.
+ - Settings not sticking after restart.
+ - ROCm half precision not being detected.
+# RVE 2.3.6
 ### Fixed:
  - Color shifting in well... everything.
  - MacOS MPS not working.

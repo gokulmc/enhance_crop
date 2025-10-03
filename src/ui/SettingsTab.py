@@ -5,7 +5,7 @@ from ..constants import PLATFORM, HOME_PATH
 from ..Util import currentDirectory, checkForWritePermissions, open_folder, log
 from .QTcustom import RegularQTPopup
 from ..GenerateFFMpegCommand import FFMpegCommand
-from ..InputHandler import FFMpegInfoWrapper
+from ..VideoInfo import VideoLoader
 
 class SettingsTab:
     def __init__(
@@ -24,7 +24,6 @@ class SettingsTab:
         self.ffmpeg_settings_dict = {
             "encoder": self.parent.encoder,
             "audio_encoder": self.parent.audio_encoder,
-            "subtitle_encoder": self.parent.subtitle_encoder,
             "audio_bitrate": self.parent.audio_bitrate,
             "video_pixel_format": self.parent.video_pixel_format,
             "video_quality": self.parent.video_quality,
@@ -32,8 +31,9 @@ class SettingsTab:
         }
         self.settings = Settings()
         log("Settings: " + str(self.settings.settings))
+        self.connectSettingText() # has to be in this order, otherwise settings wont stick because they get reset.
         self.connectWriteSettings()
-        self.connectSettingText()
+        
 
         # disable half option if its not supported
         if not halfPrecisionSupport:
@@ -62,10 +62,12 @@ class SettingsTab:
         if input_file and len(input_file) > 1: # caching is nice
             if self.input_file != input_file:
                 self.input_file = input_file
-                self.ffmpegInfoWrapper = FFMpegInfoWrapper(self.input_file)
+                self.ffmpegInfoWrapper = VideoLoader(self.input_file)
+                self.ffmpegInfoWrapper.loadVideo()
+                self.ffmpegInfoWrapper.getData()
 
         if self.ffmpegInfoWrapper:
-            hdr_mode = self.ffmpegInfoWrapper.is_hdr() and self.settings.settings['auto_hdr_mode'] == "True"
+            hdr_mode = (self.ffmpegInfoWrapper.is_hdr) and self.settings.settings['auto_hdr_mode'] == "True"
             if hdr_mode:
                 pxfmtdict = {
                             "yuv420p": "yuv420p10le",
@@ -75,18 +77,18 @@ class SettingsTab:
 
                 if pixel_fmt in pxfmtdict:
                     pixel_fmt = pxfmtdict[pixel_fmt]
-            self.color_space = self.ffmpegInfoWrapper.get_color_space()
-            self.color_primaries = self.ffmpegInfoWrapper.get_color_primaries()
-            self.color_transfer = self.ffmpegInfoWrapper.get_color_transfer()
+            self.color_space = self.ffmpegInfoWrapper.color_space
+            self.color_primaries = self.ffmpegInfoWrapper.color_primaries
+            self.color_transfer = self.ffmpegInfoWrapper.color_transfer
 
         command = FFMpegCommand(
         self.settings.settings['encoder'].replace(' (experimental)', '').replace(' (40 series and up)', ''),
+        self.settings.settings['video_encoder_speed'],
         self.settings.settings['video_quality'],
         pixel_fmt,
         self.settings.settings['audio_encoder'],
         self.settings.settings['audio_bitrate'],
         hdr_mode,
-        self.settings.settings['subtitle_encoder'],
         self.color_space,
         self.color_primaries,
         self.color_transfer,
@@ -108,30 +110,6 @@ class SettingsTab:
                 "tensorrt_optimization_level",
                 self.parent.tensorrt_optimization_level.currentText(),
             )
-        )
-        self.parent.inputFileText.textChanged.connect(
-            self.updateFFMpegCommand
-        )
-        self.parent.encoder.currentIndexChanged.connect(
-            self.updateFFMpegCommand
-        )
-        self.parent.audio_encoder.currentIndexChanged.connect(
-            self.updateFFMpegCommand
-        )
-        self.parent.subtitle_encoder.currentIndexChanged.connect(
-            self.updateFFMpegCommand
-        )
-        self.parent.video_pixel_format.currentIndexChanged.connect(
-            self.updateFFMpegCommand
-        )
-        self.parent.audio_bitrate.currentIndexChanged.connect(
-            self.updateFFMpegCommand
-        )
-        self.parent.auto_hdr_mode.stateChanged.connect(
-            self.updateFFMpegCommand
-        )
-        self.parent.video_quality.currentIndexChanged.connect(
-            self.updateFFMpegCommand
         )
         self.parent.preview_enabled.stateChanged.connect(
             lambda: self.settings.writeSetting(
@@ -232,6 +210,35 @@ class SettingsTab:
                 "True" if self.parent.auto_hdr_mode.isChecked() else "False"
             )
         )
+        self.parent.video_encoder_speed.currentIndexChanged.connect(
+            lambda: self.settings.writeSetting(
+                "video_encoder_speed", self.parent.video_encoder_speed.currentText()
+            )
+        )
+        self.parent.inputFileText.textChanged.connect(
+            self.updateFFMpegCommand
+        )
+        self.parent.encoder.currentIndexChanged.connect(
+            self.updateFFMpegCommand
+        )
+        self.parent.audio_encoder.currentIndexChanged.connect(
+            self.updateFFMpegCommand
+        )
+        self.parent.video_pixel_format.currentIndexChanged.connect(
+            self.updateFFMpegCommand
+        )
+        self.parent.audio_bitrate.currentIndexChanged.connect(
+            self.updateFFMpegCommand
+        )
+        self.parent.auto_hdr_mode.stateChanged.connect(
+            self.updateFFMpegCommand
+        )
+        self.parent.video_quality.currentIndexChanged.connect(
+            self.updateFFMpegCommand
+        )
+        self.parent.video_encoder_speed.currentIndexChanged.connect(
+            self.updateFFMpegCommand
+        )
 
     def writeOutputFolder(self):
         outputlocation = self.parent.output_folder_location.text()
@@ -252,10 +259,11 @@ class SettingsTab:
         )
 
     def resetSettings(self):
-        self.settings.writeDefaultSettings()
-        self.settings.readSettings()
-        self.connectSettingText()
-        self.parent.switchToSettingsPage()
+        for i in range(10): # idk why, but settings wont fully reset until like 5 button presses.
+            self.settings.writeDefaultSettings()
+            self.settings.readSettings()
+            self.connectSettingText()
+            self.parent.switchToSettingsPage()
 
     def connectSettingText(self):
         if PLATFORM == "darwin":
@@ -269,9 +277,6 @@ class SettingsTab:
         self.parent.encoder.setCurrentText(self.settings.settings["encoder"])
         self.parent.audio_encoder.setCurrentText(
             self.settings.settings["audio_encoder"]
-        )
-        self.parent.subtitle_encoder.setCurrentText(
-            self.settings.settings["subtitle_encoder"]
         )
         self.parent.audio_bitrate.setCurrentText(
             self.settings.settings["audio_bitrate"]
@@ -326,6 +331,9 @@ class SettingsTab:
         self.parent.auto_hdr_mode.setChecked(
             self.settings.settings["auto_hdr_mode"] == "True"
         )
+        self.parent.video_encoder_speed.setCurrentText(
+            self.settings.settings["video_encoder_speed"]
+        )
 
     def selectOutputFolder(self):
         outputFile = QFileDialog.getExistingDirectory(
@@ -358,8 +366,8 @@ class Settings:
             "tensorrt_optimization_level": "3",
             "dynamic_tensorrt_engine": "False",
             "encoder": "libx264",
+            "video_encoder_speed": "medium",
             "audio_encoder": "copy_audio",
-            "subtitle_encoder": "copy_subtitle",
             "audio_bitrate": "192k",
             "preview_enabled": "True",
             "scene_change_detection_method": "pyscenedetect",
@@ -379,7 +387,7 @@ class Settings:
             "auto_border_cropping": "False",
             "video_container": "mkv",
             "video_pixel_format": "yuv420p",
-            "pytorch_version": "2.8.0",
+            "pytorch_version": "2.9.0" if PLATFORM == "darwin" else "2.8.0",
             "pytorch_backend": "CUDA",
             "auto_hdr_mode": "True",
         }
@@ -402,9 +410,9 @@ class Settings:
                 "x265_vaapi",
                 "av1_vaapi",
             ),
+            "video_encoder_speed": ("placebo","slow", "medium", "fast", "fastest"),
             "audio_encoder": ("aac", "libmp3lame", "opus", "copy_audio"),
-            "subtitle_encoder": ("srt", "ass", "webvtt", "copy_subtitle"),
-            "audio_bitrate": ("320k", "192k", "128k", "96k"),
+            "audio_bitrate": "ANY",
             "preview_enabled": ("True", "False"),
             "scene_change_detection_method": (
                 "mean",
@@ -424,15 +432,8 @@ class Settings:
             "pytorch_gpu_id": "ANY",
             "auto_border_cropping": ("True", "False"),
             "video_container": ("mkv", "mp4", "mov", "webm", "avi"),
-            "video_pixel_format": (
-                "yuv420p",
-                "yuv422p",
-                "yuv444p",
-                "yuv420p10le",
-                "yuv422p10le",
-                "yuv444p10le",
-            ),
-            "pytorch_version": ("2.8.0", "2.6.0"),
+            "video_pixel_format": "ANY",
+            "pytorch_version": ("2.9.0", "2.8.0", "2.6.0"),
             "pytorch_backend": "ANY",
             "auto_hdr_mode": ("True", "False"),
         }
