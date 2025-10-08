@@ -161,6 +161,7 @@ python3 build.py --build BUILD_OPTION --copy_backend
 | Software Used | For | Link|
 |--|--|--|
 | FFmpeg | Multimedia framework for handling video, audio, and other media files | https://ffmpeg.org/ 
+| QT | GUI framework | https://qt.io/
 | FFMpeg Builds | Pre-compiled builds of FFMpeg. | Windows/Linux:  https://github.com/BtbN/FFmpeg-Builds, MacOS: https://github.com/eko5624/mpv-mac
 | PyTorch | Neural Network Inference (CUDA/ROCm/TensorRT) | https://pytorch.org/ 
 | NCNN | Neural Network Inference (Vulkan) | https://github.com/tencent/ncnn 
