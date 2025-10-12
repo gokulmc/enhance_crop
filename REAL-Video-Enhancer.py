@@ -340,25 +340,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.animationHandler.fadeInAnimation(self.stackedWidget)
 
     def updateVideoGUIText(self):
+        self.settings.readSettings()
         if self.isVideoLoaded:
             upscaleModelName = self.upscaleModelComboBox.currentText()
             interpolateModelName = self.interpolateModelComboBox.currentText()
             interpolateTimes = self.getInterpolationMultiplier(interpolateModelName)
             scale = self.getUpscaleModelScale(upscaleModelName)
-            text = (
+            inputText = (
                 f"FPS: {round(self.videoFps, 0)} -> {round(self.videoFps * interpolateTimes, 0)}\n"
                 + f"Resolution: {self.videoWidth}x{self.videoHeight} -> {self.videoWidth * scale}x{self.videoHeight * scale}\n"
                 + f"Frame Count: {self.videoFrameCount} -> {int(round(self.videoFrameCount * interpolateTimes, 0))}\n"
-                + f"Bitrate: {self.videoBitrate}\n"
-                + f"Encoder: {self.videoEncoder}\n"
-                + f"Container: {self.videoContainer}\n"
-                + f"Color Space: {self.colorSpace}\n"
-                + f"Pixel Format: {self.pixelFMT}\n"
-                + f"HDR: {self.videoHDR}\n"
-                + f"Bit Depth: {self.videoBitDepth} bit\n"
+                + f"Encoder: {self.videoEncoder} -> {self.settings.settings['encoder']}\n"
+                + f"Container: {self.videoContainer} -> {self.settings.settings['video_container']}\n"
+                + f"Color Space: {self.colorSpace} -> {self.colorSpace}\n"
+                + f"Pixel Format: {self.pixelFMT} -> {self.settings.settings['video_pixel_format']}\n"
+                + f"HDR: {self.videoHDR} -> {self.videoHDR if self.settings.settings['auto_hdr_mode'] == 'True' else 'False'}\n"
+                + f"Bit Depth: {self.videoBitDepth} bit -> {self.videoBitDepth if self.settings.settings['auto_hdr_mode'] == 'True' else 8} bit\n"
             )
-            self.videoInfoTextEdit.setFontPointSize(10)
-            self.videoInfoTextEdit.setText(text)
+            
+            self.inputVideoInfoTextEdit.setFontPointSize(10)
+            self.inputVideoInfoTextEdit.setText(inputText)
 
     def getInterpolationMultiplier(self, interpolateModelName):
         if interpolateModelName == "None" or not self.interpolateCheckBox.isChecked():

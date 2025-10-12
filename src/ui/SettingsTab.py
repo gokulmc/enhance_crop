@@ -82,19 +82,19 @@ class SettingsTab:
             self.color_transfer = self.ffmpegInfoWrapper.color_transfer
 
         command = FFMpegCommand(
-        self.settings.settings['encoder'].replace(' (experimental)', '').replace(' (40 series and up)', ''),
-        self.settings.settings['video_encoder_speed'],
-        self.settings.settings['video_quality'],
-        pixel_fmt,
-        self.settings.settings['audio_encoder'],
-        self.settings.settings['audio_bitrate'],
-        hdr_mode,
-        self.color_space,
-        self.color_primaries,
-        self.color_transfer,
-    ).build_command()
-        self.parent.EncoderCommand.setText(" ".join(command),
-        )
+            self.settings.settings['encoder'].replace(' (experimental)', '').replace(' (40 series and up)', ''),
+            self.settings.settings['video_encoder_speed'],
+            self.settings.settings['video_quality'],
+            pixel_fmt,
+            self.settings.settings['audio_encoder'],
+            self.settings.settings['audio_bitrate'],
+            hdr_mode,
+            self.color_space,
+            self.color_primaries,
+            self.color_transfer,    
+        ).build_command()
+        self.parent.EncoderCommand.setText(" ".join(command))
+        self.parent.updateVideoGUIText()
          
 
     def connectWriteSettings(self):
