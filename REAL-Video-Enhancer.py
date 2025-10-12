@@ -427,9 +427,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         isDeblur = self.deblurCheckBox.isChecked()
         isDenoise = self.denoiseCheckBox.isChecked()
         isDecompress = self.decompressCheckBox.isChecked()
-        if isUpscale:
-            max_scale = totalModels[self.upscaleModelComboBox.currentText()][2]
-            self.upscaleScaleSpinBox.setMaximum(max_scale if max_scale > 0 else 4)
+        
         self.interpolationContainer.setVisible(isInterpolate)
         self.interpolateContainer_2.setVisible(isInterpolate)
         self.deblurContainer.setVisible(isDeblur)
@@ -449,7 +447,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.startTimeSpinBox.setMaximum(self.videoLength)
         self.endTimeSpinBox.setMaximum(self.videoLength)
         self.timeInVideoScrollBar.setMaximum(self.videoLength)
-        
+        if isUpscale and (self.upscaleModelComboBox.currentText() != "" or self.upscaleModelComboBox.currentText() != "None"):
+            try:
+                max_scale = totalModels[self.upscaleModelComboBox.currentText()][2]
+                self.upscaleScaleSpinBox.setMaximum(max_scale if max_scale > 0 else 4)
+            except KeyError: # idk why it does this, gui is shit tbh.
+                self.upscaleScaleSpinBox.setMaximum(4)
+
     def getCurrentRenderOptions(self, input_file=None, output_path=None):
         interpolate = self.interpolateModelComboBox.currentText()
         upscale = self.upscaleModelComboBox.currentText()
