@@ -427,6 +427,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         isDeblur = self.deblurCheckBox.isChecked()
         isDenoise = self.denoiseCheckBox.isChecked()
         isDecompress = self.decompressCheckBox.isChecked()
+        if isUpscale:
+            max_scale = totalModels[self.upscaleModelComboBox.currentText()][2]
+            self.upscaleScaleSpinBox.setMaximum(max_scale if max_scale > 0 else 4)
         self.interpolationContainer.setVisible(isInterpolate)
         self.interpolateContainer_2.setVisible(isInterpolate)
         self.deblurContainer.setVisible(isDeblur)

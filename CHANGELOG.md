@@ -1,6 +1,7 @@
 # RVE 2.3.8 pre-release
 ### Added
  - Open output folder button
+ - Cap output scale based on model scale
 ### Fixed
  - ROCm showing cuda on front end.
 # RVE 2.3.7
