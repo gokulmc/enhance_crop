@@ -924,11 +924,11 @@ def main():
     app.setStyle("Fusion")
     app.setPalette(Palette())
 
-    if not "--unlock" in sys.argv:
+    """if not "--unlock" in sys.argv:
         lock_file = QLockFile(LOCKFILE)
         if not lock_file.tryLock(10):
             QMessageBox.warning(None, "Instance Running", "Another instance is already running.")
-            sys.exit(0)
+            sys.exit(0)"""
 
     # setting the pallette
     window = MainWindow()
@@ -942,7 +942,6 @@ def main():
 """
 custom command args
 --debug: runs the app in debug mode
---unlock: allows more than one instance to be launched
 --fullscreen: runs the app in fullscreen
 --swap-flatpak-checks: swaps the flatpak checks, ex if the app is running in flatpak, it will run as if it is not
 """
