@@ -1,4 +1,6 @@
 # RVE 2.3.8 pre-release
+### Added
+ - Open output folder button
 ### Fixed
  - ROCm showing cuda on front end.
 # RVE 2.3.7
