@@ -753,6 +753,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.outputFileText.setEnabled(True)
 
         self.outputFileSelectButton.setEnabled(True)
+        self.openOutputFolderButton.setEnabled(True)    
         self.isVideoLoaded = True
         self.updateVideoGUIDetails()
 
