@@ -2293,13 +2293,13 @@ li.checked::marker { content: "\2612"; }
                                 <property name="widgetResizable">
                                  <bool>true</bool>
                                 </property>
-                                <widget class="QWidget" name="scrollAreaWidgetContents_7">
+                                <widget class="QWidget" name="encoderSettings">
                                  <property name="geometry">
                                   <rect>
                                    <x>0</x>
                                    <y>0</y>
-                                   <width>480</width>
-                                   <height>484</height>
+                                   <width>488</width>
+                                   <height>500</height>
                                   </rect>
                                  </property>
                                  <layout class="QVBoxLayout" name="verticalLayout_40">
@@ -2381,7 +2381,7 @@ li.checked::marker { content: "\2612"; }
                                                 <x>0</x>
                                                 <y>0</y>
                                                 <width>918</width>
-                                                <height>48</height>
+                                                <height>56</height>
                                                </rect>
                                               </property>
                                               <layout class="QHBoxLayout" name="horizontalLayout_54">
@@ -2867,17 +2867,17 @@ li.checked::marker { content: "\2612"; }
                                           </item>
                                           <item>
                                            <property name="text">
-                                            <string>yuv420p10le</string>
+                                            <string>yuv420p (10 bit)</string>
                                            </property>
                                           </item>
                                           <item>
                                            <property name="text">
-                                            <string>yuv422p10le</string>
+                                            <string>yuv422p (10 bit)</string>
                                            </property>
                                           </item>
                                           <item>
                                            <property name="text">
-                                            <string>yuv444p10le</string>
+                                            <string>yuv444p (10 bit)</string>
                                            </property>
                                           </item>
                                          </widget>
@@ -3237,7 +3237,7 @@ border-radius:10px;
                                 <x>0</x>
                                 <y>0</y>
                                 <width>506</width>
-                                <height>437</height>
+                                <height>518</height>
                                </rect>
                               </property>
                               <property name="sizePolicy">

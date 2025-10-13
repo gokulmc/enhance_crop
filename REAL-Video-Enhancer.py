@@ -346,6 +346,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             interpolateModelName = self.interpolateModelComboBox.currentText()
             interpolateTimes = self.getInterpolationMultiplier(interpolateModelName)
             scale = self.getUpscaleModelScale(upscaleModelName)
+            new_bitrate = 8 if "10" not in self.settings.settings['video_pixel_format'] else 10
             inputText = (
                 f"FPS: {round(self.videoFps, 0)} -> {round(self.videoFps * interpolateTimes, 0)}\n"
                 + f"Resolution: {self.videoWidth}x{self.videoHeight} -> {self.videoWidth * scale}x{self.videoHeight * scale}\n"
@@ -355,7 +356,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 + f"Color Space: {self.colorSpace} -> {self.colorSpace}\n"
                 + f"Pixel Format: {self.pixelFMT} -> {self.settings.settings['video_pixel_format']}\n"
                 + f"HDR: {self.videoHDR} -> {self.videoHDR if self.settings.settings['auto_hdr_mode'] == 'True' else 'False'}\n"
-                + f"Bit Depth: {self.videoBitDepth} bit -> {self.videoBitDepth if self.settings.settings['auto_hdr_mode'] == 'True' else 8} bit\n"
+                + f"Bit Depth: {self.videoBitDepth} bit -> {new_bitrate if self.settings.settings['auto_hdr_mode'] == 'True' else 8} bit\n"
             )
             
             self.inputVideoInfoTextEdit.setFontPointSize(10)
@@ -687,6 +688,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             child.setEnabled(False)
         for child in self.renderQueueTab.children():
             child.setEnabled(False)
+        for child in self.encoderSettings.children():
+            child.setEnabled(False)
         self.RenderedPreviewControlsContainer.setEnabled(False)
         self.scrollArea_4.setEnabled(True)
         self.scrollAreaWidgetContents_4.setEnabled(False)
@@ -698,6 +701,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for child in self.advancedSettings.children():
             child.setEnabled(True)
         for child in self.renderQueueTab.children():
+            child.setEnabled(True)
+        for child in self.encoderSettings.children():
             child.setEnabled(True)
         self.RenderedPreviewControlsContainer.setEnabled(True)
         self.scrollAreaWidgetContents_4.setEnabled(True)

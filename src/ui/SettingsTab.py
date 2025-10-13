@@ -55,7 +55,16 @@ class SettingsTab:
             self.settings.writeSetting(key, value.currentText())
         
         pixel_fmt = self.settings.settings['video_pixel_format']
-        
+        pxfmtDict = {
+                "yuv420p": "yuv420p",
+                "yuv422": "yuv422p",
+                "yuv444": "yuv444p",
+                "yuv420p (10 bit)": "yuv420p10le",
+                "yuv422p (10 bit)": "yuv422p10le",
+                "yuv444p (10 bit)": "yuv444p10le",
+            }
+        pixel_fmt = pxfmtDict[pixel_fmt]
+
         hdr_mode = False
 
         input_file = self.parent.inputFileText.text()
@@ -68,15 +77,17 @@ class SettingsTab:
 
         if self.ffmpegInfoWrapper:
             hdr_mode = (self.ffmpegInfoWrapper.is_hdr) and self.settings.settings['auto_hdr_mode'] == "True"
+            
+            
             if hdr_mode:
-                pxfmtdict = {
+                pxfmtDict = {
                             "yuv420p": "yuv420p10le",
                             "yuv422": "yuv422p10le",
                             "yuv444": "yuv444p10le",
                         }
 
-                if pixel_fmt in pxfmtdict:
-                    pixel_fmt = pxfmtdict[pixel_fmt]
+                if pixel_fmt in pxfmtDict:
+                    pixel_fmt = pxfmtDict[pixel_fmt]
             self.color_space = self.ffmpegInfoWrapper.color_space
             self.color_primaries = self.ffmpegInfoWrapper.color_primaries
             self.color_transfer = self.ffmpegInfoWrapper.color_transfer
