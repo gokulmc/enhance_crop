@@ -5,6 +5,7 @@ class FFMpegCommand:
                  video_encoder_speed: str,
                  video_quality: str,
                  video_pixel_format: str,
+                 input_pixel_format: str,
                  audio_encoder: str,
                  audio_bitrate: str,
                  hdr_mode: bool,
@@ -15,6 +16,7 @@ class FFMpegCommand:
         self._video_encoder_speed = video_encoder_speed
         self._video_quality = video_quality
         self._video_pixel_format = video_pixel_format
+        self._input_pixel_format = input_pixel_format
         self._audio_encoder = audio_encoder
         self._audio_bitrate = audio_bitrate
         self._hdr_mode = hdr_mode
@@ -37,7 +39,7 @@ class FFMpegCommand:
                 self._color_transfer,
             ]
             encoder_params += f":transfer={self._color_transfer}:"
-        if self._color_space is not None:
+        if self._color_space is not None and self._input_pixel_format != "yuv420p":
             command += [
                 "-colorspace",
                 self._color_space,

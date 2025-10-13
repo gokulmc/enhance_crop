@@ -21,6 +21,7 @@ class SettingsTab:
         self.color_space = None
         self.color_primaries = None
         self.color_transfer = None
+        self.in_pix_fmt = None
         self.ffmpeg_settings_dict = {
             "encoder": self.parent.encoder,
             "audio_encoder": self.parent.audio_encoder,
@@ -57,8 +58,8 @@ class SettingsTab:
         pixel_fmt = self.settings.settings['video_pixel_format']
         pxfmtDict = {
                 "yuv420p": "yuv420p",
-                "yuv422": "yuv422p",
-                "yuv444": "yuv444p",
+                "yuv422p": "yuv422p",
+                "yuv444p": "yuv444p",
                 "yuv420p (10 bit)": "yuv420p10le",
                 "yuv422p (10 bit)": "yuv422p10le",
                 "yuv444p (10 bit)": "yuv444p10le",
@@ -91,12 +92,14 @@ class SettingsTab:
             self.color_space = self.ffmpegInfoWrapper.color_space
             self.color_primaries = self.ffmpegInfoWrapper.color_primaries
             self.color_transfer = self.ffmpegInfoWrapper.color_transfer
+            self.in_pix_fmt = self.ffmpegInfoWrapper.pixel_format
 
         command = FFMpegCommand(
             self.settings.settings['encoder'].replace(' (experimental)', '').replace(' (40 series and up)', ''),
             self.settings.settings['video_encoder_speed'],
             self.settings.settings['video_quality'],
             pixel_fmt,
+            self.in_pix_fmt,
             self.settings.settings['audio_encoder'],
             self.settings.settings['audio_bitrate'],
             hdr_mode,
