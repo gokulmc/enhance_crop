@@ -43,7 +43,8 @@ class FFmpegRead(Buffer):
                 self.inputFrameChunkSize = width * height * 3 // 2
             else:
                 self.inputFrameChunkSize = width * height * 3
-
+        command = self.command()
+        log("FFMPEG READ COMMAND: " + str(command))
         self.readProcess = subprocess_popen_without_terminal(
             self.command(),
             stdout=subprocess.PIPE,
@@ -52,7 +53,6 @@ class FFmpegRead(Buffer):
         self.readQueue = queue.Queue(maxsize=25)
 
     def command(self):
-        log("Generating FFmpeg READ command...")
         
         command = [
             f"{FFMPEG_PATH}",
@@ -181,7 +181,6 @@ class FFmpegWrite(Buffer):
         self.color_space = color_space
         self.color_primaries = color_primaries
         self.color_transfer = color_transfer
-        log(f"FFmpegWrite parameters: inputFile={inputFile}, outputFile={outputFile}, width={width}, height={height}, start_time={start_time}, end_time={end_time}, fps={fps}, crf={crf}, audio_bitrate={audio_bitrate}, pixelFormat={pixelFormat}, overwrite={overwrite}, custom_encoder={custom_encoder}, benchmark={benchmark}, slowmo_mode={slowmo_mode}, upscaleTimes={upscaleTimes}, interpolateFactor={interpolateFactor}, ceilInterpolateFactor={ceilInterpolateFactor}, video_encoder={video_encoder}, audio_encoder={audio_encoder}, subtitle_encoder={subtitle_encoder}, hdr_mode={hdr_mode}, mpv_output={mpv_output}, merge_subtitles={merge_subtitles}")
         self.outputFPS = (
             (self.fps * self.interpolateFactor)
             if not self.slowmo_mode
@@ -189,9 +188,10 @@ class FFmpegWrite(Buffer):
         )
         self.ffmpeg_log = open(FFMPEG_LOG_FILE, "w", encoding='utf-8')
         try:
-
+            command = self.command()
+            log("\nFFMPEG WRITE COMMAND: " + str(command) + "\n")
             self.writeProcess = subprocess_popen_without_terminal(
-                self.command(),
+                command,
                 stdin=subprocess.PIPE,
                 stderr=self.ffmpeg_log,
                 stdout=subprocess.PIPE if self.mpv_output else self.ffmpeg_log,
@@ -385,7 +385,7 @@ class FFmpegWrite(Buffer):
                 "-",
             ]
 
-        log("FFMPEG WRITE COMMAND: " + str(command))
+        
         return command
 
     def get_num_frames_rendered(self):
