@@ -164,7 +164,6 @@ class FFMpegInfoWrapper(VideoInfo):
             try:
                 match color_opt:
                     case "Space":
-                        log(self.stream_line)
                         color_opt_detected = self.stream_line.split(string_pattern)[1].split(",")[1].split("/")[0].strip()
                         if color_opt_detected not in FFMPEG_COLORSPACES:
                             return None
