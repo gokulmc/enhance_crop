@@ -157,18 +157,23 @@ class FFMpegInfoWrapper(VideoInfo):
     
     def check_color_opt(self, color_opt:str) -> str | None:
         if self.stream_line:
+            if "ffv1" in self.get_codec():
+                string_pattern = "1,"
+            else:
+                string_pattern = "),"
             try:
                 match color_opt:
                     case "Space":
-                        color_opt_detected = self.stream_line.split("),")[1].split(",")[1].split("/")[0].strip()
+                        log(self.stream_line)
+                        color_opt_detected = self.stream_line.split(string_pattern)[1].split(",")[1].split("/")[0].strip()
                         if color_opt_detected not in FFMPEG_COLORSPACES:
                             return None
                     case "Primaries":
-                        color_opt_detected = self.stream_line.split("),")[1].split("/")[1].strip()
+                        color_opt_detected = self.stream_line.split(string_pattern)[1].split("/")[1].strip()
                         if color_opt_detected not in FFMPEG_COLOR_PRIMARIES:
                             return None
                     case "Transfer":
-                        color_opt_detected = self.stream_line.split("),")[1].split("/")[2].replace(")","").split(",")[0].strip()
+                        color_opt_detected = self.stream_line.split(string_pattern)[1].split("/")[2].replace(")","").split(",")[0].strip()
                         if color_opt_detected not in FFMPEG_COLOR_TRC:
                             return None
 
