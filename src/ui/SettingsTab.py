@@ -81,7 +81,7 @@ class SettingsTab:
                 self.in_pix_fmt = self.ffmpegInfoWrapper.pixel_format
 
 
-        if self.hdr_mode or "10" in self.in_pix_fmt:
+        if self.hdr_mode or ("10" in self.in_pix_fmt and self.hdr_mode):
             pxfmtDict = {
                         "yuv420p": "yuv420p10le",
                         "yuv422p": "yuv422p10le",
