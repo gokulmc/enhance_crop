@@ -21,7 +21,8 @@ class SettingsTab:
         self.color_space = None
         self.color_primaries = None
         self.color_transfer = None
-        self.in_pix_fmt = None
+        self.in_pix_fmt = ""
+        self.hdr_mode = False
         self.ffmpeg_settings_dict = {
             "encoder": self.parent.encoder,
             "audio_encoder": self.parent.audio_encoder,
@@ -66,8 +67,6 @@ class SettingsTab:
             }
         pixel_fmt = pxfmtDict[pixel_fmt]
 
-        hdr_mode = False
-
         input_file = self.parent.inputFileText.text()
         if input_file and len(input_file) > 1: # caching is nice
             if self.input_file != input_file:
@@ -75,35 +74,33 @@ class SettingsTab:
                 self.ffmpegInfoWrapper = VideoLoader(self.input_file)
                 self.ffmpegInfoWrapper.loadVideo()
                 self.ffmpegInfoWrapper.getData()
+                self.hdr_mode = (self.ffmpegInfoWrapper.is_hdr) and self.settings.settings['auto_hdr_mode'] == "True"
+                self.color_space = self.ffmpegInfoWrapper.color_space
+                self.color_primaries = self.ffmpegInfoWrapper.color_primaries
+                self.color_transfer = self.ffmpegInfoWrapper.color_transfer
+                self.in_pix_fmt = self.ffmpegInfoWrapper.pixel_format
 
-        if self.ffmpegInfoWrapper:
-            hdr_mode = (self.ffmpegInfoWrapper.is_hdr) and self.settings.settings['auto_hdr_mode'] == "True"
-            
-            
-            if hdr_mode:
-                pxfmtDict = {
-                            "yuv420p": "yuv420p10le",
-                            "yuv422": "yuv422p10le",
-                            "yuv444": "yuv444p10le",
-                        }
 
-                if pixel_fmt in pxfmtDict:
-                    pixel_fmt = pxfmtDict[pixel_fmt]
-            self.color_space = self.ffmpegInfoWrapper.color_space
-            self.color_primaries = self.ffmpegInfoWrapper.color_primaries
-            self.color_transfer = self.ffmpegInfoWrapper.color_transfer
-            self.in_pix_fmt = self.ffmpegInfoWrapper.pixel_format
+        if self.hdr_mode or "10" in self.in_pix_fmt:
+            pxfmtDict = {
+                        "yuv420p": "yuv420p10le",
+                        "yuv422p": "yuv422p10le",
+                        "yuv444p": "yuv444p10le",
+                    }
+
+            if pixel_fmt in pxfmtDict:
+                pixel_fmt = pxfmtDict[pixel_fmt]
+            
 
         command = FFMpegCommand(
             self.settings.settings['encoder'].replace(' (experimental)', '').replace(' (40 series and up)', ''),
             self.settings.settings['video_encoder_speed'],
             self.settings.settings['video_quality'],
             pixel_fmt,
-            self.in_pix_fmt,
             self.settings.settings['audio_encoder'],
             self.settings.settings['audio_bitrate'],
-            hdr_mode,
-            self.color_space,
+            self.hdr_mode,
+            self.color_space if self.in_pix_fmt != "yuv420p" else None,
             self.color_primaries,
             self.color_transfer,    
         ).build_command()
