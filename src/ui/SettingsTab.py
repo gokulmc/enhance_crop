@@ -56,7 +56,7 @@ class SettingsTab:
         for key, value in self.ffmpeg_settings_dict.items():
             self.settings.writeSetting(key, value.currentText())
         
-        pixel_fmt = self.settings.settings['video_pixel_format']
+        self.out_pixel_fmt = self.settings.settings['video_pixel_format']
         pxfmtDict = {
                 "yuv420p": "yuv420p",
                 "yuv422p": "yuv422p",
@@ -65,7 +65,7 @@ class SettingsTab:
                 "yuv422p (10 bit)": "yuv422p10le",
                 "yuv444p (10 bit)": "yuv444p10le",
             }
-        pixel_fmt = pxfmtDict[pixel_fmt]
+        self.out_pixel_fmt = pxfmtDict[self.out_pixel_fmt]
 
         input_file = self.parent.inputFileText.text()
         if input_file and len(input_file) > 1: # caching is nice
@@ -81,22 +81,22 @@ class SettingsTab:
                 self.in_pix_fmt = self.ffmpegInfoWrapper.pixel_format
 
 
-        if self.hdr_mode or ("10" in self.in_pix_fmt and self.hdr_mode):
+        if self.hdr_mode or ("10" in self.in_pix_fmt and self.settings.settings['auto_hdr_mode'] == "True"):
             pxfmtDict = {
                         "yuv420p": "yuv420p10le",
                         "yuv422p": "yuv422p10le",
                         "yuv444p": "yuv444p10le",
                     }
 
-            if pixel_fmt in pxfmtDict:
-                pixel_fmt = pxfmtDict[pixel_fmt]
-            
+            if self.out_pixel_fmt in pxfmtDict:
+                self.out_pixel_fmt = pxfmtDict[self.out_pixel_fmt]
+
 
         command = FFMpegCommand(
             self.settings.settings['encoder'].replace(' (experimental)', '').replace(' (40 series and up)', ''),
             self.settings.settings['video_encoder_speed'],
             self.settings.settings['video_quality'],
-            pixel_fmt,
+            self.out_pixel_fmt,
             self.settings.settings['audio_encoder'],
             self.settings.settings['audio_bitrate'],
             self.hdr_mode,

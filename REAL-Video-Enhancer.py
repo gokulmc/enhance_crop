@@ -346,7 +346,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             interpolateModelName = self.interpolateModelComboBox.currentText()
             interpolateTimes = self.getInterpolationMultiplier(interpolateModelName)
             scale = self.getUpscaleModelScale(upscaleModelName)
-            new_bitrate = 8 if "10" not in self.settings.settings['video_pixel_format'] else 10
+            new_bitrate = 8 if "10" not in self.settingsTab.in_pix_fmt else 10
             inputText = (
                 f"FPS: {round(self.videoFps, 0)} -> {round(self.videoFps * interpolateTimes, 0)}\n"
                 + f"Resolution: {self.videoWidth}x{self.videoHeight} -> {self.videoWidth * scale}x{self.videoHeight * scale}\n"
@@ -354,7 +354,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 + f"Encoder: {self.videoEncoder} -> {self.settings.settings['encoder']}\n"
                 + f"Container: {self.videoContainer} -> {self.settings.settings['video_container']}\n"
                 + f"Color Space: {self.colorSpace} -> {self.colorSpace}\n"
-                + f"Pixel Format: {self.pixelFMT} -> {self.settings.settings['video_pixel_format']}\n"
+                + f"Pixel Format: {self.settingsTab.in_pix_fmt} -> {self.settingsTab.out_pixel_fmt}\n"
                 + f"HDR: {self.videoHDR} -> {self.videoHDR if self.settings.settings['auto_hdr_mode'] == 'True' else 'False'}\n"
                 + f"Bit Depth: {self.videoBitDepth} bit -> {new_bitrate if self.settings.settings['auto_hdr_mode'] == 'True' else 8} bit\n"
             )

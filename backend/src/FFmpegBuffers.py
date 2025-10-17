@@ -1,4 +1,5 @@
 import queue
+import sys
 from abc import ABC, abstractmethod
 import os
 import subprocess
@@ -439,7 +440,7 @@ class FFmpegWrite(Buffer):
             log("Benchmark mode enabled, skipping subtitle merge.")
             return
 
-        temp_output = self.outputFile + ".temp.mkv"
+        temp_output = self.outputFile + "-" + str(os.getpid()) + "-temp.mkv"
         os.rename(self.outputFile, temp_output)
 
         command = [
@@ -461,9 +462,6 @@ class FFmpegWrite(Buffer):
             self.outputFile,
         ]
 
-        if self.overwrite:
-            command.append("-y")
-
         log("Merging subtitles with command: " + " ".join(command))
 
         try:
@@ -471,6 +469,7 @@ class FFmpegWrite(Buffer):
             if result.returncode != 0:
                 log("Failed to merge subtitles. FFmpeg error:")
                 log(result.stderr.decode())
+                os.remove(self.outputFile) # Remove incomplete output file
                 os.rename(temp_output, self.outputFile)  # Restore original file
                 return
             os.remove(temp_output)
