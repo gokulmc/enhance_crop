@@ -226,7 +226,7 @@ QScrollBar:horizontal{
              <string notr="true"/>
             </property>
             <property name="currentIndex">
-             <number>2</number>
+             <number>4</number>
             </property>
             <widget class="QWidget" name="homePage">
              <property name="styleSheet">
@@ -2312,8 +2312,8 @@ li.checked::marker { content: &quot;\2612&quot;; }
                                   <rect>
                                    <x>0</x>
                                    <y>0</y>
-                                   <width>488</width>
-                                   <height>500</height>
+                                   <width>428</width>
+                                   <height>484</height>
                                   </rect>
                                  </property>
                                  <layout class="QVBoxLayout" name="verticalLayout_40">
@@ -2395,7 +2395,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
                                                 <x>0</x>
                                                 <y>0</y>
                                                 <width>918</width>
-                                                <height>56</height>
+                                                <height>48</height>
                                                </rect>
                                               </property>
                                               <layout class="QHBoxLayout" name="horizontalLayout_54">
@@ -3250,8 +3250,8 @@ border-radius:10px;
                                <rect>
                                 <x>0</x>
                                 <y>0</y>
-                                <width>506</width>
-                                <height>518</height>
+                                <width>393</width>
+                                <height>430</height>
                                </rect>
                               </property>
                               <property name="sizePolicy">
@@ -4259,8 +4259,8 @@ QTabWidget::pane { /* The tab widget frame */
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>397</width>
-                   <height>379</height>
+                   <width>863</width>
+                   <height>652</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_18">
@@ -4302,8 +4302,8 @@ QTabWidget::pane { /* The tab widget frame */
                              <rect>
                               <x>0</x>
                               <y>0</y>
-                              <width>480</width>
-                              <height>173</height>
+                              <width>805</width>
+                              <height>535</height>
                              </rect>
                             </property>
                             <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -5563,7 +5563,7 @@ background-color:white;
                         </size>
                        </property>
                        <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;PyTorch Version&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- This is the version downloaded&lt;/p&gt;&lt;p&gt;- 2.6: Supports older CUDA enabled GPUs&lt;/p&gt;&lt;p&gt;- 2.7: Supports all RTX cards, faster and recomended.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;PyTorch Version&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- This is the version downloaded&lt;/p&gt;&lt;p&gt;- 2.6: Supports older CUDA enabled GPUs&lt;/p&gt;&lt;p&gt;- 2.8: Supports all RTX cards, faster and recomended.&lt;/p&gt;&lt;p&gt;- 2.9: Experimental.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                        </property>
                        <property name="toolTipDuration">
                         <number>0</number>
@@ -5683,8 +5683,8 @@ color: red;
                      <rect>
                       <x>0</x>
                       <y>0</y>
-                      <width>791</width>
-                      <height>178</height>
+                      <width>845</width>
+                      <height>333</height>
                      </rect>
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_13">
