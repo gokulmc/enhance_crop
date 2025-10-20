@@ -6,6 +6,7 @@
  - UI Tweaks
 ### Fixed
  - ROCm showing cuda on front end.
+ - GMFSS not working
 ### Removed
  - GIMM.
  - locking the app to 1 instance.
