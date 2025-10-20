@@ -7,13 +7,8 @@ from .FeatureNet import FeatureNet
 from .gmflow.gmflow import GMFlow
 from .MetricNet import MetricNet
 from .FusionNet_u import GridNet
-from ....constants import HAS_SYSTEM_CUDA
+from ....utils.Util import CudaChecker
 from ..DetectInterpolateArch import ArchDetect
-
-if HAS_SYSTEM_CUDA:
-    from ..util.softsplat_cupy import softsplat
-else:
-    from ..util.softsplat_torch import softsplat
 
 
 class GMFSS:
@@ -44,6 +39,10 @@ class GMFSS:
         tmp = max(_pad, int(_pad / self.scale))
         self.pw = math.ceil(self.width / tmp) * tmp
         self.ph = math.ceil(self.height / tmp) * tmp
+        if CudaChecker.checkForCUDA():
+            from ..util.softsplat_cupy import softsplat
+        else:
+            from ..util.softsplat_torch import softsplat
         self.warp = softsplat
 
         combined_state_dict = torch.load(model_path, map_location="cpu")
