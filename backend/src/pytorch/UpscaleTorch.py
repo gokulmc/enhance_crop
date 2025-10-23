@@ -232,7 +232,7 @@ class UpscalePytorch:
                         self.model.load_state_dict(model.state_dict())
                         output = model(inputs[0])
                         del model
-                        torch.cuda.empty_cache()
+                        TorchUtils.clear_cache()
                     except Exception as e:
                        print("Test inf failed")
 
@@ -305,7 +305,7 @@ class UpscalePytorch:
 
     @torch.inference_mode()
     def set_self_model(self, backend="pytorch", trt_engine_name=None):
-        torch.cuda.empty_cache()
+        self.torchUtils.clear_cache()
         if backend == "tensorrt":
             from .TensorRTHandler import TorchTensorRTHandler
             trtHandler = TorchTensorRTHandler(model_parent_path=os.path.dirname(self.modelPath),)

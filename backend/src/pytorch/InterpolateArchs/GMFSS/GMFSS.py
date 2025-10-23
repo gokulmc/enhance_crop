@@ -60,7 +60,7 @@ class GMFSS:
         # model unspecific setup
 
         self.ifnet = IFNet(ensemble=ensemble).to(dtype=dtype, device=device)
-        self.flownet = GMFlow().to(dtype=torch.float, device=device)
+        self.flownet = GMFlow().to(dtype=dtype, device=device)
         self.metricnet = MetricNet().to(dtype=dtype, device=device)
         self.feat_ext = FeatureNet().to(dtype=dtype, device=device)
         self.fusionnet = GridNet().to(dtype=dtype, device=device)
@@ -113,9 +113,9 @@ class GMFSS:
             import gc
 
             gc.collect()
-            torch.cuda.empty_cache()
-            torch.cuda.reset_max_memory_allocated()
-            torch.cuda.reset_max_memory_cached()
+            #torch.cuda.empty_cache()
+            #torch.cuda.reset_max_memory_allocated()
+            #torch.cuda.reset_max_memory_cached()
             self.ifnet = trtHandler.load_engine("IFNet.engine")
             self.feat_ext = trtHandler.load_engine("Feat.engine")
             self.flownet = trtHandler.load_engine("Flownet.engine")
@@ -137,8 +137,8 @@ class GMFSS:
             imgf0 = img0
             imgf1 = img1
         if self.flow01 is None:
-            self.flow01 = self.flownet(imgf0.float(), imgf1.float()).to(dtype=self.dtype)
-            self.flow10 = self.flownet(imgf1.float(), imgf0.float()).to(dtype=self.dtype)
+            self.flow01 = self.flownet(imgf0, imgf1)
+            self.flow10 = self.flownet(imgf1, imgf0)
         if self.scale != 1.0:
             self.flow01 = (
                 F.interpolate(

@@ -196,6 +196,8 @@ class TorchUtils:
     def clear_cache():
         if HAS_PYTORCH_CUDA:
             torch.cuda.empty_cache()
+            torch.cuda.reset_max_memory_allocated()
+            torch.cuda.reset_max_memory_cached()
     
     @torch.inference_mode()
     def tensor_to_frame(self, frame: torch.Tensor):
