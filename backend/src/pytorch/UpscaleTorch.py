@@ -3,6 +3,7 @@ import math
 
 import gc
 from .TorchUtils import TorchUtils
+from .spandrel.UpscaleModelWrapper import UpscaleModelWrapper
 import torch as torch
 import torch.nn.functional as F
 import sys
@@ -314,43 +315,6 @@ class UpscalePytorch:
             self.model = self.loadModel(
                 modelPath=self.modelPath, device=self.device, dtype=self.dtype
             )
-
-    @torch.inference_mode()
-    def loadModel(
-        self, modelPath: str, dtype: torch.dtype = torch.float32, device: str = "cuda"
-    ) -> torch.nn.Module:
-        try:
-            from .spandrel import ModelLoader, ImageModelDescriptor, UnsupportedModelError
-        except ImportError:
-            # spandrel will import like this if its a submodule
-            from .spandrel.libs.spandrel.spandrel import ModelLoader, ImageModelDescriptor, UnsupportedModelError
-        try:
-            model = ModelLoader().load_from_file(modelPath)
-            assert isinstance(model, ImageModelDescriptor)
-            self.model = model
-            # get model attributes
-            
-        except (UnsupportedModelError) as e:
-            from .VSRArchs.AnimeSR import AnimeSRArch
-            from .VSRArchs.vsr_inference_helper import VSRInferenceHelper
-            model = AnimeSRArch()
-            self.inference = VSRInferenceHelper(model)
-
-        self.scale = model.scale
-        model = model.model
-        
-        model.load_state_dict(model.state_dict(), assign=True)
-        model.eval().to(self.device, dtype=self.dtype)
-        try:
-            example_input = torch.zeros((1, 3, 64, 64), device=self.device, dtype=self.dtype)
-            model(example_input)
-        except Exception as e:
-            print("Error occured during model validation, falling back to float32 dtype.\n")
-            log(str(e))
-            model = model.to(self.device, dtype=torch.float32)
-            
-        return model
-
     
     @torch.inference_mode()
     def __call__(self, image: bytes) -> torch.Tensor:
