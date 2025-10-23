@@ -2,7 +2,7 @@ import os
 
 from PySide6.QtWidgets import QMainWindow, QFileDialog
 from ..constants import PLATFORM, HOME_PATH
-from ..Util import currentDirectory, checkForWritePermissions, open_folder, log
+from ..Util import currentDirectory, checkForWritePermissions, open_folder, log, FileHandler
 from .QTcustom import RegularQTPopup
 from ..GenerateFFMpegCommand import FFMpegCommand
 from ..VideoInfo import VideoLoader
@@ -372,6 +372,7 @@ class Settings:
         The default settings are set here, and are overwritten by the settings in the settings file if it exists and the legnth of the settings is the same as the default settings.
         The key is equal to the name of the widget of the setting in the settings tab.
         """
+        output_folder_default = FileHandler.getDefaultOutputFolder()
         self.defaultSettings = {
             "precision": "auto",
             "tensorrt_optimization_level": "3",
@@ -386,12 +387,8 @@ class Settings:
             "scene_change_detection_threshold": "3.5",
             "discord_rich_presence": "False",
             "video_quality": "High",
-            "output_folder_location": os.path.join(f"{HOME_PATH}", "Videos")
-            if PLATFORM != "darwin"
-            else os.path.join(f"{HOME_PATH}", "Desktop"),
-            "last_input_folder_location": os.path.join(f"{HOME_PATH}", "Videos")
-            if PLATFORM != "darwin"
-            else os.path.join(f"{HOME_PATH}", "Desktop"),
+            "output_folder_location": output_folder_default,
+            "last_input_folder_location": output_folder_default,
             "uhd_mode": "True",
             "ncnn_gpu_id": "0",
             "pytorch_gpu_id": "0",
