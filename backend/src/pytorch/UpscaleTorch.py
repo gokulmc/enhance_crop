@@ -91,8 +91,8 @@ class UpscalePytorch:
     ):
         self.torchUtils = TorchUtils(width=width, height=height,hdr_mode=hdr_mode,device_type=device)  
         device = self.torchUtils.handle_device(device, gpu_id=gpu_id)
-        self.tile_pad = tile_pad
         self.dtype = self.torchUtils.handle_precision(precision)
+        self.tile_pad = tile_pad
         self.device = device
         self.videoWidth = width
         self.videoHeight = height
@@ -100,7 +100,6 @@ class UpscalePytorch:
         self.tile = [self.tilesize, self.tilesize]
         self.modelPath = modelPath
         self.backend = backend
-        
       
         self.trt_workspace_size = trt_workspace_size
         self.trt_optimization_level = trt_optimization_level
@@ -117,11 +116,6 @@ class UpscalePytorch:
         self.prepareStream = self.torchUtils.init_stream(gpu_id=gpu_id)
         self.convertStream = self.torchUtils.init_stream(gpu_id=gpu_id)
         self._load()
-
-
-    # add prores
-    # add janai v2
-    # add bhi light model
 
     @torch.inference_mode()
     def _load(self):
@@ -141,9 +135,13 @@ class UpscalePytorch:
 
         
         with self.torchUtils.run_stream(self.prepareStream):
-            self.set_self_model(backend="pytorch")
+            self.upscale_model_wrapper = UpscaleModelWrapper(
+                model_path=self.modelPath,
+                device=self.device,
+                precision=self.dtype,
+            )
 
-            match self.scale:
+            match self.upscale_model_wrapper.get_scale():
                 case 1:
                     modulo = 4
                 case 2:
@@ -224,24 +222,9 @@ class UpscalePytorch:
                         dim_width = _width * modulo
                         dynamic_shapes = {"x": {2: dim_height, 3: dim_width}}
 
-                        
-
-                    # inference and get re-load state dict due to issue with span.
-                    try:
-                        model = self.model
-                        model(inputs[0])
-                        self.model.load_state_dict(model.state_dict())
-                        output = model(inputs[0])
-                        del model
-                        TorchUtils.clear_cache()
-                    except Exception as e:
-                       print("Test inf failed")
-
-                    
-
                     try:
                         trt_engine = trtHandler.build_engine(
-                            self.model,
+                            self.upscale_model_wrapper.get_model(),
                             self.dtype,
                             self.device,
                             example_inputs=inputs,
@@ -267,7 +250,7 @@ class UpscalePytorch:
                             else:
 
                                 trt_engine = trtHandler.build_engine(
-                                    self.model,
+                                    self.upscale_model_wrapper.get_model(),
                                     self.dtype,
                                     self.device,
                                     example_inputs=inputs,
@@ -284,16 +267,14 @@ class UpscalePytorch:
                             raise RuntimeError(
                                 f"Failed to build TensorRT engine: {e}\n"
                             )
-                self.set_self_model(backend="tensorrt", trt_engine_name=self.trt_engine_name)
-
-                
+                self.upscale_model_wrapper.__load_model(trt_engine_name=self.trt_engine_name)
 
         self.torchUtils.clear_cache()
         self.torchUtils.sync_all_streams()
 
     @torch.inference_mode()
     def hotUnload(self):
-        self.model = None
+        self.upscale_model_wrapper = None
         gc.collect()
         self.torchUtils.clear_cache()
         if HAS_PYTORCH_CUDA:
@@ -303,30 +284,18 @@ class UpscalePytorch:
     @torch.inference_mode()
     def hotReload(self):
         self._load()
-
-    @torch.inference_mode()
-    def set_self_model(self, backend="pytorch", trt_engine_name=None):
-        self.torchUtils.clear_cache()
-        if backend == "tensorrt":
-            from .TensorRTHandler import TorchTensorRTHandler
-            trtHandler = TorchTensorRTHandler(model_parent_path=os.path.dirname(self.modelPath),)
-            self.model = trtHandler.load_engine(trt_engine_name=trt_engine_name)
-        else:
-            self.model = self.loadModel(
-                modelPath=self.modelPath, device=self.device, dtype=self.dtype
-            )
     
     @torch.inference_mode()
     def __call__(self, image: bytes) -> torch.Tensor:
         image = self.torchUtils.frame_to_tensor(image, self.f2tstream, self.device, self.dtype)
         with self.torchUtils.run_stream(self.stream), torch.amp.autocast(
             enabled=self.dtype == torch.float16,device_type="cuda"):
-            while self.model is None:
+            while self.upscale_model_wrapper is None:
                 sleep(1)
             if self.tilesize == 0:
-                
-                output = self.model(image)
-                
+
+                output = self.upscale_model_wrapper(image)
+
             else:
                 output = self.renderTiledImage(image)
             
@@ -339,7 +308,7 @@ class UpscalePytorch:
         return output
  
     def getScale(self):
-        return self.scale
+        return self.upscale_model_wrapper.get_scale()
 
     @torch.inference_mode()
     def renderTiledImage(
@@ -395,7 +364,7 @@ class UpscalePytorch:
                 )
 
                 # process tile
-                output_tile = self.model(
+                output_tile = self.upscale_model_wrapper(
                     input_tile
                 )
 

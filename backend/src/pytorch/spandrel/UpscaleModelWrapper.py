@@ -1,67 +1,75 @@
 import torch
 from ...utils.Util import log
+from ..TorchUtils import TorchUtils
+import os
+
 class UpscaleModelWrapper:
-    def __init__(self, model: torch.nn.Module, device: torch.device, precision: torch.dtype, backed:str="pytorch"):
-        self.__model = model
+    def __init__(self, model_path: torch.nn.Module, device: torch.device, precision: torch.dtype):
+        self.__model_path = model_path
         self.__device = device
         self.__precision = precision
-        model.eval().to(device, dtype=precision)
-    
-    def setPrecision(self, precision: torch.dtype):
+        self.__model: torch.nn.Module = self.__load_model()
+        self.set_precision(self.__precision)
+        self.__test_model_precision()
+
+    def set_precision(self, precision: torch.dtype):
         self.__precision = precision
         self.__model.to(self.__device, dtype=precision)
-    
-    @torch.inference_mode()
-    def loadModel(
-        self, modelPath: str, dtype: torch.dtype = torch.float32, device: str = "cuda"
-    ) -> torch.nn.Module:
-        try:
-            from . import ModelLoader, ImageModelDescriptor, UnsupportedModelError
-        except ImportError:
-            # spandrel will import like this if its a submodule
-            from .libs.spandrel.spandrel import ModelLoader, ImageModelDescriptor, UnsupportedModelError
-        try:
-            model = ModelLoader().load_from_file(modelPath)
-            assert isinstance(model, ImageModelDescriptor)
-            self.model = model
-            # get model attributes
-            
-        except (UnsupportedModelError) as e:
-            log(f"Model at {modelPath} is not supported: {e}")
-            raise e
 
-        self.scale = model.scale
-        model = UpscaleModelWrapper(model=model, device=device, precision=dtype)
-        
-        try:
-            example_input = torch.zeros((1, 3, 64, 64), device=self.device, dtype=self.dtype)
-            model(example_input)
-        except Exception as e:
-            print("Error occured during model validation, falling back to float32 dtype.\n")
-            log(str(e))
-            model.setPrecision(torch.float32)
-            
-        return model
-
-    def getModel(self):
+    def get_model(self):
         return self.__model
+    
+    def get_scale(self):
+        return self.__scale
 
-    def predict(self, input_data):
-        # Preprocess input data
-        processed_data = self.preprocess(input_data)
-        
-        # Make prediction using the wrapped model
-        prediction = self.__model(processed_data)
-        
-        # Postprocess the prediction
-        result = self.postprocess(prediction)
-        
-        return result
+    def load_state_dict(self, state_dict):
+        self.__model.load_state_dict(state_dict)
 
-    def preprocess(self, input_data):
-        # Implement preprocessing logic here
-        return input_data
+    def __test_inference(self, test_input:torch.Tensor):
+        # inference and get re-load state dict due to issue with span.
+        with torch.inference_mode():
+            model = self.__model
+            model(test_input)
+            output = model(test_input)
+            self.__model.load_state_dict(model.state_dict()) # reload state dict to fix span
+            del model
+            TorchUtils.clear_cache()
 
-    def postprocess(self, prediction):
-        # Implement postprocessing logic here
-        return prediction
+    def __test_model_precision(self):
+        test_input = torch.randn(1, 3, 64, 64).to(self.__device, dtype=self.__precision)
+        with torch.inference_mode():
+            try:
+                self.__test_inference(test_input)
+            except Exception as e:
+                log(f"Model precision {self.__precision} not supported, falling back to float32: {e}")
+                self.set_precision(torch.float32)
+                self.__test_inference(test_input)
+            
+
+    @torch.inference_mode()
+    def __load_model(self, trt_engine_name=None) -> torch.nn.Module:
+        if trt_engine_name:
+            from ..TensorRTHandler import TorchTensorRTHandler
+            trtHandler = TorchTensorRTHandler(model_parent_path=os.path.dirname(self.__model_path),)
+            model = trtHandler.load_engine(trt_engine_name=trt_engine_name)
+        else:
+            try:
+                from . import ModelLoader, ImageModelDescriptor, UnsupportedModelError
+            except ImportError:
+                # spandrel will import like this if its a submodule
+                from .libs.spandrel.spandrel import ModelLoader, ImageModelDescriptor, UnsupportedModelError
+            try:
+                model = ModelLoader().load_from_file(self.__model_path)
+                assert isinstance(model, ImageModelDescriptor)
+                # get model attributes
+                
+            except (UnsupportedModelError) as e:
+                log(f"Model at {self.__model_path} is not supported: {e}")
+                raise e
+            
+            self.__scale = model.scale
+
+        return model.model
+    
+    def __call__(self, *args, **kwargs):
+        return self.__model(*args, **kwargs)
