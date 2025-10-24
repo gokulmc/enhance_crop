@@ -267,7 +267,8 @@ class UpscalePytorch:
                             raise RuntimeError(
                                 f"Failed to build TensorRT engine: {e}\n"
                             )
-                self.upscale_model_wrapper.__load_model(trt_engine_name=self.trt_engine_name)
+                model = trtHandler.load_engine(trt_engine_name=self.trt_engine_name)
+                self.upscale_model_wrapper.load_model(model)
 
         self.torchUtils.clear_cache()
         self.torchUtils.sync_all_streams()

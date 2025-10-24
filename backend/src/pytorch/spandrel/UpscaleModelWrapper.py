@@ -8,7 +8,7 @@ class UpscaleModelWrapper:
         self.__model_path = model_path
         self.__device = device
         self.__precision = precision
-        self.__model: torch.nn.Module = self.__load_model()
+        self.load_model()
         self.set_precision(self.__precision)
         self.__test_model_precision()
 
@@ -47,12 +47,8 @@ class UpscaleModelWrapper:
             
 
     @torch.inference_mode()
-    def __load_model(self, trt_engine_name=None) -> torch.nn.Module:
-        if trt_engine_name:
-            from ..TensorRTHandler import TorchTensorRTHandler
-            trtHandler = TorchTensorRTHandler(model_parent_path=os.path.dirname(self.__model_path),)
-            model = trtHandler.load_engine(trt_engine_name=trt_engine_name)
-        else:
+    def load_model(self, model=None) -> torch.nn.Module:
+        if not model:
             try:
                 from . import ModelLoader, ImageModelDescriptor, UnsupportedModelError
             except ImportError:
@@ -68,8 +64,9 @@ class UpscaleModelWrapper:
                 raise e
             
             self.__scale = model.scale
+            model = model.model
 
-        return model.model
+        self.__model = model
     
     def __call__(self, *args, **kwargs):
         return self.__model(*args, **kwargs)
