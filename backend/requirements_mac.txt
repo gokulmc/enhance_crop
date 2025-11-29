@@ -1,0 +1,9 @@
+requests
+numpy
+pillow
+scenedetect
+torch
+torchvision
+einops
+safetensors
+opencv-python
